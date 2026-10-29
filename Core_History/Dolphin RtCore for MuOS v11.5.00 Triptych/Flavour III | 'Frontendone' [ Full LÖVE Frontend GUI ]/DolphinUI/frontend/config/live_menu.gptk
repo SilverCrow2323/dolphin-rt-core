@@ -1,0 +1,18 @@
+# Dolphin Rt:Core - Live Menu
+# Gamepad -> keyboard for whiptail navigation.
+
+a = return
+b = escape
+x = tab
+y = space
+start = return
+back = escape
+guide = escape
+
+leftshoulder = pageup
+rightshoulder = pagedown
+
+dpup = up
+dpdown = down
+dpleft = left
+dpright = right

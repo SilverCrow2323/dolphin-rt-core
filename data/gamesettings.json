@@ -1,0 +1,1382 @@
+{
+  "version": 2,
+  "last_update": "2026-10-13",
+  "settings": [
+    {
+      "game": "Luigi's Mansion",
+      "game_ids": [
+        { "id": "GLME01", "region": "NTSC" },
+        { "id": "GLMP01", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "glme01-sirpips-core-boost",
+          "filename": "GLME01_rtmuos.ini",
+          "universal_filename": "GLM_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips (original: Luis Torrão)",
+          "description": "Stable 15 FPS config for RG4xxx. Lowers virtual CPU clock, uses JIT core, cuts internal resolution to 66%, OpenSLES audio backend.",
+          "tags": ["boost", "jit", "opensles", "overclock"],
+          "raw_content": "# GLME01 - Luigi's Mansion\n# Rt:Core Boost\n# sirpips (original: Luis Torrão)\n# Stable 15 FPS config for RG4xxx. Lowers virtual CPU clock, uses JIT core, cuts internal resolution to 66%, OpenSLES audio backend.\n\n[Core]\nOverclock = 0.60000000\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.66666667\nNoMipmapping = True\nBackend = OpenSLES\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\nSafeTextureCacheColorSamples = 128\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Sonic Heroes",
+      "game_ids": [
+        { "id": "G9SE8P", "region": "PAL" },
+        { "id": "G9SP8P", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "g9se8p-tekkragmd-core-boost",
+          "filename": "G9SE8P_rtmuos.ini",
+          "universal_filename": "G9S_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "TekkraGMD",
+          "description": "JIT core, EFB-to-texture, no mipmaps, VISkip, OpenSLES. Runs 9-25 FPS with dips when Tails appears.",
+          "tags": ["boost", "jit", "efb-to-texture"],
+          "raw_content": "# G9SE8P / G9SP8P - Sonic Heroes\n# Rt:Core Boost\n# TekkraGMD\n# JIT core, EFB-to-texture, no mipmaps, VISkip, OpenSLES. Runs 9-25 FPS with dips when Tails appears.\n\n[Core]\nCPUCore = 2\nCPUThread = True\nFastmem = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nEFBToTextureEnable = True\nNoMipmapping = True\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVertexRounding = True\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Need for Speed: Most Wanted",
+      "game_ids": [
+        { "id": "GOWP69", "region": "PAL" },
+        { "id": "GOWE69", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gowp69-lazz-core-boost",
+          "filename": "GOWP69_rtmuos.ini",
+          "universal_filename": "GOW_rtmuos.ini",
+          "title": "Rt:Core Boost + Overclock",
+          "author": "Lazz + sirpips",
+          "description": "Overclock 0.20, JITFollowBranch off, PerfQueries on. Designed for use with the NFSMW Potato Edition RVZ.",
+          "tags": ["boost", "overclock", "potato-edition"],
+          "raw_content": "# GOWP69 / GOWE69 - Need for Speed: Most Wanted\n# Rt:Core Boost + Overclock\n# Lazz + sirpips\n# Overclock 0.20, JITFollowBranch off, PerfQueries on. Designed for use with the NFSMW Potato Edition RVZ.\n\n[Core]\nOverclock = 0.20\nCPUCore = 4\nCPUThread = True\nJITFollowBranch = False\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video]\nPerfQueriesEnable = True\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Metroid Prime",
+      "game_ids": [
+        { "id": "GM8P01", "region": "PAL" },
+        { "id": "GM8E01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gm8p01-sirpips-speedhack-boost",
+          "filename": "GM8P01_rtmuos.ini",
+          "universal_filename": "GM8_rtmuos.ini",
+          "title": "Rt:Core Boost + Speedhack",
+          "author": "sirpips",
+          "description": "Includes official Dolphin speedhack and CPUCull. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "speedhack", "cpucull"],
+          "raw_content": "# GM8P01 / GM8E01 - Metroid Prime\n# Rt:Core Boost + Speedhack\n# sirpips\n# Includes official Dolphin speedhack and CPUCull. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 512\nMSAA = 0\n\n[Video_Hacks]\nCPUCull = True\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n\n[Speedhacks]\n0x8036eba0=400\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Gotcha Force",
+      "game_ids": [
+        { "id": "GG4P08", "region": "PAL" },
+        { "id": "GG4E08", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gg4p08-sirpips-speedhack-boost",
+          "filename": "GG4P08_rtmuos.ini",
+          "universal_filename": "GG4_rtmuos.ini",
+          "title": "Rt:Core Boost + Speedhack",
+          "author": "sirpips",
+          "description": "Official Dolphin speedhack plus 0.5x resolution. Already runs 42-50 FPS.",
+          "tags": ["boost", "speedhack"],
+          "raw_content": "# GG4P08 / GG4E08 - Gotcha Force\n# Rt:Core Boost + Speedhack\n# sirpips\n# Official Dolphin speedhack plus 0.5x resolution. Already runs 42-50 FPS.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n\n[Speedhacks]\n0x802087c8=200\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Super Mario Sunshine",
+      "game_ids": [
+        { "id": "GMSP01", "region": "PAL" },
+        { "id": "GMSE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gmsp01-sirpips-core-boost",
+          "filename": "GMSP01_rtmuos.ini",
+          "universal_filename": "GMS_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "EFBToTexture disabled to avoid reflection and water glitches. 0.5x resolution, VISkip, FastDepthCalc, DisableFog.",
+          "tags": ["boost", "efb", "internal-resolution"],
+          "raw_content": "# GMSP01 / GMSE01 - Super Mario Sunshine\n# Rt:Core Boost\n# sirpips\n# EFBToTexture disabled to avoid reflection and water glitches. 0.5x resolution, VISkip, FastDepthCalc, DisableFog.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video]\nPerfQueriesEnable = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nEFBToTextureEnable = False\nEFBAccessEnable = True\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n\n[Video_Enhancements]\nForceTextureFiltering = 0\nArbitraryMipmapDetection = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "The Legend of Zelda: The Wind Waker",
+      "game_ids": [
+        { "id": "GZLP01", "region": "PAL" },
+        { "id": "GZLE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gzlp01-sirpips-core-boost",
+          "filename": "GZLP01_rtmuos.ini",
+          "universal_filename": "GZL_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Picto Box fix (EFBToTexture off, EFBAccess on), VISkip disabled due to shadow register incompatibility. 0.5x resolution.",
+          "tags": ["boost", "picto-box", "efb"],
+          "raw_content": "# GZLP01 / GZLE01 - The Legend of Zelda: The Wind Waker\n# Rt:Core Boost\n# sirpips\n# Picto Box fix (EFBToTexture off, EFBAccess on), VISkip disabled due to shadow register incompatibility. 0.5x resolution.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nEFBAccessEnable = True\nEFBToTextureEnable = False\nVISkip = False\nFastDepthCalc = True\nDisableFog = True\n\n[Video_Enhancements]\nArbitraryMipmapDetection = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "F-Zero GX",
+      "game_ids": [
+        { "id": "GFZP01", "region": "PAL" },
+        { "id": "GFZE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gfzp01-sirpips-core-boost",
+          "filename": "GFZP01_rtmuos.ini",
+          "universal_filename": "GFZ_rtmuos.ini",
+          "title": "Rt:Core Boost + FPRF",
+          "author": "sirpips",
+          "description": "FPRF enabled for floating-point precision, EFBAccessTileSize=0 for Sand Ocean. CPUThread forced True for H700. 0.5x resolution, VISkip.",
+          "tags": ["boost", "fprf", "sand-ocean"],
+          "raw_content": "# GFZP01 / GFZE01 - F-Zero GX\n# Rt:Core Boost + FPRF\n# sirpips\n# FPRF enabled for floating-point precision, EFBAccessTileSize=0 for Sand Ocean. CPUThread forced True for H700. 0.5x resolution, VISkip.\n\n[Core]\nFPRF = True\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nEFBAccessTileSize = 0\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Sonic Adventure DX",
+      "game_ids": [
+        { "id": "GXSP8P", "region": "PAL" },
+        { "id": "GXSE8P", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gxsp8p-sirpips-core-boost",
+          "filename": "GXSP8P_rtmuos.ini",
+          "universal_filename": "GXS_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "SafeTextureCache 512 to prevent texture glitches. 0.5x resolution, VISkip, FastDepthCalc, DisableFog.",
+          "tags": ["boost", "safe-texture", "internal-resolution"],
+          "raw_content": "# GXSP8P / GXSE8P - Sonic Adventure DX\n# Rt:Core Boost\n# sirpips\n# SafeTextureCache 512 to prevent texture glitches. 0.5x resolution, VISkip, FastDepthCalc, DisableFog.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 512\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Shadow the Hedgehog",
+      "game_ids": [
+        { "id": "GUPP8P", "region": "PAL" },
+        { "id": "GUPE8P", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gupp8p-sirpips-core-boost",
+          "filename": "GUPP8P_rtmuos.ini",
+          "universal_filename": "GUP_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "VertexRounding for ground corruption fix, SafeTextureCache 512 for bloom bleed. CPUThread forced True for H700.",
+          "tags": ["boost", "vertex-rounding", "bloom-fix"],
+          "raw_content": "# GUPP8P / GUPE8P - Shadow the Hedgehog\n# Rt:Core Boost\n# sirpips\n# VertexRounding for ground corruption fix, SafeTextureCache 512 for bloom bleed. CPUThread forced True for H700.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 512\nMSAA = 0\n\n[Video_Hacks]\nVertexRounding = True\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Prince of Persia: The Sands of Time",
+      "game_ids": [
+        { "id": "GPTP41", "region": "PAL" },
+        { "id": "GPTE41", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gptp41-sirpips-core-boost",
+          "filename": "GPTP41_rtmuos.ini",
+          "universal_filename": "GPT_rtmuos.ini",
+          "title": "Rt:Core Boost + FMV Fix",
+          "author": "sirpips",
+          "description": "EarlyXFBOutput and ImmediateXFB disabled to fix FMV tearing and missing videos. 0.5x resolution, VISkip.",
+          "tags": ["boost", "fmv-fix", "xfb"],
+          "raw_content": "# GPTP41 / GPTE41 - Prince of Persia: The Sands of Time\n# Rt:Core Boost + FMV Fix\n# sirpips\n# EarlyXFBOutput and ImmediateXFB disabled to fix FMV tearing and missing videos. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nEarlyXFBOutput = False\nImmediateXFBEnable = False\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Beyond Good & Evil",
+      "game_ids": [
+        { "id": "GGEP41", "region": "PAL" },
+        { "id": "GGEE41", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "ggep41-sirpips-core-boost",
+          "filename": "GGEP41_rtmuos.ini",
+          "universal_filename": "GGE_rtmuos.ini",
+          "title": "Rt:Core Boost + Pacing Fix",
+          "author": "sirpips",
+          "description": "ImmediateXFB disabled to avoid terrible frame pacing. 0.5x resolution, VISkip, FastDepthCalc, DisableFog.",
+          "tags": ["boost", "pacing-fix", "xfb"],
+          "raw_content": "# GGEP41 / GGEE41 - Beyond Good & Evil\n# Rt:Core Boost + Pacing Fix\n# sirpips\n# ImmediateXFB disabled to avoid terrible frame pacing. 0.5x resolution, VISkip, FastDepthCalc, DisableFog.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nImmediateXFBEnable = False\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Skies of Arcadia Legends",
+      "game_ids": [
+        { "id": "GEAP8P", "region": "PAL" },
+        { "id": "GEAE8P", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "geap8p-sirpips-core-boost",
+          "filename": "GEAP8P_rtmuos.ini",
+          "universal_filename": "GEA_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "SafeTextureCache 512, EFBToTexture off, CPUThread forced True for H700. 0.5x resolution, VISkip.",
+          "tags": ["boost", "safe-texture", "efb"],
+          "raw_content": "# GEAP8P / GEAE8P - Skies of Arcadia Legends\n# Rt:Core Boost\n# sirpips\n# SafeTextureCache 512, EFBToTexture off, CPUThread forced True for H700. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 512\nMSAA = 0\n\n[Video_Hacks]\nEFBToTextureEnable = False\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Mario Kart: Double Dash!!",
+      "game_ids": [
+        { "id": "GM4P01", "region": "PAL" },
+        { "id": "GM4E01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gm4p01-sirpips-core-boost",
+          "filename": "GM4P01_rtmuos.ini",
+          "universal_filename": "GM4_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "No official performance settings exist. Custom config: 0.5x resolution, Fast texture cache, no MSAA, VISkip, FastDepthCalc, DisableFog.",
+          "tags": ["boost", "internal-resolution", "viskip"],
+          "raw_content": "# GM4P01 / GM4E01 - Mario Kart: Double Dash!!\n# Rt:Core Boost\n# sirpips\n# No official performance settings exist. Custom config: 0.5x resolution, Fast texture cache, no MSAA, VISkip, FastDepthCalc, DisableFog.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Paper Mario: The Thousand-Year Door",
+      "game_ids": [
+        { "id": "G8MP01", "region": "PAL" },
+        { "id": "G8ME01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "g8mp01-sirpips-core-boost",
+          "filename": "G8MP01_rtmuos.ini",
+          "universal_filename": "G8M_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "No official performance settings exist. Custom config: 0.5x resolution, Fast texture cache, no MSAA, VISkip, FastDepthCalc, DisableFog.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# G8MP01 / G8ME01 - Paper Mario: The Thousand-Year Door\n# Rt:Core Boost\n# sirpips\n# No official performance settings exist. Custom config: 0.5x resolution, Fast texture cache, no MSAA, VISkip, FastDepthCalc, DisableFog.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "TimeSplitters 2",
+      "game_ids": [
+        { "id": "GTSE4F", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gtse4f-sirpips-core-boost",
+          "filename": "GTSE4F_rtmuos.ini",
+          "universal_filename": "GTS_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "No official performance settings exist. Custom config: 0.5x resolution, Fast texture cache, no MSAA, VISkip, FastDepthCalc, DisableFog.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GTSE4F - TimeSplitters 2\n# Rt:Core Boost\n# sirpips\n# No official performance settings exist. Custom config: 0.5x resolution, Fast texture cache, no MSAA, VISkip, FastDepthCalc, DisableFog.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Crash Nitro Kart",
+      "game_ids": [
+        { "id": "GCNP7D", "region": "PAL" },
+        { "id": "GCNE7D", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gcnp7d-sirpips-speedhack-boost",
+          "filename": "GCNP7D_rtmuos.ini",
+          "universal_filename": "GCN_rtmuos.ini",
+          "title": "Rt:Core Boost + Speedhack",
+          "author": "sirpips",
+          "description": "Reaches 30-50 FPS with Speed Hack profile. Includes 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "speedhack"],
+          "raw_content": "# GCNP7D / GCNE7D - Crash Nitro Kart\n# Rt:Core Boost + Speedhack\n# sirpips\n# Reaches 30-50 FPS with Speed Hack profile. Includes 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Crazy Taxi",
+      "game_ids": [
+        { "id": "GCTP51", "region": "PAL" },
+        { "id": "GCTE51", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gctp51-sirpips-core-boost",
+          "filename": "GCTP51_rtmuos.ini",
+          "universal_filename": "GCT_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs perfectly at 25-40 FPS. 0.5x resolution, VISkip, FastDepthCalc, DisableFog.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GCTP51 / GCTE51 - Crazy Taxi\n# Rt:Core Boost\n# sirpips\n# Runs perfectly at 25-40 FPS. 0.5x resolution, VISkip, FastDepthCalc, DisableFog.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Kirby Air Ride",
+      "game_ids": [
+        { "id": "GKYP01", "region": "PAL" },
+        { "id": "GKYE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gkyp01-sirpips-core-boost",
+          "filename": "GKYP01_rtmuos.ini",
+          "universal_filename": "GKY_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Free Run mode runs 30-40 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GKYP01 / GKYE01 - Kirby Air Ride\n# Rt:Core Boost\n# sirpips\n# Free Run mode runs 30-40 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Mario Smash Football",
+      "game_ids": [
+        { "id": "G4QP01", "region": "PAL" },
+        { "id": "G4QE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "g4qp01-sirpips-core-boost",
+          "filename": "G4QP01_rtmuos.ini",
+          "universal_filename": "G4Q_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs perfectly at 30-50 FPS with all profiles tested. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# G4QP01 / G4QE01 - Mario Smash Football\n# Rt:Core Boost\n# sirpips\n# Runs perfectly at 30-50 FPS with all profiles tested. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "WarioWare, Inc.: Mega Party Game$!",
+      "game_ids": [
+        { "id": "GZWP01", "region": "PAL" },
+        { "id": "GZWE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gzwp01-sirpips-core-boost",
+          "filename": "GZWP01_rtmuos.ini",
+          "universal_filename": "GZW_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs nearly flawlessly at 40-50 FPS. Minigames run full speed. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GZWP01 / GZWE01 - WarioWare, Inc.: Mega Party Game$!\n# Rt:Core Boost\n# sirpips\n# Runs nearly flawlessly at 40-50 FPS. Minigames run full speed. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Aggressive Inline",
+      "game_ids": [
+        { "id": "GILP51", "region": "PAL" },
+        { "id": "GILE51", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gilp51-sirpips-core-boost",
+          "filename": "GILP51_rtmuos.ini",
+          "universal_filename": "GIL_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "FPS drops are common but very playable. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GILP51 / GILE51 - Aggressive Inline\n# Rt:Core Boost\n# sirpips\n# FPS drops are common but very playable. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Cubivore: Survival of the Fittest",
+      "game_ids": [
+        { "id": "GCVEEB", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gcveeb-sirpips-core-boost",
+          "filename": "GCVEEB_rtmuos.ini",
+          "universal_filename": "GCV_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Almost perfect at 38-40 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GCVEEB - Cubivore: Survival of the Fittest\n# Rt:Core Boost\n# sirpips\n# Almost perfect at 38-40 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Pac-Man World 2",
+      "game_ids": [
+        { "id": "GP2P69", "region": "PAL" },
+        { "id": "GP2E69", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gp2p69-sirpips-core-boost",
+          "filename": "GP2P69_rtmuos.ini",
+          "universal_filename": "GP2_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Playable at 16-30 FPS with variable framerate. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GP2P69 / GP2E69 - Pac-Man World 2\n# Rt:Core Boost\n# sirpips\n# Playable at 16-30 FPS with variable framerate. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Super Monkey Ball 2",
+      "game_ids": [
+        { "id": "GM2E8P", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gm2e8p-sirpips-core-boost",
+          "filename": "GM2E8P_rtmuos.ini",
+          "universal_filename": "GM2_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs at 30-60 FPS. Use debug mode to disable BACKGROUND, STOBJ, EFFECTS, APE, MINIMAP for best performance.",
+          "tags": ["boost", "debug-mode"],
+          "raw_content": "# GM2E8P - Super Monkey Ball 2\n# Rt:Core Boost\n# sirpips\n# Runs at 30-60 FPS. Use debug mode to disable BACKGROUND, STOBJ, EFFECTS, APE, MINIMAP for best performance.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Frogger: Ancient Shadow",
+      "game_ids": [
+        { "id": "GFPEA4", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gfpea4-sirpips-core-boost",
+          "filename": "GFPEA4_rtmuos.ini",
+          "universal_filename": "GFP_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs really well at 41-60 FPS, very playable. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GFPEA4 - Frogger: Ancient Shadow\n# Rt:Core Boost\n# sirpips\n# Runs really well at 41-60 FPS, very playable. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Pokemon XD: Gale of Darkness",
+      "game_ids": [
+        { "id": "GXXP01", "region": "PAL" },
+        { "id": "GXXE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gxxp01-sirpips-core-boost",
+          "filename": "GXXP01_rtmuos.ini",
+          "universal_filename": "GXX_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Playable at 25 FPS with few frame drops. Glitchy text is expected. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GXXP01 / GXXE01 - Pokemon XD: Gale of Darkness\n# Rt:Core Boost\n# sirpips\n# Playable at 25 FPS with few frame drops. Glitchy text is expected. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Zoocube",
+      "game_ids": [
+        { "id": "GZCP51", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gzcp51-sirpips-core-boost",
+          "filename": "GZCP51_rtmuos.ini",
+          "universal_filename": "GZC_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs at 30-40 FPS. Select 50Hz mode at startup. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "50hz"],
+          "raw_content": "# GZCP51 - Zoocube\n# Rt:Core Boost\n# sirpips\n# Runs at 30-40 FPS. Select 50Hz mode at startup. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Wario World",
+      "game_ids": [
+        { "id": "GWWP01", "region": "PAL" },
+        { "id": "GWWE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gwwp01-sirpips-core-boost",
+          "filename": "GWWP01_rtmuos.ini",
+          "universal_filename": "GWW_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "UI texture problems make starting a new game difficult. Performance improves in levels. 0.5x resolution, VISkip.",
+          "tags": ["boost", "ui-fix"],
+          "raw_content": "# GWWP01 / GWWE01 - Wario World\n# Rt:Core Boost\n# sirpips\n# UI texture problems make starting a new game difficult. Performance improves in levels. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 512\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Digimon World 4",
+      "game_ids": [
+        { "id": "GDJEB2", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gdjeb2-sirpips-core-boost",
+          "filename": "GDJEB2_rtmuos.ini",
+          "universal_filename": "GDJ_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Almost perfect at 30-50 FPS. Some lag during intense scenes. Speedup 1 profile recommended.",
+          "tags": ["boost", "speedup"],
+          "raw_content": "# GDJEB2 - Digimon World 4\n# Rt:Core Boost\n# sirpips\n# Almost perfect at 30-50 FPS. Some lag during intense scenes. Speedup 1 profile recommended.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Frogger Beyond",
+      "game_ids": [
+        { "id": "GFGEA4", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gfgea4-sirpips-core-boost",
+          "filename": "GFGEA4_rtmuos.ini",
+          "universal_filename": "GFG_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs at 26-40 FPS with some slowdown. Requires NTSC ISO. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GFGEA4 - Frogger Beyond\n# Rt:Core Boost\n# sirpips\n# Runs at 26-40 FPS with some slowdown. Requires NTSC ISO. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Frogger's Adventures: The Rescue",
+      "game_ids": [
+        { "id": "GFQEA4", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gfqea4-sirpips-core-boost",
+          "filename": "GFQEA4_rtmuos.ini",
+          "universal_filename": "GFQ_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs at 30-42 FPS. Slow cutscenes but in-game runs fine. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GFQEA4 - Frogger's Adventures: The Rescue\n# Rt:Core Boost\n# sirpips\n# Runs at 30-42 FPS. Slow cutscenes but in-game runs fine. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "LEGO Star Wars II: The Original Trilogy",
+      "game_ids": [
+        { "id": "GL7E64", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gl7e64-sirpips-core-boost",
+          "filename": "GL7E64_rtmuos.ini",
+          "universal_filename": "GL7_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs at 19-47 FPS with rare music glitch-loops and few stutters. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GL7E64 - LEGO Star Wars II: The Original Trilogy\n# Rt:Core Boost\n# sirpips\n# Runs at 19-47 FPS with rare music glitch-loops and few stutters. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "SpongeBob SquarePants: Battle for Bikini Bottom",
+      "game_ids": [
+        { "id": "GGVX78", "region": "PAL" },
+        { "id": "GGVE78", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "ggvx78-sirpips-core-boost",
+          "filename": "GGVX78_rtmuos.ini",
+          "universal_filename": "GGV_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs at 22-50 FPS with variable framerate. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GGVX78 / GGVE78 - SpongeBob SquarePants: Battle for Bikini Bottom\n# Rt:Core Boost\n# sirpips\n# Runs at 22-50 FPS with variable framerate. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Serious Sam: Next Encounter",
+      "game_ids": [
+        { "id": "G3BP9G", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "g3bp9g-sirpips-core-boost",
+          "filename": "G3BP9G_rtmuos.ini",
+          "universal_filename": "G3B_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs at 15-50 FPS. Videos run slow, struggles during battles and larger levels but still playable.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# G3BP9G - Serious Sam: Next Encounter\n# Rt:Core Boost\n# sirpips\n# Runs at 15-50 FPS. Videos run slow, struggles during battles and larger levels but still playable.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Star Fox Adventures",
+      "game_ids": [
+        { "id": "GSAP01", "region": "PAL" },
+        { "id": "GSAE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gsap01-sirpips-core-boost",
+          "filename": "GSAP01_rtmuos.ini",
+          "universal_filename": "GSA_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Playable at 20-25 FPS with occasional framerate variation. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GSAP01 / GSAE01 - Star Fox Adventures\n# Rt:Core Boost\n# sirpips\n# Playable at 20-25 FPS with occasional framerate variation. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Star Fox: Assault",
+      "game_ids": [
+        { "id": "GF7P01", "region": "PAL" },
+        { "id": "GF7E01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gf7p01-sirpips-core-boost",
+          "filename": "GF7P01_rtmuos.ini",
+          "universal_filename": "GF7_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Menu text does not render making navigation difficult but gameplay itself is very playable. 0.5x resolution, VISkip.",
+          "tags": ["boost", "menu-text-issue"],
+          "raw_content": "# GF7P01 / GF7E01 - Star Fox: Assault\n# Rt:Core Boost\n# sirpips\n# Menu text does not render making navigation difficult but gameplay itself is very playable. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Ultimate Muscle: Legends vs. New Generation",
+      "game_ids": [
+        { "id": "GKNEB2", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gkmeb2-sirpips-core-boost",
+          "filename": "GKNEB2_rtmuos.ini",
+          "universal_filename": "GKN_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Playable at 19-28 FPS with some patience needed. Note: does not boot on v11.0.0 regardless of profile.",
+          "tags": ["boost", "v10-compatible"],
+          "raw_content": "# GKNEB2 - Ultimate Muscle: Legends vs. New Generation\n# Rt:Core Boost\n# sirpips\n# Playable at 19-28 FPS with some patience needed. Note: does not boot on v11.0.0 regardless of profile.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Pikmin",
+      "game_ids": [
+        { "id": "GPIP01", "region": "PAL" },
+        { "id": "GPIE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gpip01-sirpips-core-boost",
+          "filename": "GPIP01_rtmuos.ini",
+          "universal_filename": "GPI_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Menus are slow but gameplay is almost perfect at 20-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GPIP01 / GPIE01 - Pikmin\n# Rt:Core Boost\n# sirpips\n# Menus are slow but gameplay is almost perfect at 20-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Bionicle Heroes",
+      "game_ids": [
+        { "id": "GVHE4F", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gvhe4f-sirpips-core-boost",
+          "filename": "GVHE4F_rtmuos.ini",
+          "universal_filename": "GVH_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Framerate varies but very much playable at 12-30 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GVHE4F - Bionicle Heroes\n# Rt:Core Boost\n# sirpips\n# Framerate varies but very much playable at 12-30 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Pac-Man World Rally",
+      "game_ids": [
+        { "id": "G89EAF", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "g89eaf-sirpips-core-boost",
+          "filename": "G89EAF_rtmuos.ini",
+          "universal_filename": "G89_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Performance varies but it's playable at 13-28 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# G89EAF - Pac-Man World Rally\n# Rt:Core Boost\n# sirpips\n# Performance varies but it's playable at 13-28 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Rayman 3: Hoodlum Havoc",
+      "game_ids": [
+        { "id": "GRHP41", "region": "PAL" },
+        { "id": "GRHE41", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "grhp41-sirpips-core-boost",
+          "filename": "GRHP41_rtmuos.ini",
+          "universal_filename": "GRH_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Playable at 17-25 FPS with framerate dips in larger areas. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GRHP41 / GRHE41 - Rayman 3: Hoodlum Havoc\n# Rt:Core Boost\n# sirpips\n# Playable at 17-25 FPS with framerate dips in larger areas. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Star Wars: Bounty Hunter",
+      "game_ids": [
+        { "id": "GBWP64", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gbwp64-sirpips-core-boost",
+          "filename": "GBWP64_rtmuos.ini",
+          "universal_filename": "GBW_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Few stutters here and there but playable at 18-24 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GBWP64 - Star Wars: Bounty Hunter\n# Rt:Core Boost\n# sirpips\n# Few stutters here and there but playable at 18-24 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "SpongeBob SquarePants: The Movie",
+      "game_ids": [
+        { "id": "GGVP69", "region": "PAL" },
+        { "id": "GGVE78", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "ggvp69-sirpips-core-boost",
+          "filename": "GGVP69_rtmuos.ini",
+          "universal_filename": "GGV_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Few stutters, playable at 20-25 FPS. May need higher CPU clock to avoid crashing. 0.5x resolution, VISkip.",
+          "tags": ["boost", "cpu-clock"],
+          "raw_content": "# GGVP69 / GGVE78 - SpongeBob SquarePants: The Movie\n# Rt:Core Boost\n# sirpips\n# Few stutters, playable at 20-25 FPS. May need higher CPU clock to avoid crashing. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "The Incredibles",
+      "game_ids": [
+        { "id": "GICP78", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gicp78-sirpips-core-boost",
+          "filename": "GICP78_rtmuos.ini",
+          "universal_filename": "GIC_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Severe slowdowns in large areas, barely playable at 11-24 FPS but not really enjoyable.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GICP78 - The Incredibles\n# Rt:Core Boost\n# sirpips\n# Severe slowdowns in large areas, barely playable at 11-24 FPS but not really enjoyable.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Turok Evolution",
+      "game_ids": [
+        { "id": "GTKP51", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gtkp51-sirpips-core-boost",
+          "filename": "GTKP51_rtmuos.ini",
+          "universal_filename": "GTK_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Videos run slow, runs around 15 FPS most of the time but still playable. 0.5x resolution, VISkip.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GTKP51 - Turok Evolution\n# Rt:Core Boost\n# sirpips\n# Videos run slow, runs around 15 FPS most of the time but still playable. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "X-Men 2: Wolverine's Revenge",
+      "game_ids": [
+        { "id": "GWVP52", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gwvp52-sirpips-core-boost",
+          "filename": "GWVP52_rtmuos.ini",
+          "universal_filename": "GWV_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Some framedrops can happen, still very playable at 13-25 FPS. 0.5x resolution, VISkip.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GWVP52 - X-Men 2: Wolverine's Revenge\n# Rt:Core Boost\n# sirpips\n# Some framedrops can happen, still very playable at 13-25 FPS. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Mega Man X: Command Mission",
+      "game_ids": [
+        { "id": "GXRP08", "region": "PAL" },
+        { "id": "GXRE08", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gxrp08-sirpips-core-boost",
+          "filename": "GXRP08_rtmuos.ini",
+          "universal_filename": "GXR_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "A bit slow but playable with patience at 27-40 FPS. 0.5x resolution, VISkip.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GXRP08 / GXRE08 - Mega Man X: Command Mission\n# Rt:Core Boost\n# sirpips\n# A bit slow but playable with patience at 27-40 FPS. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Digimon Rumble Arena 2",
+      "game_ids": [
+        { "id": "GD6P70", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gd6p70-sirpips-core-boost",
+          "filename": "GD6P70_rtmuos.ini",
+          "universal_filename": "GD6_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Playable at 20-45 FPS but with noticeable frame drops during combat. 0.5x resolution, VISkip.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GD6P70 - Digimon Rumble Arena 2\n# Rt:Core Boost\n# sirpips\n# Playable at 20-45 FPS but with noticeable frame drops during combat. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Dragon Ball Z: Budokai",
+      "game_ids": [
+        { "id": "GD7PB2", "region": "PAL" },
+        { "id": "GD7EB2", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gd7pb2-sirpips-core-boost",
+          "filename": "GD7PB2_rtmuos.ini",
+          "universal_filename": "GD7_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Combat slowdowns at 30-53 FPS, but visuals are excellent with Default profile. Speedup 2 makes combat smoother.",
+          "tags": ["boost", "default-profile"],
+          "raw_content": "# GD7PB2 / GD7EB2 - Dragon Ball Z: Budokai\n# Rt:Core Boost\n# sirpips\n# Combat slowdowns at 30-53 FPS, but visuals are excellent with Default profile. Speedup 2 makes combat smoother.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Dancing Stage Mario Mix",
+      "game_ids": [
+        { "id": "GWZP01", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gwzp01-sirpips-core-boost",
+          "filename": "GWZP01_rtmuos.ini",
+          "universal_filename": "GWZ_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs almost perfectly at 19-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GWZP01 - Dancing Stage Mario Mix\n# Rt:Core Boost\n# sirpips\n# Runs almost perfectly at 19-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Donald Duck: Quack Attack",
+      "game_ids": [
+        { "id": "GDDP41", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gddp41-sirpips-core-boost",
+          "filename": "GDDP41_rtmuos.ini",
+          "universal_filename": "GDD_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Performance varies at 13-20 FPS, playable but can be laggy. 0.5x resolution, VISkip.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GDDP41 - Donald Duck: Quack Attack\n# Rt:Core Boost\n# sirpips\n# Performance varies at 13-20 FPS, playable but can be laggy. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Pac-Man World 3",
+      "game_ids": [
+        { "id": "GP8P69", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gp8p69-sirpips-core-boost",
+          "filename": "GP8P69_rtmuos.ini",
+          "universal_filename": "GP8_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Too slow to be enjoyable at 9-12 FPS but config documented for testing.",
+          "tags": ["boost", "documentation"],
+          "raw_content": "# GP8P69 - Pac-Man World 3\n# Rt:Core Boost\n# sirpips\n# Too slow to be enjoyable at 9-12 FPS but config documented for testing.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "007: Agent Under Fire",
+      "game_ids": [
+        { "id": "GW7P69", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gw7p69-sirpips-core-boost",
+          "filename": "GW7P69_rtmuos.ini",
+          "universal_filename": "GW7_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Videos run slow, framerate varies but playable at 12-40 FPS. 0.5x resolution, VISkip.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GW7P69 - 007: Agent Under Fire\n# Rt:Core Boost\n# sirpips\n# Videos run slow, framerate varies but playable at 12-40 FPS. 0.5x resolution, VISkip.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Animal Crossing",
+      "game_ids": [
+        { "id": "GAFE01", "region": "NTSC" },
+        { "id": "GAFP01", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gafe01-sirpips-core-boost",
+          "filename": "GAFE01_rtmuos.ini",
+          "universal_filename": "GAF_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs at 12-25 FPS but stutters. Prefer PAL ROM with SpeedHack core, or play the N64 original.",
+          "tags": ["boost", "pal-recommended"],
+          "raw_content": "# GAFE01 / GAFP01 - Animal Crossing\n# Rt:Core Boost\n# sirpips\n# Runs at 12-25 FPS but stutters. Prefer PAL ROM with SpeedHack core, or play the N64 original.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Asterix & Obelix XXL",
+      "game_ids": [
+        { "id": "GAGP70", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gagp70-sirpips-core-boost",
+          "filename": "GAGP70_rtmuos.ini",
+          "universal_filename": "GAG_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Can be slow with many enemies on screen and stutters during NPC dialogue. Playable at 12-40 FPS.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GAGP70 - Asterix & Obelix XXL\n# Rt:Core Boost\n# sirpips\n# Can be slow with many enemies on screen and stutters during NPC dialogue. Playable at 12-40 FPS.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Carmen Sandiego: The Secret of the Stolen Drums",
+      "game_ids": [
+        { "id": "G3DE6L", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "g3de6l-sirpips-core-boost",
+          "filename": "G3DE6L_rtmuos.ini",
+          "universal_filename": "G3D_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Framerate slowdown in large areas, cutscenes are slow. Playable at 20-37 FPS.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# G3DE6L - Carmen Sandiego: The Secret of the Stolen Drums\n# Rt:Core Boost\n# sirpips\n# Framerate slowdown in large areas, cutscenes are slow. Playable at 20-37 FPS.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Pokemon Colosseum",
+      "game_ids": [
+        { "id": "GC6P01", "region": "PAL" },
+        { "id": "GC6E01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gc6p01-sirpips-core-boost",
+          "filename": "GC6P01_rtmuos.ini",
+          "universal_filename": "GC6_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Slow videos, framerate varies but playable at 15-20 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GC6P01 / GC6E01 - Pokemon Colosseum\n# Rt:Core Boost\n# sirpips\n# Slow videos, framerate varies but playable at 15-20 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Kao the Kangaroo: Round 2",
+      "game_ids": [
+        { "id": "GKOP6V", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gkop6v-sirpips-core-boost",
+          "filename": "GKOP6V_rtmuos.ini",
+          "universal_filename": "GKO_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Framerate varies but playable at 12-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GKOP6V - Kao the Kangaroo: Round 2\n# Rt:Core Boost\n# sirpips\n# Framerate varies but playable at 12-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Scaler",
+      "game_ids": [
+        { "id": "GKUE9G", "region": "NTSC" },
+        { "id": "GKUE9E", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gkue9g-sirpips-core-boost",
+          "filename": "GKUE9G_rtmuos.ini",
+          "universal_filename": "GKU_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Runs smoothly at 40 FPS, gets laggy in large or crowded spaces. Video sequences perfect. 19-45 FPS overall.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GKUE9G / GKUE9E - Scaler\n# Rt:Core Boost\n# sirpips\n# Runs smoothly at 40 FPS, gets laggy in large or crowded spaces. Video sequences perfect. 19-45 FPS overall.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Looney Tunes: Back in Action",
+      "game_ids": [
+        { "id": "GLNP69", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "glnp69-sirpips-core-boost",
+          "filename": "GLNP69_rtmuos.ini",
+          "universal_filename": "GLN_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Few slowdowns, mostly playable at 13-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GLNP69 - Looney Tunes: Back in Action\n# Rt:Core Boost\n# sirpips\n# Few slowdowns, mostly playable at 13-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Codename KND: Operation V.I.D.E.O.G.A.M.E.",
+      "game_ids": [
+        { "id": "GKZE9G", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gkze9g-sirpips-core-boost",
+          "filename": "GKZE9G_rtmuos.ini",
+          "universal_filename": "GKZ_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "A few stutters but otherwise playable at 17-34 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GKZE9G - Codename KND: Operation V.I.D.E.O.G.A.M.E.\n# Rt:Core Boost\n# sirpips\n# A few stutters but otherwise playable at 17-34 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Disney-Pixar Ratatouille",
+      "game_ids": [
+        { "id": "GLLE78", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "glle78-sirpips-core-boost",
+          "filename": "GLLE78_rtmuos.ini",
+          "universal_filename": "GLL_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Broken cutscenes but in-game runs fine at 14-17 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "cutscene-issue"],
+          "raw_content": "# GLLE78 - Disney-Pixar Ratatouille\n# Rt:Core Boost\n# sirpips\n# Broken cutscenes but in-game runs fine at 14-17 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Ribbit King",
+      "game_ids": [
+        { "id": "GKREB2", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gkmeb2-sirpips-core-boost",
+          "filename": "GKREB2_rtmuos.ini",
+          "universal_filename": "GKR_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Playable at 7-30 FPS but can be laggy. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GKREB2 - Ribbit King\n# Rt:Core Boost\n# sirpips\n# Playable at 7-30 FPS but can be laggy. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Yu-Gi-Oh! The Falsebound Kingdom",
+      "game_ids": [
+        { "id": "GYFPA4", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gyfpa4-sirpips-core-boost",
+          "filename": "GYFPA4_rtmuos.ini",
+          "universal_filename": "GYF_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Overworld runs good, battles not as good at 11-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GYFPA4 - Yu-Gi-Oh! The Falsebound Kingdom\n# Rt:Core Boost\n# sirpips\n# Overworld runs good, battles not as good at 11-25 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Tales of Symphonia",
+      "game_ids": [
+        { "id": "GQSPAF", "region": "PAL" },
+        { "id": "GQSE01", "region": "NTSC" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "gqspaf-sirpips-core-boost",
+          "filename": "GQSPAF_rtmuos.ini",
+          "universal_filename": "GQS_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Unskippable prologue is unbearably slow but in-game is completely playable at 16-25 FPS.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GQSPAF / GQSE01 - Tales of Symphonia\n# Rt:Core Boost\n# sirpips\n# Unskippable prologue is unbearably slow but in-game is completely playable at 16-25 FPS.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    },
+    {
+      "game": "Hitman 2: Silent Assassin",
+      "game_ids": [
+        { "id": "GHMP4F", "region": "PAL" }
+      ],
+      "system": "GC",
+      "configs": [
+        {
+          "id": "ghmp4f-sirpips-core-boost",
+          "filename": "GHMP4F_rtmuos.ini",
+          "universal_filename": "GHM_rtmuos.ini",
+          "title": "Rt:Core Boost",
+          "author": "sirpips",
+          "description": "Pretty playable at 12-20 FPS. 0.5x resolution, VISkip, FastDepthCalc.",
+          "tags": ["boost", "internal-resolution"],
+          "raw_content": "# GHMP4F - Hitman 2: Silent Assassin\n# Rt:Core Boost\n# sirpips\n# Pretty playable at 12-20 FPS. 0.5x resolution, VISkip, FastDepthCalc.\n\n[Core]\nCPUCore = 4\nCPUThread = True\nDSPHLE = True\nSkipIPL = True\n\n[Video_Settings]\nInternalResolution = 0.5\nSafeTextureCacheColorSamples = 0\nMSAA = 0\n\n[Video_Hacks]\nVISkip = True\nFastDepthCalc = True\nDisableFog = True\n",
+          "content_url": ""
+        }
+      ]
+    }
+  ]
+}

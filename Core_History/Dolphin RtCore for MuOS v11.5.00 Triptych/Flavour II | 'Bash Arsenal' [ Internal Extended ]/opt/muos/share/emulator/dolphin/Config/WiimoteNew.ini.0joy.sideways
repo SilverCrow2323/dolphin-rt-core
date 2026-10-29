@@ -1,0 +1,37 @@
+[Wiimote1]
+Device = SDL/0/muOS-Keys
+Buttons/A = (`Button 1` & !`Button 10` )
+Buttons/B = (`Button 0` & !`Button 10` )
+Buttons/1 = (`Button 2` & !`Button 10` )
+Buttons/2 = `Button 3`
+Buttons/- = (`Button 6` & !`Button 7` )
+Buttons/+ = (`Button 7` & !`Button 6` )
+Buttons/Home = `Button 11`
+IR/Up = (`Button 10` & `Pad N` )
+IR/Down = (`Button 10` & `Pad S` )
+IR/Left = (`Button 10` & `Pad W` )
+IR/Right = (`Button 10` & `Pad E` )
+Shake/X = (`Button 10` & `Button 2` )
+Shake/Y = (`Button 10` & `Button 1` )
+Shake/Z = (`Button 10` & `Button 0` )
+Extension = Nunchuk
+Nunchuk/Buttons/C = `Button 4`
+Nunchuk/Buttons/Z = `Button 5`
+Nunchuk/Stick/Up = (`Button 9` & `Pad N` )
+Nunchuk/Stick/Down = (`Button 9` & `Pad S` )
+Nunchuk/Stick/Left = (`Button 9` & `Pad W` )
+Nunchuk/Stick/Right = (`Button 9` & `Pad E` )
+Nunchuk/Stick/Calibration = 100.00 141.42 100.00 141.42 100.00 141.42 100.00 141.42
+D-Pad/Up = (`Pad N` & !`Button 10` & !`Button 9` )
+D-Pad/Down = (`Pad S` & !`Button 10` & !`Button 9` )
+D-Pad/Left = (`Pad W` & !`Button 10` & !`Button 9` )
+D-Pad/Right = (`Pad E` & !`Button 10` & !`Button 9` )
+Source = 1
+[Wiimote2]
+Source = 2
+[Wiimote3]
+Source = 2
+[Wiimote4]
+Source = 2
+[BalanceBoard]
+Source = 2

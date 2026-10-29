@@ -1,0 +1,87 @@
+[General]
+ShowLag = False
+ShowFrameCount = False
+ShowActiveTitle = False
+ShowNetPlayPing = False
+HideCursor = True
+ShowMouseCursor = False
+ISOPaths = 0
+RecursiveISOPaths = False
+GCMPathes = 0
+RecursiveGCMPaths = False
+NANDRootPath = Wii
+WiiSDCardPath = Wii/sd.raw
+LoadPath = Load
+DumpPath = Dump
+ResourcePackPath = ResourcePacks
+WirelessMac = 00:17:ab:a3:1f:27
+UseDualCore = True
+EnableCheats = False
+JITFollowBranch = True
+AudioBackend = ALSA
+AudioLatency = 3
+AudioStretch = False
+SoundVolume = 100
+FastDiscSpeed = True
+DriveSpeed = 0
+WiiKeyboard = False
+WiiSensorBarPosition = 2
+WiiSensorBarSensitivity = 3
+WiiSpeakerPan = 0
+HotkeysRequireFocus = False
+EnableNetworkLogging = False
+MemoryCardA = True
+MemoryCardB = False
+SlotA_GC = MemoryCardA.USA.raw
+SlotB_GC = MemoryCardB.USA.raw
+FullscreenDisplayRes = Auto
+AutoDiscChange = True
+USBGeckoEnabled = False
+EmulateDiscSpeed = False
+
+[Interface]
+ConfirmStop = False
+UsePanicHandlers = False
+OnScreenDisplayMessages = False
+OSDMessageDuration = 2.5
+ThemeName = Clean
+DebugModeEnabled = False
+ShowDebuggingUI = False
+PauseOnFocusLost = False
+ExtendedFPSInfo = False
+UseBuiltinTitleDatabase = True
+
+[Core]
+CPUCore = 4
+CPUThread = True
+DSPHLE = True
+EnableIdleSkipping = True
+OverclockEnable = False
+Overclock = 1.0
+MMU = False
+EnableMMU = False
+SyncGPU = False
+SyncOnSkipIdle = True
+Framelimit = 1
+FPRF = False
+Fastmem = True
+TimingVariance = 40
+AccurateNaNs = False
+EmulationSpeed = 1.0
+SkipIPL = True
+SelectedLanguage = 0
+OverrideRegionSettings = False
+DPL2Decoder = False
+EnableCustomRTC = False
+CustomRTCValue = 0x386d4380
+
+[DSP]
+EnableJIT = True
+Backend = ALSA
+Volume = 100
+DSPThread = True
+
+[Network]
+Enable = False
+EnableNetworkLogging = False
+AdoptPAL60 = False

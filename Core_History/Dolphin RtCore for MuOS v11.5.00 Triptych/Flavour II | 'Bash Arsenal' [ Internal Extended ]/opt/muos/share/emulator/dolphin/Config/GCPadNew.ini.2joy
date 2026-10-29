@@ -1,0 +1,35 @@
+[GCPad1]
+Device = SDL/0/muOS-Keys
+Buttons/A = `Button 1`
+Buttons/B = `Button 0`
+Buttons/X = `Button 2`
+Buttons/Y = `Button 3`
+Buttons/Z = `Button 11`
+Buttons/Start = (`Button 7` & !`Button 6` )
+Main Stick/Up = `Left Y+`
+Main Stick/Down = `Left Y-`
+Main Stick/Left = `Left X-`
+Main Stick/Right = `Left X+`
+Main Stick/Modifier = `Shift`
+Main Stick/Calibration = 100.00 141.42 100.00 141.42 100.00 141.42 100.00 141.42
+C-Stick/Up = `Right Y+`
+C-Stick/Down = `Right Y-`
+C-Stick/Left = `Right X-`
+C-Stick/Right = `Right X+`
+C-Stick/Modifier = `Ctrl`
+C-Stick/Calibration = 100.00 141.42 100.00 141.42 100.00 141.42 100.00 141.42
+Triggers/L = `Button 4`
+Triggers/R = `Button 5`
+Rumble/Motor = `Motor 0` `Motor 1`
+D-Pad/Up = `Pad N`
+D-Pad/Down = `Pad S`
+D-Pad/Left = `Pad W`
+D-Pad/Right = `Pad E`
+Triggers/L-Analog = `Button 9`
+Triggers/R-Analog = `Button 12`
+[GCPad2]
+Device = XInput2/0/Virtual core pointer
+[GCPad3]
+Device = XInput2/0/Virtual core pointer
+[GCPad4]
+Device = XInput2/0/Virtual core pointer

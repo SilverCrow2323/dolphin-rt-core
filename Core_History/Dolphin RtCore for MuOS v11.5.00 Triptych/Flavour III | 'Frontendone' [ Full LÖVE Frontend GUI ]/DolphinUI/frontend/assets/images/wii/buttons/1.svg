@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="745"
+   height="745"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docname="WiimoteButton1.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective2390"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="217.00435"
+     inkscape:cy="348.56205"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="779"
+     inkscape:window-height="667"
+     inkscape:window-x="132"
+     inkscape:window-y="174" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#000000"
+       d="M 343.6205,742.41272 C 341.6955,742.19277 335.6205,741.52996 330.1205,740.93981 C 296.53773,737.33638 256.64223,726.74689 225.65776,713.21218 C 111.95984,663.5464 30.745761,562.09539 7.7602814,441.01896 C 3.2974714,417.51101 2.1649314,403.80084 2.1430814,373.01896 C 2.1165514,335.6321 4.2679814,316.46934 12.101881,284.31572 C 40.681431,167.01337 125.30471,70.700177 238.6205,26.505682 C 280.66969,10.106001 316.67737,3.2298254 365.1205,2.3487194 C 396.05721,1.7860284 411.53878,2.8132344 436.28689,7.0706264 C 551.97066,26.971587 652.80021,102.73406 705.05267,209.01896 C 725.26887,250.14003 736.91432,290.95906 741.71303,337.51896 C 743.42815,354.16008 743.17296,392.83612 741.22936,410.82383 C 732.18602,494.51838 696.73595,570.3834 638.64784,630.35376 C 579.50542,691.41258 503.96166,729.23521 418.4151,740.61808 C 406.77793,742.16653 352.80088,743.46167 343.6205,742.41272 z M 413.6205,704.55238 C 479.10223,695.65077 536.24511,670.75872 586.3318,629.31749 C 600.2282,617.81975 625.35232,591.78433 636.6205,577.20473 C 675.23751,527.23919 698.41603,469.67655 705.14853,407.01896 C 707.03643,389.44876 707.01962,354.31918 705.11503,337.01896 C 689.75575,197.50386 589.43417,82.306643 453.38161,47.958645 C 407.13741,36.283777 355.67515,34.913787 308.6205,44.104925 C 206.1003,64.13009 118.46115,131.35202 72.105831,225.51896 C 55.368591,259.51924 45.138601,293.56938 39.958841,332.51896 C 37.541731,350.69456 37.541731,394.34336 39.958841,412.51896 C 48.465181,476.48303 72.255751,532.41465 112.26848,582.51896 C 123.53619,596.62848 148.01098,621.10327 162.1205,632.37098 C 205.54744,667.05124 253.67967,689.6737 307.1205,700.5219 C 317.31085,702.59049 331.53975,704.5843 349.1205,706.40711 C 358.02556,707.3304 402.61743,706.04815 413.6205,704.55238 z M 363.6205,400.51896 C 363.6205,311.69396 363.36963,239.01896 363.063,239.01896 C 362.75638,239.01896 347.77188,252.63146 329.76412,269.26896 C 311.75637,285.90646 296.08706,300.32659 294.94345,301.31369 C 292.88804,303.08781 292.69067,302.90031 277.76406,284.9942 L 262.66396,266.87996 L 308.89223,228.78176 C 334.31778,207.82774 358.30982,188.05902 362.20787,184.85126 L 369.29524,179.01896 L 391.95787,179.01896 L 414.6205,179.01896 L 414.6205,370.51896 L 414.6205,562.01896 L 389.1205,562.01896 L 363.6205,562.01896 L 363.6205,400.51896 z"
+       id="path2396" />
+  </g>
+</svg>

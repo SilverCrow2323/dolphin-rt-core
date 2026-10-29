@@ -1,0 +1,391 @@
+# ============================================================
+# GFX.INI — Complete Graphics Configuration for RG35XX-H (H700)
+# Optimized for muOS with 1GB RAM
+# ============================================================
+# Every option is documented with:
+#   - Description         what it does
+#   - Parameters          accepted values
+#   - Recommend (opt.)    the value we recommend on this hardware
+#   - Why (opt.)          short hardware-specific rationale
+#
+# Per-game overrides go in GameSettings/<GAMEID>.ini using the namespaced
+# section format ([Video_Settings], [Video_Enhancements], [Video_Hacks]).
+# ============================================================
+
+
+# ============================================================
+# [Hardware] — Graphics hardware
+# ============================================================
+[Hardware]
+
+# Backend : Graphics API.
+# Backend Parameters : OGL (OpenGL ES), Vulkan, D3D11, D3D12, Software, Null.
+# Backend Recommend : OGL
+# Backend Why : Panfrost (Mesa's Bifrost driver) exposes a mature OpenGL ES 3.1 stack. PanVK is experimental and non-conformant on G31/G51/G52/G76 — do not use it.
+Backend = OGL
+
+# Adapter : GPU device index (0 = default).
+# Adapter Parameters : Integer (0-N).
+Adapter = 0
+
+# VSync : Vertical sync. Caps FPS to the panel refresh rate.
+# VSync Parameters : True, False.
+# VSync Recommend : False
+# VSync Why : Avoids presentation stalls on the Mali driver, reduces input lag.
+VSync = False
+
+# BorderlessFullscreen : Use a borderless window instead of exclusive fullscreen.
+# BorderlessFullscreen Parameters : True, False.
+# BorderlessFullscreen Recommend : False
+BorderlessFullscreen = False
+
+
+# ============================================================
+# [Settings] — Core graphics
+# ============================================================
+[Settings]
+
+# InternalResolution : Render resolution multiplier.
+# InternalResolution Parameters : 1 (native), 2 (2x), 3 (3x), ..., 9 (9x).
+# InternalResolution Recommend : 1
+# InternalResolution Why : The H700's panel is 640x480. Higher IR spends scarce GPU cycles for no visible benefit.
+InternalResolution = 1
+
+# EFBScale : Embedded Framebuffer scale factor.
+# EFBScale Parameters : 0 (Auto-fractional), 1 (Auto-integral), 2 (1x), 3 (1.5x), 4 (2x).
+# EFBScale Recommend : 0
+EFBScale = 0
+
+# AspectRatio : Display aspect ratio.
+# AspectRatio Parameters : 0 (Auto), 1 (4:3), 2 (16:9), 3 (Stretch).
+# AspectRatio Recommend : 0
+AspectRatio = 0
+
+# Crop : Crop the image to the active aspect ratio.
+# Crop Parameters : True, False.
+# Crop Recommend : False
+Crop = False
+
+# wideScreenHack : Force widescreen rendering (can break titles).
+# wideScreenHack Parameters : True, False.
+# wideScreenHack Recommend : False
+wideScreenHack = False
+
+# MSAA : Multi-sample anti-aliasing.
+# MSAA Parameters : 1 (Off), 2 (2x), 4 (4x), 8 (8x).
+# MSAA Recommend : 1
+# MSAA Why : Note the off value is 1 (not 0) in Dolphin's numbering. AA is far too expensive on the G31.
+MSAA = 1
+
+# SSAA : Super-sample anti-aliasing.
+# SSAA Parameters : True, False.
+# SSAA Recommend : False
+SSAA = False
+
+# ShaderCompilationMode : Shader compilation strategy.
+# ShaderCompilationMode Parameters : 0 (Synchronous), 1 (Synchronous Ubershaders), 2 (Async Ubershaders), 3 (Skip Drawing).
+# ShaderCompilationMode Recommend : 3
+# ShaderCompilationMode Why : Skip Drawing eliminates shader-compilation stutter on Mali entirely. Trade-off: very brief pop-in during extreme transitions.
+ShaderCompilationMode = 3
+
+# WaitForShadersBeforeStarting : Wait for all shaders to compile before the game starts.
+# WaitForShadersBeforeStarting Parameters : True, False.
+# WaitForShadersBeforeStarting Recommend : False
+WaitForShadersBeforeStarting = False
+
+# BackendMultithreading : Multi-threaded rendering submission.
+# BackendMultithreading Parameters : True, False.
+# BackendMultithreading Recommend : True
+BackendMultithreading = True
+
+# FastDepthCalc : Fast depth calculation.
+# FastDepthCalc Parameters : True, False.
+# FastDepthCalc Recommend : True
+# FastDepthCalc Why : Despite the name, this is the MORE accurate method on modern Dolphin. Only disable per-game if a title flickers on Panfrost.
+FastDepthCalc = True
+
+# EnableGPUTextureDecoding : Offload texture decoding to the GPU.
+# EnableGPUTextureDecoding Parameters : True, False.
+# EnableGPUTextureDecoding Recommend : True
+# EnableGPUTextureDecoding Why : Frees CPU cycles. Worth an A/B test per-game on GPU-bound titles.
+EnableGPUTextureDecoding = True
+
+# SafeTextureCacheColorSamples : Texture cache accuracy.
+# SafeTextureCacheColorSamples Parameters : 0 (Safe, most accurate), 128 (Fast), 512 (Middle).
+# SafeTextureCacheColorSamples Recommend : 0
+# SafeTextureCacheColorSamples Why : 0 is the most accurate setting, not a shortcut. Only raise to 512 for a specific title with choppy FMVs.
+SafeTextureCacheColorSamples = 0
+
+# EnablePixelLighting : Per-pixel lighting (quality, heavy).
+# EnablePixelLighting Parameters : True, False.
+# EnablePixelLighting Recommend : False
+EnablePixelLighting = False
+
+# ShowFPS : Show an FPS counter on screen.
+# ShowFPS Parameters : True, False.
+# ShowFPS Recommend : False
+ShowFPS = False
+
+# LogRenderTimeToFile : Log render times to a file (debugging).
+# LogRenderTimeToFile Parameters : True, False.
+# LogRenderTimeToFile Recommend : False
+LogRenderTimeToFile = False
+
+# OverlayStats : Show a performance stats overlay.
+# OverlayStats Parameters : True, False.
+# OverlayStats Recommend : False
+OverlayStats = False
+
+# HiresTextures : Load custom HD texture packs.
+# HiresTextures Parameters : True, False.
+# HiresTextures Recommend : False
+# HiresTextures Why : 1GB of RAM; HD packs cause swapping or OOM crashes.
+HiresTextures = False
+
+# CacheHiresTextures : Cache custom textures to RAM.
+# CacheHiresTextures Parameters : True, False.
+CacheHiresTextures = False
+
+# ConvertHiresTextures : Convert custom textures on load.
+# ConvertHiresTextures Parameters : True, False.
+ConvertHiresTextures = False
+
+# DumpTextures : Dump game textures (debugging).
+# DumpTextures Parameters : True, False.
+# DumpTextures Recommend : False
+DumpTextures = False
+
+# DumpBaseTextures : Dump base-level textures only.
+# DumpBaseTextures Parameters : True, False.
+DumpBaseTextures = False
+
+# DumpMipTextures : Dump mipmap textures.
+# DumpMipTextures Parameters : True, False.
+DumpMipTextures = False
+
+# DumpEFBTarget : Dump EFB targets.
+# DumpEFBTarget Parameters : True, False.
+DumpEFBTarget = False
+
+# DumpXFB : Dump XFB targets.
+# DumpXFB Parameters : True, False.
+DumpXFB = False
+
+# DumpFormat : Format for video dumps.
+# DumpFormat Parameters : String (empty for default).
+DumpFormat =
+
+# DumpCodec : Codec for video dumps.
+# DumpCodec Parameters : String (empty for default).
+DumpCodec =
+
+# BitrateKbps : Video dump bitrate in kbps.
+# BitrateKbps Parameters : Integer.
+BitrateKbps =
+
+# PNGCompressionLevel : PNG compression level for texture dumps.
+# PNGCompressionLevel Parameters : Integer (0-9).
+PNGCompressionLevel =
+
+# TexturePNGCompressionLevel : Alternative PNG compression setting.
+# TexturePNGCompressionLevel Parameters : Integer (0-9).
+TexturePNGCompressionLevel =
+
+# InternalResolutionFrameDumps : Use internal resolution for frame dumps.
+# InternalResolutionFrameDumps Parameters : True, False.
+InternalResolutionFrameDumps = False
+
+# FreeLook : Enable free camera mode (debugging).
+# FreeLook Parameters : True, False.
+# FreeLook Recommend : False
+FreeLook = False
+
+# UseXFB : Use the External Frame Buffer (required by a few titles).
+# UseXFB Parameters : True, False.
+# UseXFB Recommend : False
+UseXFB = False
+
+# UseRealXFB : Use the real XFB (accuracy, heavy).
+# UseRealXFB Parameters : True, False.
+# UseRealXFB Recommend : False
+UseRealXFB = False
+
+# DisableFog : Disable fog rendering.
+# DisableFog Parameters : True, False.
+# DisableFog Recommend : True
+# DisableFog Why : Reduces pixel-shader load and prevents some black-screen artifacts tied to fog calc.
+DisableFog = True
+
+# Wireframe : Render in wireframe (debugging).
+# Wireframe Parameters : True, False.
+Wireframe = False
+
+# EnableShaderDebugging : Enable shader debugging.
+# EnableShaderDebugging Parameters : True, False.
+# EnableShaderDebugging Recommend : False
+EnableShaderDebugging = False
+
+# PreferGLES : Prefer OpenGL ES over desktop OpenGL.
+# PreferGLES Parameters : True, False.
+# PreferGLES Recommend : True
+PreferGLES = True
+
+# SWDrawEnd : Software renderer parameter (debugging).
+# SWDrawEnd Parameters : Integer.
+SWDrawEnd =
+
+
+# ============================================================
+# [Enhancements] — Visual enhancements
+# ============================================================
+[Enhancements]
+
+# ArbitraryMipmapDetection : Detect arbitrary mipmaps (quality).
+# ArbitraryMipmapDetection Parameters : True, False.
+# ArbitraryMipmapDetection Recommend : False
+ArbitraryMipmapDetection = False
+
+# DisableCopyFilter : Disable the EFB copy filter.
+# DisableCopyFilter Parameters : True, False.
+# DisableCopyFilter Recommend : True
+# DisableCopyFilter Why : Slightly cleaner image, one less filter pass.
+DisableCopyFilter = True
+
+# ForceTrueColor : Force 24-bit color rendering.
+# ForceTrueColor Parameters : True, False.
+# ForceTrueColor Recommend : False
+ForceTrueColor = False
+
+# MaxAnisotropy : Anisotropic filtering.
+# MaxAnisotropy Parameters : 0 (Off), 2, 4, 8, 16.
+# MaxAnisotropy Recommend : 0
+MaxAnisotropy = 0
+
+# PostProcessingShader : Post-processing effect shader.
+# PostProcessingShader Parameters : shader name or empty for off.
+PostProcessingShader =
+
+# ForceFiltering : Force texture filtering on all textures.
+# ForceFiltering Parameters : True, False.
+# ForceFiltering Recommend : False
+ForceFiltering = False
+
+
+# ============================================================
+# [Hacks] — Performance hacks
+# ============================================================
+[Hacks]
+
+# BBoxEnable : Emulate bounding box access.
+# BBoxEnable Parameters : True, False.
+# BBoxEnable Recommend : False
+# BBoxEnable Why : Only a handful of games need it (for hit detection); expensive.
+BBoxEnable = False
+
+# DeferEFBCopies : Defer EFB copies (make them async).
+# DeferEFBCopies Parameters : True, False.
+# DeferEFBCopies Recommend : True
+DeferEFBCopies = True
+
+# EFBEmulateFormatChanges : Emulate EFB format changes (accuracy).
+# EFBEmulateFormatChanges Parameters : True, False.
+# EFBEmulateFormatChanges Recommend : False
+# EFBEmulateFormatChanges Why : Breaks some Kirby / Zelda titles that rely on format changes for specific effects.
+EFBEmulateFormatChanges = False
+
+# EFBScaledCopy : Scale EFB copies.
+# EFBScaledCopy Parameters : True, False.
+# EFBScaledCopy Recommend : False
+# EFBScaledCopy Why : Consistent with native resolution; no wasted GPU work.
+EFBScaledCopy = False
+
+# EFBToTextureEnable : Keep EFB copies as GPU textures.
+# EFBToTextureEnable Parameters : True, False.
+# EFBToTextureEnable Recommend : True
+# EFBToTextureEnable Why : Eliminates the CPU readback path.
+EFBToTextureEnable = True
+
+# XFBToTextureEnable : Keep XFB copies as GPU textures.
+# XFBToTextureEnable Parameters : True, False.
+# XFBToTextureEnable Recommend : True
+XFBToTextureEnable = True
+
+# ImmediateXFBEnable : Copy XFB immediately.
+# ImmediateXFBEnable Parameters : True, False.
+# ImmediateXFBEnable Recommend : True
+ImmediateXFBEnable = True
+
+# VertexRounding : Round vertex coordinates.
+# VertexRounding Parameters : True, False.
+# VertexRounding Recommend : True
+# VertexRounding Why : Prevents vertex wobble; harmless at native resolution.
+VertexRounding = True
+
+# SkipDuplicateXFBs : Skip duplicate XFB copies.
+# SkipDuplicateXFBs Parameters : True, False.
+# SkipDuplicateXFBs Recommend : True
+SkipDuplicateXFBs = True
+
+# EFBAccessEnable : Allow the CPU to read from the EFB (accuracy, heavy).
+# EFBAccessEnable Parameters : True, False.
+# EFBAccessEnable Recommend : False globally; True per-game if a title relies on EFB reads for gameplay.
+EFBAccessEnable = False
+
+# ForceProgressive : Force progressive-scan output.
+# ForceProgressive Parameters : True, False.
+# ForceProgressive Recommend : False
+ForceProgressive = False
+
+# VISkip : Skip some vertex processing.
+# VISkip Parameters : True, False.
+# VISkip Recommend : False in the baseline.
+# VISkip Why : Never enable on Wind Waker or Twilight Princess — they stop rendering entirely with it on. Safe per-game for some CPU-bound titles.
+VISkip = False
+
+# FastTextureSampling : Use a faster texture sampling path.
+# FastTextureSampling Parameters : True, False.
+# FastTextureSampling Recommend : True
+FastTextureSampling = True
+
+
+# ============================================================
+# [Stereoscopy] — 3D / stereoscopic output (disabled on H700)
+# ============================================================
+[Stereoscopy]
+
+# StereoMode : Stereoscopic mode.
+# StereoMode Parameters : 0 (Off), 1 (Side-by-side), 2 (Top-and-bottom), 3 (Anaglyph).
+# StereoMode Recommend : 0
+StereoMode = 0
+
+# StereoDepth : Depth strength.
+# StereoDepth Parameters : Integer (0-100).
+StereoDepth = 0
+
+# StereoConvergencePercentage : Convergence percentage.
+# StereoConvergencePercentage Parameters : Integer.
+StereoConvergencePercentage = 0
+
+# StereoSwapEyes : Swap left and right eyes.
+# StereoSwapEyes Parameters : True, False.
+StereoSwapEyes = False
+
+
+# ============================================================
+# [ColorCorrection] — Color space / gamma
+# ============================================================
+[ColorCorrection]
+
+# CorrectColorSpace : Enable color space correction.
+# CorrectColorSpace Parameters : True, False.
+# CorrectColorSpace Recommend : False
+CorrectColorSpace = False
+
+# CorrectGamma : Enable gamma correction.
+# CorrectGamma Parameters : True, False.
+# CorrectGamma Recommend : False
+CorrectGamma = False
+
+# GameColorSpace : Target color space.
+# GameColorSpace Parameters : Integer.
+GameColorSpace = 0

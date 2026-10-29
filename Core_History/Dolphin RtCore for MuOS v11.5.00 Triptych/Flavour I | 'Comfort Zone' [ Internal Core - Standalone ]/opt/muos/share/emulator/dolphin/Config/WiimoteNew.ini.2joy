@@ -1,0 +1,37 @@
+[Wiimote1]
+Device = SDL/0/muOS-Keys
+Buttons/A = `Button 1`
+Buttons/B = `Button 0`
+Buttons/1 = `Button 2`
+Buttons/2 = `Button 3`
+Buttons/- = (`Button 6` & !`Button 7` )
+Buttons/+ = (`Button 7` & !`Button 6` )
+Buttons/Home = `Button 8`
+IR/Up = `Right Y+`
+IR/Down = `Right Y-`
+IR/Left = `Right X-`
+IR/Right = `Right X+`
+Shake/X = `Button 9`
+Shake/Y = `Button 12`
+Shake/Z = `Button 16`
+Extension = Nunchuk
+Nunchuk/Buttons/C = `Button 4`
+Nunchuk/Buttons/Z = `Button 5`
+Nunchuk/Stick/Up = `Left Y+
+Nunchuk/Stick/Down = `Left Y-
+Nunchuk/Stick/Left = `Left X-
+Nunchuk/Stick/Right = `Left X+
+Nunchuk/Stick/Calibration = 100.00 141.42 100.00 141.42 100.00 141.42 100.00 141.42
+D-Pad/Up = `Pad W`
+D-Pad/Down = `Pad E`
+D-Pad/Left = `Pad S`
+D-Pad/Right = `Pad N`
+Source = 1
+[Wiimote2]
+Source = 2
+[Wiimote3]
+Source = 2
+[Wiimote4]
+Source = 2
+[BalanceBoard]
+Source = 2

@@ -1,0 +1,9 @@
+[rtcore-k] Dolphin Rt:Core K 0.2.0
+[rtcore-k] release : /userdata/emulators/dolphin-rtcore-k
+[rtcore-k] userdata: /userdata   roms: /userdata/roms   es: /userdata/system/configs/emulationstation
+[rtcore-k] EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in /userdata/roms/{wii,gamecube}
+[theme] active theme: ES-THEME-ARCADEPLANET
+[theme] copied /userdata/themes/ES-THEME-ARCADEPLANET/_art/Colorlogos/wii.png
+[theme] copied /userdata/themes/ES-THEME-ARCADEPLANET/_art/Colorlogos/gamecube.png
+[theme] copied /userdata/themes/ES-THEME-ARCADEPLANET/_art/Colorlogos/rtcore.png
+[rtcore-k] Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists.

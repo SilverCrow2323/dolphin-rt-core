@@ -1,0 +1,9 @@
+# Dolphin Rt:Core - The Legend of Zelda: The Wind Waker (PAL) - Speedhack (VISkip fix + 80% underclock)
+# Game ID: GZLP01
+
+[Core]
+OverclockEnable = True
+Overclock = 0.80
+
+[Video_Hacks]
+VISkip = False

@@ -1,0 +1,82 @@
+[Rt:Data]
+CoreVersion = 11.000
+RtProfile = Sweet Spot
+ConfigFile = GFX
+RintromperScouoter = 0
+
+[Hardware]
+VSync = False
+Adapter =
+
+[Settings]
+Backend = Vulkan
+AspectRatio = 0
+InternalResolution = 1
+EFBScale = 1
+WideScreenHack = False
+DisableFog = True
+EnablePixelLighting = False
+FastDepthResult = True
+MaxAnisotropy = 0
+ForceFiltering = False
+SaveTextureCacheToDisk = False
+SafeTextureCacheColorSamples = 0
+ShowFPS = False
+LogRenderTimeToFile = False
+OverlayStats = False
+OverlayProjStats = False
+DumpTextures = False
+HiresTextures = False
+ConvertHiresTextures = False
+CacheHiresTextures = False
+CacheHiresTexturesToDisk = False
+DumpEFBTarget = False
+FreeLook = False
+UseFFV1 = False
+Anisotropy = 0
+ForceTextureFiltering = 0
+TextureFilteringMode = 0
+Antialiasing = 0
+MSAA = 0
+SSAA = 0
+ShaderCompilationMode = 3
+WaitForShadersBeforeStarting = False
+
+[Enhancements]
+ArbitraryMipmapBias = False
+ArbitraryMipmapDetection = False
+ForceTrueColor = False
+DisableCopyFilter = True
+ForceTextureFiltering = 0
+PostProcessingShader =
+StereoMode = 0
+StereoDepth = 20
+StereoConvergence = 14
+StereoSwapEyes = False
+
+[Enhancements_Custom]
+
+[Hacks]
+EFBToTextureEnable = True
+EFBScaled = True
+EFBEmulateFormatChanges = False
+EFBAccessEnable = False
+SkipEFBCopyToRam = True
+BBoxEnable = False
+DeferEFBCopies = True
+EFBCopyMethod = 0
+EFBToRam = False
+GPUTextureDecoding = True
+EnableGPUTextureDecoding = True
+XFBToTextureEnable = True
+ImmediateXFBEnable = False
+FastTextureSampling = True
+DisableBoundingBox = True
+ForceProgressive = True
+VertexRounding = True
+CopyEFBScaled = True
+NoMipmapping = True
+SkipDuplicateXFBs = True
+VISkip = True
+
+[Hacks_Custom]

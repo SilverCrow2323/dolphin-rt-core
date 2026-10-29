@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "_note": "Aggiungi qui le SHA256 dei file scaricati, per URL. Formato: { \"sha256\": { \"https://...\": \"hex...\" } }. Se un URL non è presente, la verifica viene saltata (opt-in).",
+  "sha256": {}
+}

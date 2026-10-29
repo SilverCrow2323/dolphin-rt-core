@@ -1,0 +1,44 @@
+[Hardware]
+VSync = False
+Adapter = 0
+
+[Settings]
+Backend = OGL
+AspectRatio = 0
+InternalResolution = 1
+WideScreenHack = False
+DisableFog = True
+EnablePixelLighting = False
+FastDepthCalc = False
+MaxAnisotropy = 0
+ForceFiltering = False
+SafeTextureCacheColorSamples = 0
+ShowFPS = False
+HiresTextures = False
+CacheHiresTextures = False
+MSAA = 1
+SSAA = False
+ShaderCompilationMode = 3
+WaitForShadersBeforeStarting = False
+
+[Enhancements]
+ArbitraryMipmapDetection = True
+ForceTrueColor = True
+DisableCopyFilter = False
+PostProcessingShader = 
+
+[Hacks]
+NoMipmapping = True
+EFBToTextureEnable = False
+EFBScaledCopy = False
+EFBEmulateFormatChanges = True
+EFBAccessEnable = False
+DeferEFBCopies = False
+EnableGPUTextureDecoding = False
+XFBToTextureEnable = False
+ImmediateXFBEnable = False
+FastTextureSampling = False
+BBoxEnable = True
+VertexRounding = False
+SkipDuplicateXFBs = False
+VISkip = True

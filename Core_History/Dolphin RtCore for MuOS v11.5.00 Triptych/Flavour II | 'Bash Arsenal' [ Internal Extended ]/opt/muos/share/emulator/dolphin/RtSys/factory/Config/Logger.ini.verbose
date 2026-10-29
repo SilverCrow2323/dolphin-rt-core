@@ -1,0 +1,25 @@
+[Logs]
+BOOT = True
+COMMON = True
+CONSOLE = True
+CORE = True
+DSP = True
+DSPHLE = True
+DVD = True
+EXI = True
+IOS = True
+JIT = True
+MASTER = True
+MI = True
+OSREPORT = True
+OSREPORT_HLE = True
+PowerPC = True
+SI = True
+VI = True
+Video = True
+WII_IPC = True
+[Options]
+Verbosity = 4
+WriteToConsole = False
+WriteToFile = True
+WriteToWindow = False
