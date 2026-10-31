@@ -5,9 +5,9 @@
 
   <p>
     <a href="https://github.com/SilverCrow2323/Dolphin-Core-for-MuOS/releases/latest">
-      <img src="https://img.shields.io/badge/version-11.5.00-8C59F2?style=for-the-badge&logo=github" alt="Version">
+      <img src="https://img.shields.io/badge/version-11.5.10-8C59F2?style=for-the-badge&logo=github" alt="Version">
     </a>
-    <img src="https://img.shields.io/badge/platform-muOS-4FA8C7?style=for-the-badge&logo=linux" alt="Platform">
+    <img src="https://img.shields.io/badge/platform-AARCH64 Linux Handhelds-4FA8C7?style=for-the-badge&logo=linux" alt="Platform">
     <img src="https://img.shields.io/badge/SoC-Allwinner%20H700-FF6F00?style=for-the-badge" alt="SoC">
     <img src="https://img.shields.io/badge/lab-SPDW%20Factory-00FFCC?style=for-the-badge" alt="SPDW">
     <img src="https://img.shields.io/badge/license-GPL--3.0-green?style=for-the-badge" alt="License">
