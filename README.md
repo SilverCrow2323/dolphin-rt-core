@@ -100,15 +100,15 @@ Every part of Dolphin Rt:Core shares a base configuration tuned specifically for
 | `Backend` | `OGL` | Vulkan on Panfrost is EXPERIMENTAL and NON-CONFORMANT. Use OGL. Always. This is not a suggestion. This is physics. |
 | `InternalResolution` | `1` | **Native resolution only** ($1.0\times$). The small Mali GPU cannot afford to render more pixels. |
 | `ShaderCompilationMode` | `3` | Uses "skip drawing" during shader compilation. Instead of pausing to compile, the emulator briefly skips unfinished objects. Slight pop-in, but no stutter. |
-| `DisableFog` | `True` / `False` | Removes fog effects where possible. Free performance, minor visual change. |
+| `DisableFog` | `True` / `False` | Removes fog effects where possible. Free performance with minor visual change. |
 | `FastDepthResult` | `True` | Faster depth (Z-buffer) handling. |
-| `EFBToTextureEnable` | `True` | Keeps frame-buffer copies inside the GPU's memory, not in system RAM. Big win. |
+| `EFBToTextureEnable` | `True` | Keeps frame-buffer copies inside the GPU's memory, not in system RAM. We won a battle---not the war. |
 | `SkipEFBCopyToRam` | `True` | Skips an extra copy step that is slow on this hardware. |
 | `DeferEFBCopies` | `True` | Batches several frame updates together so the GPU works less. |
 | `XFBToTextureEnable` | `True` | Same idea as EFB, but for the final output frame. |
 | `FastTextureSampling` | `True` | Uses a cheaper texture filtering path. |
-| `SafeTextureCacheColorSamples` | `0` | Turns off the "safety check" on textures. Maximum speed; only change this if a specific game glitches. |
-| `EnableGraphicsMods` | `True` | Lets the emulator load custom graphical fixes and texture packs at runtime. |
+| `SafeTextureCacheColorSamples` | `0` | Turns off the "safety check" on textures. Maximum speed output; only change this if a specific game glitches. |
+| `EnableGraphicsMods` | `True` | Lets the emulator load custom graphical fixes and texture packs at runtime. Must have to load Dolphin's granted weapons.|
 
 ---
 
@@ -116,6 +116,8 @@ Every part of Dolphin Rt:Core shares a base configuration tuned specifically for
 
 > [!NOTE]
 > **What does "Kanzentai" mean?** In Japanese tokusatsu shows (Kamen Rider, Super Sentai, Ultraman), *Kanzentai* (完全体) is the **"perfect form"**: the final shape a hero takes after all separate modules have **docked** together. That is exactly what happened here. The three old flavours — which used to be three separate releases — are now docked into **one package**, one installer, one body.
+One run in Archive Manager and "I'm done." 
+Ready to bongle in the jungle.
 
 Starting with v12.0.0 **Andromeda "Kanzentai"**, everything lives in **one `.muxupd` file**. The **Env Triage** screen (Settings ▸ About & Tools) checks every layer and tells you whether it is **HEALTHY**, **DEGRADED**, or **BROKEN**.
 
