@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Dolphin Rt:Stream PC Portal
+GenericName=GameCube/Wii streaming portal
+Comment=GameCube & Wii library for muOS — PC portal
+Exec=spdw-stream-portal
+Icon=spdw-stream-portal
+Terminal=false
+Categories=Game;Utility;
+Keywords=dolphin;sunshine;moonlight;gamecube;wii;stream;muos;
+StartupNotify=false
