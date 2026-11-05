@@ -1,123 +1,129 @@
 <div align="center">
-  <h1><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Dolphin_Emulator_Logo_Refresh.svg/250px-Dolphin_Emulator_Logo_Refresh.svg.png" width="40" alt="Dolphin Logo" style="vertical-align: middle; margin-right: 15px;"> Dolphin Rt:Core for muOS <img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/spdw_symbol.png" width="30" alt="SPDW Symbol" style="vertical-align: middle;"></h1>
+ <h1><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Dolphin_Emulator_Logo_Refresh.svg/250px-Dolphin_Emulator_Logo_Refresh.svg.png" width="40" alt="Dolphin Logo" style="vertical-align: middle; margin-right: 15px;"> Dolphin Rt:Core for muOS <img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/spdw_symbol.png" width="30" alt="SPDW Symbol" style="vertical-align: middle;"></h1>
   <h3><b><i>Kanzentai (完全体) — One Entity. All Layers Docked. Sbrobs.</i></b></h3>
   <p><b>Surgically tuned GameCube &amp; Wii emulation for the Allwinner H700 chipset under muOS.</b></p>
-
   <p>
     <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/latest">
-      <img src="https://img.shields.io/badge/version-12.0.00_Kanzentai-8C59F2?style=for-the-badge&logo=github" alt="Version">
+      <img src="https://img.shields.io/badge/version-12.0.0_Kanzentai-8C59F2?style=for-the-badge&logo=github" alt="Version">
     </a>
-    <img src="https://img.shields.io/badge/muOS-2606.0_Andromeda_Sloppy_Kofi-4FA8C7?style=for-the-badge&logo=linux" alt="muOS">
+    <img src="https://img.shields.io/badge/muOS-2606.0_Andromeda-4FA8C7?style=for-the-badge&logo=linux" alt="muOS">
     <img src="https://img.shields.io/badge/SoC-Allwinner%20H700-FF6F00?style=for-the-badge" alt="SoC">
     <img src="https://img.shields.io/badge/lab-SPDW%20Factory-00FFCC?style=for-the-badge" alt="SPDW">
     <img src="https://img.shields.io/badge/license-GPL--3.0-green?style=for-the-badge" alt="License">
   </p>
-
   <p>
-    <b>Codename:</b> <code>Andromeda</code> · <b>muOS release:</b> <code>Sloppy Kofi (2606.0)</code> · <b>Form:</b> <code>Kanzentai (完全体)</code>
+    <b>Codename:</b> <code>Sloppy Kofi</code> · <b>muOS release:</b> <code>Andromeda (2606.0)</code> · <b>Form:</b> <code>Kanzentai (完全体)</code>
   </p>
 </div>
 
----
 
-> ### ⚡ **TL;DR — Straight to the Point**
-> ***Stock firmware gives you emulation and calls it a day. muOS tears the door off the hinges. Dolphin Rt:Core is what happens next.***
->
-> Running GameCube and Wii games on an **Allwinner H700** handheld is not a "plug-and-play" situation. It is (unfortunately) a careful, engineering and stressful-heavy job. It means working within a (REALLY) strict $1\text{ GB}$ RAM budget, cutting as much unnecessary graphical effects as possible, and pushing titles to run at a stable $50\text{--}60\text{ FPS}$ even though they were never (and ever) meant to run on this chip.
->
-> This repository is **that challenge, solved...kinda.** Starting with v12.0.0 **"Kanzentai" (完全体)**, the three old flavours (Comfort Zone, Bash Arsenal, FrontendONE) are no longer separate releases: they have been docked into **one single package**. One installer, one install, one entity. No intricate situations or layered installs (as we already did with 11.5.01).
->
-> 🏛️ *Whant to know something more on how this port began? Read the full **[Digital Fossil Record & Core History Archive (Core_History/README.md)](Core_History/README.md)**.*
 
 ---
 
-## 🧠 <u>The Harsh Hardware Reality & What We Can Do</u>
 
-Before using any profile, it helps to understand **what the hardware can, cannot and never in life can do**. The H700 is a small, low-power chip, and emulating a GameCube or a Wii on it is...genuinely not the best idea you may come up with. But hey, who cares? Let's try to do it anyway! It's a pleasure when you make it on rising the avg FPS from 18 to 20 right?....Right?!
-Back on track, here's the disgraceful and challenging situation we're in (with both boots):
+> ⚡ Stock firmware gives you emulation and calls it a day. muOS timidly opens the door. Dolphin Rt:Core is what slams the door wide open to see what's beyond the line drawn by the fearful. Fuck you and your ethos, let's go Amigos!***
+>
+> Running GameCube and Wii games on an **Allwinner H700** handheld is not a "plug-and-play" situation. It is (unfortunately) a careful, engineering-heavy, and stressful dirty job.
+> A dirty job that someone has todo.
+Actually no, it's not true. But I was dreaming to say that somewhere one day.
+> It means working within a (REALLY) strict $1\text{ GB}$ RAM budget, cutting as many unnecessary graphical effects as possible, and pushing titles to run at a stable $50\text{--}60\text{ FPS}$ even though they were never (ever) meant to run on this chip.
+>
+> This repository is **that challenge, solved... kinda.** Starting with v12.0.0 **"Kanzentai" (完全体)**, the three old flavours (Comfort Zone, Bash Arsenal, FrontendONE) are no longer separate releases: they have been docked together into **one single <u>Franken package</u>**. One installer, one install, one entity. No intricate situations or layered installs (as we previously did with 11.5.01).
+>
+> 🏛️ *Want to know more about how this port began? Read the full [**Digital Fossil Record & Core History Archive (Core_History/README.md)**](Core_History/README.md).*
 
-| Component | What it is | What it means for you |
-| :--- | :--- | :--- |
-| **SoC (CPU)** | Allwinner H700 — 4 cores at 1.5 GHz | **The CPU** has to "translate" every GameCube/Wii instruction into something it can run. This translation is heavy, and four small cores are not much. And apparently the engaged translator was not the best of his class. |
-| **GPU** | Mali-G31 MP2 | **The graphics chip** is, and I'm sure you'll be surprised, SMALL and shares memory bandwidth with everything else. Complex scenes, heavy effects, and high resolutions will slow it down quickly like hitting both your legs with a bat. |
-| **RAM** | 1 GB LPDDR4, shared between CPU and GPU | **Memory** is tight. Everything lives in the same 1 GB pool — the system, the GPU textures, the emulator, like my grand-grand-grandfathers sleeping together in a drawer. No room (or drawers) for waste. |
-| **Display** | 640×480 up to 720×720, depending on model | **The screen** is (imagine what) small. Rendering at native resolution ($1.0\times$) is the only reasonable choice, anything higher just wastes power. But actually neither that choice is reasonable. Neither this project.  |
-| **Storage** | MicroSD card | **The card** is slower than a hard drive, we like to play in the toughtest situaions. We're real squared men here, afraid uh? (Using the compressed **RVZ** format may help with loading times...but don't expect any miracles at all) |
+## 🧠 The Harsh Hardware Reality & What We Can Do
 
-To get past the hardware's natural limits, **Dolphin Rt:Core** goes into the battlefield on **three main leyers + 1**:
+Before using any profile, it helps to understand **what the hardware can, cannot, and will never do**. 
+The H700 is a small, low-power chip, and emulating a GameCube or a Wii on it is... genuinely not the best idea you may come up with. But hey, who cares? Let's try to do it anyway! It's a pleasure when you manage to raise the avg FPS from 18 to 20, right?... Right?!
+Back on track, here is the disgraceful and challenging situation we're in (with both boots):
 
-```mermaid
-graph LR
-    A[🎮 Dolphin Engine Core] --> B[1. Resolution]
-    A --> C[2. Visual Effects]
-    A --> D[3. Virtual CPU Speed]
+| Component | What it is | What it means for you | 
+| ----- | ----- | ----- | 
+| **SoC (CPU)** | Allwinner H700 — 4 cores at $1.5\text{ GHz}$ | **The CPU** has to "translate" every GameCube/Wii instruction into something it can run. This translation is heavy, and four small cores are not much. And apparently the engaged translator was not the best of his class. | 
+| **GPU** | Mali-G31 MP2 | **The graphics chip** is, and I'm sure you'll be surprised, SMALL and shares memory bandwidth with everything else. Complex scenes, heavy effects, and high resolutions will slow it down quickly like hitting both your legs with a bat. | 
+| **RAM** | $1\text{ GB}$ LPDDR4, shared between CPU and GPU | **Memory** is tight. Everything lives in the same $1\text{ GB}$ pool — the system, the GPU textures, the emulator, like my grand-grand-grandfathers sleeping together in a drawer. No room (or drawers) for waste. | 
+| **Display** | $640\times 480$ up to $720\times 720$, depending on model | **The screen** is (imagine what) small. Rendering at native resolution ($1.0\times$) is the only reasonable choice; anything higher just wastes power. But actually, neither that choice is reasonable. Neither this project. | 
+| **Storage** | MicroSD card | **The card** is slower than a solid-state drive, but we like to play in the toughest situations. We're real squared men here, afraid uh? (Using the compressed **RVZ** format may help with loading times... but don't expect any miracles at all) | 
 
-    B --> B1["Keep native resolution (1.0x)<br>Avoids filling the small GPU with pixels it can't handle"]
-    C --> C1["Turn off bloom, depth of field, fog<br>Each effect removed = free FPS"]
-    D --> D1["Strategic underclocking (0.40x - 0.75x)<br>Fewer simulated CPU cycles = smoother playback"]
-
-    style A fill:#0f172a,stroke:#8c59f2,stroke-width:2px,color:#fff
-    style B fill:#1e293b,stroke:#4fa8c7,stroke-width:1px,color:#fff
-    style C fill:#1e293b,stroke:#4cc850,stroke-width:1px,color:#fff
-    style D fill:#1e293b,stroke:#f5c542,stroke-width:1px,color:#fff
-```
-
-### ⚠️ <u>What to Realistically Expect</u>
+### ⚠️ What to Realistically Expect
 
 Even with everything tuned, the physical limits of this chip do not change, for this you need 7 spheres called Dragon Balls. Here is roughly how games will perform:
 
-- 🟢 **Light 2D & 3D games** — $30 \text{ -- } 50\text{ FPS}$ *(Fully playable, comfortable)*
-- 🟡 **Medium 3D games** — $15 \text{ -- } 25\text{ FPS}$ *(If you're lucky, playable with some speed hacks and blasphemy)*
-- 🔴 **Heavy 3D games** — $5 \text{ -- } 15\text{ FPS}$ *(Stunningly Perfect and smooth. If the game is one single screen. Otherwise...In your Dreams. )*
+* 🟢 **Light 2D & 3D games** — $30 \text{ -- } 50\text{ FPS}$ *(Fully playable, comfortable)*
+
+* 🟡 **Medium 3D games** — $15 \text{ -- } 25\text{ FPS}$ *(If you're lucky, playable with some speed hacks and blasphemy)*
+
+* 🔴 **Heavy 3D games** — $5 \text{ -- } 15\text{ FPS}$ *(Stunningly perfect and smooth. If the game is one single screen. Otherwise... In your Dreams.)*
 
 > [!IMPORTANT]
-> **Why not just overclock that bitch?** Calm down, Johnny. Don't xongle the bongle so quicly. Overclocking the real hardware makes it hotter and drains the battery, plus it does **not** fix the real problem, which is that the emulated GameCube/Wii CPU is running like a roadrunner for the emulator (the coyote) to keep up. The right move is the opposite: *underclock the emulated CPU* (pretend it's slower, like a sloppy kofi). This reduces the workload without any physical abuse on the device.
+> **Why not just overclock that bitch?** Calm down, Johnny. Don't xongle the bongle so quickly. Overclocking the real hardware makes it hotter and drains the battery, plus it does **not** fix the real problem, which is that the emulated GameCube/Wii CPU is running like a roadrunner for the emulator (the coyote) to keep up. The right move is the opposite: *underclock the emulated CPU* (pretend it's slower, like a sloppy kofi). This reduces the workload without any physical abuse on the device.
 
 ---
 
-## ⚙️ <u>Base Configuration — What Gets Tuned, and Why</u>
+## 🛠️ OS-Level & Hardware Tweaks (muOS + System)
+
+To extract every last frame safely on the Allwinner H700 under muOS, configure these system-level parameters based on community research and Linux kernel patches:
+
+### 1. CPU Governor Management: `performance` vs. `interactive`
+The H700 can experience instability or sudden frame drops under dynamic governors (like `ondemand` or `schedutil`).
+* **[Performance Governor (Recommended for Dolphin):](https://patchew.org/linux/20241128154556.2743839-1-simons.philippe@gmail.com/#1)** Locks CPU cores at $1.5\text{ GHz}$. Delivers maximum stability and consistent frame pacing.
+* **Interactive Governor (Thermal/Battery Compromise):** Reduces audio crackle while letting the CPU step down when idle.
+
+### 2. Memory Optimization: ZRAM Swap
+With a strict $1\text{ GB}$ RAM budget shared between OS, CPU, and GPU, physical RAM exhaustion causes severe stuttering.
+* **[Why ZRAM over SD Swapfile:](https://community.muos.dev/t/difference-between-using-swapfile-or-zram/315)** ZRAM creates a compressed swap block directly inside RAM. It is significantly faster than MicroSD swap space and avoids physical SD card wear.
+
+### 3. Storage Optimization: RVZ Compression ($128\text{ KiB}$ Block Size)
+* **[Block Size Standard:](https://mintlify.wiki/dolphin-emu/dolphin/architecture/disc-io)** Keep block size strictly at $128\text{ KiB}$ ($131072\text{ bytes}$). Larger block sizes increase seek latency during random I/O access on MicroSD media.
+
+### 4. Thermal & Background Power Management
+* **[Disable Rest Mode / Screensaver:](https://community.muos.dev/t/rg35xxh-hdmi-rest-mode/1654#main-container)** Disable Rest Mode during heavy emulation sessions to avoid CPU downclock locks after wake cycles.
+
+---
+
+## ⚙️ Base Configuration — What Gets Tuned, and Why
 
 Every part of Dolphin Rt:Core shares a base configuration tuned specifically for this chip and this OS. And like this chip and this OS are the results. Here are the main settings, with plain-English explanations of **what they try to do**, basically our little hired goons from the streets.
 
 ### 🧩 `Dolphin.ini` — Core Engine Settings
 
-| Setting | Value | What it means |
+| Setting | Value | What it means | 
 | :--- | :---: | :--- |
-| `CPUCore` | `4` | Uses **JITARM64**, the fastest way to "translate" GameCube/Wii CPU code on this device. Huge speed boost compared to the slow interpreter. Is the most skilled translator in your roster for this job. |
-| `CPUThread` | `True` | Runs the emulated CPU on its own thread, so the graphics work doesn't block it. |
-| `EnableIdleSkipping` | `True` | Skips the moments where the emulated CPU would just be beating around the bush. Free performance for ya, boy. |
-| `SyncGPU` | `False` / `True` | **Off** for speed. **On** only when a game glitches and whines loudly, so we force the graphics to stay in sync and shut up. Like the best sloppy gatekeepers in the west. |
-| `Overclock` | `0.40` – `1.00` | **Underclocks** the *emulated* CPU (not the real one Johnny, sit down). Lower value = smoother frame rate, but risks games running in slow motion, so xongle it carefully. |
-| `TimingVariance` | `40` – `60` | Gives the audio system a bit of "slack". Higher value = fewer crackles and pops. Same gatekeepers story. |
-| `FastDiscSpeed` | `True` | Pretends the disc drive is faster than real hardware, like in its delusional fantasies... Faster loading. Let's keep him in its dream worlds. |
-| `Framelimit` | `1` | Auto-caps the emulator to $50\text{ Hz}$ (PAL) or $60\text{ Hz}$ (NTSC), matching the game's native frame rate. |
-| `SkipIPL` | `True` | Skips the GameCube boot animation and jumps straight into the game. Less homeworks for Johnnys |
+| `CPUCore` | `4` | Uses **JITARM64**, the fastest way to "translate" GameCube/Wii CPU code on this device. Is the most skilled translator in your roster for this job. | 
+| `CPUThread` | `True` | Runs the emulated CPU on its own thread, so the graphics work doesn't block it. | 
+| `EnableIdleSkipping` | `True` | Skips the moments where the emulated CPU would just be beating around the bush. Free performance for ya, boy. | 
+| `SyncGPU` | `False` / `True` | **Off** for speed. **On** only when a game glitches and whines loudly, so we force the graphics to stay in sync and shut up. Like the best sloppy gatekeepers in the west. | 
+| `Overclock` | `0.40` – `1.00` | **Underclocks** the *emulated* CPU (not the real one Johnny, sit down). Lower value = smoother frame rate, but risks games running in slow motion, so xongle it carefully. | 
+| `TimingVariance` | `40` – `60` | Gives the audio system a bit of "slack". Higher value = fewer crackles and pops. Same gatekeepers story. | 
+| `FastDiscSpeed` | `True` | Pretends the disc drive is faster than real hardware, like in its delusional fantasies... Faster loading. Let's keep him in its dream worlds. | 
+| `Framelimit` | `1` | Auto-caps the emulator to $50\text{ Hz}$ (PAL) or $60\text{ Hz}$ (NTSC), matching the game's native frame rate. | 
+| `SkipIPL` | `True` | Skips the GameCube boot animation and jumps straight into the game. Less homework for Johnnys. | 
 
 ### 🎨 `GFX.ini` — Graphics & Rendering
 
-| Setting | Value | What it means |
+| Setting | Value | What it means | 
 | :--- | :---: | :--- |
-| `Backend` | `OGL` | Vulkan on Panfrost is EXPERIMENTAL and NON-CONFORMANT. Use OGL. Always. This is not a suggestion. This is physics. |
-| `InternalResolution` | `1` | **Native resolution only** ($1.0\times$). The small Mali GPU cannot afford to render more pixels. |
-| `ShaderCompilationMode` | `3` | Uses "skip drawing" during shader compilation. Instead of pausing to compile, the emulator briefly skips unfinished objects. Slight pop-in, but no stutter. |
-| `DisableFog` | `True` / `False` | Removes fog effects where possible. Free performance with minor visual change. |
-| `FastDepthResult` | `True` | Faster depth (Z-buffer) handling. |
-| `EFBToTextureEnable` | `True` | Keeps frame-buffer copies inside the GPU's memory, not in system RAM. We won a battle---not the war. |
-| `SkipEFBCopyToRam` | `True` | Skips an extra copy step that is slow on this hardware. |
-| `DeferEFBCopies` | `True` | Batches several frame updates together so the GPU works less. |
-| `XFBToTextureEnable` | `True` | Same idea as EFB, but for the final output frame. |
-| `FastTextureSampling` | `True` | Uses a cheaper texture filtering path. |
-| `SafeTextureCacheColorSamples` | `0` | Turns off the "safety check" on textures. Maximum speed output; only change this if a specific game glitches. |
-| `EnableGraphicsMods` | `True` | Lets the emulator load custom graphical fixes and texture packs at runtime. Must have to load Dolphin's granted weapons.|
+| `Backend` | `OGL` | Vulkan on Panfrost is EXPERIMENTAL and NON-CONFORMANT. Use OGL. Always. This is not a suggestion. This is physics. | 
+| `InternalResolution` | `1` | **Native resolution only** ($1.0\times$). The small Mali GPU cannot afford to render more pixels. | 
+| `ShaderCompilationMode` | `3` | Uses "skip drawing" during shader compilation. Instead of pausing to compile, the emulator briefly skips unfinished objects. Slight pop-in, but no stutter. | 
+| `EFBAccessEnable` | `False` / `True` | **Single biggest performance setting:** Keep `False` by default. Enable `True` only for games requiring EFB CPU reads (e.g., Picto Box in *Wind Waker*). | 
+| `DisableFog` | `True` / `False` | Removes fog effects where possible. Free performance with minor visual change. | 
+| `FastDepthResult` | `True` | Faster depth (Z-buffer) handling. | 
+| `EFBToTextureEnable` | `True` | Keeps frame-buffer copies inside the GPU's memory, not in system RAM. We won a battle---not the war. | 
+| `SkipEFBCopyToRam` | `True` | Skips an extra copy step that is slow on this hardware. | 
+| `DeferEFBCopies` | `True` | Batches several frame updates together so the GPU works less. | 
+| `XFBToTextureEnable` | `True` | Same idea as EFB, but for the final output frame. | 
+| `FastTextureSampling` | `True` | Uses a cheaper texture filtering path. | 
+| `SafeTextureCacheColorSamples` | `0` | Turns off the "safety check" on textures. Maximum speed output; only change this if a specific game glitches. | 
+| `EnableGraphicsMods` | `True` | Lets the emulator load custom graphical fixes and texture packs at runtime. Must have to load Dolphin's granted weapons. | 
 
 ---
 
-## 🔱 <u>The Unified Entity — All Layers Docked (Kanzentai)</u>
+## 🔱 The Unified Entity — All Layers Docked (Kanzentai)
 
 > [!NOTE]
-> **What does "Kanzentai" mean?** In Japanese tokusatsu shows (Kamen Rider, Super Sentai, Ultraman), *Kanzentai* (完全体) is the **"perfect form"**: the final shape a hero takes after all separate modules have **docked** together. That is exactly what happened here. The three old flavours — which used to be three separate releases — are now docked into **one package**, one installer, one body.
-One run in Archive Manager and "I'm done." 
-Ready to bongle in the jungle.
+> **What does "Kanzentai" mean?** In Japanese tokusatsu shows (Kamen Rider, Super Sentai, Ultraman), *Kanzentai* (完全体) is the **"perfect form"**: the final shape a hero takes after all separate modules have **docked** together. That is exactly what happened here. The three old flavours — which used to be three separate releases — are now docked into **one package**, one installer, one body. One run in Archive Manager and "I'm done." Ready to bongle in the jungle.
 
 Starting with v12.0.0 **Andromeda "Kanzentai"**, everything lives in **one `.muxupd` file**. The **Env Triage** screen (Settings ▸ About & Tools) checks every layer and tells you whether it is **HEALTHY**, **DEGRADED**, or **BROKEN**.
 
@@ -125,90 +131,61 @@ Starting with v12.0.0 **Andromeda "Kanzentai"**, everything lives in **one `.mux
 graph TD
     subgraph Entity ["🐬 Dolphin Rt:Core — Kanzentai (完全体)"]
         direction TB
-        L1["⚙️ Layer I: Comfort Zone<br><i>Base engine, profiles, overrides</i>"]
-        L2["🔧 Layer II: Bash Arsenal<br><i>RtSys profile engine & Task Toolkit</i>"]
-        L3["🎨 Layer III: FrontendONE<br><i>Rt:UI LÖVE frontend (22 screens)</i>"]
-        L4["📡 + Rt:Stream<br><i>Moonlight + Sunshine streaming</i>"]
+        L1["⚙️ Layer I: Compy Dolphy<br><i>Base engine, profiles, overrides</i>"]
+        L2["🔧 Layer II: Basholphin<br><i>RtSys profile engine & Task Toolkit</i>"]
+        L3["🎨 Layer III: Dolphronton<br><i>Rt:UI LÖVE frontend (22 screens)</i>"]
+        L4["📡 Layer IV: Dolphirnet<br><i>Moonlight + Sunshine streaming</i>"]
     end
 
     L1 -->|Base Engine & Overrides| L2
     L2 -->|Toolkit & Profile Engine| L3
-    L3 -->|UI + Streaming| L4
+    L3 -->|UI + Core Controls| L4
 
-    style L1 fill:#1e293b,stroke:#4cc850,stroke-width:2px,color:#fff
-    style L2 fill:#0f172a,stroke:#8c59f2,stroke-width:2px,color:#fff
+    style L1 fill:#1e293b,stroke:#00ffcc,stroke-width:2px,color:#fff
+    style L2 fill:#0f172a,stroke:#ff0055,stroke-width:2px,color:#fff
     style L3 fill:#172554,stroke:#38bdf8,stroke-width:2px,color:#fff
-    style L4 fill:#2d1b4e,stroke:#c084fc,stroke-width:2px,color:#fff
+    style L4 fill:#2d1b4e,stroke:#bf5af2,stroke-width:2px,color:#fff
 ```
 
-### ⚙️ Layer I — Comfort Zone *(Base Engine)*
+<div style="background: linear-gradient(135deg, #0b1329 0%, #1a233a 100%); border: 2px solid #00ffcc; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);">
+  <h3><img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/icon1.png" width="36" alt="Icon 1" style="vertical-align: middle; margin-right: 12px;">Layer I — Compy Dolphy <i>(Base Engine)</i></h3>
+  <p><b>What it is:</b> the foundation of the whole project. This is where you find the emulator binary, the base configuration, the per-game settings, the texture packs, the graphical mods, and the launcher script that muOS calls when you press "play".</p>
+  <ul>
+    <li>Ships <b>7 pre-tuned profiles</b> (<code>performance</code>, <code>compatibility</code>, <code>rintromping</code>, <code>speedhacks</code>, <code>blackscreenfix</code>, <code>sweetspot</code>, <code>default</code>).</li>
+    <li>Removes post-processing bloom globally for instant speed boosts.</li>
+    <li>Includes a <b>Crash Nitro Kart HD texture pack</b> and 12+ per-game overrides in <code>GameSettings/</code>.</li>
+  </ul>
+</div>
 
-**What it is:** the foundation of the whole project. This is where you find the emulator binary, the base configuration, the per-game settings, the texture packs, the graphical mods, and the launcher script that muOS calls when you press "play".
+<div style="background: linear-gradient(135deg, #120b1f 0%, #251330 100%); border: 2px solid #ff0055; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);">
+  <h3><img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/icon2.png" width="36" alt="Icon 2" style="vertical-align: middle; margin-right: 12px;">Layer II — Basholphin <i>(Power-User Control)</i></h3>
+  <p><b>What it is:</b> a toolkit that sits on top of Compy Dolphy and gives you on-device control using muOS's Task Toolkit system.</p>
+  <ul>
+    <li>Extends profiles with three execution tiers: <b>Lite</b>, <b>Std</b>, and <b>Max</b>.</li>
+    <li>Adds <b>over 30 automation scripts</b> across 7 functional categories.</li>
+    <li>Builds dynamic toggle menus automatically for graphic mods and texture packs.</li>
+  </ul>
+</div>
 
-**What it does:**
-- Ships **7 pre-tuned profiles** — `performance`, `compatibility`, `rintromping`, `speedhacks`, `blackscreenfix`, `sweetspot`, and `default` — each tuned for a different type of game.
-- Removes post-processing bloom globally (the fuzzy glow many games use). This alone gives a small but noticeable speed boost.
-- Includes a **Crash Nitro Kart HD texture pack** that fixes the well-known texture tiling problems on that game's HUD.
-- Provides **12+ per-game overrides** in `GameSettings/` that fix specific titles without you having to touch anything.
-- Supports the native **START + SELECT** shutdown hotkey: the emulator closes cleanly, and memory card saves are safe.
+<div style="background: linear-gradient(135deg, #09192b 0%, #102a45 100%); border: 2px solid #38bdf8; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);">
+  <h3><img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/icon3.png" width="36" alt="Icon 3" style="vertical-align: middle; margin-right: 12px;">Layer III — Dolphronton <i>(Full Graphical App)</i></h3>
+  <p><b>What it is:</b> a real, graphical frontend (Rt:UI v3.6.0 Kanzentai) running on LÖVE 2D that turns your handheld into a mini-console.</p>
+  <ul>
+    <li>Full media library with box art, filtering, search, and one-button launch.</li>
+    <li>Includes a Workshop for custom profiles and live community compatibility guides.</li>
+    <li>Triage screen (Settings ▸ About & Tools) to verify layer integrity.</li>
+  </ul>
+</div>
 
-**What it does NOT do:** it does not change how the emulator is tuned beyond its built-in profiles. That is what Layer II is for.
-
----
-
-### 🔧 Layer II — Bash Arsenal *(Power-User Control)*
-
-**What it is:** a toolkit that sits on top of Comfort Zone and gives you on-device control. It uses muOS's own **Task Toolkit** system — the same menu you already use for other system tasks.
-
-**What it does:**
-- Extends the profiles with three **execution tiers**:
-  - **`Lite`** — almost no hacks, best visual quality.
-  - **`Std`** — balanced, recommended for most cases.
-  - **`Max`** — aggressive speed hacks, best for struggling games.
-- Adds **over 30 automation scripts**, grouped into 7 categories:
-  1. Adjusting profiles
-  2. Toggling effects (bloom, depth of field, fog, audio)
-  3. Managing configuration files
-  4. Scanning for new graphic mods automatically
-  5. Diagnostics and log viewing
-  6. An on-device technical manual
-  7. Save data tools
-- Builds **dynamic toggle menus** for whatever you have in the `GraphicMods/`, `Textures/`, and `Riivolution/` folders. Put a mod in the folder, and it appears in the menu.
-- Lets you choose between **Clean** core assignment (the default) or **Tier-exposed** assignment (each folder can pick its own tier).
-
-**What it does NOT do:** it does not require any terminal or configuration file editing. Everything is menu-driven.
-
----
-
-### 🎨 Layer III — FrontendONE *(Full Graphical App)*
-
-**What it is:** a real, graphical frontend — the **Rt:UI** (v3.6.0 "Kanzentai") — running on **LÖVE 2D**. It turns the handheld into a mini-console.
-
-**What it does:**
-- Gives you a **media library** with box art, filters, search, and one-button launch for GameCube and Wii titles.
-- Rotates between the **GameCube dashboard** and the **Wii dashboard** using <kbd>SELECT</kbd>, changing the whole look and feel.
-- Includes a **Workshop** where you can create, test, and apply custom profiles, graphic mods, and controller mappings — no command-line involved.
-- Shows a **live compatibility guide** with what other users have tested: FPS, settings, profile used.
-- Runs a **Triage screen** (Settings ▸ About & Tools) that tells you if all layers are correctly installed.
-- Boots through a guided pipeline: check for updates → download data files → scan ROMs → apply bundled settings → download cheats → build game cards.
-
-**What it does NOT do:** it does not replace Layers I and II. It uses them underneath.
-
----
-
-### 📡 Rt:Stream *(Streaming from Your PC)*
-
-**What it is:** a new feature in v12.0.0. It lets you play GameCube and Wii games that are hosted on your PC, streamed to the handheld over your local network using **Sunshine** (on the PC) and **Moonlight** (on the device).
-
-**What it does:**
-- Adds a **Stream** section directly inside Rt:UI, so you don't need a separate app.
-- Offers three views (Flow, Grid, List), favourites, recent history, and cover art syncing from your PC.
-- Handles **Wake-on-LAN** (turn your PC on from the handheld), latency tests, and diagnostics.
-- Uses the same library folder structure as local games, so it feels natural.
-
-**What it does NOT do:** it does not require you to do anything on the handheld other than enter your PC's address. Everything else is set up on the PC side.
-
----
+<div style="background: linear-gradient(135deg, #1b0f2e 0%, #31184f 100%); border: 2px solid #bf5af2; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(191, 90, 242, 0.2);">
+  <h3><img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/icon4.png" width="36" alt="Icon 4" style="vertical-align: middle; margin-right: 12px;">Layer IV — Dolphirnet <i>(PC Streaming)</i></h3>
+  <p><b>What it is:</b> your bridge to host-powered streaming via Sunshine (on your PC) and Moonlight (on your handheld device).</p>
+  <ul>
+    <li>Integrates a dedicated Stream section directly inside Rt:UI.</li>
+    <li>Supports Flow, Grid, and List views with cover art syncing and favorites.</li>
+    <li>Handles Wake-on-LAN commands and latency diagnostics natively.</li>
+  </ul>
+</div>
 
 ### 🐬 The Dolphin Binary
 
@@ -219,9 +196,7 @@ graph TD
 >
 > **It is now included in the package.** If you are building from source, make sure the `dolphin` executable is placed in exactly that path before installing Rt:Core.
 
----
-
-## 💡 <u>Practical Tips & Format Standards</u>
+## 💡 Practical Tips & Format Standards
 
 ### 📺 1. Prefer PAL Games ($50\text{ Hz}$) When Available
 
@@ -273,62 +248,44 @@ EFBAccessEnable = True
 SafeTextureCacheColorSamples = 512
 ```
 
-**Explanation of each line:**
-- `Overclock = 0.600000` — pretend the GameCube CPU is running at 60% speed. Saves a lot of work.
-- `OverclockEnable = True` — actually apply that setting.
-- `EFBAccessEnable = True` — turns on a compatibility feature that fixes certain graphics glitches.
-- `SafeTextureCacheColorSamples = 512` — uses a more accurate (but slightly slower) texture cache, which fixes certain textures in this game.
-
 ---
 
-## 📂 <u>Where Files Live on the Device</u>
-
-Here is the folder layout, with a one-line explanation of each part.
+## 📂 Where Files Live on the Device
 
 ```text
 /opt/
 └── muos/
     ├── script/
     │   └── launch/
-    │       └── ext-dolphinrt.sh            # 🚀 Called by muOS when you launch a game
+    │       └── ext-dolphinrt.sh            # 🚀 Primary execution entry script called by muOS
     └── share/
         ├── emulator/
         │   └── dolphin/
-        │       ├── dolphin                 # 🐬 The actual emulator program
-        │       ├── Config/                 # ⚙️ The active .ini settings used right now
+        │       ├── dolphin                 # 🐬 Compiled Dolphin emulator binary
+        │       ├── Config/                 # ⚙️ Active runtime configuration (.ini)
         │       │   ├── Dolphin.ini
         │       │   ├── GFX.ini
         │       │   ├── GCPadNew.ini
         │       │   └── WiimoteNew.ini
-        │       ├── GameSettings/           # 🎯 Per-game overrides (one file per game)
+        │       ├── GameSettings/           # 🎯 Title-specific game override INI files
         │       ├── Load/
-        │       │   ├── GraphicMods/        # 🎨 Bloom removal, DOF fixes, etc.
-        │       │   └── Textures/           # 🖼️ HD texture packs (e.g. Crash Nitro Kart)
-        │       ├── RtSys/                  # 🛠️ System scripts (exit watcher, uninstaller, logs)
+        │       │   ├── GraphicMods/        # 🎨 Mod patches (Bloom removal, DOF fixes)
+        │       │   └── Textures/           # 🖼️ Custom HD texture packs
+        │       ├── RtSys/                  # 🛠️ System utility scripts and runtime logs
         │       │   ├── overlay_exit.sh
         │       │   ├── uninstall_dolphinrt.sh
-        │       │   └── logs/               # 📝 Capped diagnostic log files
-        │       ├── Sys/                    # 🧬 System resources: fonts, shaders, game list
-        │       │   └── GC/                 # GameCube IPL and region fonts
-        │       └── Wii/                    # 🎮 Simulated Wii internal memory (NAND)
+        │       │   └── logs/               # 📝 Subsystem execution logs
+        │       ├── Sys/                    # 🧬 Emulator system data (Fonts, Shaders)
+        │       │   └── GC/                 # GameCube IPL and region font resources
+        │       └── Wii/                    # 🎮 Virtualized Wii NAND memory file tree
         └── info/
-            └── manifest/                   # 🧩 The core list (Andromeda manifest)
-                └── core.json               # or split core/<Namespace>/<System>.json
+            └── manifest/                   # 🧩 Core manifest registry (Andromeda)
+                └── core.json               # Core assignment configuration file
 ```
-
-**Short version of what each top folder does:**
-- **`ext-dolphinrt.sh`** — the launcher: it prepares the environment and starts Dolphin.
-- **`Config/`** — the settings currently in use.
-- **`GameSettings/`** — per-game exceptions.
-- **`Load/`** — optional add-ons (texture packs, graphic mods).
-- **`RtSys/`** — the toolkit scripts and logs.
-- **`Sys/`** — Dolphin's built-in data.
-- **`Wii/`** — the simulated Wii filesystem.
-- **`info/manifest/`** — where Andromeda keeps the list of emulators per system.
 
 ---
 
-## 📊 <u>Compatibility Database</u>
+## 📊 Compatibility Database
 
 **What it is:** an online database, kept up to date, that tells you **how well each game runs** on this hardware — with FPS numbers, recommended profiles, and user notes.
 
@@ -342,7 +299,7 @@ It currently covers over **200 GameCube and Wii titles**.
 
 ---
 
-## 🙏 <u>Credits, History & Community</u>
+## 🙏 Credits, History & Community
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/sirpips.jpeg" alt="sirpips" width="110" style="border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 8px;">
@@ -361,8 +318,6 @@ It currently covers over **200 GameCube and Wii titles**.
 >
 > The project was later adopted by **SPDW Factory (sirpips aka SilverCrow2323)** with one goal: ***Chou Henka* (超変化)** — a radical transformation that pushes the emulator and the hardware to their absolute limit. The aim is not "just make it boot" but "make it playable".
 >
-> With **v12.0.0 Andromeda "Kanzentai"**, that evolution reached its **perfect form**: all layers docked together, one package, one entity.
->
 > 🏛️ **For the full timeline, original forum posts, and legacy builds, see [Core_History/README.md](Core_History/README.md).**
 
 ### 🐬 Core Development & Pioneer Lineage
@@ -378,7 +333,7 @@ It currently covers over **200 GameCube and Wii titles**.
 
 ---
 
-## 🔗 <u>Links & Resources</u>
+## 🔗 Links & Resources
 
 - 🏛️ **[Dolphin Core History & Archive](Core_History/README.md)** — original forum threads and legacy builds
 - 🌐 **[GitHub Repository](https://github.com/SilverCrow2323/dolphin-rt-core)**
