@@ -7,6 +7,9 @@
       <img src="https://img.shields.io/badge/version-12.0.0_Kanzentai-8C59F2?style=for-the-badge&logo=github" alt="Version">
     </a>
     <img src="https://img.shields.io/badge/muOS-2606.0_Andromeda-4FA8C7?style=for-the-badge&logo=linux" alt="muOS">
+    <img src="https://img.shields.io/badge/muOS-Jacaranda_(legacy_v11.5.1)-6B7280?style=for-the-badge&logo=linux" alt="Jacaranda">
+    <img src="https://img.shields.io/badge/Knulli-planned-3B82F6?style=for-the-badge" alt="Knulli">
+    <img src="https://img.shields.io/badge/ROCKNIX-planned-3B82F6?style=for-the-badge" alt="ROCKNIX">
     <img src="https://img.shields.io/badge/SoC-Allwinner%20H700-FF6F00?style=for-the-badge" alt="SoC">
     <img src="https://img.shields.io/badge/lab-SPDW%20Factory-00FFCC?style=for-the-badge" alt="SPDW">
     <img src="https://img.shields.io/badge/license-GPL--3.0-green?style=for-the-badge" alt="License">
@@ -31,6 +34,41 @@ Actually no, it's not true. But I was dreaming to say that somewhere one day.
 > This repository is **that challenge, solved... kinda.** Starting with v12.0.0 **"Kanzentai" (完全体)**, the three old flavours (Comfort Zone, Bash Arsenal, FrontendONE) are no longer separate releases: they have been docked together into **one single <u>Franken package</u>**. One installer, one install, one entity. No intricate situations or layered installs (as we previously did with 11.5.01).
 >
 > 🏛️ *Want to know more about how this port began? Read the full [**Digital Fossil Record & Core History Archive (Core_History/README.md)**](Core_History/README.md).*
+
+## 🧭 Platforms & Releases
+
+One project, several firmwares. Dolphin's own configuration (`Dolphin.ini`, `GFX.ini`, `GameSettings/`, graphic mods,
+texture packs, controller profiles) is plain Dolphin data and is shared by every build; what changes per platform is the
+**launcher glue, the core registration and the packaging**.
+
+| Platform | Status | Package | What it means |
+| :--- | :--- | :--- | :--- |
+| **muOS 2606.0 Andromeda** (*Sloppy Kofi*) | ✅ **v12.0.0 — current** | `Dolphin_RtCore_v12_0_0_Andromeda.muxupd` | Everything in this README. Registers itself in the Andromeda core manifest, signed-manifest install, Rt:Stream built in. |
+| **muOS 2601.1 Funky Jacaranda** | 🟡 **Legacy line** — v11.5.1 "Triptych" | `Dolphin_RtCore_v11_5_1_Triptych_Bundle.muxupd` | Uses the old `info/assign/*.ini` registry. Stays available; a v12 backport is **planned**, not built. |
+| **Knulli** | 🔵 **Planned** | — | Config/profiles/textures carry over unchanged. Launcher, frontend glue and packaging are **not written yet**. |
+| **ROCKNIX** | 🔵 **Planned** | — | Same story as Knulli. Nothing is built or tested yet. |
+
+> [!NOTE]
+> "Planned" means exactly that: no download, no promise of a date. This table only lists a release as available when a
+> package exists and was tested on that firmware.
+
+## 📥 Install (muOS Andromeda)
+
+1. Copy `Dolphin_RtCore_v12_0_0_Andromeda.muxupd` into the **`ARCHIVE`** folder of the ROM card and install it from **Archive Manager**.
+   The package carries the integrity manifest (`manifest.sha256`) that Andromeda requires, and registers
+   **Nintendo Gamecube** and **Nintendo Wii** in the core list by itself when the installation ends.
+2. Make sure the `dolphin` binary sits at `/opt/muos/share/emulator/dolphin/dolphin`.
+3. Open **Dolphin Rt:Core** from *Applications*. If GameCube/Wii are not listed as systems, run
+   *Task Toolkit ▸ Dolphin Rt-Core ▸ Register GameCube and Wii* (the app also checks this at every start).
+4. In Content Explorer pick the GameCube/Wii folder ▸ **Core Assignment** ▸ choose a Dolphin profile.
+
+Switching between **Mode 1 (standard profiles only)** and **Mode 2 (all lite/std/max tiers)** is a Task too
+(*Profiles - Standard Only* / *Profiles - All Tiers*).
+
+> [!WARNING]
+> On 2606.0 the core manifest is **one file** (`MUOS/info/manifest/core.json`) that *replaces* the bundled one. Rt:Core merges its
+> two systems into it without touching any other system and keeps a one-time backup (`core.json.rtcore.bak`), but a muOS update
+> that adds new systems will not show them until the manifest is re-merged.
 
 ## 🧠 The Harsh Hardware Reality & What We Can Do
 
@@ -164,6 +202,7 @@ graph TD
     <li>Extends profiles with three execution tiers: <b>Lite</b>, <b>Std</b>, and <b>Max</b>.</li>
     <li>Adds <b>over 30 automation scripts</b> across 7 functional categories.</li>
     <li>Builds dynamic toggle menus automatically for graphic mods and texture packs.</li>
+    <li><b>Andromeda registry:</b> <code>manifest_tool.sh</code> turns the profile sources into core-manifest entries (never touching other systems), with Task Toolkit entries to register, and to switch between Mode 1 and Mode 2.</li>
   </ul>
 </div>
 
@@ -184,6 +223,9 @@ graph TD
     <li>Integrates a dedicated Stream section directly inside Rt:UI.</li>
     <li>Supports Flow, Grid, and List views with cover art syncing and favorites.</li>
     <li>Handles Wake-on-LAN commands and latency diagnostics natively.</li>
+    <li>Pair with a PIN shown on screen, one-tap library + cover sync, Sunshine app check, connection test and a diagnostics report that hides your token.</li>
+    <li>Imports settings, library, covers and Moonlight pairing keys from an existing standalone <i>Dolphin RtStream</i> install, once, so you do not pair again.</li>
+    <li>PC side: the <b>Rt:Stream PC Portal</b> (Linux, Python/Tk) scans your ROMs and serves the library to the handheld.</li>
   </ul>
 </div>
 
@@ -272,15 +314,26 @@ SafeTextureCacheColorSamples = 512
         │       │   ├── GraphicMods/        # 🎨 Mod patches (Bloom removal, DOF fixes)
         │       │   └── Textures/           # 🖼️ Custom HD texture packs
         │       ├── RtSys/                  # 🛠️ System utility scripts and runtime logs
+        │       │   ├── manifest_tool.sh    # 🧩 Registers GameCube/Wii in the core manifest
+        │       │   ├── switch_weapon/      # 🔀 Profile sources (gc/wii, mode 1 & 2)
         │       │   ├── overlay_exit.sh
         │       │   ├── uninstall_dolphinrt.sh
         │       │   └── logs/               # 📝 Subsystem execution logs
         │       ├── Sys/                    # 🧬 Emulator system data (Fonts, Shaders)
         │       │   └── GC/                 # GameCube IPL and region font resources
         │       └── Wii/                    # 🎮 Virtualized Wii NAND memory file tree
+        ├── task/
+        │   └── Dolphin Rt-Core/            # 🧰 Register / Mode 1 / Mode 2 Tasks
         └── info/
-            └── manifest/                   # 🧩 Core manifest registry (Andromeda)
-                └── core.json               # Core assignment configuration file
+            └── manifest/                   # 🧩 Bundled core manifest (Andromeda)
+
+/run/muos/storage/                           # (the "MUOS" folder on the SD card)
+├── info/manifest/core.json                 # 🧩 Your core manifest — Rt:Core merges its two systems here
+└── application/
+    └── Dolphin RtUI/                       # 🎨 Rt:UI frontend
+        ├── data/stream/                    # 📡 Rt:Stream settings, library, covers (never shipped)
+        ├── tools/stream/                   # 🔧 sync / pair / test / wake / latency / launch scripts
+        └── lib/                            # love, moonlight, gptokeyb2
 ```
 
 ---
@@ -339,6 +392,7 @@ It currently covers over **200 GameCube and Wii titles**.
 - 🌐 **[GitHub Repository](https://github.com/SilverCrow2323/dolphin-rt-core)**
 - 📦 **[Latest Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases/latest)**
 - 📊 **[Compatibility Database](https://silvercrow2323.github.io/Dolphin-Core-for-MuOS/)**
+- 📡 **[Dolphin Rt:Stream PC Portal](https://github.com/SilverCrow2323/dolphin-rt-stream)** — the PC side (deb · rpm · Arch · AppImage)
 - 💾 **[Official muOS Documentation](https://muos.dev)**
 - 🐬 **[Dolphin Emulator Project](https://dolphin-emu.org)**
 
