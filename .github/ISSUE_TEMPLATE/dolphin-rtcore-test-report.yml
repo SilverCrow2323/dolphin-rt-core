@@ -1,0 +1,312 @@
+name: "🐬 Dolphin Rt:Core Test Report"
+description: "Submit test results for GameCube or Wii games on Dolphin Rt:Core / muOS"
+title: "[TEST REPORT]: "
+labels: ["test-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        <div align="center">
+          <img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/spdwfactory_logo.png" alt="SPDW Factory" width="120">
+          <h1>🎮 DOLPHIN RT:CORE COMPATIBILITY REPORT</h1>
+          <p>
+            <img src="https://img.shields.io/badge/Platform-GameCube_%7C_Wii-FFA500?style=flat-square">
+            <img src="https://img.shields.io/badge/Core-Dolphin_Rt:Core-blue?style=flat-square">
+            <img src="https://img.shields.io/badge/OS-muOS-orange?style=flat-square">
+          </p>
+          <p><em>Community-driven testing database for Dolphin emulation on muOS &amp; H700 chipset</em></p>
+        </div>
+        ---
+
+  # ================= SECTION 1: TARGET DETAILS =================
+  - type: markdown
+    attributes:
+      value: |
+        ## <u>**1. TARGET DETAILS**</u>
+        <small><em>Select the platform, enter the game title, region, and ID (if known).</em></small>
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: "Platform *"
+      options:
+        - "GameCube"
+        - "Wii"
+    validations:
+      required: true
+
+  - type: input
+    id: game_title
+    attributes:
+      label: "Game Title *"
+      placeholder: "e.g., Super Mario Sunshine, Wii Sports"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: region
+    attributes:
+      label: "Region *"
+      options:
+        - "NTSC"
+        - "PAL"
+        - "NTSC-J"
+    validations:
+      required: true
+
+  - type: input
+    id: game_id
+    attributes:
+      label: "Game ID (optional)"
+      description: "If you know the Game ID (e.g., GMSE01, RSPE01), enter it here. Otherwise it will be auto-detected."
+      placeholder: "e.g., GMSE01"
+    validations:
+      required: false
+
+  - type: input
+    id: cover_art
+    attributes:
+      label: "Cover Art URL (optional)"
+      description: "If you have a direct link to a cover image, paste it here. It overrides the auto-generated cover."
+      placeholder: "https://example.com/cover.jpg"
+    validations:
+      required: false
+
+  # ================= SECTION 2: TEST OVERVIEW =================
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## <u>**2. TEST OVERVIEW**</u>
+        <small><em>Rate the game's behavior, FPS range, and core profile used.</em></small>
+
+  - type: markdown
+    attributes:
+      value: |
+        ### ⭐ Performance Rating Guide
+
+        | Rating | Boot | Description |
+        |:---:|:---:|---|
+        | **0★** | ❌ NO BOOT | Immediate crash on launch; emulator fails to start or crashes instantly. |
+        | **1★** |  ⚠️ BOOT  | Crashes within 5 seconds after boot, or game is severely corrupted / unrecognizable. |
+        | **2★** |  ⚠️ BOOT  | No crashes, but major issues are widespread. A glimpse of playability, but not there yet. |
+        | **3★** |  ✅ BOOT  | No crashes; the game runs, but has several issues that affect the experience. |
+        | **4★** |  ✅ BOOT  | Playable, with some noticeable issues that may be annoying but not game-breaking. |
+        | **5★** |  ✅ BOOT  | Practically perfect. Any minor issues are negligible or do not affect gameplay. |
+
+  - type: dropdown
+    id: boot_rating
+    attributes:
+      label: "Performance Rating *"
+      options:
+        - "0★ - DOESN'T BOOT (immediate crash)"
+        - "1★ - BOOTS & UNPLAYABLE (crashes during the session, sever bugs or heavy corruption)"
+        - "2★ - BOOTS & UNPLAYABLE (no crashes but major issues)"
+        - "3★ - BOOTS WITH ISSUES (runs but has several problems)"
+        - "4★ - BOOTS & PLAYABLE (playable with secondary issues)"
+        - "5★ - BOOTS & FULLY PLAYABLE (practically perfect)"
+    validations:
+      required: true
+
+  - type: input
+    id: fps_min
+    attributes:
+      label: "FPS Range - Minimum *"
+      description: "Minimum FPS observed during gameplay"
+      placeholder: "e.g., 15"
+    validations:
+      required: true
+
+  - type: input
+    id: fps_max
+    attributes:
+      label: "FPS Range - Maximum *"
+      description: "Maximum FPS observed during gameplay"
+      placeholder: "e.g., 30"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: core_profile
+    attributes:
+      label: "Core Profile Used *"
+      description: "Select the profile you tested."
+      options:
+        - "Default"
+        - "Speedhacks"
+        - "Blackscreenfix"
+        - "Performance"
+        - "Compatibility"
+        - "Lite"
+        - "Troubleshooting"
+        - "Safe"
+        - "Speedup 1"
+        - "Speedup 2"
+        - "Wii"
+        - "Wii Performance"
+        - "Wii Compatibility"
+        - "Wii Safe"
+        - "Various / All profiles tested"
+    validations:
+      required: true
+
+  # ================= SECTION 3: RESULTS =================
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## <u>**3. RESULTS IN DEPTH**</u>
+        <small><em>Describe your gameplay experience, issues, solutions, or workarounds.</em></small>
+
+  - type: textarea
+    id: considerations
+    attributes:
+      label: "Considerations & Gameplay Experience"
+      description: "Describe performance, graphical issues, audio problems, bugs, or any other observations."
+      placeholder: "Write your considerations here..."
+    validations:
+      required: false
+
+  # ================= SECTION 4: ADDITIONAL DATA =================
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## <u>**4. ADDITIONAL DATA**</u>
+        <small><em>Optional: add recommended custom settings and/or links to screenshots/videos.</em></small>
+
+  - type: dropdown
+    id: custom_settings_enabled
+    attributes:
+      label: "Do you want to recommend Custom Settings?"
+      description: "If you select 'Yes', you must also select a Type and provide a Description."
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: custom_settings_type
+    attributes:
+      label: "Custom Settings - Type"
+      description: "Required only if 'Custom Settings' is set to 'Yes'"
+      options:
+        - "Select a type..."
+        - "Config"
+        - "Texture"
+        - "Hack"
+        - "Cheats"
+        - "Others"
+    validations:
+      required: false
+
+  - type: input
+    id: custom_settings_name
+    attributes:
+      label: "Custom Settings - Name / Title"
+      description: "Brief name for this configuration (required if Custom Settings = Yes)"
+      placeholder: "e.g., Luigi's Mansion Performance Fix"
+    validations:
+      required: false
+
+  - type: input
+    id: custom_settings_url
+    attributes:
+      label: "Custom Settings - URL (optional)"
+      description: "Link to download the configuration file or source"
+      placeholder: "https://raw.githubusercontent.com/.../game.ini"
+    validations:
+      required: false
+
+  - type: textarea
+    id: custom_settings_details
+    attributes:
+      label: "Custom Settings - Details"
+      description: "Detailed description of the settings (required if Custom Settings = Yes)"
+      placeholder: "Overclock = 0.55\nInternalResolution = 50\nVISkip = True\n..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: attachments
+    attributes:
+      label: "Attachments (URLs of screenshots / videos)"
+      description: "Enter one URL per line. Accepted formats: images (jpg, png, gif) and videos (YouTube, MP4)."
+      placeholder: "https://i.imgur.com/abc123.jpg\nhttps://youtu.be/xyz789\nhttps://example.com/video.mp4"
+    validations:
+      required: false
+
+  # ================= SECTION 5: TESTER INFO =================
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## <u>**5. TESTER INFO**</u>
+        <small><em>Who performed the test, on which device, and with which software versions.</em></small>
+
+  - type: input
+    id: tester
+    attributes:
+      label: "Tester Username *"
+      placeholder: "Write your username or alias"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: "Device Used *"
+      placeholder: "e.g., RG35XX H, RG40XX H, RG CubeXX"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: muos_version
+    attributes:
+      label: "muOS Version *"
+      options:
+        - "2601.1 Funky Jacaranda (current)"
+        - "2601.0 Jacaranda"
+        - "2508.4 Loose Goose"
+        - "2508.3 Golden Goose"
+        - "2508.2 Silly Goose"
+        - "2508.1 Canada Goose"
+        - "2508.0 Goose"
+        - "2502.0 Pixie"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: core_version
+    attributes:
+      label: "Dolphin Rt:Core Version *"
+      options:
+        - "v11.5.00-III FrontendONE"
+        - "v11.5.00-II Bash Arsenal"
+        - "v11.5.00-I Comfort Zone"
+        - "v11.0.00-dev"
+        - "v10.5.3"
+        - "v10.5.124"
+        - "v10.0.0 SPDW"
+        - "v9 Goose"
+        - "v8"
+        - "v7"
+        - "v6 or prior"
+        - "Other (specify in considerations)"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        <div align="center">
+          <br>
+          <img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/gamecube.svg" alt="Console" width="48">
+          <br><br>
+          <strong>Thank you for contributing!</strong> 🙌
+          <br><br>
+          <small>Your report will be automatically processed and added to the database.</small>
+        </div>

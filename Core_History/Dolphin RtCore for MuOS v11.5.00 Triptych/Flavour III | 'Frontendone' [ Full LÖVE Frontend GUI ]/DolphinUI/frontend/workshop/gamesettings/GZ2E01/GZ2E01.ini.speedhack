@@ -1,0 +1,9 @@
+# Dolphin Rt:Core - The Legend of Zelda: Twilight Princess (NTSC) - Speedhack (VISkip fix + 70% underclock)
+# Game ID: GZ2E01
+
+[Core]
+OverclockEnable = True
+Overclock = 0.70
+
+[Video_Hacks]
+VISkip = False

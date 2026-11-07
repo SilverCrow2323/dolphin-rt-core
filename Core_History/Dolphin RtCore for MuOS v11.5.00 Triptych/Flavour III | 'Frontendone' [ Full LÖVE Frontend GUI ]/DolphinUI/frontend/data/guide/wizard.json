@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "wizards": {
+    "core_profile": {
+      "label": "Rt:Core Profile",
+      "description": "Create a new global Rt:Core profile for the whole library",
+      "target_kind": "rtcoreprofile",
+      "start": "goal",
+      "steps": {
+        "goal": {
+          "prompt": "What do you want to improve?",
+          "options": [
+            { "key": "perf", "label": "Performance", "desc": "Prioritize framerate over visual accuracy", "next": "perf_tier" },
+            { "key": "acc",  "label": "Accuracy",    "desc": "Prioritize correct rendering over speed",   "next": "acc_tier"  },
+            { "key": "fix",  "label": "Fix an issue", "desc": "Black screen, glitches, crashes",          "next": "fix_kind"  }
+          ]
+        },
+        "perf_tier": {
+          "prompt": "How aggressive should the underclock be?",
+          "options": [
+            { "key": "mild", "label": "Mild (Overclock 0.80)",
+              "desc": "Light CPU underclock, safe on most titles",
+              "apply": [
+                { "section": "Core", "key": "OverclockEnable", "val": "True" },
+                { "section": "Core", "key": "Overclock", "val": "0.80" }
+              ],
+              "terminal": true },
+            { "key": "rec", "label": "Recommended (Overclock 0.70)",
+              "desc": "Sweet Spot. Daily driver for H700.",
+              "apply": [
+                { "section": "Core", "key": "OverclockEnable", "val": "True" },
+                { "section": "Core", "key": "Overclock", "val": "0.70" },
+                { "section": "Settings", "key": "ShaderCompilationMode", "val": "3" },
+                { "section": "Settings", "key": "DisableFog", "val": "True" }
+              ],
+              "terminal": true },
+            { "key": "aggr", "label": "Aggressive (Overclock 0.55)",
+              "desc": "Only for stubborn titles. Trade-off: game logic runs slow.",
+              "apply": [
+                { "section": "Core", "key": "OverclockEnable", "val": "True" },
+                { "section": "Core", "key": "Overclock", "val": "0.55" },
+                { "section": "Settings", "key": "DisableFog", "val": "True" },
+                { "section": "Hacks", "key": "VISkip", "val": "True" },
+                { "section": "Settings", "key": "FastDepthCalc", "val": "True" }
+              ],
+              "terminal": true }
+          ]
+        },
+        "acc_tier": {
+          "prompt": "How much accuracy do you need?",
+          "options": [
+            { "key": "visual", "label": "Better visuals",
+              "desc": "Sharper textures, cleaner edges, small speed cost",
+              "apply": [
+                { "section": "Enhancements", "key": "ArbitraryMipmapDetection", "val": "True" },
+                { "section": "Settings", "key": "MSAA", "val": "2" },
+                { "section": "Enhancements", "key": "ForceTrueColor", "val": "True" }
+              ],
+              "terminal": true },
+            { "key": "max", "label": "Maximum compatibility",
+              "desc": "Disables speedhacks that break specific titles",
+              "apply": [
+                { "section": "Hacks", "key": "EFBToTextureEnable", "val": "False" },
+                { "section": "Hacks", "key": "XFBToTextureEnable", "val": "False" },
+                { "section": "Hacks", "key": "DeferEFBCopies", "val": "False" },
+                { "section": "Hacks", "key": "EFBEmulateFormatChanges", "val": "True" },
+                { "section": "Hacks", "key": "BBoxEnable", "val": "True" },
+                { "section": "Settings", "key": "ShaderCompilationMode", "val": "0" },
+                { "section": "Settings", "key": "WaitForShadersBeforeStarting", "val": "True" }
+              ],
+              "terminal": true }
+          ]
+        },
+        "fix_kind": {
+          "prompt": "Which issue are you fixing?",
+          "options": [
+            { "key": "black",  "label": "Black screen on boot",     "desc": "", "next": "fix_black" },
+            { "key": "flick",  "label": "Textures flickering",      "desc": "",
+              "apply": [
+                { "section": "Settings", "key": "FastDepthCalc", "val": "False" }
+              ],
+              "terminal": true },
+            { "key": "fmv",    "label": "Choppy or pixelated FMVs", "desc": "",
+              "apply": [
+                { "section": "Settings", "key": "SafeTextureCacheColorSamples", "val": "512" }
+              ],
+              "terminal": true },
+            { "key": "mmu",    "label": "Skies of Arcadia Legends", "desc": "Title requires MMU",
+              "apply": [
+                { "section": "Core", "key": "MMU", "val": "True" }
+              ],
+              "terminal": true }
+          ]
+        },
+        "fix_black": {
+          "prompt": "Apply the first fix or go deeper?",
+          "options": [
+            { "key": "efb", "label": "Enable EFB Access",
+              "desc": "Cheapest fix; breaks nothing on the rest of the library",
+              "apply": [
+                { "section": "Hacks", "key": "EFBAccessEnable", "val": "True" }
+              ],
+              "terminal": true },
+            { "key": "mmu", "label": "Also enable MMU",
+              "desc": "Heavier. Only if the game needs extended memory.",
+              "apply": [
+                { "section": "Hacks", "key": "EFBAccessEnable", "val": "True" },
+                { "section": "Core", "key": "MMU", "val": "True" }
+              ],
+              "terminal": true }
+          ]
+        }
+      }
+    },
+
+    "per_game": {
+      "label": "Per-game override",
+      "description": "Create a GameSettings override for a specific title",
+      "target_kind": "gamesettings",
+      "start": "select_game",
+      "steps": {
+        "select_game": {
+          "type": "game_picker",
+          "prompt": "Choose the target game"
+        },
+        "goal": {
+          "prompt": "What do you want to fix or improve?",
+          "options": [
+            { "key": "perf", "label": "Performance", "desc": "Underclock CPU for this title only", "next": "perf_tier" },
+            { "key": "fix",  "label": "Fix an issue", "desc": "Black screen, glitches, FMV", "next": "fix_kind" },
+            { "key": "acc",  "label": "Better accuracy", "desc": "Force accurate paths for this title", "next": "acc_tier" }
+          ]
+        },
+        "perf_tier": {
+          "prompt": "How aggressive?",
+          "options": [
+            { "key": "mild", "label": "Mild (Overclock 0.80)",
+              "apply": [
+                { "section": "Core", "key": "OverclockEnable", "val": "True" },
+                { "section": "Core", "key": "Overclock", "val": "0.80" }
+              ],
+              "terminal": true },
+            { "key": "rec", "label": "Recommended (Overclock 0.70)",
+              "apply": [
+                { "section": "Core", "key": "OverclockEnable", "val": "True" },
+                { "section": "Core", "key": "Overclock", "val": "0.70" }
+              ],
+              "terminal": true },
+            { "key": "aggr", "label": "Aggressive (Overclock 0.55)",
+              "apply": [
+                { "section": "Core", "key": "OverclockEnable", "val": "True" },
+                { "section": "Core", "key": "Overclock", "val": "0.55" },
+                { "section": "Video_Hacks", "key": "VISkip", "val": "True" },
+                { "section": "Video_Settings", "key": "DisableFog", "val": "True" }
+              ],
+              "terminal": true }
+          ]
+        },
+        "fix_kind": {
+          "prompt": "Which issue?",
+          "options": [
+            { "key": "black", "label": "Black screen on boot", "next": "fix_black" },
+            { "key": "flick", "label": "Textures flickering",
+              "apply": [ { "section": "Video_Settings", "key": "FastDepthCalc", "val": "False" } ],
+              "terminal": true },
+            { "key": "fmv",   "label": "Choppy FMVs",
+              "apply": [ { "section": "Video_Settings", "key": "SafeTextureCacheColorSamples", "val": "512" } ],
+              "terminal": true }
+          ]
+        },
+        "fix_black": {
+          "prompt": "Which fix?",
+          "options": [
+            { "key": "efb", "label": "Enable EFB Access",
+              "apply": [ { "section": "Video_Hacks", "key": "EFBAccessEnable", "val": "True" } ],
+              "terminal": true },
+            { "key": "mmu", "label": "Enable MMU (Skies, etc.)",
+              "apply": [
+                { "section": "Video_Hacks", "key": "EFBAccessEnable", "val": "True" },
+                { "section": "Core", "key": "MMU", "val": "True" }
+              ],
+              "terminal": true }
+          ]
+        },
+        "acc_tier": {
+          "prompt": "Which accuracy fix?",
+          "options": [
+            { "key": "viskip_off", "label": "Turn off VISkip",
+              "desc": "Mandatory for Wind Waker / Twilight Princess",
+              "apply": [ { "section": "Video_Hacks", "key": "VISkip", "val": "False" } ],
+              "terminal": true },
+            { "key": "efb_acc", "label": "Fully accurate EFB paths",
+              "apply": [
+                { "section": "Video_Hacks", "key": "EFBToTextureEnable", "val": "False" },
+                { "section": "Video_Hacks", "key": "EFBEmulateFormatChanges", "val": "True" }
+              ],
+              "terminal": true }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+*.love
+*.muxapp
+*.muxzip
+*.armhf
+build/
+dist/
+*.muxupd
+.dev_files/
+.DS_Store
+tools/
+
+# Runtime data
+frontend/data/frontendone.json
+frontend/data/keybindings.json
+frontend/data/_covers_cache.json
+frontend/data/_roms_cache.json
+frontend/data/downloads/
+frontend/data/logs/
+frontend/data/covers/
+frontend/data/icons/*.tmp
+frontend/dolphin-emu/Config/.backup/
+frontend/dolphin-emu/Config/Logger.ini
+frontend/dolphin-emu/Config/Hotkeys.ini
+frontend/workshop/snapshots/
+frontend/frontend/
+frontend/assets/fonts/*.zip
+frontend/assets/sfx/noise.ogg

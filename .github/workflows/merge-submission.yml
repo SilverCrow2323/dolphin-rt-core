@@ -1,0 +1,81 @@
+name: Merge community submissions
+
+on:
+  issues:
+    types: [opened, labeled, edited]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  merge:
+    if: >
+      github.event.issue.state == 'open' &&
+      (
+        contains(join(github.event.issue.labels.*.name, ','), 'gamesetting') ||
+        contains(join(github.event.issue.labels.*.name, ','), 'test-report')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Extract + merge
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          python - <<'PY'
+          import os, re, json, pathlib, sys, time, datetime
+
+          body = os.environ.get('ISSUE_BODY', '') or ''
+          labels = os.environ.get('ISSUE_LABELS', '') or ''
+          issue_num = os.environ.get('ISSUE_NUMBER', '0')
+
+          # Extract all fenced code blocks (json or ini)
+          blocks = re.findall(r'```(?:json|ini)\s*\n(.*?)\n```', body, re.DOTALL)
+          if not blocks:
+              print("::error::No code blocks found in issue body")
+              sys.exit(1)
+
+          is_test = 'test-report' in labels
+          is_setting = 'gamesetting' in labels
+
+          # helper to ensure data dir exists before writing files
+          def ensure_parent(path):
+              p = pathlib.Path(path)
+              if not p.parent.exists():
+                  p.parent.mkdir(parents=True, exist_ok=True)
+
+          # ---------- TEST REPORT ----------
+          if is_test:
+              json_block = next((b for b in blocks if b.strip().startswith('{')), None)
+              if not json_block:
+                  print("::error::No JSON payload in test report")
+                  sys.exit(1)
+              payload = json.loads(json_block)
+              path = pathlib.Path('data/games_data.json')
+              ensure_parent(path)
+              data = json.loads(path.read_text()) if path.exists() and path.read_text().strip() else {'version': 1, 'last_update': '', 'games': []}
+              games = data.get('games', [])
+              gid = payload.get('game_info', {}).get('game_id', 'UNKNOWN')
+              # find existing game entry
+              target = None
+              for g in games:
+                  if g.get('game_info', {}).get('game_id') == gid:
+                      target = g; break
+              entry = {k: payload[k] for k in ('game_info','test_review','test_details','test_environment') if k in payload}
+              if target:
+                  target.setdefault('entries', []).append(entry)
+              else:
+                  games.append({'game_info': payload.get('game_info', {}), 'entries': [entry]})
+            });

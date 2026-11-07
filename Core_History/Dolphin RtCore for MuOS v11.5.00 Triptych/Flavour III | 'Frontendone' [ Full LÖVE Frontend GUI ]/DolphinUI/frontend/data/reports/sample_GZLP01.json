@@ -1,0 +1,35 @@
+{
+  "game_info": {
+    "game_id": "GZLP01",
+    "system": "GC",
+    "game": "The Legend of Zelda: The Wind Waker",
+    "region": "PAL"
+  },
+  "test_review": {
+    "rating": 2,
+    "fps": "4-5",
+    "boot": "YES",
+    "playable": "NO",
+    "fps_min": 4,
+    "fps_max": 5
+  },
+  "test_details": {
+    "rtcore_version": "v11.0.0 (Light Arsenal)",
+    "core_profile": "Performance",
+    "considerations": "Tested on RG35XX H running 2601.1 Funky Jacaranda with Rt:Core v11.0.0 (Light Arsenal) on profile Performance. Frame rate ranged between 4 and 5 FPS. Boot: YES. Not playable in its current state. Performance is below an enjoyable threshold."
+  },
+  "test_environment": {
+    "tester": "sirpips",
+    "device": "RG35XX H",
+    "muos_version": "2601.1 Funky Jacaranda"
+  },
+  "cover_art": "",
+  "custom_settings": [],
+  "attachments": [],
+  "_meta": {
+    "id": "sample_GZLP01",
+    "created": "2026-09-12T14:30:22",
+    "dolphinui_version": "0.4.0"
+  },
+  "_extended": {}
+}

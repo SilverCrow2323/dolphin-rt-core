@@ -1,0 +1,17 @@
+Dolphin-Core-for-MuOS
+
+This product includes software developed by the Dolphin Emulator Project
+(https://dolphin-emu.org/), licensed under the GNU General Public License
+v2.0 or later (GPLv2+).
+
+Game title data is provided by GameTDB (https://www.gametdb.com/).
+Please keep the GameTDB attribution when redistributing the wiitdb files.
+
+Nintendo, GameCube, Wii and related names are trademarks of Nintendo.
+This project is not affiliated with, endorsed by, or sponsored by Nintendo.
+
+The original Dolphin core port for muOS was created by @Speedrun.
+Repository, website and compatibility database are maintained by
+SilverCrow2323 (sirpips) and contributors.
+
+See THIRD_PARTY_LICENSES.md for more details.

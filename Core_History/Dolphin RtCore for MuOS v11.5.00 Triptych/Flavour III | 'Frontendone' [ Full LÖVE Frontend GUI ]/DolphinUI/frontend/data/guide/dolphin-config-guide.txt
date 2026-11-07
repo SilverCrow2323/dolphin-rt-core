@@ -1,0 +1,200 @@
+# Dolphin Configuration Guide for muOS / RG35XX H
+
+A complete reference for tuning Dolphin (GameCube/Wii emulation) on the Allwinner H700 / Mali-G31 MP2 platform running muOS. Every recommendation below is calibrated for this specific hardware, not generic desktop advice.
+
+## Table of Contents
+- [1. Hardware Reality & Driver Stack](#1-hardware-reality--driver-stack)
+- [2. How Dolphin Works](#2-how-dolphin-works)
+- [3. Core Settings](#3-core-settings-core)
+- [4. Backend & Basic Graphics](#4-backend--basic-graphics)
+- [5. Enhancements & Resolution](#5-enhancements--resolution)
+- [6. EFB Hacks](#6-efb-hacks-embedded-frame-buffer)
+- [7. XFB Hacks](#7-xfb-hacks-external-frame-buffer)
+- [8. Other Hacks & Sampling](#8-other-hacks--sampling)
+- [9. Performance, Shaders & Texture Cache](#9-performance-shaders--texture-cache)
+- [10. Audio & DSP](#10-audio--dsp)
+- [11. Per-Game Overrides](#11-per-game-overrides-gamesettings)
+- [12. muOS-Specific Levers & RAM](#12-muos-specific-levers--ram)
+- [13. The Baseline Profile](#13-the-baseline-profile)
+- [14. Troubleshooting](#14-troubleshooting)
+
+## 1. Hardware Reality & Driver Stack
+
+**SoC & GPU.** The RG35XX H runs an Allwinner H700: a quad-core Cortex-A53 at 1.5GHz paired with a 2-core Mali-G31 MP2 at 650MHz and 1GB of LPDDR4 RAM. The A53 is an efficiency core, not a performance core — Dolphin leans hard on single-thread CPU speed for its main emulation thread (JitArm64), which is the primary bottleneck in most titles, not the GPU. The Mali-G31 sits at the very bottom of ARM's Bifrost lineup, with no headroom to spare.
+
+**The driver situation.** On Linux-based muOS, this GPU is driven by Panfrost, Mesa's open-source Bifrost driver. Its OpenGL ES 3.1 implementation is mature and stable on this silicon. Its Vulkan implementation (PanVK) is explicitly experimental and non-conformant across the entire Bifrost G31/G51/G52/G76 family, and has to be force-enabled with an environment variable that exists specifically to signal "this is known to be broken."
+
+> **Use OpenGL. Do not use Vulkan on this hardware.**
+
+**Standalone, not libretro.** muOS's Dolphin builds read native standalone-Dolphin `Dolphin.ini` / `GFX.ini` files, not the RetroArch core (which is frozen years behind and missing entire settings, including Manual Texture Sampling). Every setting in this guide is fully applicable.
+
+## 2. How Dolphin Works
+
+Three threads run in parallel — this is what "Dual Core" actually splits apart:
+
+- **CPU thread** — recompiles the game's PowerPC code just-in-time into native code. On an ARM64 host this is JitArm64: direct PowerPC→ARM64 translation, not double emulation.
+- **GPU thread** — manages the EFB (Embedded Frame Buffer, the internal render target) and XFB (External Frame Buffer, what actually reaches the display). Nearly every hack in the Hacks tab is really just a different policy for how these buffer copies happen: to RAM or to a GPU texture, native or scaled, immediate or deferred.
+- **Audio/DSP thread** — HLE (High-Level Emulation, reimplemented audio functions) rather than LLE (cycle-accurate emulation of the real DSP firmware) — the only sustainable choice on an A53.
+
+The single biggest source of *perceived* stutter on a weak mobile GPU is on-the-fly shader compilation, not raw framerate — see Section 9.
+
+## 3. Core Settings (`[Core]`)
+
+| GUI Setting | ini Key | Recommended Value | Why |
+|---|---|---|---|
+| Dual Core | `CPUThread` | `True` | Uses the H700's 4 cores by splitting CPU and video work. Non-negotiable. |
+| CPU Emulation Engine | `CPUCore` | `1` (JIT) | Native JitArm64 translation. The pure interpreter is unusable here (10-50x slower). |
+| DSP Emulation Engine | `DSPHLE` | `True` | LLE (cycle-accurate) is far too CPU-heavy; HLE is the only sustainable option. |
+| Fastmem | `Fastmem` | `True` | Host virtual-memory tricks for fast, safe memory access. Near-free performance gain. |
+| Enable Idle Skipping | `EnableIdleSkipping` | `True` | Skips CPU busy-wait loops. Clean win, essentially no risk. |
+| CPU Clock Override | `Overclock` / `OverclockEnable` | `1.0` / `False` globally | An underclock (e.g. 0.60-0.70) belongs in a performance-tier profile or a per-game override — not in the safe baseline. |
+| MMU / Accurate NaNs | `MMU` / `AccurateNaNs` | `False` | Expensive, and only needed by a handful of homebrew or edge-case titles (e.g. MMU for Skies of Arcadia Legends). |
+| Graphics Backend | `GFXBackend` | `OGL` | Lives here, under `[Core]` in Dolphin.ini — **not** in GFX.ini. |
+
+## 4. Backend & Basic Graphics
+
+- **Graphics Backend**: `GFXBackend = OGL` under `[Core]` in Dolphin.ini, per Section 1.
+- **VSync**: `False` — avoids presentation stalls on the Mali driver.
+- **Aspect Ratio**: Auto (`AspectRatio = 0`).
+
+## 5. Enhancements & Resolution
+
+- **Internal Resolution**: native (`InternalResolution = 1`). The RG35XX H's screen is 640×480 — raising internal resolution spends scarce GPU cycles for no visible benefit on a 3.5" panel.
+- **Anisotropic Filtering & MSAA/SSAA**: off (`MaxAnisotropy = 0`, `MSAA = 1`, `SSAA = False`).
+- **Disable Copy Filter**: `True` — slightly cleaner image, one less filter pass.
+- **Force True Color / Force Filtering**: `False` — the GPU cost isn't justified on this display.
+
+## 6. EFB Hacks (Embedded Frame Buffer)
+
+These avoid expensive CPU↔GPU synchronization stalls:
+
+- `EFBAccessEnable = False` (Skip EFB Access) — large performance win, as long as the title doesn't use CPU EFB reads for gameplay logic or specific effects.
+- `EFBToTextureEnable = True` — keeps EFB copies on the GPU as textures, eliminating the CPU readback path.
+- `DeferEFBCopies = True` — makes copy operations asynchronous.
+- `EFBScaledCopy = False` — consistent with native resolution: no mismatch, no wasted GPU work.
+- `EFBEmulateFormatChanges = False` — further savings; breaks a small number of titles that rely on format-change tricks for effects (some Kirby/Zelda titles historically).
+
+## 7. XFB Hacks (External Frame Buffer)
+
+- `ImmediateXFBEnable = True` & `SkipDuplicateXFBs = True` — reduce latency and skip identical frames. Near-free performance.
+- `VISkip = False` in the global baseline. Enable it per-game for CPU/GPU-bound titles that benefit from it; **never** on Zelda: The Wind Waker or Twilight Princess, which stop rendering entirely with it on.
+
+## 8. Other Hacks & Sampling
+
+- `DisableFog = True` (lives under `[Settings]`, not `[Hacks]`) — reduces pixel-shader load and, in some titles, prevents black-screen/rendering artifacts tied to fog calculation.
+- `FastTextureSampling = True` — fast sampling path, safe for the large majority of titles.
+- `BBoxEnable = False` — bounding box emulation is only needed by a handful of games for hit detection or specific effects; expensive, re-enable per-game if needed.
+- `VertexRounding = True` — prevents vertex "wobble," more relevant above native resolution but harmless to leave on regardless.
+
+## 9. Performance, Shaders & Texture Cache
+
+- **Shader Compilation Mode**: `ShaderCompilationMode = 3` (Skip Drawing) — the correct choice on Mali to eliminate shader-compilation stutter entirely. Instead of waiting on an unready shader, Dolphin skips drawing that object for a frame and continues. Trade-off: very occasional, brief pop-in during extreme transitions — still the best compromise on this GPU.
+- **Texture Cache Accuracy**: `SafeTextureCacheColorSamples = 0` (Safe). This is Dolphin's actual default and the most accurate setting, not a shortcut — `0` sits at the "Safe" end of the accuracy slider, `128` is "Fast," `512` is "Middle." There's a narrow, legitimate exception in the *opposite* direction: a few video-heavy titles benefit from being *raised* to `512` to fix choppy/pixelated FMVs — that's a per-game fix, not a reason to change the global default.
+- **GPU Texture Decoding**: `EnableGPUTextureDecoding = True` — offloads texture decoding to the GPU, freeing CPU cycles. Worth an A/B test per-game on GPU-bound titles, since the G31 MP2 doesn't have much compute headroom either.
+- **Wait For Shaders Before Starting**: `False` — unnecessary with Skip Drawing already handling stutter.
+
+> **On `FastDepthCalc`.** Despite the name, this is the *more accurate* depth method on modern Dolphin builds, not the shortcut it sounds like. It's the default (`True`) and should stay `True` in the baseline. On Panfrost specifically, a small number of titles see texture flicker with it enabled — that's a per-game fix (`FastDepthCalc = False` inside that game's GameSettings file), not a reason to change the global default. Do not switch it off "just in case": on the vast majority of titles it is both faster *and* correct.
+
+## 10. Audio & DSP
+
+HLE audio (`DSPHLE = True`) with the `ALSA` backend at low latency (2-5ms) to avoid audio desync. `DPL2Decoder = False` unless you specifically need multi-channel output.
+
+## 11. Per-Game Overrides (GameSettings)
+
+For targeted fixes, create a file in the `GameSettings` folder named after the six-character Game ID (e.g. `GALE01.ini` for Melee, `GZLE01.ini` for Wind Waker). Only the keys you list are overridden — everything else falls back to the global profile.
+
+```ini
+# GZLE01.ini - Zelda: The Wind Waker
+[Video_Hacks]
+VISkip = False
+
+# CPU-bound titles that benefit from a targeted underclock
+[Core]
+OverclockEnable = True
+Overclock = 0.70
+GameSettings use a namespaced section format. When you write a per-game override, you do not use the top-level section names from GFX.ini. Instead you prefix every graphics section with Video_. Dolphin's "unified config" convention is:
+
+Main file section	GameSettings section
+[Core] (Dolphin.ini)	[Core]
+[DSP] (Dolphin.ini)	[DSP]
+[Interface] (Dolphin.ini)	[Interface]
+[Settings] (GFX.ini)	[Video_Settings]
+[Enhancements] (GFX.ini)	[Video_Enhancements]
+[Hacks] (GFX.ini)	[Video_Hacks]
+[Hardware] (GFX.ini)	[Video_Hardware]
+Only [Core], [DSP] and [Interface] keep their bare names. Everything graphics-related gets the Video_ prefix. If you write [Hacks] inside a GameSettings file, it will be silently ignored — the game will keep the global value, and you'll spend an afternoon wondering why nothing changed.
+
+## 12. muOS-Specific Levers & RAM
+With 1GB of total RAM, avoid HD texture packs — they saturate memory and lead to swapping or outright crashes. muOS also supports assigning a CPU governor per piece of content: setting Performance for your Dolphin launch profile removes A53 core ramp-up latency entirely, a free complement to everything above.
+
+## 13. The Baseline Profile
+ini
+# --- Dolphin.ini ---
+[Core]
+GFXBackend = OGL
+CPUThread = True
+CPUCore = 1
+DSPHLE = True
+EnableIdleSkipping = True
+JITFollowBranch = True
+Fastmem = True
+MMU = False
+AccurateNaNs = False
+SyncGPU = False
+FastDiscSpeed = True
+OverclockEnable = False
+Overclock = 1.0
+
+[DSP]
+Backend = ALSA
+DPL2Decoder = False
+
+# --- GFX.ini ---
+[Hardware]
+VSync = False
+
+[Enhancements]
+ArbitraryMipmapDetection = False
+DisableCopyFilter = True
+ForceTrueColor = False
+ForceFiltering = False
+MaxAnisotropy = 0
+PostProcessingShader =
+
+[Hacks]
+BBoxEnable = False
+EFBAccessEnable = False
+EFBEmulateFormatChanges = False
+EFBScaledCopy = False
+EFBToTextureEnable = True
+DeferEFBCopies = True
+XFBToTextureEnable = True
+ImmediateXFBEnable = True
+SkipDuplicateXFBs = True
+VertexRounding = True
+VISkip = False
+FastTextureSampling = True
+
+[Settings]
+BackendMultithreading = True
+EnableGPUTextureDecoding = True
+FastDepthCalc = True
+EnablePixelLighting = False
+DisableFog = True
+SafeTextureCacheColorSamples = 0
+ShaderCompilationMode = 3
+WaitForShadersBeforeStarting = False
+InternalResolution = 1
+MSAA = 1
+SSAA = False
+wideScreenHack = False
+AspectRatio = 0
+
+## 14. Troubleshooting
+Black screen on launching a Wii/GC title. First confirm the ISO isn't corrupted. If it persists, try toggling EFBAccessEnable to True for that specific title. Some titles (a notable example is Skies of Arcadia Legends, Game ID GEAE8P) also require the emulated Memory Management Unit: set MMU = True for that game only, inside its GameSettings file. Do not enable MMU globally — it would slow the entire library down for the sake of a handful of titles that need it.
+
+Textures flickering or disappearing. Almost never SafeTextureCacheColorSamples at 0 — that's the safe default. The first suspect is FastDepthCalc: despite the name it's the more accurate method on modern Dolphin builds, and can cause flicker specifically on GLES/Panfrost stacks. Try disabling it for the affected title before touching anything else.
+
+Crashes during loading (OOM). Likely excessive RAM use from texture packs or oversized caches. With only 1GB total, keep the system lean.
+
+Choppy or pixelated FMVs in a specific title. Try raising SafeTextureCacheColorSamples to 512 for that Game ID only — a known fix for video-heavy titles, not something to apply globally.

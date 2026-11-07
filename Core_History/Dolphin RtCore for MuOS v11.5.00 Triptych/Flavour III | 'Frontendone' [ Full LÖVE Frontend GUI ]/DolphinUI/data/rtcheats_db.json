@@ -1,0 +1,2962 @@
+[
+  {
+    "gameid": "G5SE7D",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/G5SE7D.ini"
+  },
+  {
+    "gameid": "GAHEGG",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GAHEGG.ini"
+  },
+  {
+    "gameid": "GC4JBN",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GC4JBN.ini"
+  },
+  {
+    "gameid": "GC6E01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GC6E01.ini"
+  },
+  {
+    "gameid": "GC6J01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GC6J01.ini"
+  },
+  {
+    "gameid": "GC6P01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GC6P01.ini"
+  },
+  {
+    "gameid": "GC8JA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GC8JA4.ini"
+  },
+  {
+    "gameid": "GCBE7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCBE7D.ini"
+  },
+  {
+    "gameid": "GCBP7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCBP7D.ini"
+  },
+  {
+    "gameid": "GCCE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCCE01.ini"
+  },
+  {
+    "gameid": "GCCJGC",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCCJGC.ini"
+  },
+  {
+    "gameid": "GCCP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCCP01.ini"
+  },
+  {
+    "gameid": "GCDE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCDE08.ini"
+  },
+  {
+    "gameid": "GCDP08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCDP08.ini"
+  },
+  {
+    "gameid": "GCEE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCEE41.ini"
+  },
+  {
+    "gameid": "GCGE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCGE41.ini"
+  },
+  {
+    "gameid": "GCHE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCHE78.ini"
+  },
+  {
+    "gameid": "GCIE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCIE69.ini"
+  },
+  {
+    "gameid": "GCJE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCJE41.ini"
+  },
+  {
+    "gameid": "GCN",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCN.ini"
+  },
+  {
+    "gameid": "GCOE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCOE52.ini"
+  },
+  {
+    "gameid": "GCQE7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCQE7D.ini"
+  },
+  {
+    "gameid": "GCSEAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCSEAF.ini"
+  },
+  {
+    "gameid": "GCTE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCTE51.ini"
+  },
+  {
+    "gameid": "GCUE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCUE69.ini"
+  },
+  {
+    "gameid": "GCVEEB",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCVEEB.ini"
+  },
+  {
+    "gameid": "GCZE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GCZE69.ini"
+  },
+  {
+    "gameid": "GD7E70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GD7E70.ini"
+  },
+  {
+    "gameid": "GD7PB2",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GD7PB2.ini"
+  },
+  {
+    "gameid": "GDDE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDDE41.ini"
+  },
+  {
+    "gameid": "GDEE71",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDEE71.ini"
+  },
+  {
+    "gameid": "GDFE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDFE5D.ini"
+  },
+  {
+    "gameid": "GDGE7H",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDGE7H.ini"
+  },
+  {
+    "gameid": "GDIE7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDIE7D.ini"
+  },
+  {
+    "gameid": "GDJEB2",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDJEB2.ini"
+  },
+  {
+    "gameid": "GDQE7L",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDQE7L.ini"
+  },
+  {
+    "gameid": "GDREAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDREAF.ini"
+  },
+  {
+    "gameid": "GDRP69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDRP69.ini"
+  },
+  {
+    "gameid": "GDSE78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDSE78.ini"
+  },
+  {
+    "gameid": "GDSP78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDSP78.ini"
+  },
+  {
+    "gameid": "GDTE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDTE69.ini"
+  },
+  {
+    "gameid": "GDVE6L",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GDVE6L.ini"
+  },
+  {
+    "gameid": "GE4",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GE4.ini"
+  },
+  {
+    "gameid": "GE5EA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GE5EA4.ini"
+  },
+  {
+    "gameid": "GE9E5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GE9E5D.ini"
+  },
+  {
+    "gameid": "GEAE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEAE8P.ini"
+  },
+  {
+    "gameid": "GEDE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEDE01.ini"
+  },
+  {
+    "gameid": "GEDJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEDJ01.ini"
+  },
+  {
+    "gameid": "GEDP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEDP01.ini"
+  },
+  {
+    "gameid": "GEDW01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEDW01.ini"
+  },
+  {
+    "gameid": "GEME7F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEME7F.ini"
+  },
+  {
+    "gameid": "GEMJ28",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEMJ28.ini"
+  },
+  {
+    "gameid": "GENE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GENE69.ini"
+  },
+  {
+    "gameid": "GEOE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEOE08.ini"
+  },
+  {
+    "gameid": "GEWE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEWE41.ini"
+  },
+  {
+    "gameid": "GEYE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEYE69.ini"
+  },
+  {
+    "gameid": "GEZE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEZE8P.ini"
+  },
+  {
+    "gameid": "GEZP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GEZP8P.ini"
+  },
+  {
+    "gameid": "GF2E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GF2E69.ini"
+  },
+  {
+    "gameid": "GF4E52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GF4E52.ini"
+  },
+  {
+    "gameid": "GF7E01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GF7E01.ini"
+  },
+  {
+    "gameid": "GF7P01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GF7P01.ini"
+  },
+  {
+    "gameid": "GF8E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GF8E69.ini"
+  },
+  {
+    "gameid": "GFBE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFBE5D.ini"
+  },
+  {
+    "gameid": "GFDE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFDE69.ini"
+  },
+  {
+    "gameid": "GFEE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFEE01.ini"
+  },
+  {
+    "gameid": "GFEJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFEJ01.ini"
+  },
+  {
+    "gameid": "GFFE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFFE5D.ini"
+  },
+  {
+    "gameid": "GFGEA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFGEA4.ini"
+  },
+  {
+    "gameid": "GFOE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFOE78.ini"
+  },
+  {
+    "gameid": "GFQEA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFQEA4.ini"
+  },
+  {
+    "gameid": "GFSE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFSE69.ini"
+  },
+  {
+    "gameid": "GFTE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFTE01.ini"
+  },
+  {
+    "gameid": "GFWE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFWE78.ini"
+  },
+  {
+    "gameid": "GFYE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFYE69.ini"
+  },
+  {
+    "gameid": "GFZA01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFZA01.ini"
+  },
+  {
+    "gameid": "GFZE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFZE01.ini"
+  },
+  {
+    "gameid": "GFZJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFZJ01.ini"
+  },
+  {
+    "gameid": "GFZJ8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFZJ8P.ini"
+  },
+  {
+    "gameid": "GFZP01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GFZP01.ini"
+  },
+  {
+    "gameid": "GG2E4Z",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GG2E4Z.ini"
+  },
+  {
+    "gameid": "GG4E08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GG4E08.ini"
+  },
+  {
+    "gameid": "GGEE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGEE41.ini"
+  },
+  {
+    "gameid": "GGRE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGRE41.ini"
+  },
+  {
+    "gameid": "GGSEA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGSEA4.ini"
+  },
+  {
+    "gameid": "GGSPA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGSPA4.ini"
+  },
+  {
+    "gameid": "GGTE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGTE01.ini"
+  },
+  {
+    "gameid": "GGTJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGTJ01.ini"
+  },
+  {
+    "gameid": "GGTP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGTP01.ini"
+  },
+  {
+    "gameid": "GGVD78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGVD78.ini"
+  },
+  {
+    "gameid": "GGVE78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGVE78.ini"
+  },
+  {
+    "gameid": "GGVP78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGVP78.ini"
+  },
+  {
+    "gameid": "GGVX78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGVX78.ini"
+  },
+  {
+    "gameid": "GGZE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GGZE52.ini"
+  },
+  {
+    "gameid": "GH2E69",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GH2E69.ini"
+  },
+  {
+    "gameid": "GH2P69",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GH2P69.ini"
+  },
+  {
+    "gameid": "GH3E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GH3E69.ini"
+  },
+  {
+    "gameid": "GH4E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GH4E69.ini"
+  },
+  {
+    "gameid": "GHAE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHAE08.ini"
+  },
+  {
+    "gameid": "GHAP08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHAP08.ini"
+  },
+  {
+    "gameid": "GHBE7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHBE7D.ini"
+  },
+  {
+    "gameid": "GHCE4Q",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHCE4Q.ini"
+  },
+  {
+    "gameid": "GHEC4Q",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHEC4Q.ini"
+  },
+  {
+    "gameid": "GHKD7D",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHKD7D.ini"
+  },
+  {
+    "gameid": "GHKE7D",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHKE7D.ini"
+  },
+  {
+    "gameid": "GHKF7D",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHKF7D.ini"
+  },
+  {
+    "gameid": "GHKP7D",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHKP7D.ini"
+  },
+  {
+    "gameid": "GHKS7D",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHKS7D.ini"
+  },
+  {
+    "gameid": "GHLE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHLE69.ini"
+  },
+  {
+    "gameid": "GHME4F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHME4F.ini"
+  },
+  {
+    "gameid": "GHNE71",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHNE71.ini"
+  },
+  {
+    "gameid": "GHQE7D",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHQE7D.ini"
+  },
+  {
+    "gameid": "GHQP7D",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHQP7D.ini"
+  },
+  {
+    "gameid": "GHRE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHRE78.ini"
+  },
+  {
+    "gameid": "GHSE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHSE69.ini"
+  },
+  {
+    "gameid": "GHSP69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHSP69.ini"
+  },
+  {
+    "gameid": "GHUE7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHUE7D.ini"
+  },
+  {
+    "gameid": "GHWE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GHWE78.ini"
+  },
+  {
+    "gameid": "GIAE7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIAE7D.ini"
+  },
+  {
+    "gameid": "GICD78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GICD78.ini"
+  },
+  {
+    "gameid": "GICE78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GICE78.ini"
+  },
+  {
+    "gameid": "GICF78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GICF78.ini"
+  },
+  {
+    "gameid": "GICH78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GICH78.ini"
+  },
+  {
+    "gameid": "GICJG9",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GICJG9.ini"
+  },
+  {
+    "gameid": "GICP78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GICP78.ini"
+  },
+  {
+    "gameid": "GIGJ8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIGJ8P.ini"
+  },
+  {
+    "gameid": "GIHE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIHE78.ini"
+  },
+  {
+    "gameid": "GIKE70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIKE70.ini"
+  },
+  {
+    "gameid": "GIKP70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIKP70.ini"
+  },
+  {
+    "gameid": "GILE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GILE51.ini"
+  },
+  {
+    "gameid": "GINE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GINE69.ini"
+  },
+  {
+    "gameid": "GIQE78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIQE78.ini"
+  },
+  {
+    "gameid": "GIQJ8P",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIQJ8P.ini"
+  },
+  {
+    "gameid": "GIQX78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIQX78.ini"
+  },
+  {
+    "gameid": "GIQY78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIQY78.ini"
+  },
+  {
+    "gameid": "GISE36",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GISE36.ini"
+  },
+  {
+    "gameid": "GITE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GITE01.ini"
+  },
+  {
+    "gameid": "GIZE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GIZE52.ini"
+  },
+  {
+    "gameid": "GJBE5G",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GJBE5G.ini"
+  },
+  {
+    "gameid": "GJCE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GJCE8P.ini"
+  },
+  {
+    "gameid": "GJDE5S",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GJDE5S.ini"
+  },
+  {
+    "gameid": "GJFE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GJFE78.ini"
+  },
+  {
+    "gameid": "GJKE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GJKE52.ini"
+  },
+  {
+    "gameid": "GJUE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GJUE78.ini"
+  },
+  {
+    "gameid": "GJWE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GJWE78.ini"
+  },
+  {
+    "gameid": "GJXE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GJXE51.ini"
+  },
+  {
+    "gameid": "GK2",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GK2.ini"
+  },
+  {
+    "gameid": "GK2E52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GK2E52.ini"
+  },
+  {
+    "gameid": "GK4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GK4.ini"
+  },
+  {
+    "gameid": "GK4E01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GK4E01.ini"
+  },
+  {
+    "gameid": "GK7E08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GK7E08.ini"
+  },
+  {
+    "gameid": "GKAE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKAE8P.ini"
+  },
+  {
+    "gameid": "GKB",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKB.ini"
+  },
+  {
+    "gameid": "GKBEAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKBEAF.ini"
+  },
+  {
+    "gameid": "GKBPAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKBPAF.ini"
+  },
+  {
+    "gameid": "GKDP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKDP01.ini"
+  },
+  {
+    "gameid": "GKFEGG",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKFEGG.ini"
+  },
+  {
+    "gameid": "GKGE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKGE01.ini"
+  },
+  {
+    "gameid": "GKHEA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKHEA4.ini"
+  },
+  {
+    "gameid": "GKKE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKKE69.ini"
+  },
+  {
+    "gameid": "GKLE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKLE69.ini"
+  },
+  {
+    "gameid": "GKME41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKME41.ini"
+  },
+  {
+    "gameid": "GKNEB2",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKNEB2.ini"
+  },
+  {
+    "gameid": "GKRPB2",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKRPB2.ini"
+  },
+  {
+    "gameid": "GKTJA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKTJA4.ini"
+  },
+  {
+    "gameid": "GKWJ18",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKWJ18.ini"
+  },
+  {
+    "gameid": "GKYE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKYE01.ini"
+  },
+  {
+    "gameid": "GKYJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKYJ01.ini"
+  },
+  {
+    "gameid": "GKYP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GKYP01.ini"
+  },
+  {
+    "gameid": "GL2E51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GL2E51.ini"
+  },
+  {
+    "gameid": "GL5E4F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GL5E4F.ini"
+  },
+  {
+    "gameid": "GL7E64",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GL7E64.ini"
+  },
+  {
+    "gameid": "GL8",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GL8.ini"
+  },
+  {
+    "gameid": "GL8E4F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GL8E4F.ini"
+  },
+  {
+    "gameid": "GL8P4F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GL8P4F.ini"
+  },
+  {
+    "gameid": "GLBE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLBE8P.ini"
+  },
+  {
+    "gameid": "GLCE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLCE52.ini"
+  },
+  {
+    "gameid": "GLEE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLEE08.ini"
+  },
+  {
+    "gameid": "GLEJ08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLEJ08.ini"
+  },
+  {
+    "gameid": "GLEP08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLEP08.ini"
+  },
+  {
+    "gameid": "GLMA01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLMA01.ini"
+  },
+  {
+    "gameid": "GLME01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLME01.ini"
+  },
+  {
+    "gameid": "GLMP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLMP01.ini"
+  },
+  {
+    "gameid": "GLNE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLNE69.ini"
+  },
+  {
+    "gameid": "GLOE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLOE69.ini"
+  },
+  {
+    "gameid": "GLRE64",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLRE64.ini"
+  },
+  {
+    "gameid": "GLSD64",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLSD64.ini"
+  },
+  {
+    "gameid": "GLSE64",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLSE64.ini"
+  },
+  {
+    "gameid": "GLSF64",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLSF64.ini"
+  },
+  {
+    "gameid": "GLSP64",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLSP64.ini"
+  },
+  {
+    "gameid": "GLVE4Q",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLVE4Q.ini"
+  },
+  {
+    "gameid": "GLWE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLWE51.ini"
+  },
+  {
+    "gameid": "GLZE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GLZE69.ini"
+  },
+  {
+    "gameid": "GM2E8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GM2E8P.ini"
+  },
+  {
+    "gameid": "GM2P8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GM2P8P.ini"
+  },
+  {
+    "gameid": "GM3E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GM3E69.ini"
+  },
+  {
+    "gameid": "GM4E01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GM4E01.ini"
+  },
+  {
+    "gameid": "GM4P01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GM4P01.ini"
+  },
+  {
+    "gameid": "GM5E7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GM5E7D.ini"
+  },
+  {
+    "gameid": "GM6EE9",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GM6EE9.ini"
+  },
+  {
+    "gameid": "GM8E01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GM8E01.ini"
+  },
+  {
+    "gameid": "GMBE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMBE8P.ini"
+  },
+  {
+    "gameid": "GMBP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMBP8P.ini"
+  },
+  {
+    "gameid": "GMFE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMFE69.ini"
+  },
+  {
+    "gameid": "GMHE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMHE52.ini"
+  },
+  {
+    "gameid": "GMKE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMKE5D.ini"
+  },
+  {
+    "gameid": "GMNE78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMNE78.ini"
+  },
+  {
+    "gameid": "GMNP78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMNP78.ini"
+  },
+  {
+    "gameid": "GMOP70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMOP70.ini"
+  },
+  {
+    "gameid": "GMPE01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMPE01.ini"
+  },
+  {
+    "gameid": "GMPJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMPJ01.ini"
+  },
+  {
+    "gameid": "GMPP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMPP01.ini"
+  },
+  {
+    "gameid": "GMSE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMSE01.ini"
+  },
+  {
+    "gameid": "GMSJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMSJ01.ini"
+  },
+  {
+    "gameid": "GMSP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMSP01.ini"
+  },
+  {
+    "gameid": "GMWE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMWE52.ini"
+  },
+  {
+    "gameid": "GMXE70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMXE70.ini"
+  },
+  {
+    "gameid": "GMZE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GMZE41.ini"
+  },
+  {
+    "gameid": "GN7E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GN7E69.ini"
+  },
+  {
+    "gameid": "GN8E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GN8E69.ini"
+  },
+  {
+    "gameid": "GNBE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNBE01.ini"
+  },
+  {
+    "gameid": "GNDE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNDE69.ini"
+  },
+  {
+    "gameid": "GNEE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNEE78.ini"
+  },
+  {
+    "gameid": "GNIEA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNIEA4.ini"
+  },
+  {
+    "gameid": "GNJEAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNJEAF.ini"
+  },
+  {
+    "gameid": "GNLE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNLE69.ini"
+  },
+  {
+    "gameid": "GNLE82",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNLE82.ini"
+  },
+  {
+    "gameid": "GNLJ82",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNLJ82.ini"
+  },
+  {
+    "gameid": "GNMEAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNMEAF.ini"
+  },
+  {
+    "gameid": "GNNE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNNE69.ini"
+  },
+  {
+    "gameid": "GNOE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNOE78.ini"
+  },
+  {
+    "gameid": "GNQE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNQE69.ini"
+  },
+  {
+    "gameid": "GNREDA",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNREDA.ini"
+  },
+  {
+    "gameid": "GNSE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNSE69.ini"
+  },
+  {
+    "gameid": "GNUEDA",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNUEDA.ini"
+  },
+  {
+    "gameid": "GNVE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNVE69.ini"
+  },
+  {
+    "gameid": "GNWE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNWE69.ini"
+  },
+  {
+    "gameid": "GNXE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNXE69.ini"
+  },
+  {
+    "gameid": "GNZE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GNZE69.ini"
+  },
+  {
+    "gameid": "GO2E4F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GO2E4F.ini"
+  },
+  {
+    "gameid": "GO7E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GO7E69.ini"
+  },
+  {
+    "gameid": "GO7F69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GO7F69.ini"
+  },
+  {
+    "gameid": "GO7P69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GO7P69.ini"
+  },
+  {
+    "gameid": "GOCE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GOCE5D.ini"
+  },
+  {
+    "gameid": "GOFE7L",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GOFE7L.ini"
+  },
+  {
+    "gameid": "GOME01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GOME01.ini"
+  },
+  {
+    "gameid": "GOMP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GOMP01.ini"
+  },
+  {
+    "gameid": "GONE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GONE69.ini"
+  },
+  {
+    "gameid": "GOOE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GOOE01.ini"
+  },
+  {
+    "gameid": "GOPEB2",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GOPEB2.ini"
+  },
+  {
+    "gameid": "GOWE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GOWE69.ini"
+  },
+  {
+    "gameid": "GOYE69",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GOYE69.ini"
+  },
+  {
+    "gameid": "GP2EAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP2EAF.ini"
+  },
+  {
+    "gameid": "GP3E78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP3E78.ini"
+  },
+  {
+    "gameid": "GP4J18",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP4J18.ini"
+  },
+  {
+    "gameid": "GP5E01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP5E01.ini"
+  },
+  {
+    "gameid": "GP5J01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP5J01.ini"
+  },
+  {
+    "gameid": "GP5P01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP5P01.ini"
+  },
+  {
+    "gameid": "GP6E01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP6E01.ini"
+  },
+  {
+    "gameid": "GP6J01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP6J01.ini"
+  },
+  {
+    "gameid": "GP6P01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP6P01.ini"
+  },
+  {
+    "gameid": "GP7E01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP7E01.ini"
+  },
+  {
+    "gameid": "GP7J01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP7J01.ini"
+  },
+  {
+    "gameid": "GP7P01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP7P01.ini"
+  },
+  {
+    "gameid": "GP8EAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP8EAF.ini"
+  },
+  {
+    "gameid": "GP9E7F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GP9E7F.ini"
+  },
+  {
+    "gameid": "GPAE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPAE01.ini"
+  },
+  {
+    "gameid": "GPDE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPDE51.ini"
+  },
+  {
+    "gameid": "GPHE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPHE52.ini"
+  },
+  {
+    "gameid": "GPIE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPIE01.ini"
+  },
+  {
+    "gameid": "GPIP01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPIP01.ini"
+  },
+  {
+    "gameid": "GPNE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPNE08.ini"
+  },
+  {
+    "gameid": "GPNP08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPNP08.ini"
+  },
+  {
+    "gameid": "GPOE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPOE8P.ini"
+  },
+  {
+    "gameid": "GPOP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPOP8P.ini"
+  },
+  {
+    "gameid": "GPRE7U",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPRE7U.ini"
+  },
+  {
+    "gameid": "GPSP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPSP8P.ini"
+  },
+  {
+    "gameid": "GPVE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPVE01.ini"
+  },
+  {
+    "gameid": "GPVP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPVP01.ini"
+  },
+  {
+    "gameid": "GPXE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GPXE01.ini"
+  },
+  {
+    "gameid": "GQBE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GQBE51.ini"
+  },
+  {
+    "gameid": "GQNE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GQNE5D.ini"
+  },
+  {
+    "gameid": "GQPE78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GQPE78.ini"
+  },
+  {
+    "gameid": "GQPP78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GQPP78.ini"
+  },
+  {
+    "gameid": "GQSDAF",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GQSDAF.ini"
+  },
+  {
+    "gameid": "GQSEAF",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GQSEAF.ini"
+  },
+  {
+    "gameid": "GQSFAF",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GQSFAF.ini"
+  },
+  {
+    "gameid": "GQXE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GQXE69.ini"
+  },
+  {
+    "gameid": "GR2E52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GR2E52.ini"
+  },
+  {
+    "gameid": "GR2J52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GR2J52.ini"
+  },
+  {
+    "gameid": "GR2P52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GR2P52.ini"
+  },
+  {
+    "gameid": "GR3E5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GR3E5D.ini"
+  },
+  {
+    "gameid": "GR4EMZ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GR4EMZ.ini"
+  },
+  {
+    "gameid": "GR8E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GR8E69.ini"
+  },
+  {
+    "gameid": "GR9E6L",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GR9E6L.ini"
+  },
+  {
+    "gameid": "GRAE5Z",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRAE5Z.ini"
+  },
+  {
+    "gameid": "GRBE6S",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRBE6S.ini"
+  },
+  {
+    "gameid": "GREE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GREE08.ini"
+  },
+  {
+    "gameid": "GRJEAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRJEAF.ini"
+  },
+  {
+    "gameid": "GRKE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRKE41.ini"
+  },
+  {
+    "gameid": "GRNE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRNE52.ini"
+  },
+  {
+    "gameid": "GRNJ52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRNJ52.ini"
+  },
+  {
+    "gameid": "GRNP52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRNP52.ini"
+  },
+  {
+    "gameid": "GROE5Z",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GROE5Z.ini"
+  },
+  {
+    "gameid": "GRSEAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRSEAF.ini"
+  },
+  {
+    "gameid": "GRSPAF",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRSPAF.ini"
+  },
+  {
+    "gameid": "GRUE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRUE78.ini"
+  },
+  {
+    "gameid": "GRWJD9",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRWJD9.ini"
+  },
+  {
+    "gameid": "GRYE41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GRYE41.ini"
+  },
+  {
+    "gameid": "GS2E78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GS2E78.ini"
+  },
+  {
+    "gameid": "GS7E5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GS7E5D.ini"
+  },
+  {
+    "gameid": "GS8E7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GS8E7D.ini"
+  },
+  {
+    "gameid": "GS9E6S",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GS9E6S.ini"
+  },
+  {
+    "gameid": "GSAE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSAE01.ini"
+  },
+  {
+    "gameid": "GSAP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSAP01.ini"
+  },
+  {
+    "gameid": "GSCE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSCE51.ini"
+  },
+  {
+    "gameid": "GSHE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSHE5D.ini"
+  },
+  {
+    "gameid": "GSME52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSME52.ini"
+  },
+  {
+    "gameid": "GSNE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSNE8P.ini"
+  },
+  {
+    "gameid": "GSNJ8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSNJ8P.ini"
+  },
+  {
+    "gameid": "GSNP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSNP8P.ini"
+  },
+  {
+    "gameid": "GSO",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSO.ini"
+  },
+  {
+    "gameid": "GSPE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSPE69.ini"
+  },
+  {
+    "gameid": "GSPP69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSPP69.ini"
+  },
+  {
+    "gameid": "GSRE7S",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSRE7S.ini"
+  },
+  {
+    "gameid": "GSSE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSSE8P.ini"
+  },
+  {
+    "gameid": "GSTE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSTE69.ini"
+  },
+  {
+    "gameid": "GSVE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSVE78.ini"
+  },
+  {
+    "gameid": "GSWE64",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSWE64.ini"
+  },
+  {
+    "gameid": "GSXE64",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSXE64.ini"
+  },
+  {
+    "gameid": "GSYE6S",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GSYE6S.ini"
+  },
+  {
+    "gameid": "GT3E52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GT3E52.ini"
+  },
+  {
+    "gameid": "GT4P52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GT4P52.ini"
+  },
+  {
+    "gameid": "GT6E70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GT6E70.ini"
+  },
+  {
+    "gameid": "GT7E41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GT7E41.ini"
+  },
+  {
+    "gameid": "GT8E78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GT8E78.ini"
+  },
+  {
+    "gameid": "GTDE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTDE52.ini"
+  },
+  {
+    "gameid": "GTEE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTEE01.ini"
+  },
+  {
+    "gameid": "GTEP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTEP01.ini"
+  },
+  {
+    "gameid": "GTFEA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTFEA4.ini"
+  },
+  {
+    "gameid": "GTGE60",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTGE60.ini"
+  },
+  {
+    "gameid": "GTIE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTIE69.ini"
+  },
+  {
+    "gameid": "GTKE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTKE51.ini"
+  },
+  {
+    "gameid": "GTKP51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTKP51.ini"
+  },
+  {
+    "gameid": "GTLE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTLE52.ini"
+  },
+  {
+    "gameid": "GTOJAF",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTOJAF.ini"
+  },
+  {
+    "gameid": "GTRJ8N",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTRJ8N.ini"
+  },
+  {
+    "gameid": "GTRP78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTRP78.ini"
+  },
+  {
+    "gameid": "GTSE4F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTSE4F.ini"
+  },
+  {
+    "gameid": "GTUE8G",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTUE8G.ini"
+  },
+  {
+    "gameid": "GTYE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTYE69.ini"
+  },
+  {
+    "gameid": "GTZE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTZE41.ini"
+  },
+  {
+    "gameid": "GTZP41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GTZP41.ini"
+  },
+  {
+    "gameid": "GUBE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUBE69.ini"
+  },
+  {
+    "gameid": "GUGE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUGE69.ini"
+  },
+  {
+    "gameid": "GUME52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUME52.ini"
+  },
+  {
+    "gameid": "GUNE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUNE5D.ini"
+  },
+  {
+    "gameid": "GUNP5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUNP5D.ini"
+  },
+  {
+    "gameid": "GUPE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUPE8P.ini"
+  },
+  {
+    "gameid": "GUPP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUPP8P.ini"
+  },
+  {
+    "gameid": "GUTE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUTE52.ini"
+  },
+  {
+    "gameid": "GUZE41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GUZE41.ini"
+  },
+  {
+    "gameid": "GV4E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GV4E69.ini"
+  },
+  {
+    "gameid": "GVCE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVCE08.ini"
+  },
+  {
+    "gameid": "GVJE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVJE08.ini"
+  },
+  {
+    "gameid": "GVJP08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVJP08.ini"
+  },
+  {
+    "gameid": "GVKE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVKE52.ini"
+  },
+  {
+    "gameid": "GVLE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVLE69.ini"
+  },
+  {
+    "gameid": "GVOE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVOE69.ini"
+  },
+  {
+    "gameid": "GVPE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVPE69.ini"
+  },
+  {
+    "gameid": "GVSE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVSE8P.ini"
+  },
+  {
+    "gameid": "GVSP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GVSP8P.ini"
+  },
+  {
+    "gameid": "GW2E78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW2E78.ini"
+  },
+  {
+    "gameid": "GW2P78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW2P78.ini"
+  },
+  {
+    "gameid": "GW4E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW4E69.ini"
+  },
+  {
+    "gameid": "GW5D69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW5D69.ini"
+  },
+  {
+    "gameid": "GW5E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW5E69.ini"
+  },
+  {
+    "gameid": "GW6JEM",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW6JEM.ini"
+  },
+  {
+    "gameid": "GW7E69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW7E69.ini"
+  },
+  {
+    "gameid": "GW8E52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW8E52.ini"
+  },
+  {
+    "gameid": "GW9E78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GW9E78.ini"
+  },
+  {
+    "gameid": "GWAE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWAE8P.ini"
+  },
+  {
+    "gameid": "GWBP41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWBP41.ini"
+  },
+  {
+    "gameid": "GWEE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWEE51.ini"
+  },
+  {
+    "gameid": "GWGE4F",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWGE4F.ini"
+  },
+  {
+    "gameid": "GWJE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWJE52.ini"
+  },
+  {
+    "gameid": "GWLE6L",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWLE6L.ini"
+  },
+  {
+    "gameid": "GWME51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWME51.ini"
+  },
+  {
+    "gameid": "GWPE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWPE78.ini"
+  },
+  {
+    "gameid": "GWQE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWQE52.ini"
+  },
+  {
+    "gameid": "GWRE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWRE01.ini"
+  },
+  {
+    "gameid": "GWRP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWRP01.ini"
+  },
+  {
+    "gameid": "GWUE7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWUE7D.ini"
+  },
+  {
+    "gameid": "GWVE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWVE52.ini"
+  },
+  {
+    "gameid": "GWWE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWWE01.ini"
+  },
+  {
+    "gameid": "GWWJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWWJ01.ini"
+  },
+  {
+    "gameid": "GWWP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWWP01.ini"
+  },
+  {
+    "gameid": "GWZE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GWZE01.ini"
+  },
+  {
+    "gameid": "GX2E52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GX2E52.ini"
+  },
+  {
+    "gameid": "GX3E41",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GX3E41.ini"
+  },
+  {
+    "gameid": "GXAE51",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXAE51.ini"
+  },
+  {
+    "gameid": "GXBE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXBE69.ini"
+  },
+  {
+    "gameid": "GXCE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXCE01.ini"
+  },
+  {
+    "gameid": "GXEE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXEE8P.ini"
+  },
+  {
+    "gameid": "GXEP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXEP8P.ini"
+  },
+  {
+    "gameid": "GXGE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXGE08.ini"
+  },
+  {
+    "gameid": "GXLE52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXLE52.ini"
+  },
+  {
+    "gameid": "GXME52",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXME52.ini"
+  },
+  {
+    "gameid": "GXNE5D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXNE5D.ini"
+  },
+  {
+    "gameid": "GXOE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXOE69.ini"
+  },
+  {
+    "gameid": "GXPE78",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXPE78.ini"
+  },
+  {
+    "gameid": "GXRE08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXRE08.ini"
+  },
+  {
+    "gameid": "GXRP08",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXRP08.ini"
+  },
+  {
+    "gameid": "GXSE8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXSE8P.ini"
+  },
+  {
+    "gameid": "GXSJ8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXSJ8P.ini"
+  },
+  {
+    "gameid": "GXSP8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXSP8P.ini"
+  },
+  {
+    "gameid": "GXXE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXXE01.ini"
+  },
+  {
+    "gameid": "GXXJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXXJ01.ini"
+  },
+  {
+    "gameid": "GXXP01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GXXP01.ini"
+  },
+  {
+    "gameid": "GY2E01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GY2E01.ini"
+  },
+  {
+    "gameid": "GYAE78",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GYAE78.ini"
+  },
+  {
+    "gameid": "GYBE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GYBE01.ini"
+  },
+  {
+    "gameid": "GYFEA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GYFEA4.ini"
+  },
+  {
+    "gameid": "GYFPA4",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GYFPA4.ini"
+  },
+  {
+    "gameid": "GYQE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GYQE01.ini"
+  },
+  {
+    "gameid": "GYTE69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GYTE69.ini"
+  },
+  {
+    "gameid": "GYTP69",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GYTP69.ini"
+  },
+  {
+    "gameid": "GYWEE9",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GYWEE9.ini"
+  },
+  {
+    "gameid": "GZ2E01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZ2E01.ini"
+  },
+  {
+    "gameid": "GZ2J01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZ2J01.ini"
+  },
+  {
+    "gameid": "GZ2P01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZ2P01.ini"
+  },
+  {
+    "gameid": "GZ3E70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZ3E70.ini"
+  },
+  {
+    "gameid": "GZBJB2",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZBJB2.ini"
+  },
+  {
+    "gameid": "GZDE70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZDE70.ini"
+  },
+  {
+    "gameid": "GZDP70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZDP70.ini"
+  },
+  {
+    "gameid": "GZEE70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZEE70.ini"
+  },
+  {
+    "gameid": "GZLE01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZLE01.ini"
+  },
+  {
+    "gameid": "GZLJ01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZLJ01.ini"
+  },
+  {
+    "gameid": "GZLP01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZLP01.ini"
+  },
+  {
+    "gameid": "GZPE70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZPE70.ini"
+  },
+  {
+    "gameid": "GZPP70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZPP70.ini"
+  },
+  {
+    "gameid": "GZQE7D",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZQE7D.ini"
+  },
+  {
+    "gameid": "GZSE70",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZSE70.ini"
+  },
+  {
+    "gameid": "GZWE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/GZWE01.ini"
+  },
+  {
+    "gameid": "NARE",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/NARE.ini"
+  },
+  {
+    "gameid": "PA3J",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PA3J.ini"
+  },
+  {
+    "gameid": "PA4J",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PA4J.ini"
+  },
+  {
+    "gameid": "PA6P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PA6P.ini"
+  },
+  {
+    "gameid": "PA7E",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PA7E.ini"
+  },
+  {
+    "gameid": "PA7P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PA7P.ini"
+  },
+  {
+    "gameid": "PA8E",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PA8E.ini"
+  },
+  {
+    "gameid": "PA9E",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PA9E.ini"
+  },
+  {
+    "gameid": "PA9P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PA9P.ini"
+  },
+  {
+    "gameid": "PAAP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAAP.ini"
+  },
+  {
+    "gameid": "PABE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PABE.ini"
+  },
+  {
+    "gameid": "PABP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PABP.ini"
+  },
+  {
+    "gameid": "PACE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PACE.ini"
+  },
+  {
+    "gameid": "PACP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PACP.ini"
+  },
+  {
+    "gameid": "PADE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PADE.ini"
+  },
+  {
+    "gameid": "PADP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PADP.ini"
+  },
+  {
+    "gameid": "PAEE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAEE.ini"
+  },
+  {
+    "gameid": "PAEP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAEP.ini"
+  },
+  {
+    "gameid": "PAGJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAGJ.ini"
+  },
+  {
+    "gameid": "PAGL",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAGL.ini"
+  },
+  {
+    "gameid": "PAGN",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAGN.ini"
+  },
+  {
+    "gameid": "PAHE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAHE.ini"
+  },
+  {
+    "gameid": "PAHJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAHJ.ini"
+  },
+  {
+    "gameid": "PAHP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAHP.ini"
+  },
+  {
+    "gameid": "PAIE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAIE.ini"
+  },
+  {
+    "gameid": "PAIP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAIP.ini"
+  },
+  {
+    "gameid": "PAKE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAKE.ini"
+  },
+  {
+    "gameid": "PAKP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAKP.ini"
+  },
+  {
+    "gameid": "PALE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PALE.ini"
+  },
+  {
+    "gameid": "PALP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PALP.ini"
+  },
+  {
+    "gameid": "PAMP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAMP.ini"
+  },
+  {
+    "gameid": "PAOL",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAOL.ini"
+  },
+  {
+    "gameid": "PAON",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAON.ini"
+  },
+  {
+    "gameid": "PAPJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAPJ.ini"
+  },
+  {
+    "gameid": "PAQJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAQJ.ini"
+  },
+  {
+    "gameid": "PARJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PARJ.ini"
+  },
+  {
+    "gameid": "PARL",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PARL.ini"
+  },
+  {
+    "gameid": "PARN",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PARN.ini"
+  },
+  {
+    "gameid": "PASJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PASJ.ini"
+  },
+  {
+    "gameid": "PATJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PATJ.ini"
+  },
+  {
+    "gameid": "PAVE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAVE.ini"
+  },
+  {
+    "gameid": "PAVP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAVP.ini"
+  },
+  {
+    "gameid": "PAWE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAWE.ini"
+  },
+  {
+    "gameid": "PAWP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAWP.ini"
+  },
+  {
+    "gameid": "PAYJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PAYJ.ini"
+  },
+  {
+    "gameid": "PB2P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PB2P.ini"
+  },
+  {
+    "gameid": "PB3E",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PB3E.ini"
+  },
+  {
+    "gameid": "PB3P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PB3P.ini"
+  },
+  {
+    "gameid": "PB5J",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PB5J.ini"
+  },
+  {
+    "gameid": "PB6E",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PB6E.ini"
+  },
+  {
+    "gameid": "PB6P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PB6P.ini"
+  },
+  {
+    "gameid": "PB8E",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PB8E.ini"
+  },
+  {
+    "gameid": "PB8P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PB8P.ini"
+  },
+  {
+    "gameid": "PBAE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBAE.ini"
+  },
+  {
+    "gameid": "PBAP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBAP.ini"
+  },
+  {
+    "gameid": "PBDE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBDE.ini"
+  },
+  {
+    "gameid": "PBDP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBDP.ini"
+  },
+  {
+    "gameid": "PBHE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBHE.ini"
+  },
+  {
+    "gameid": "PBHP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBHP.ini"
+  },
+  {
+    "gameid": "PBIE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBIE.ini"
+  },
+  {
+    "gameid": "PBIP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBIP.ini"
+  },
+  {
+    "gameid": "PBJE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBJE.ini"
+  },
+  {
+    "gameid": "PBLP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBLP.ini"
+  },
+  {
+    "gameid": "PBME",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBME.ini"
+  },
+  {
+    "gameid": "PBMP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBMP.ini"
+  },
+  {
+    "gameid": "PBNE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBNE.ini"
+  },
+  {
+    "gameid": "PBNP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBNP.ini"
+  },
+  {
+    "gameid": "PBSP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBSP.ini"
+  },
+  {
+    "gameid": "PBTE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBTE.ini"
+  },
+  {
+    "gameid": "PBTP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBTP.ini"
+  },
+  {
+    "gameid": "PBUE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBUE.ini"
+  },
+  {
+    "gameid": "PBWE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBWE.ini"
+  },
+  {
+    "gameid": "PBWP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBWP.ini"
+  },
+  {
+    "gameid": "PBXE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBXE.ini"
+  },
+  {
+    "gameid": "PBXP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBXP.ini"
+  },
+  {
+    "gameid": "PBZE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBZE.ini"
+  },
+  {
+    "gameid": "PBZP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PBZP.ini"
+  },
+  {
+    "gameid": "PC2E",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PC2E.ini"
+  },
+  {
+    "gameid": "PC2P",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PC2P.ini"
+  },
+  {
+    "gameid": "PCAE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCAE.ini"
+  },
+  {
+    "gameid": "PCAP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCAP.ini"
+  },
+  {
+    "gameid": "PCBE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCBE.ini"
+  },
+  {
+    "gameid": "PCBP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCBP.ini"
+  },
+  {
+    "gameid": "PCHE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCHE.ini"
+  },
+  {
+    "gameid": "PCHP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCHP.ini"
+  },
+  {
+    "gameid": "PCMC",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCMC.ini"
+  },
+  {
+    "gameid": "PCOE",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCOE.ini"
+  },
+  {
+    "gameid": "PCOP",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCOP.ini"
+  },
+  {
+    "gameid": "PCRL",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCRL.ini"
+  },
+  {
+    "gameid": "PCSL",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCSL.ini"
+  },
+  {
+    "gameid": "PCSN",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCSN.ini"
+  },
+  {
+    "gameid": "PCWJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PCWJ.ini"
+  },
+  {
+    "gameid": "PDAJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PDAJ.ini"
+  },
+  {
+    "gameid": "PDCJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PDCJ.ini"
+  },
+  {
+    "gameid": "PDDJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PDDJ.ini"
+  },
+  {
+    "gameid": "PDFJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PDFJ.ini"
+  },
+  {
+    "gameid": "PDJJ",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PDJJ.ini"
+  },
+  {
+    "gameid": "PDJL",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PDJL.ini"
+  },
+  {
+    "gameid": "PDJN",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PDJN.ini"
+  },
+  {
+    "gameid": "PRJE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PRJE01.ini"
+  },
+  {
+    "gameid": "PZLE01",
+    "performance_boost": false,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/PZLE01.ini"
+  },
+  {
+    "gameid": "R6APPU",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/R6APPU.ini"
+  },
+  {
+    "gameid": "R7XE69",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/R7XE69.ini"
+  },
+  {
+    "gameid": "R7XJ13",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/R7XJ13.ini"
+  },
+  {
+    "gameid": "R7XP69",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/R7XP69.ini"
+  },
+  {
+    "gameid": "R9IE01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/R9IE01.ini"
+  },
+  {
+    "gameid": "R9IJ01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/R9IJ01.ini"
+  },
+  {
+    "gameid": "R9IK01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/R9IK01.ini"
+  },
+  {
+    "gameid": "R9IP01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/R9IP01.ini"
+  },
+  {
+    "gameid": "RB7E54",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RB7E54.ini"
+  },
+  {
+    "gameid": "RB7P54",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RB7P54.ini"
+  },
+  {
+    "gameid": "RGWE41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RGWE41.ini"
+  },
+  {
+    "gameid": "RGWP41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RGWP41.ini"
+  },
+  {
+    "gameid": "RJ2E52",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RJ2E52.ini"
+  },
+  {
+    "gameid": "RJ2JGD",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RJ2JGD.ini"
+  },
+  {
+    "gameid": "RJ2P52",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RJ2P52.ini"
+  },
+  {
+    "gameid": "RJAE52",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RJAE52.ini"
+  },
+  {
+    "gameid": "RJAP52",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RJAP52.ini"
+  },
+  {
+    "gameid": "RMCE01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RMCE01.ini"
+  },
+  {
+    "gameid": "RMCJ01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RMCJ01.ini"
+  },
+  {
+    "gameid": "RMCK01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RMCK01.ini"
+  },
+  {
+    "gameid": "RMCP01",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RMCP01.ini"
+  },
+  {
+    "gameid": "RMHE08",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RMHE08.ini"
+  },
+  {
+    "gameid": "RMHJ08",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RMHJ08.ini"
+  },
+  {
+    "gameid": "RMHP08",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RMHP08.ini"
+  },
+  {
+    "gameid": "RQZ",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RQZ.ini"
+  },
+  {
+    "gameid": "RRBJ41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RRBJ41.ini"
+  },
+  {
+    "gameid": "RRBP41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RRBP41.ini"
+  },
+  {
+    "gameid": "RTH",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/RTH.ini"
+  },
+  {
+    "gameid": "SC2",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SC2.ini"
+  },
+  {
+    "gameid": "SC7E52",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SC7E52.ini"
+  },
+  {
+    "gameid": "SCYE4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SCYE4Q.ini"
+  },
+  {
+    "gameid": "SCYP4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SCYP4Q.ini"
+  },
+  {
+    "gameid": "SCYR4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SCYR4Q.ini"
+  },
+  {
+    "gameid": "SCYX4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SCYX4Q.ini"
+  },
+  {
+    "gameid": "SCYY4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SCYY4Q.ini"
+  },
+  {
+    "gameid": "SCYZ4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SCYZ4Q.ini"
+  },
+  {
+    "gameid": "SDVE41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SDVE41.ini"
+  },
+  {
+    "gameid": "SDVP41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SDVP41.ini"
+  },
+  {
+    "gameid": "SM8E52",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SM8E52.ini"
+  },
+  {
+    "gameid": "SQIE4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SQIE4Q.ini"
+  },
+  {
+    "gameid": "SQIP4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SQIP4Q.ini"
+  },
+  {
+    "gameid": "SQIY4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/SQIY4Q.ini"
+  },
+  {
+    "gameid": "STSE4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/STSE4Q.ini"
+  },
+  {
+    "gameid": "STSX4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/STSX4Q.ini"
+  },
+  {
+    "gameid": "STSZ4Q",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/STSZ4Q.ini"
+  },
+  {
+    "gameid": "WR2E41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/WR2E41.ini"
+  },
+  {
+    "gameid": "WR2P41",
+    "performance_boost": true,
+    "download_url": "https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/refs/heads/main/data/database/cheats_db/WR2P41.ini"
+  }
+]

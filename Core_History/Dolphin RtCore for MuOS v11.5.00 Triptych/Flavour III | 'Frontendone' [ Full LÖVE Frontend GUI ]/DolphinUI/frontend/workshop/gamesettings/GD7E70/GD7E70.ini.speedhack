@@ -1,0 +1,12 @@
+# Dolphin Rt:Core - Dragon Ball Z: Budokai (NTSC) - Speedhack (flicker fix + 70% underclock, extrapolated)
+# Game ID: GD7E70
+
+[Core]
+OverclockEnable = True
+Overclock = 0.70
+
+[Video_Hacks]
+VISkip = True
+
+[Video_Enhancements]
+DisableCopyFilter = False

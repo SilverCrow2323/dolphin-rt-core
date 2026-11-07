@@ -1,0 +1,80 @@
+{
+  "version": 6,
+  "last_update": "2026-10-31",
+  "items": [
+    {
+      "id": "community-gc-hb-swiss",
+      "category": "homebrew",
+      "subcategory": "utilities",
+      "system": "gc",
+      "name": "Swiss (Stable)",
+      "description": "Stable build of Swiss, the Swiss Army Knife of GameCube homebrew. Launches games and homebrew from SD Gecko, SD2SP2, IDE-EXI, USB Gecko and network shares. Can force 480p output on games that don't natively support it and provides a virtual Broadband Adapter for LAN play. Installed as data/homebrew/gc/swiss.dol.",
+      "author": "emukidid, Extrems",
+      "version": "0.6r2073",
+      "download_url": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/data/homebrew/gc/swiss.dol",
+      "icon_url": "https://wiibrew.org/w/images/8/8d/Swiss.png",
+      "size_mb": 0.5,
+      "install_path": "/opt/muos/share/emulator/dolphin/frontend/data/homebrew/gc/",
+      "tags": ["homebrew", "gc", "swiss", "loader", "stable"]
+    },
+    {
+      "id": "community-gc-hb-swiss-r2119",
+      "category": "homebrew",
+      "subcategory": "utilities",
+      "system": "gc",
+      "name": "Swiss (r2119)",
+      "description": "Development build r2119 of Swiss. Same feature set as the stable build plus the latest fixes and improvements from the main branch. Installed as data/homebrew/gc/swiss_r2119.dol.",
+      "author": "emukidid, Extrems",
+      "version": "r2119",
+      "download_url": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/data/homebrew/gc/swiss_r2119.dol",
+      "icon_url": "https://wiibrew.org/w/images/8/8d/Swiss.png",
+      "size_mb": 0.5,
+      "install_path": "/opt/muos/share/emulator/dolphin/frontend/data/homebrew/gc/",
+      "tags": ["homebrew", "gc", "swiss", "loader", "nightly"]
+    },
+    {
+      "id": "community-gc-hb-gc-linux-alpha",
+      "category": "homebrew",
+      "subcategory": "desktop",
+      "system": "gc",
+      "name": "GC Linux (alpha)",
+      "description": "Experimental port of Linux for the GameCube and Wii. A developer tool for enthusiasts experimenting with running a Linux distribution on the hardware. Not a user-friendly application for everyday use. Installed as data/homebrew/gc/gclinux_alpha.dol.",
+      "author": "Various",
+      "version": "Alpha",
+      "download_url": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/data/homebrew/gc/gclinux_alpha.dol",
+      "icon_url": "https://wiibrew.org/w/images/a/ad/Gc-linux_icon_fixed_arn.png",
+      "size_mb": 5.0,
+      "install_path": "/opt/muos/share/emulator/dolphin/frontend/data/homebrew/gc/",
+      "tags": ["homebrew", "gc", "linux", "experimental"]
+    },
+    {
+      "id": "spdw-gc-texture-cnk",
+      "category": "rt_resources",
+      "subcategory": "rintropacks",
+      "system": "gc",
+      "name": "Crash Nitro Kart HD Textures",
+      "description": "Lightweight HD texture pack for Crash Nitro Kart. Single archive with all images stored at the root of the zip. At install time the user MUST specify the target GameID folder for their ROM: GCNE7D (NTSC-U), GCNP7D (PAL), GCNJ7D (JP), or 'universal' for modded ROMs whose reported GameID differs from the retail one. Files are extracted into Load/Textures/<GAMEID>/ so Dolphin picks them up automatically.",
+      "author": "sirpips",
+      "version": "1.0",
+      "download_url": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/data/gcn_texturepack.zip",
+      "icon_url": "https://static.wikia.nocookie.net/crashban/images/2/25/Crash-0.png/revision/latest?cb=20200115143310",
+      "size_mb": 0.5,
+      "install_paths": {
+        "frontend": "dolphin-emu/Load/Textures/",
+        "external": "/opt/muos/share/emulator/dolphin/Load/Textures/"
+      },
+      "extract_into": "Textures/{GAMEID}",
+      "ask_user": {
+        "prompt": "Which GameID folder should the textures be installed into?",
+        "type": "choice",
+        "options": [
+          { "label": "GCNE7D - NTSC-U",          "value": "GCNE7D" },
+          { "label": "GCNP7D - PAL",             "value": "GCNP7D" },
+          { "label": "GCNJ7D - JP",              "value": "GCNJ7D" },
+          { "label": "universal (modded ROM)",   "value": "universal" }
+        ]
+      },
+      "tags": ["texture", "hd", "crash-nitro-kart", "h700", "user-gamed-id"]
+    }
+  ]
+}

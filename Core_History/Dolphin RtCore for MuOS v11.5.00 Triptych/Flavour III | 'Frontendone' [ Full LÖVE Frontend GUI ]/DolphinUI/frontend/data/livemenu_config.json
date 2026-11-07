@@ -1,0 +1,18 @@
+{
+  "watcher": {
+    "menu_buttons": [8, 13],
+    "start_button": 7,
+    "combo_window_ms": 500,
+    "menu_alone_timeout_ms": 2000,
+    "kill_on_menu_alone": true,
+    "poll_interval_ms": 20
+  },
+  "overlay": {
+    "pause_dolphin": true,
+    "inject_delay_ms": 150,
+    "resume_wait_ms": 300
+  },
+  "logging": {
+    "level": "INFO"
+  }
+}

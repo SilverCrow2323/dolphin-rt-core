@@ -1,0 +1,764 @@
+# ============================================================
+# DOLPHIN.INI — Complete Configuration for RG35XX-H (H700)
+# Optimized for muOS with 1GB RAM
+# ============================================================
+# Every option is documented with:
+#   - Description         what it does
+#   - Parameters          accepted values
+#   - Recommend (opt.)    the value we recommend on this hardware
+#   - Why (opt.)          short hardware-specific rationale
+#
+# Per-game overrides go in GameSettings/<GAMEID>.ini using the namespaced
+# section format ([Core], [Video_Settings], [Video_Hacks], ...).
+# ============================================================
+
+
+# ============================================================
+# [General] — Core application settings
+# ============================================================
+[General]
+
+# ShowLag : Display a frame-time lag counter on screen.
+# ShowLag Parameters : True, False.
+# ShowLag Recommend : False
+# ShowLag Why : Screen clutter, no gameplay value.
+ShowLag = False
+
+# ShowFrameCount : Display a frame counter overlay.
+# ShowFrameCount Parameters : True, False.
+# ShowFrameCount Recommend : False
+# ShowFrameCount Why : Negligible cost, but no value on a 3.5" screen.
+ShowFrameCount = False
+
+# ShowActiveTitle : Display the active game title in the top bar.
+# ShowActiveTitle Parameters : True, False.
+# ShowActiveTitle Recommend : False
+ShowActiveTitle = False
+
+# ShowNetPlayPing : Display NetPlay ping (online play only).
+# ShowNetPlayPing Parameters : True, False.
+# ShowNetPlayPing Recommend : False
+ShowNetPlayPing = False
+
+# HideCursor : Hide the mouse cursor during gameplay.
+# HideCursor Parameters : True, False.
+# HideCursor Recommend : True
+HideCursor = False
+
+# ShowMouseCursor : Legacy mouse cursor toggle.
+# ShowMouseCursor Parameters : True, False.
+# ShowMouseCursor Recommend : False
+ShowMouseCursor = False
+
+
+# ============================================================
+# Path settings — directory and file paths
+# ============================================================
+
+# ISOPaths : Number of configured ISO directories.
+# ISOPaths Parameters : Integer (0-N).
+# ISOPaths Recommend : 0
+# ISOPaths Why : DolphinUI locates ROMs by file scan; the frontend handles paths.
+ISOPaths = 0
+
+# RecursiveISOPaths : Scan subdirectories for ISOs.
+# RecursiveISOPaths Parameters : True, False.
+# RecursiveISOPaths Recommend : False
+RecursiveISOPaths = False
+
+# GCMPathes : Number of configured GCM directories.
+# GCMPathes Parameters : Integer (0-N).
+# GCMPathes Recommend : 0
+GCMPathes = 0
+
+# RecursiveGCMPaths : Scan subdirectories for GCM files.
+# RecursiveGCMPaths Parameters : True, False.
+# RecursiveGCMPaths Recommend : False
+RecursiveGCMPaths = False
+
+# NANDRootPath : Wii NAND (virtual system memory) directory.
+# NANDRootPath Parameters : Directory path.
+# NANDRootPath Recommend : Wii
+NANDRootPath = Wii
+
+# WiiSDCardPath : Wii SD Card image file.
+# WiiSDCardPath Parameters : File path.
+# WiiSDCardPath Recommend : Wii/sd.raw
+WiiSDCardPath = Wii/sd.raw
+
+# LoadPath : Base directory for external files (texture packs, mods).
+# LoadPath Parameters : Path (absolute or relative to User dir).
+# LoadPath Recommend : Load/
+# LoadPath Why : Textures are read from Load/Textures/<GameID>/.
+LoadPath = Load/
+
+# DumpPath : Directory where texture / frame / audio dumps are written.
+# DumpPath Parameters : Directory path.
+# DumpPath Recommend : Dump
+DumpPath = Dump
+
+# ResourcePackPath : Directory for Resource Packs (graphic mods, shaders).
+# ResourcePackPath Parameters : Directory path.
+# ResourcePackPath Recommend : ResourcePacks
+ResourcePackPath = ResourcePacks
+
+
+# ============================================================
+# Wireless & network
+# ============================================================
+
+# WirelessMac : Emulated Wii Wi-Fi MAC address.
+# WirelessMac Parameters : MAC string.
+WirelessMac = 00:17:ab:a3:1f:27
+
+# UseDualCore : Legacy alias for CPUThread (see [Core]).
+# UseDualCore Parameters : True, False.
+UseDualCore = True
+
+# EnableCheats : Enable Action Replay / Gecko cheat engine.
+# EnableCheats Parameters : True, False.
+# EnableCheats Recommend : False
+# EnableCheats Why : Turn on only when you actually use cheats.
+EnableCheats = False
+
+# JITFollowBranch : Enable branch following in the JIT.
+# JITFollowBranch Parameters : True, False.
+# JITFollowBranch Recommend : True
+# JITFollowBranch Why : Small, essentially free speedup.
+JITFollowBranch = True
+
+# FastDiscSpeed : Read the emulated DVD faster than realtime.
+# FastDiscSpeed Parameters : True, False.
+# FastDiscSpeed Recommend : True
+# FastDiscSpeed Why : Big win on loading screens, breaks a handful of streaming-audio titles.
+FastDiscSpeed = True
+
+# DriveSpeed : Emulated DVD drive speed (0 = auto).
+# DriveSpeed Parameters : Integer (0-8).
+# DriveSpeed Recommend : 0
+DriveSpeed = 0
+
+
+# ============================================================
+# Audio
+# ============================================================
+
+# AudioBackend : Audio output backend.
+# AudioBackend Parameters : Cubeb, OpenAL, ALSA, PulseAudio.
+# AudioBackend Recommend : ALSA
+# AudioBackend Why : On muOS ALSA is the native, lowest-latency backend. Cubeb is not built into most ARM binaries.
+AudioBackend = ALSA
+
+# AudioLatency : Audio buffer size in milliseconds.
+# AudioLatency Parameters : Integer (1-100).
+# AudioLatency Recommend : 3
+# AudioLatency Why : 2-5 ms avoids desync without stuttering.
+AudioLatency = 3
+
+# AudioStretch : Stretch audio to match framerate (prevents crackling at low FPS).
+# AudioStretch Parameters : True, False.
+# AudioStretch Recommend : False
+# AudioStretch Why : Adds latency; leave off unless the title crackles badly.
+AudioStretch = False
+
+# SoundVolume : Master volume.
+# SoundVolume Parameters : Integer (0-100).
+SoundVolume = 100
+
+
+# ============================================================
+# Wii-specific
+# ============================================================
+
+# WiiKeyboard : Enable emulated Wii USB keyboard.
+# WiiKeyboard Parameters : True, False.
+# WiiKeyboard Recommend : False
+WiiKeyboard = False
+
+# WiiSensorBarPosition : Where the sensor bar sits (0=Bottom, 1=Top, 2=Default).
+# WiiSensorBarPosition Parameters : 0, 1, 2.
+WiiSensorBarPosition = 2
+
+# WiiSensorBarSensitivity : Sensor bar IR sensitivity.
+# WiiSensorBarSensitivity Parameters : Integer (1-5).
+WiiSensorBarSensitivity = 3
+
+# WiiSpeakerPan : Wiimote speaker pan.
+# WiiSpeakerPan Parameters : Integer (-1, 0, 1).
+WiiSpeakerPan = 0
+
+
+# ============================================================
+# Network & debug (rarely touched)
+# ============================================================
+
+# GDBSocket : GDB debugger socket path.
+# GDBSocket Parameters : Socket path string (empty disables).
+GDBSocket =
+
+# GDBPort : GDB debugger port (-1 disables).
+# GDBPort Parameters : Integer.
+GDBPort = -1
+
+# HotkeysRequireFocus : Require window focus for hotkey handling.
+# HotkeysRequireFocus Parameters : True, False.
+# HotkeysRequireFocus Recommend : False
+HotkeysRequireFocus = False
+
+# EnableNetworkLogging : Log all network traffic (debugging only).
+# EnableNetworkLogging Parameters : True, False.
+# EnableNetworkLogging Recommend : False
+EnableNetworkLogging = False
+
+
+# ============================================================
+# Memory card
+# ============================================================
+
+# MemoryCardA : Enable Slot A.
+# MemoryCardA Parameters : True, False.
+MemoryCardA = True
+
+# MemoryCardB : Enable Slot B.
+# MemoryCardB Parameters : True, False.
+# MemoryCardB Recommend : False
+MemoryCardB = False
+
+# SlotA_GC : Slot A memory card file name.
+# SlotA_GC Parameters : File name string.
+SlotA_GC = MemoryCardA.USA.raw
+
+# SlotB_GC : Slot B memory card file name.
+# SlotB_GC Parameters : File name string.
+SlotB_GC = MemoryCardB.USA.raw
+
+
+# ============================================================
+# Display
+# ============================================================
+
+# FullscreenDisplayRes : Fullscreen display resolution.
+# FullscreenDisplayRes Parameters : Resolution string or "Auto".
+FullscreenDisplayRes = Auto
+
+# AutoDiscChange : Auto-swap discs when the game requests them.
+# AutoDiscChange Parameters : True, False.
+AutoDiscChange = True
+
+# LastFilename : Last loaded ROM (used for the recent list).
+# LastFilename Parameters : String.
+LastFilename =
+
+# SelectedProfile : Selected controller profile.
+# SelectedProfile Parameters : String.
+SelectedProfile =
+
+# GCAdapterConfig : GameCube adapter configuration.
+# GCAdapterConfig Parameters : String.
+GCAdapterConfig =
+
+# USBGeckoEnabled : Emulate a USB Gecko adapter (debugging).
+# USBGeckoEnabled Parameters : True, False.
+# USBGeckoEnabled Recommend : False
+USBGeckoEnabled = False
+
+# EmulateDiscSpeed : Match real disc read speed (accuracy).
+# EmulateDiscSpeed Parameters : True, False.
+# EmulateDiscSpeed Recommend : False
+EmulateDiscSpeed = False
+
+
+# ============================================================
+# [Interface] — User interface settings
+# ============================================================
+[Interface]
+
+# ConfirmStop : Show a confirmation dialog when stopping emulation.
+# ConfirmStop Parameters : True, False.
+# ConfirmStop Recommend : False
+# ConfirmStop Why : Frontend exits deliberately; a confirm dialog only slows you down.
+ConfirmStop = False
+
+# UsePanicHandlers : Show error popups for emulation panics.
+# UsePanicHandlers Parameters : True, False.
+# UsePanicHandlers Recommend : False
+UsePanicHandlers = False
+
+# OnScreenDisplayMessages : Show OSD messages (save state, FPS, etc.).
+# OnScreenDisplayMessages Parameters : True, False.
+OnScreenDisplayMessages = True
+
+# OSDMessageDuration : Duration of OSD messages in seconds.
+# OSDMessageDuration Parameters : Float (1.0-10.0).
+OSDMessageDuration = 2.5
+
+# ThemeName : UI theme name.
+# ThemeName Parameters : Theme name string.
+ThemeName = Clean
+
+# DebugModeEnabled : Enable debug mode UI.
+# DebugModeEnabled Parameters : True, False.
+# DebugModeEnabled Recommend : False
+DebugModeEnabled = False
+
+# ShowDebuggingUI : Show debugging UI elements.
+# ShowDebuggingUI Parameters : True, False.
+# ShowDebuggingUI Recommend : False
+ShowDebuggingUI = False
+
+# LanguageCode : UI language code.
+# LanguageCode Parameters : Language code string (empty = system default).
+LanguageCode =
+
+# PauseOnFocusLost : Pause emulation when the window loses focus.
+# PauseOnFocusLost Parameters : True, False.
+# PauseOnFocusLost Recommend : True
+PauseOnFocusLost = False
+
+# ExtendedFPSInfo : Show extended FPS info (VPS, speed).
+# ExtendedFPSInfo Parameters : True, False.
+# ExtendedFPSInfo Recommend : False
+ExtendedFPSInfo = False
+
+# UseBuiltinTitleDatabase : Use the built-in game title database.
+# UseBuiltinTitleDatabase Parameters : True, False.
+UseBuiltinTitleDatabase = True
+
+
+# ============================================================
+# [GameList] — Game list display and filters
+# ============================================================
+[GameList]
+
+# ListDrives : Show physical drives in the game list.
+# ListDrives Parameters : True, False.
+ListDrives = False
+
+# ListWad : Show Wii WAD files.
+# ListWad Parameters : True, False.
+ListWad = True
+
+# ListElfDol : Show ELF / DOL homebrew.
+# ListElfDol Parameters : True, False.
+ListElfDol = True
+
+# ListWii : Show Wii games.
+# ListWii Parameters : True, False.
+ListWii = True
+
+# ListGC : Show GameCube games.
+# ListGC Parameters : True, False.
+ListGC = True
+
+# ListJap : Show Japanese-region titles.
+# ListJap Parameters : True, False.
+ListJap = True
+
+# ListPal : Show PAL-region titles.
+# ListPal Parameters : True, False.
+ListPal = True
+
+# ListUsa : Show USA-region titles.
+# ListUsa Parameters : True, False.
+ListUsa = True
+
+# ListAustralia : Show Australia-region titles.
+# ListAustralia Parameters : True, False.
+ListAustralia = True
+
+# ListFrance : Show France-region titles.
+# ListFrance Parameters : True, False.
+ListFrance = True
+
+# ListGermany : Show Germany-region titles.
+# ListGermany Parameters : True, False.
+ListGermany = True
+
+# ListItaly : Show Italy-region titles.
+# ListItaly Parameters : True, False.
+ListItaly = True
+
+# ListKorea : Show Korea-region titles.
+# ListKorea Parameters : True, False.
+ListKorea = True
+
+# ListNetherlands : Show Netherlands-region titles.
+# ListNetherlands Parameters : True, False.
+ListNetherlands = True
+
+# ListRussia : Show Russia-region titles.
+# ListRussia Parameters : True, False.
+ListRussia = True
+
+# ListSpain : Show Spain-region titles.
+# ListSpain Parameters : True, False.
+ListSpain = True
+
+# ListTaiwan : Show Taiwan-region titles.
+# ListTaiwan Parameters : True, False.
+ListTaiwan = True
+
+# ListWorld : Show World-region titles.
+# ListWorld Parameters : True, False.
+ListWorld = True
+
+# ListUnknown : Show unknown-region titles.
+# ListUnknown Parameters : True, False.
+ListUnknown = True
+
+# ListSort : Primary sort (0=None, 1=Title, 2=ID, 3=Region, 4=Size).
+# ListSort Parameters : Integer (0-4).
+ListSort = 3
+
+# ListSortSecondary : Secondary sort method.
+# ListSortSecondary Parameters : Integer (0-4).
+ListSortSecondary = 0
+
+# ColumnPlatform : Show the Platform column.
+# ColumnPlatform Parameters : True, False.
+ColumnPlatform = True
+
+# ColumnBanner : Show the Banner column.
+# ColumnBanner Parameters : True, False.
+ColumnBanner = True
+
+# ColumnDescription : Show the Description column.
+# ColumnDescription Parameters : True, False.
+ColumnDescription = False
+
+# ColumnTitle : Show the Title column.
+# ColumnTitle Parameters : True, False.
+ColumnTitle = True
+
+# ColumnNotes : Show the Notes column.
+# ColumnNotes Parameters : True, False.
+ColumnNotes = True
+
+# ColumnFileName : Show the File Name column.
+# ColumnFileName Parameters : True, False.
+ColumnFileName = False
+
+# ColumnID : Show the Game ID column.
+# ColumnID Parameters : True, False.
+ColumnID = False
+
+# ColumnRegion : Show the Region column.
+# ColumnRegion Parameters : True, False.
+ColumnRegion = True
+
+# ColumnSize : Show the Size column.
+# ColumnSize Parameters : True, False.
+ColumnSize = True
+
+# ColumnTags : Show the Tags column.
+# ColumnTags Parameters : True, False.
+ColumnTags = False
+
+
+# ============================================================
+# [Core] — Emulation core
+# ============================================================
+[Core]
+
+# CPUCore : CPU emulation engine.
+# CPUCore Parameters : 0 (JIT64), 1 (JITARM64), 2 (Interpreter), 3 (Cached Interpreter), 4 (JITIL, deprecated).
+# CPUCore Recommend : 1
+# CPUCore Why : Native ARM64 JIT. Mandatory on H700 — the interpreter is 10-50x slower.
+CPUCore = 1
+
+# CPUThread : Run CPU and GPU in separate threads (Dual Core).
+# CPUThread Parameters : True, False.
+# CPUThread Recommend : True
+# CPUThread Why : Uses all 4 A53 cores. Non-negotiable.
+CPUThread = True
+
+# DSPHLE : Use High-Level Emulation for the DSP.
+# DSPHLE Parameters : True, False.
+# DSPHLE Recommend : True
+# DSPHLE Why : LLE (cycle-accurate) is far too CPU-heavy on A53.
+DSPHLE = True
+
+# EnableIdleSkipping : Skip CPU busy-wait loops.
+# EnableIdleSkipping Parameters : True, False.
+# EnableIdleSkipping Recommend : True
+# EnableIdleSkipping Why : Clean win; a handful of games misbehave and need it off.
+EnableIdleSkipping = True
+
+# Overclock : Emulated CPU clock multiplier.
+# Overclock Parameters : Float (0.5-1.5).
+# Overclock Recommend : 1.0 in the baseline; 0.70 in a Performance profile.
+# Overclock Why : Lower values reduce CPU load at the cost of game logic speed. Never put an underclock in the baseline.
+Overclock = 1.0
+
+# OverclockEnable : Enable the Overclock multiplier.
+# OverclockEnable Parameters : True, False.
+# OverclockEnable Recommend : False in the baseline.
+OverclockEnable = False
+
+# MMU : Emulate the Memory Management Unit.
+# MMU Parameters : True, False.
+# MMU Recommend : False globally; True for Skies of Arcadia Legends (GEAE8P).
+# MMU Why : Expensive. Enable only per-game when a title requires it.
+MMU = False
+
+# SyncGPU : Synchronize CPU and GPU threads.
+# SyncGPU Parameters : True, False.
+# SyncGPU Recommend : False
+SyncGPU = False
+
+# SyncOnSkipIdle : Sync after skipping idle.
+# SyncOnSkipIdle Parameters : True, False.
+SyncOnSkipIdle = True
+
+# Framelimit : Frame rate limiter.
+# Framelimit Parameters : 0 (Off), 1 (Auto), 2 (60), 3 (30).
+# Framelimit Recommend : 1
+Framelimit = 1
+
+# FPRF : Floating-Point Result Flag accuracy.
+# FPRF Parameters : True, False.
+# FPRF Recommend : False
+FPRF = False
+
+# Fastmem : Fast host memory access (virtual-memory mapping).
+# Fastmem Parameters : True, False.
+# Fastmem Recommend : True
+# Fastmem Why : Near-free performance win; safe.
+Fastmem = True
+
+# TimingVariance : CPU timing tolerance (higher = more forgiving).
+# TimingVariance Parameters : Integer (0-100).
+TimingVariance = 40
+
+# AccurateNaNs : Accurate NaN handling (compatibility).
+# AccurateNaNs Parameters : True, False.
+# AccurateNaNs Recommend : False
+AccurateNaNs = False
+
+# EmulationSpeed : Global speed multiplier (1.0 = 100%).
+# EmulationSpeed Parameters : Float (0.0-10.0).
+EmulationSpeed = 1.0
+
+# SkipIPL : Skip the GameCube IPL boot intro.
+# SkipIPL Parameters : True, False.
+# SkipIPL Recommend : True
+SkipIPL = True
+
+# SelectedLanguage : In-game language.
+# SelectedLanguage Parameters : 0 (English), 1 (German), 2 (French), 3 (Spanish), 4 (Italian), 5 (Dutch), 6 (Japanese).
+SelectedLanguage = 0
+
+# OverrideRegionSettings : Ignore the game's region.
+# OverrideRegionSettings Parameters : True, False.
+# OverrideRegionSettings Recommend : False
+OverrideRegionSettings = False
+
+# DPL2Decoder : Dolby Pro Logic II downmix (multi-channel).
+# DPL2Decoder Parameters : True, False.
+# DPL2Decoder Recommend : False
+# DPL2Decoder Why : No value on stereo speakers; small CPU cost.
+DPL2Decoder = False
+
+# EnableCustomRTC : Use a custom real-time clock value.
+# EnableCustomRTC Parameters : True, False.
+# EnableCustomRTC Recommend : False
+EnableCustomRTC = False
+
+# CustomRTCValue : Custom RTC value (hex).
+# CustomRTCValue Parameters : Hex string.
+CustomRTCValue = 0x386d4380
+
+
+# ============================================================
+# [Movie] — TAS / movie recording (leave alone unless recording)
+# ============================================================
+[Movie]
+
+# PauseMovie : Pause movie playback / recording.
+# PauseMovie Parameters : True, False.
+PauseMovie = False
+
+# Author : Name embedded in the recorded movie.
+# Author Parameters : String.
+Author =
+
+# DumpFrames : Dump rendered frames to image files.
+# DumpFrames Parameters : True, False.
+# DumpFrames Recommend : False
+DumpFrames = False
+
+# DumpFramesSilent : Dump frames without an OSD notification.
+# DumpFramesSilent Parameters : True, False.
+DumpFramesSilent = False
+
+# DumpFramesPath : Destination for dumped frames.
+# DumpFramesPath Parameters : Directory path.
+DumpFramesPath =
+
+# ShowInputDisplay : Show an on-screen input display.
+# ShowInputDisplay Parameters : True, False.
+# ShowInputDisplay Recommend : False
+ShowInputDisplay = False
+
+# ShowRTC : Show the real-time clock on screen.
+# ShowRTC Parameters : True, False.
+# ShowRTC Recommend : False
+ShowRTC = False
+
+# DumpFrameCount : Number of frames to dump (0 = all).
+# DumpFrameCount Parameters : Integer (0-N).
+DumpFrameCount = 0
+
+
+# ============================================================
+# [Network] — Online / NetPlay network configuration
+# ============================================================
+[Network]
+
+# Enable : Enable network features.
+# Enable Parameters : True, False.
+# Enable Recommend : False
+# Enable Why : Turn on only when actually playing online; NetPlay is not usable on this device anyway.
+Enable = False
+
+# SSID : WiFi SSID used by the emulated Wii.
+# SSID Parameters : String.
+SSID =
+
+# Password : WiFi password used by the emulated Wii.
+# Password Parameters : String.
+Password =
+
+# EnableNetworkLogging : Log network traffic.
+# EnableNetworkLogging Parameters : True, False.
+# EnableNetworkLogging Recommend : False
+EnableNetworkLogging = False
+
+# AdoptPAL60 : Adopt PAL60 for network play.
+# AdoptPAL60 Parameters : True, False.
+AdoptPAL60 = False
+
+
+# ============================================================
+# [Log] — Logging. All disabled by default for performance.
+# ============================================================
+[Log]
+
+# EnableNetworkLogging : Master switch for network logging.
+# EnableNetworkLogging Parameters : True, False.
+# EnableNetworkLogging Recommend : False
+EnableNetworkLogging = False
+
+# Default : Default log verbosity for all subsystems.
+# Default Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Default =
+
+# Audio : Audio subsystem log level.
+# Audio Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Audio =
+
+# Core : Core subsystem log level.
+# Core Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Core =
+
+# DSP : DSP log level.
+# DSP Parameters : Notice, Info, Warning, Error. Empty = disabled.
+DSP =
+
+# DVD : DVD log level.
+# DVD Parameters : Notice, Info, Warning, Error. Empty = disabled.
+DVD =
+
+# Emu : Emulation log level.
+# Emu Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Emu =
+
+# GPU : GPU log level.
+# GPU Parameters : Notice, Info, Warning, Error. Empty = disabled.
+GPU =
+
+# Input : Input log level.
+# Input Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Input =
+
+# Load : Loading log level.
+# Load Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Load =
+
+# Memory : Memory log level.
+# Memory Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Memory =
+
+# Network : Network log level.
+# Network Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Network =
+
+# OS : OS log level.
+# OS Parameters : Notice, Info, Warning, Error. Empty = disabled.
+OS =
+
+# PowerPC : PowerPC log level.
+# PowerPC Parameters : Notice, Info, Warning, Error. Empty = disabled.
+PowerPC =
+
+# Scheduler : Scheduler log level.
+# Scheduler Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Scheduler =
+
+# Video : Video log level.
+# Video Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Video =
+
+# Wiimote : Wiimote log level.
+# Wiimote Parameters : Notice, Info, Warning, Error. Empty = disabled.
+Wiimote =
+
+
+# ============================================================
+# [Debug] — Debugger. All disabled by default.
+# ============================================================
+[Debug]
+
+# Enable : Master switch for the debugger.
+# Enable Parameters : True, False.
+# Enable Recommend : False
+Enable = False
+
+# ShowOnStart : Show the debugger UI at emulator start.
+# ShowOnStart Parameters : True, False.
+# ShowOnStart Recommend : False
+ShowOnStart = False
+
+# Verbose : Verbose debug output.
+# Verbose Parameters : True, False.
+# Verbose Recommend : False
+Verbose = False
+
+# BreakOnExceptions : Break execution on exceptions.
+# BreakOnExceptions Parameters : True, False.
+# BreakOnExceptions Recommend : False
+BreakOnExceptions = False
+
+# ShowStackTraces : Show stack traces on errors.
+# ShowStackTraces Parameters : True, False.
+# ShowStackTraces Recommend : False
+ShowStackTraces = False
+
+
+# ============================================================
+# [Analytics] — Usage analytics (disabled for privacy).
+# ============================================================
+[Analytics]
+
+# Enabled : Enable usage analytics.
+# Enabled Parameters : True, False.
+# Enabled Recommend : False
+Enabled = False
+
+# ID : Unique analytics identifier.
+# ID Parameters : String.
+ID =
+
+# PermissionAsked : Whether the analytics permission prompt has been shown.
+# PermissionAsked Parameters : True, False.
+PermissionAsked = False

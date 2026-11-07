@@ -1,0 +1,41 @@
+[Hardware]
+VSync = False
+Adapter = 0
+
+[Enhancements]
+ArbitraryMipmapDetection = False
+DisableCopyFilter = True
+ForceTrueColor = False
+PostProcessingShader = 
+
+[Hacks]
+BBoxEnable = False
+EFBAccessEnable = False
+EFBEmulateFormatChanges = False
+EFBScaledCopy = False
+EFBToTextureEnable = True
+ImmediateXFBEnable = False
+NoMipmapping = True
+SkipDuplicateXFBs = True
+VertexRounding = True
+VISkip = True
+
+[Settings]
+BackendMultithreading = True
+DisableFog = True
+DumpBaseTextures = False
+DumpMipTextures = False
+EnableGPUTextureDecoding = True
+FastDepthCalc = True
+FrameDumpsResolutionType = 1
+SafeTextureCacheColorSamples = 0
+SaveTextureCacheToState = False
+ShaderCache = True
+WaitForShadersBeforeStarting = False
+ShowSpeedColors = False
+ShowSpeed = False
+ShowVPS = False
+ShowFPS = False
+InternalResolution = 1
+PNGCompressionLevel = 6
+ShaderCompilationMode = 3
