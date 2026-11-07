@@ -1,0 +1,12 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: spdw-stream-portal
+Copyright: 2026 sirpips SPDW Factory Lab
+License: MIT
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files, to deal in the software
+ without restriction, provided the copyright notice is included. The software is
+ provided "as is", without warranty of any kind.
+
+Orbitron font (assets/Orbitron.ttf): Copyright 2018 The Orbitron Project Authors,
+SIL Open Font License 1.1 - see /usr/share/spdw-stream-portal/assets/OFL-Orbitron.txt
+Logos Dolphin Rt:Core, MockRt:Core wordmark, SPDW: SPDW Factory.

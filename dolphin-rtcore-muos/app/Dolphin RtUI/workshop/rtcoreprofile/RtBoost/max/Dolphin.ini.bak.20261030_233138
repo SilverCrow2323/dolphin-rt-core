@@ -1,0 +1,31 @@
+[Interface]
+OnScreenDisplayMessages = False
+OSDMessageDuration = 2.60
+UsePanicHandlers = False
+
+[Core]
+Overclock = 0.50
+OverclockEnable = True
+TimingVariance = 80
+EmulationSpeed = 1
+SelectedLanguage = 1
+CPUCore = 5
+CustomRTCValue = 946684801
+
+[General]
+WiiSpeakerPan = 1
+ResourcePackPath = ResourcePacks
+ISOPaths = 1
+GCMPathes = 1
+AudioLatency = 4
+DriveSpeed = 1
+WiiSDCardPath = Wii/sd.raw
+LoadPath = Load
+WiiSensorBarPosition = 3
+DumpPath = Dump
+WiiSensorBarSensitivity = 4
+SoundVolume = 101
+
+[DSP]
+Volume = 101
+DSPThread = True

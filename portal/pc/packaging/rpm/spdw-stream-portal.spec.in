@@ -1,0 +1,66 @@
+Name:           spdw-stream-portal
+Version:        @VERSION@
+Release:        1%{?dist}
+Summary:        Dolphin Rt:Stream PC portal - GameCube/Wii streaming to a muOS handheld
+License:        MIT
+URL:            https://github.com/SilverCrow2323/dolphin-rt-stream
+Source0:        %{name}-%{version}.tar.gz
+BuildArch:      noarch
+Requires:       python3 >= 3.9
+Requires:       python3-tkinter
+Requires:       python3-pillow
+Requires:       python3-pillow-tk
+Requires:       procps-ng
+Recommends:     polkit
+Recommends:     xfconf
+Recommends:     xrandr
+Suggests:       dolphin-emu
+Suggests:       tailscale
+
+%description
+GameCube-style 2.5D control panel (SPDW Factory Lab). Builds the game library with cover art
+from ROMs kept on the PC, registers every game as a Sunshine app (Dolphin in batch mode,
+fullscreen, XFCE panel hidden while streaming, 4:3 display mode), serves the library to the
+handheld and manages autostart of Sunshine, the library server and the portal itself.
+Sunshine is installed separately (Fedora: the LizardByte Copr repository). No ROMs are included.
+
+%prep
+%setup -q
+
+%install
+mkdir -p %{buildroot}
+cp -a usr %{buildroot}/
+chmod 755 %{buildroot}/usr/bin/spdw-stream %{buildroot}/usr/bin/spdw-stream-portal
+chmod 755 %{buildroot}/usr/lib/spdw-stream-portal/*.sh
+
+%post
+command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q /usr/share/applications || :
+command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor || :
+
+%preun
+if [ "$1" = "0" ]; then
+    for pf in /home/*/.config/spdw-stream/serve.pid; do
+        [ -f "$pf" ] && kill "$(cat "$pf")" 2>/dev/null || :
+    done
+    rm -f /home/*/.config/autostart/spdw-stream-*.desktop /root/.config/autostart/spdw-stream-*.desktop
+    rm -f /etc/lightdm/lightdm.conf.d/50-spdw-autologin.conf
+fi
+exit 0
+
+%postun
+if [ "$1" = "0" ]; then
+    command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q /usr/share/applications || :
+fi
+
+%files
+/usr/bin/spdw-stream
+/usr/bin/spdw-stream-portal
+/usr/lib/spdw-stream-portal
+/usr/share/applications/spdw-stream-portal.desktop
+/usr/share/icons/hicolor/*/apps/spdw-stream-portal.png
+/usr/share/pixmaps/spdw-stream-portal.png
+/usr/share/spdw-stream-portal
+
+%changelog
+* Thu Nov 05 2026 SPDW Factory Lab <spdw@localhost> - @VERSION@-1
+- RPM packaging of the @VERSION@ portal (same payload as the .deb)

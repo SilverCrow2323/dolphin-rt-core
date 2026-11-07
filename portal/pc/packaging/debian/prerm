@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+case "$1" in
+    remove|purge)
+        # stop the library server if running, drop per-user autostart entries
+        for pf in /home/*/.config/spdw-stream/serve.pid; do
+            [ -f "$pf" ] && kill "$(cat "$pf")" 2>/dev/null || true
+        done
+        rm -f /home/*/.config/autostart/spdw-stream-*.desktop /root/.config/autostart/spdw-stream-*.desktop
+        rm -f /etc/lightdm/lightdm.conf.d/50-spdw-autologin.conf
+        ;;
+esac
+exit 0

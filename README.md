@@ -8,8 +8,8 @@
     </a>
     <img src="https://img.shields.io/badge/muOS-2606.0_Andromeda-4FA8C7?style=for-the-badge&logo=linux" alt="muOS">
     <img src="https://img.shields.io/badge/muOS-Jacaranda_(legacy_v11.5.1)-6B7280?style=for-the-badge&logo=linux" alt="Jacaranda">
-    <img src="https://img.shields.io/badge/Knulli-planned-3B82F6?style=for-the-badge" alt="Knulli">
-    <img src="https://img.shields.io/badge/ROCKNIX-planned-3B82F6?style=for-the-badge" alt="ROCKNIX">
+    <img src="https://img.shields.io/badge/Knulli-Rt:Core_K_0.2.0-22A06B?style=for-the-badge" alt="Knulli">
+    <img src="https://img.shields.io/badge/ROCKNIX-experimental-F59E0B?style=for-the-badge" alt="ROCKNIX">
     <img src="https://img.shields.io/badge/SoC-Allwinner%20H700-FF6F00?style=for-the-badge" alt="SoC">
     <img src="https://img.shields.io/badge/lab-SPDW%20Factory-00FFCC?style=for-the-badge" alt="SPDW">
     <img src="https://img.shields.io/badge/license-GPL--3.0-green?style=for-the-badge" alt="License">
@@ -45,12 +45,32 @@ texture packs, controller profiles) is plain Dolphin data and is shared by every
 | :--- | :--- | :--- | :--- |
 | **muOS 2606.0 Andromeda** (*Sloppy Kofi*) | ✅ **v12.0.0 — current** | `Dolphin_RtCore_v12_0_0_Andromeda.muxupd` | Everything in this README. Registers itself in the Andromeda core manifest, signed-manifest install, Rt:Stream built in. |
 | **muOS 2601.1 Funky Jacaranda** | 🟡 **Legacy line** — v11.5.1 "Triptych" | `Dolphin_RtCore_v11_5_1_Triptych_Bundle.muxupd` | Uses the old `info/assign/*.ini` registry. Stays available; a v12 backport is **planned**, not built. |
-| **Knulli** | 🔵 **Planned** | — | Config/profiles/textures carry over unchanged. Launcher, frontend glue and packaging are **not written yet**. |
-| **ROCKNIX** | 🔵 **Planned** | — | Same story as Knulli. Nothing is built or tested yet. |
+| **Knulli** (Batocera-based) | ✅ **Rt:Core K 0.2.0** — [`dolphin-rtcore-k/`](dolphin-rtcore-k) | `get.sh` / `install.sh` | EmulationStation integration (systems `wii` + `gamecube`, profiles as per-game cores, per-game options, safe exit). Tested by the maintainer on an RG35XX-H, Knulli Scarab 2026/05/11. Bring your own `core/dolphin`. |
+| **ROCKNIX** | 🟠 **Experimental** — [`dolphin-rtcore-r/`](dolphin-rtcore-r) | `install.sh` | A derivative of Rt:Core K adapted from the ROCKNIX sources (paths, ES custom systems, `system.cfg`). Passes dry-run tests on a fake filesystem; **never run on a device**. Per-game option menu is not available (see its README). |
 
 > [!NOTE]
-> "Planned" means exactly that: no download, no promise of a date. This table only lists a release as available when a
-> package exists and was tested on that firmware.
+> "Experimental" means it exists and passes automated dry-run tests but has not been run on hardware. This table only lists
+> a release as available when it was tested on that firmware.
+>
+> **No firmware ships Dolphin for the H700.** Knulli builds it only for x86_64, Raspberry Pi 5 and SM8250; ROCKNIX's H700
+> image has no Dolphin at all. Every H700 build therefore needs *your own* aarch64 `dolphin` binary.
+
+## 🗂️ Repository layout
+
+One repository, one folder per deliverable:
+
+| Folder | What it is |
+| :--- | :--- |
+| [`dolphin-rtcore-muos/`](dolphin-rtcore-muos) | **muOS Andromeda** build: shared app + emulator tree, muOS-only overlay, `tools/build-muxupd.sh`, `tools/verify-muxupd.sh` |
+| [`dolphin-rtcore-k/`](dolphin-rtcore-k) | **Knulli** port (Rt:Core K) |
+| [`dolphin-rtcore-r/`](dolphin-rtcore-r) | **ROCKNIX** port (experimental) |
+| [`portal/`](portal) | **PC side**: Rt:Stream Portal, wire protocol (`portal/docs/PROTOCOL.md`), packaging for deb / rpm / Arch / AppImage |
+| `Core_History/` | Earlier releases (v11.5.00 "Triptych" and older, the Jacaranda line) |
+| `data/`, `assets/`, `docs/` | Compatibility database, artwork, documentation |
+
+Build everything from source: `dolphin-rtcore-muos/tools/build-muxupd.sh`, `portal/tools/build-packages.sh all`;
+test the Knulli/ROCKNIX ports with `tests/test_ports_dryrun.sh`;
+build ready-to-install port archives (shared `core/` + **your** aarch64 `dolphin`) with `tools/make-port-release.sh k|r --binary /path/to/dolphin`.
 
 ## 📥 Install (muOS Andromeda)
 
@@ -392,7 +412,7 @@ It currently covers over **200 GameCube and Wii titles**.
 - 🌐 **[GitHub Repository](https://github.com/SilverCrow2323/dolphin-rt-core)**
 - 📦 **[Latest Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases/latest)**
 - 📊 **[Compatibility Database](https://silvercrow2323.github.io/Dolphin-Core-for-MuOS/)**
-- 📡 **[Dolphin Rt:Stream PC Portal](https://github.com/SilverCrow2323/dolphin-rt-stream)** — the PC side (deb · rpm · Arch · AppImage)
+- 📡 **[Rt:Stream PC Portal](portal)** — the PC side, in this repo (`portal/`): deb · rpm · Arch · AppImage
 - 💾 **[Official muOS Documentation](https://muos.dev)**
 - 🐬 **[Dolphin Emulator Project](https://dolphin-emu.org)**
 

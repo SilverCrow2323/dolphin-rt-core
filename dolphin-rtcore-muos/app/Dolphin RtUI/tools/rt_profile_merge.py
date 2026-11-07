@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""rt_profile_merge.py - runtime merge helper for DolphinRtFinalCut launch.
+
+Merges Default <- Profile <- GameSettings into a throw-away Config dir.
+Source files are never modified.
+
+GameSettings section names are remapped:
+  [Video_Settings]     -> GFX.ini [Settings]
+  [Video_Enhancements] -> GFX.ini [Enhancements]
+  [Video_Hacks]        -> GFX.ini [Hacks]
+  [Video_Hardware]     -> GFX.ini [Hardware]
+  [Core] [DSP] [Interface] stay as-is in Dolphin.ini
+"""
+
+import argparse, re, sys
+from pathlib import Path
+
+INI_SECTION_RE = re.compile(r'^\s*\[([^\]]+)\]\s*$')
+INI_KV_RE      = re.compile(r'^\s*([^=;#][^=]*?)\s*=\s*(.*?)\s*$')
+
+def parse_ini(text):
+    order, sections, cur = [], {}, None
+    for raw in text.splitlines():
+        m = INI_SECTION_RE.match(raw)
+        if m:
+            cur = m.group(1).strip()
+            if cur not in sections:
+                order.append(cur); sections[cur] = []
+            continue
+        m = INI_KV_RE.match(raw)
+        if m and cur is not None:
+            sections[cur].append((m.group(1).strip(), m.group(2)))
+    return order, sections
+
+def flatten(order, sections):
+    flat = {}
+    for sec in order:
+        for k, v in sections[sec]:
+            flat[(sec, k)] = v
+    return flat
+
+def merge_into(order, flat, text):
+    o_order, o_sections = parse_ini(text)
+    for sec in o_order:
+        if sec not in order:
+            order.append(sec)
+        for k, v in o_sections[sec]:
+            flat[(sec, k)] = v
+
+def write_ini(path, order, flat):
+    sec_keys = {sec: [] for sec in order}
+    seen = set()
+    for sec in order:
+        for (s, k), v in flat.items():
+            if s == sec and (s, k) not in seen:
+                sec_keys[sec].append((k, v)); seen.add((s, k))
+    out = []
+    for sec in order:
+        if not sec_keys[sec]: continue
+        out.append(f'[{sec}]')
+        for k, v in sec_keys[sec]:
+            out.append(f'{k} = {v}')
+        out.append('')
+    path.write_text('\n'.join(out), encoding='utf-8')
+
+GS_SECTION_MAP = {
+    'Core':               ('Dolphin.ini', 'Core'),
+    'DSP':                ('Dolphin.ini', 'DSP'),
+    'Interface':          ('Dolphin.ini', 'Interface'),
+    'General':            ('Dolphin.ini', 'General'),
+    'Network':            ('Dolphin.ini', 'Network'),
+    'Video_Settings':     ('GFX.ini', 'Settings'),
+    'Video_Enhancements': ('GFX.ini', 'Enhancements'),
+    'Video_Hacks':        ('GFX.ini', 'Hacks'),
+    'Video_Hardware':     ('GFX.ini', 'Hardware'),
+    'Settings':           ('GFX.ini', 'Settings'),
+    'Enhancements':       ('GFX.ini', 'Enhancements'),
+    'Hacks':              ('GFX.ini', 'Hacks'),
+    'Hardware':           ('GFX.ini', 'Hardware'),
+}
+
+def split_gamesettings(text):
+    order, sections = parse_ini(text)
+    dol, gfx, unknown = [], [], []
+    for sec in order:
+        target = GS_SECTION_MAP.get(sec)
+        if not target:
+            unknown.append(sec); continue
+        tgt_file, tgt_sec = target
+        bucket = dol if tgt_file == 'Dolphin.ini' else gfx
+        bucket.append(f'[{tgt_sec}]')
+        for k, v in sections[sec]:
+            bucket.append(f'{k} = {v}')
+        bucket.append('')
+    return '\n'.join(dol), '\n'.join(gfx), unknown
+
+def find_gameset_file(workshop_dir, game_id):
+    if not workshop_dir or not game_id:
+        return None
+    base = workshop_dir / 'gamesettings' / game_id
+    if not base.is_dir():
+        gs_root = workshop_dir / 'gamesettings'
+        if gs_root.is_dir():
+            for sub in gs_root.iterdir():
+                cand = sub / game_id
+                if cand.is_dir():
+                    base = cand; break
+    if not base.is_dir():
+        return None
+    meta = base / 'rtgameset_data.ini'
+    active = ''
+    if meta.is_file():
+        for line in meta.read_text(encoding='utf-8', errors='replace').splitlines():
+            m = re.match(r'^\s*ActiveConfig\s*=\s*(.*?)\s*$', line)
+            if m: active = m.group(1)
+    if active:
+        p = base / active
+        if p.is_file(): return p
+    return None
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--default-dir', required=True)
+    ap.add_argument('--profile-dir', required=True)
+    ap.add_argument('--out-dir', required=True)
+    ap.add_argument('--game-id', default='')
+    ap.add_argument('--gs-file', default='')
+    ap.add_argument('--workshop', default='')
+    args = ap.parse_args()
+
+    default_dir, profile_dir = Path(args.default_dir), Path(args.profile_dir)
+    out_dir = Path(args.out_dir); out_dir.mkdir(parents=True, exist_ok=True)
+
+    state = {}
+    for fname in ('Dolphin.ini', 'GFX.ini'):
+        p = default_dir / fname
+        if p.is_file():
+            order, sections = parse_ini(p.read_text(encoding='utf-8', errors='replace'))
+            state[fname] = (order, flatten(order, sections))
+        else:
+            state[fname] = ([], {})
+
+    if profile_dir.resolve() != default_dir.resolve():
+        for fname in ('Dolphin.ini', 'GFX.ini'):
+            p = profile_dir / fname
+            if p.is_file():
+                merge_into(state[fname][0], state[fname][1],
+                           p.read_text(encoding='utf-8', errors='replace'))
+
+    gs_file = None
+    if args.gs_file:
+        p = Path(args.gs_file)
+        if p.is_file(): gs_file = p
+    if gs_file is None and args.workshop and args.game_id:
+        gs_file = find_gameset_file(Path(args.workshop), args.game_id)
+    if gs_file:
+        dol_text, gfx_text, unknown = split_gamesettings(
+            gs_file.read_text(encoding='utf-8', errors='replace'))
+        if dol_text.strip(): merge_into(state['Dolphin.ini'][0], state['Dolphin.ini'][1], dol_text)
+        if gfx_text.strip(): merge_into(state['GFX.ini'][0], state['GFX.ini'][1], gfx_text)
+        if unknown:
+            print(f'warning: unknown GameSettings sections skipped: {unknown}', file=sys.stderr)
+
+    for fname in ('Dolphin.ini', 'GFX.ini'):
+        write_ini(out_dir / fname, state[fname][0], state[fname][1])
+
+    print(f'merged: default={default_dir} profile={profile_dir} gs={gs_file} -> {out_dir}')
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -1,0 +1,14 @@
+# Dolphin Stream - streaming settings
+# Copy to stream.conf and fill in your values
+HOST=""
+SYNC_PORT="8765"
+WIDTH="640"
+HEIGHT="480"
+FPS="60"
+BITRATE="10000"
+CODEC="auto"
+REMOTE="auto"
+SOPS="yes"
+PLATFORM=""
+EXTRA_ARGS=""
+TOKEN=""

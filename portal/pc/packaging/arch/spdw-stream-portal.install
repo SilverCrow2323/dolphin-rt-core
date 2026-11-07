@@ -1,0 +1,15 @@
+post_install() {
+    command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q /usr/share/applications || true
+    command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor || true
+}
+post_upgrade() { post_install; }
+pre_remove() {
+    for pf in /home/*/.config/spdw-stream/serve.pid; do
+        [ -f "$pf" ] && kill "$(cat "$pf")" 2>/dev/null || true
+    done
+    rm -f /home/*/.config/autostart/spdw-stream-*.desktop /root/.config/autostart/spdw-stream-*.desktop
+    rm -f /etc/lightdm/lightdm.conf.d/50-spdw-autologin.conf
+}
+post_remove() {
+    command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q /usr/share/applications || true
+}

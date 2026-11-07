@@ -1,0 +1,25 @@
+# Maintainer: SPDW Factory Lab <spdw@localhost>
+pkgname=spdw-stream-portal
+pkgver=@VERSION@
+pkgrel=1
+pkgdesc="Dolphin Rt:Stream PC portal - GameCube/Wii streaming to a muOS handheld (Sunshine + Moonlight)"
+arch=('any')
+url="https://github.com/SilverCrow2323/dolphin-rt-stream"
+license=('MIT')
+depends=('python' 'tk' 'python-pillow' 'procps-ng')
+optdepends=('polkit: admin actions (LightDM autologin)'
+            'xfconf: hide the XFCE panel while streaming'
+            'xorg-xrandr: 4:3 display mode while streaming'
+            'dolphin-emu: the emulator that runs your games'
+            'sunshine: game-stream host (AUR or LizardByte releases)'
+            'tailscale: remote play')
+install=$pkgname.install
+source=("$pkgname-$pkgver.tar.gz")
+sha256sums=('@SHA256@')
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    cp -a usr "$pkgdir/"
+    chmod 755 "$pkgdir"/usr/bin/spdw-stream "$pkgdir"/usr/bin/spdw-stream-portal "$pkgdir"/usr/lib/spdw-stream-portal/*.sh
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

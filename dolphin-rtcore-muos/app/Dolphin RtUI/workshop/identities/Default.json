@@ -1,0 +1,18 @@
+{
+  "name": "Default",
+  "color": "#8C59F2",
+  "icon": "star",
+  "rtcoreprofile": "Default",
+  "rtcoreprofile_variant": "std",
+  "controller": "Default",
+  "hotkeys": "Default",
+  "logger": "Disabled",
+  "gamesettings_mode": "all",
+  "gamesettings_list": [],
+  "cheats": false,
+  "mods": [],
+  "overlay_fps": true,
+  "overlay_vps": false,
+  "overlay_speed": false,
+  "overlay_osd": true
+}

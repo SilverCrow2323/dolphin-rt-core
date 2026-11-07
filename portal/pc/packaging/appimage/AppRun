@@ -1,0 +1,31 @@
+#!/bin/sh
+# SPDW Stream Portal - self-installing AppImage (see README: why it unpacks to ~/.local/share).
+HERE="$(dirname "$(readlink -f "$0")")"
+VER="$(cat "$HERE/VERSION")"
+DATA="${XDG_DATA_HOME:-$HOME/.local/share}/spdw-stream-portal"
+DEST="$DATA/$VER"
+BIN="$HOME/.local/bin"
+if [ ! -f "$DEST/.complete" ]; then
+    echo "SPDW Stream Portal $VER: first run, installing to $DEST ..." >&2
+    rm -rf "$DEST.tmp"; mkdir -p "$DEST.tmp" "$BIN" || exit 1
+    cp -a "$HERE/python-runtime" "$HERE/usr" "$HERE/VERSION" "$DEST.tmp/" || { rm -rf "$DEST.tmp"; exit 1; }
+    touch "$DEST.tmp/.complete"; rm -rf "$DEST"; mv "$DEST.tmp" "$DEST"
+    for d in "$DATA"/*/; do [ "${d%/}" = "$DEST" ] || rm -rf "$d"; done
+fi
+mkdir -p "$BIN"
+for pair in "spdw-stream-portal:portal.py" "spdw-stream:spdw_stream_core.py"; do
+    n="${pair%%:*}"; s="${pair#*:}"
+    cat > "$BIN/$n.tmp" <<LAUNCH
+#!/bin/sh
+R="$DEST/python-runtime"
+export LD_LIBRARY_PATH="\$R/lib/x86_64-linux-gnu\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+export TCL_LIBRARY="\$R/share/tcltk/tcl8.6" TK_LIBRARY="\$R/share/tcltk/tk8.6"
+exec "\$R/bin/python3" "$DEST/usr/lib/spdw-stream-portal/$s" "\$@"
+LAUNCH
+    chmod 755 "$BIN/$n.tmp" && mv -f "$BIN/$n.tmp" "$BIN/$n"
+done
+case "$1" in
+    cli) shift; exec "$BIN/spdw-stream" "$@" ;;
+    --install-only) echo "installed: $DEST (launchers in $BIN)"; exit 0 ;;
+    *) exec "$BIN/spdw-stream-portal" "$@" ;;
+esac

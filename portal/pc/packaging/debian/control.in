@@ -1,0 +1,17 @@
+Package: spdw-stream-portal
+Version: @VERSION@
+Section: games
+Priority: optional
+Architecture: all
+Depends: python3 (>= 3.9), python3-tk, python3-pil, python3-pil.imagetk, procps
+Recommends: pkexec | policykit-1, xfconf
+Suggests: dolphin-emu, tailscale
+Maintainer: SPDW Factory Lab <spdw@localhost>
+Homepage: https://github.com/SilverCrow2323/mockrt-core
+Description: MockRt:Core Stream Portal - PC side for GameCube/Wii streaming to a muOS handheld
+ GameCube-style 2.5D control panel (SPDW Factory Lab). Builds the game library
+ with cover art from ROMs kept on the PC, registers every game as a Sunshine app
+ (Dolphin in batch mode, fullscreen, XFCE panel hidden while streaming, 4:3 display mode so the stream fills the handheld screen), serves
+ the library to the handheld and manages autostart of Sunshine, the library
+ server and the portal itself at XFCE login (optional LightDM autologin).
+ Sunshine is installed separately (the portal can fetch the .deb from GitHub).

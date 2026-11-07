@@ -1,0 +1,89 @@
+cd "$(pwd)"   # dolphin-rt-stream/
+
+cat > .gitignore <<'GITIGNORE'
+# ============================================================
+# Dolphin Rt:Stream — .gitignore
+# ============================================================
+
+# ---- Runtime state (handheld app) ----
+# muos/*/conf sopravvive ai rename del folder (DolphinStream -> Dolphin RtStream -> ...)
+muos/*/conf/*.tsv
+muos/*/conf/*.log
+muos/*/conf/*.done
+muos/*/conf/*.status
+muos/*/conf/*.result
+muos/*/conf/*.txt
+muos/*/conf/*.pid
+muos/*/conf/stream.conf
+muos/*/conf/ui.cfg
+muos/*/conf/state.txt
+muos/*/conf/input.cfg
+muos/*/conf/profiles.tsv
+muos/*/conf/library.tsv
+muos/*/launch.txt
+muos/*/launch.env
+
+# Legacy flat path (se in futuro rimetterai conf/ in root)
+conf/*.tsv
+conf/*.log
+conf/*.done
+conf/*.status
+conf/*.result
+conf/*.txt
+conf/*.pid
+conf/stream.conf
+conf/ui.cfg
+conf/state.txt
+conf/input.cfg
+conf/profiles.tsv
+conf/library.tsv
+
+# ---- Secrets (mai nel repo) ----
+**/keys/
+**/*.pem
+**/*.p12
+**/*.key
+**/uniqueid.dat
+
+# ---- Local binaries (non ridistribuiti) ----
+**/libs/
+**/moonlight/
+**/love
+
+# ---- Cover cache (tieni il placeholder) ----
+muos/*/covers/*.png
+muos/*/covers/*.jpg
+muos/*/covers/*.jpeg
+!muos/*/covers/.gitkeep
+
+# ---- Build artefacts ----
+dist/
+*.deb
+*.zip
+*.tgz
+**/__pycache__/
+*.pyc
+*.pyo
+
+# ---- OS / IDE ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# ---- Backups ----
+*.bak
+*.orig
+*~
+GITIGNORE
+
+echo "✓ .gitignore scritto ($(wc -l < .gitignore) righe)"
+
+# muos Moonlight provides love/moonlight/keys/libs — never bundle
+# Exception: gptokeyb2 (still bundled, needed for controller mapping)
+**/libs/
+!**/libs/gptokeyb2
+**/moonlight/
+**/keys/
+**/love

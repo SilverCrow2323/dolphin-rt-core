@@ -23,7 +23,7 @@ From a PC, if the device has no `unzip`: `tar -xzf` the archive locally and copy
 
 ### Option B - online installer (downloads everything from the repo)
 ```
-curl -fsSL https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/knulli/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-k/get.sh | bash
 ```
 It downloads the release into `/userdata/emulators/dolphin-rtcore-k` and runs the installer. Run it again later and it **updates** instead (your saves and settings are kept).
 Options: `--dest DIR`, `--repo OWNER/NAME`, `--ref BRANCH_OR_TAG`, `--subdir DIR`, `--url TARBALL_URL`.
@@ -31,7 +31,7 @@ The default repo/branch/folder live in `config/repo.conf`.
 
 ### Option C - from a git checkout
 ```
-git clone https://github.com/SilverCrow2323/dolphin-rt-core && cd dolphin-rt-core/knulli && ./install.sh
+git clone https://github.com/SilverCrow2323/dolphin-rt-core && cd dolphin-rt-core/dolphin-rtcore-k && ./install.sh
 ```
 
 ### After installing

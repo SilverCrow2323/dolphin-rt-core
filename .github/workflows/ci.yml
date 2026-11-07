@@ -1,0 +1,51 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  portal:
+    runs-on: ubuntu-latest
+    strategy: { matrix: { python: ["3.10", "3.12"] } }
+    defaults: { run: { working-directory: portal } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ matrix.python }}" }
+      - run: |
+          sudo apt-get update && sudo apt-get install -y python3-tk zip xvfb
+          pip install lupa pillow
+      - run: make lint
+      - run: xvfb-run -a make test
+
+  portal-packages:
+    runs-on: ubuntu-latest
+    needs: portal
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y rpm zip
+      - run: |
+          make -C portal deb
+          bash portal/tools/build-packages.sh rpm
+          bash portal/tools/build-packages.sh arch
+      - uses: actions/upload-artifact@v4
+        with: { name: portal-packages, path: "portal/dist/**" }
+
+  muos-andromeda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y zip jq shellcheck luajit
+      - name: Lua syntax (all UI modules)
+        run: |
+          find dolphin-rtcore-muos/app -name '*.lua' -print0 | xargs -0 -n1 luajit -bl >/dev/null
+          luajit tests/test_stream_lib.lua 2>/dev/null || (cd "dolphin-rtcore-muos/app/Dolphin RtUI" && luajit ../../../tests/test_stream_lib.lua)
+      - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
+      - name: Run muOS Andromeda's own archive checks
+        run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
+      - uses: actions/upload-artifact@v4
+        with: { name: muxupd, path: dist/*.muxupd }
+
+  ports-dryrun:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tests/test_ports_dryrun.sh

@@ -1,0 +1,165 @@
+-- ui/screens/gameset_explorer.lua — editor per-game con K.List e scroll.
+local K        = require("ui.kit")
+local SFX      = require("ui.sfx")
+local Notify   = require("ui.notify")
+local Modal    = require("ui.modal")
+local GM       = require("core.gameset_manager")
+local GL       = require("core.gameset_loader")
+
+local S = {}
+S.list = K.List(K.MARGIN, 138, K.W - K.MARGIN * 2 - 14, K.BOT - 138, 46)
+S.rows = {}
+
+local function region_of(id)
+    if not id or #id < 4 then return "?" end
+    local map = { E="US", P="EU", J="JP", K="KR", W="TW", U="US", D="EU", F="EU", I="EU", S="EU", X="EU", H="EU" }
+    return map[id:sub(4,4)] or "?"
+end
+
+local function build()
+    local rows = {}
+    local list = GM.list_for(S.game_id) or {}
+    for _, cfg in ipairs(list) do
+        rows[#rows+1] = { kind = "file", file = cfg.file, active = cfg.active }
+    end
+    rows[#rows+1] = { kind = "new" }
+    S.rows = rows
+    S.list:set(rows, false)
+    S.list.sel = 1
+end
+
+function S.enter(params)
+    params = params or {}
+    S.game_id = params.game_id or "?"
+    S.game_title = params.game_title or S.game_id
+    S.region = region_of(S.game_id)
+    K.set_accent("wii")
+    build()
+end
+function S.update(dt) S.list:update(dt) end
+
+local function open_config(filename)
+    SFX.play("menu_select")
+    require("ui").go("rt_editor", {
+        mode = "game", game_id = S.game_id,
+        game_title = S.game_title, config_file = filename,
+    })
+end
+
+local function delete_custom(filename)
+    Modal.show("Delete config?", "File: " .. filename,
+        { accept_label = "Delete", cancel_label = "Cancel", color = K.C.bad,
+          on_accept = function()
+              GM.delete(S.game_id, filename)
+              SFX.play("menu_back")
+              build()
+          end })
+end
+
+local function create_new()
+    local name = "custom_" .. os.date("%m%d_%H%M") .. ".ini"
+    if GM.add(S.game_id, name) then
+        SFX.play("menu_select")
+        build()
+        open_config(name)
+    else
+        Notify.show("error", "Could not create file")
+    end
+end
+
+local function toggle_active(row)
+    if row.active then
+        GM.clear_active(S.game_id)
+        Notify.show("info", "Deactivated: " .. row.file)
+    else
+        GM.set_active(S.game_id, row.file)
+        Notify.show("success", "Active: " .. row.file)
+    end
+    SFX.play("menu_toggleoption")
+    build()
+end
+
+function S.pad(b)
+    local row = S.list:cur()
+    if b == "UP" then
+        if S.list:move(-1) then SFX.play("menu_move") end
+    elseif b == "DOWN" then
+        if S.list:move(1) then SFX.play("menu_move") end
+    elseif b == "A" and row then
+        if row.kind == "new" then create_new()
+        else open_config(row.file) end
+    elseif b == "Y" and row and row.kind == "file" then
+        toggle_active(row)
+    elseif b == "X" and row and row.kind == "file" then
+        delete_custom(row.file)
+    elseif b == "B" then
+        require("ui").back()
+    end
+end
+
+local function draw_header()
+    local m = K.MARGIN
+    local acc = K.acc or K.ACC.wii
+    K.disc(m + 26, 44, 26, nil, K.t or 0, acc)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setLineWidth(2)
+    local px, py = m + 62, 24
+    love.graphics.line(px, py, px + 12, py + 12)
+    love.graphics.line(px + 12, py + 12, px + 16, py + 16)
+    love.graphics.circle("line", px + 3, py + 3, 4)
+    love.graphics.setLineWidth(1)
+    local tx = m + 80
+    K.text("key", "GAME SETTINGS", tx, 10, K.C.faint)
+    K.text("h", K.clip("h", S.game_title, K.W - tx - m - 20), tx, 26, K.C.text)
+    local ry = 52
+    K.region_flag(S.region, tx, ry, 42, 20)
+    K.id_plate(S.game_id, tx + 48, ry, 96, 20)
+    K.color(acc, 1)
+    love.graphics.rectangle("fill", m, 80, K.W - m * 2, 2)
+end
+
+local function draw_row(row, x, y, w, h, focused)
+    if row.kind == "new" then
+        K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6, accent = K.C.ok })
+        K.text("body", "+  Create new config", x + 14, y + h/2 - 11,
+               focused and K.C.ok or K.C.text)
+        return
+    end
+    K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
+    if K.draw_tool_icon then
+        K.draw_tool_icon("file", x + 26, y + h/2, 20, focused and K.acc or K.C.dim,
+                         focused and 1 or 0.7)
+    end
+    K.text("body", K.clip("body", row.file, w - 200), x + 46, y + h/2 - 11,
+           focused and K.C.text or K.C.dim)
+    local right = x + w - 14
+    if row.active then
+        local txt = "● ACTIVE"
+        local tw = K.width("key", txt) + 12
+        K.color(K.C.ok, 0.22)
+        love.graphics.rectangle("fill", right - tw, y + h/2 - 11, tw, 22, 5, 5)
+        K.color(K.C.ok, 1)
+        love.graphics.rectangle("line", right - tw, y + h/2 - 11, tw, 22, 5, 5)
+        K.text("key", txt, right - tw + 6, y + h/2 - 7, K.C.ok)
+    else
+        K.text("small", "inactive", right - K.width("small", "inactive"), y + h/2 - 9, K.C.faint)
+    end
+end
+
+function S.draw()
+    K.bg()
+    draw_header()
+    if #S.list.items == 0 then
+        K.text("body", "No configs. Press A to create one.", 0, 240, K.C.dim, 1, K.W, "center")
+    else
+        S.list:draw(draw_row)
+    end
+    K.footer({
+        { key = "A", label = "Open" },
+        { key = "Y", label = "Activate" },
+        { key = "X", label = "Delete" },
+        { key = "B", label = "Back" },
+    })
+end
+
+return S

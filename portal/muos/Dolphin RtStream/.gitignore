@@ -1,0 +1,9 @@
+
+# Binari runtime — qualsiasi posizione nel repo
+**/libs/
+**/moonlight/
+**/keys/
+**love
+**/*.pem
+**/*.p12
+**/uniqueid.dat

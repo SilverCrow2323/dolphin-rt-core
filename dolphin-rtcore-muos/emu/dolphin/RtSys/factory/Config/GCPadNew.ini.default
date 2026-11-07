@@ -1,0 +1,47 @@
+[Rt:Data]
+CoreVersion = 11.000
+RtProfile = Settings
+ConfigFile = GC Controller
+
+
+[GCPad1]
+Device = SDL/0/muOS-Keys
+# --- Face buttons ---
+Buttons/A = `Button 1`
+Buttons/B = `Button 0`
+Buttons/X = `Button 2`
+Buttons/Y = `Button 3`
+Buttons/Z = `Button 11`
+Buttons/Start = (`Button 7` & !`Button 6` )
+# --- Stick sinistro (analogico) = Main Stick ---
+Main Stick/Up = `Left Y+`
+Main Stick/Down = `Left Y-`
+Main Stick/Left = `Left X-`
+Main Stick/Right = `Left X+`
+Main Stick/Modifier = `Shift`
+Main Stick/Calibration = 100.00 141.42 100.00 141.42 100.00 141.42 100.00 141.42
+# --- Stick destro (analogico) = C-Stick ---
+C-Stick/Up = `Right Y+`
+C-Stick/Down = `Right Y-`
+C-Stick/Left = `Right X-`
+C-Stick/Right = `Right X+`
+C-Stick/Modifier = `Ctrl`
+C-Stick/Calibration = 100.00 141.42 100.00 141.42 100.00 141.42 100.00 141.42
+# --- Grilletti L/R analogici = fisicamente L2/R2 sul pad ---
+Triggers/L = `Button 4`
+Triggers/R = `Button 5`
+Rumble/Motor = `Motor 0` `Motor 1`
+# --- D-Pad fisico = hat, indipendente dagli stick ---
+D-Pad/Up = `Pad N`
+D-Pad/Down = `Pad S`
+D-Pad/Left = `Pad W`
+D-Pad/Right = `Pad E`
+# --- Click analogico L/R (bottoni fisici L1/R1 sul pad) ---
+Triggers/L-Analog = `Button 9`
+Triggers/R-Analog = `Button 12`
+[GCPad2]
+Device = XInput2/0/Virtual core pointer
+[GCPad3]
+Device = XInput2/0/Virtual core pointer
+[GCPad4]
+Device = XInput2/0/Virtual core pointer

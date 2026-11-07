@@ -1,6 +1,6 @@
 #!/bin/bash
 # Dolphin Rt:Core K - online installer (single file)
-#   curl -fsSL https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/knulli/get.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-k/get.sh | bash
 #   ... | bash -s -- --dest /userdata/emulators/dolphin-rtcore-k --ref v0.2.0
 # Downloads the release from the repo, unpacks it and runs install.sh. Safe to run again: it then updates.
 REPO="${RTCORE_REPO:-SilverCrow2323/dolphin-rt-core}"
