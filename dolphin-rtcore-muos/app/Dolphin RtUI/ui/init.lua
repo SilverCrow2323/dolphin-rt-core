@@ -12,9 +12,10 @@ local IM     = require("ui.input")
 local K      = require("ui.kit")
 local Modal  = require("ui.modal")
 local Notify = require("ui.notify")
+local Nexus  = require("core.nexus")
 
 local M = {}
-local screens, current, current_name = {}, nil, nil
+local current, current_name = nil, nil
 local stack = {}                         -- back stack of { name, params }
 -- Transizione: la schermata uscente scivola di ~28 px e sfuma (OUT), poi la
 -- nuova entra dal lato opposto (IN). Direzione: avanti = sx, indietro = dx.
@@ -57,10 +58,31 @@ local function log(msg)
     end)
 end
 
-function M.register(name, mod_path)
+function M.register(name, mod_path, metadata)
     local ok, mod = pcall(require, mod_path)
-    if ok and type(mod) == "table" then screens[name] = mod
-    else log("screen '" .. name .. "' failed: " .. tostring(mod)) end
+    if ok and type(mod) == "table" then
+        local registered, err = Nexus.register_screen(name, mod, metadata or { title = name })
+        if not registered then log("screen '" .. name .. "' registry: " .. tostring(err)) end
+    else
+        log("screen '" .. name .. "' failed: " .. tostring(mod))
+    end
+end
+
+-- Public NEXUS hooks: stable action IDs can be invoked by menus, shortcuts
+-- and future integrations without coupling those callers to screen modules.
+function M.register_action(id, callback, metadata)
+    return Nexus.register_action(id, callback, metadata)
+end
+function M.run_action(id, ...)
+    local ok, result, detail = Nexus.run_action(id, ...)
+    if not ok then
+        log("action '" .. tostring(id) .. "' failed: " .. tostring(result))
+        Notify.show("error", "Action unavailable: " .. tostring(id))
+    end
+    return ok, result, detail
+end
+function M.catalog()
+    return { screens = Nexus.list_screens(), actions = Nexus.list_actions() }
 end
 
 function M.init()
@@ -96,7 +118,7 @@ function M.init()
 end
 
 local function enter(name, params)
-    local scr = screens[name] or screens.library
+    local scr = Nexus.get_screen(name) or Nexus.get_screen("library")
     if not scr then return end
     if current and current.leave then pcall(current.leave) end
     current, current_name = scr, name
@@ -153,7 +175,7 @@ end
 
 -- Navigate with a short fade. `params` is handed to enter().
 function M.go(name, params, opts)
-    if not screens[name] then Notify.show("error", "Unknown screen: " .. tostring(name)); return end
+    if not Nexus.has_screen(name) then Notify.show("error", "Unknown screen: " .. tostring(name)); return end
     if fade.phase ~= "idle" then return end
     if not (opts and opts.no_push) and current_name and current_name ~= name then
         stack[#stack + 1] = { name = current_name, params = current and current.params,
@@ -164,9 +186,11 @@ function M.go(name, params, opts)
 end
 
 function M.go_instant(name, params)
+    if not Nexus.has_screen(name) then Notify.show("error", "Unknown screen: " .. tostring(name)); return false end
     stack = {}
     fade.phase = "idle"
     enter(name, params)
+    return true
 end
 
 function M.is_root()
