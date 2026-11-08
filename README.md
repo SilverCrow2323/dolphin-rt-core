@@ -76,9 +76,9 @@ build ready-to-install port archives (shared `core/` + **your** aarch64 `dolphin
 
 - **[Engineering guide](docs/REPO_GUIDE.md)** — repository map, development, quality and release workflow.
 - **[Frontend documentation index](docs/README.md)** — UI architecture, screens, paths, profiles and testing.
-- **[GitHub Wiki source](wiki/Home.md)** — concise user/developer pages; publish with `tools/publish-wiki.sh`.
+- **[GitHub Wiki source](wiki/Home.md)** — concise user/developer pages; publish with `bash tools/publish-wiki.sh`.
 - **UI screenshots:** `bash tools/capture-ui.sh --screens "boot,library,settings,triage"`.
-- **Visual asset audit:** `python3 python3 tools/asset_inventory.py --contact-sheet` (Pillow optional).
+- **Visual asset audit:** `python3 tools/asset_inventory.py --contact-sheet` (Pillow optional).
 
 The screenshot helper uses the frontend's existing opt-in `core/devshot.lua` hook; it does not modify application source. Generated reports and captures stay under `artifacts/`.
 
