@@ -4,21 +4,30 @@
 - [[Home]]
 - [[Quick-Start]]
 - [[Platform-Support]]
+- [[FAQ]]
 
-**Using the project**
-- [[Compatibility-Database]]
-- [[Reporting-a-Test]]
-- [[Rating-Guide]]
+**muOS and handheld**
+- [[muOS-Registration]]
 - [[Troubleshooting]]
+
+**Compatibility Database**
+- [[Compatibility-Database]]
+- [[Compatibility-Data-Model]]
+- [[Rating-Guide]]
+- [[Reporting-a-Test]]
+- [[Compatibility-Site]]
+
+**Rt:Stream**
 - [[Rt-Stream]]
 
-**Contributing**
-- [[Contributing]]
+**Development**
+- [[Project-Map]]
 - [[Architecture]]
 - [[Development]]
+- [[Quality-Gates]]
 - [[Screenshots]]
 - [[Visual-Assets]]
-- [[Quality-Gates]]
+- [[Contributing]]
 - [[Release-Checklist]]
 
-[Repository README](https://github.com/SilverCrow2323/dolphin-rt-core#readme)
+[Repository](https://github.com/SilverCrow2323/dolphin-rt-core) · [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases) · [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues)

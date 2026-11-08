@@ -1,38 +1,40 @@
 # Compatibility Database
 
-The Compatibility Database is a static web app in the repository root (`index.html`). It presents community-submitted GameCube and Wii test reports from the tracked frontend data files.
+The Compatibility Database is the community report browser for Nintendo GameCube and Nintendo Wii titles. It helps compare observed results on specific handheld and firmware combinations.
 
-## What it shows
+## Source of truth
 
-- Game title, Game ID and region variants.
-- Boot result, playability, rating and reported FPS range.
-- Test device, firmware, Rt:Core version, profile and written considerations.
-- Links to GameSettings and shared community resources when available.
-- Individual report history in the game detail view.
+The static web app is the root `index.html`. It reads the tracked files:
 
-The source JSON files are:
+- `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json` — test reports.
+- `dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json` — community settings.
 
-- `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json`
-- `dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json`
-
-Do not fork the data into a second manually-maintained copy. The website fetches the tracked JSON from the current repository's `main` branch.
+The frontend and website should read the same source data. Do not maintain an untracked duplicate.
 
 ## Search and filters
 
 1. Select **GameCube** or **Wii**.
-2. Search by title, Game ID or words found in test notes.
-3. Narrow by region or boot result.
-4. Select a rating bucket or sort by recent, title or number of reports.
-5. Open a game card to inspect report details and available settings.
+2. Search by title, Game ID, test notes, tester, handheld, firmware or core profile.
+3. Filter by region, boot result, rating, tested device or muOS version.
+4. Sort by rating, recent report, title or number of tests.
+5. Open a game to inspect individual reports before applying settings.
 
-The **Share** control copies a URL containing the current console and supported filters. Favourites are browser-local and are not included in shared links.
+The **Share** action preserves the console and supported filters in the URL. Favourites remain local to the browser and are not shared.
 
 ## Interpreting results
 
-A card summarizes multiple test entries. Open it to inspect the underlying reports. A result can vary with device revision, firmware, game region/revision, image format, profile and Rt:Core build.
+An aggregated game card summarizes multiple report entries. Open the details to compare each tester's device, muOS version, Rt:Core and Dolphin versions, profile, GameSettings, game ID, region, observed FPS, stability, audio, graphics and input notes.
 
-The database is not an official guarantee and should not be treated as a substitute for a backup or a careful first launch.
+A result is not portable automatically across regions, firmware revisions, devices or Dolphin builds.
 
-## Suggesting a correction
+## Submitting a report
 
-Use the site's Report action or open a GitHub issue with the `test-report` label. Include the exact game ID and the source report that needs correction. Do not overwrite or remove another tester's result without traceable evidence.
+Use the site's Report form. It prepares a GitHub issue; it does not write directly to the JSON database. Maintainers review the report before updating the source. Follow [[Reporting-a-Test]] and [[Rating-Guide]].
+
+## Privacy and licensing
+
+Do not upload ROMs, BIOS files, firmware, copyrighted game images, serial numbers, pairing tokens or private logs. Screenshots should contain only the evidence needed to reproduce or understand the report.
+
+## Site deployment
+
+See [[Compatibility-Site]] for local preview, GitHub Pages configuration, the PWA cache and automated checks. A committed `index.html` does not by itself mean that GitHub Pages is enabled.
