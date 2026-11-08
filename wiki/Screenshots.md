@@ -1,13 +1,18 @@
 # Screenshots
 
-The muOS frontend has an opt-in screenshot hook in `core/devshot.lua`. From the repository root:
+The muOS LÖVE frontend has an opt-in screenshot hook in `core/devshot.lua`. It is inert unless `DOLPHINUI_SHOT` is set.
+
+From the repository root:
 
 ```sh
 bash tools/capture-ui.sh library
-tools/capture-ui.sh --screen triage --pads "R1,A,DOWN" --output /tmp/triage.png
-tools/capture-ui.sh --screens "boot,library,settings,triage" --out-dir artifacts/screenshots
+bash tools/capture-ui.sh --screen triage --pads "R1,A,DOWN" --output /tmp/triage.png
+bash tools/capture-ui.sh --screens "boot,library,settings,triage"
+bash tools/capture-ui.sh --all
 ```
 
-Requires LÖVE 11.5 and either an X11 display or `xvfb-run`. Screen names must match registered frontend screen names. Inspect the PNGs manually; a successful process does not prove the correct screen rendered.
+Requires LÖVE 11.5 and either an X11 display or `xvfb-run`. The `--all` option iterates the screens registered by the frontend and continues after individual failures.
 
-For handheld changes, include a separately labelled real-device capture where possible. Never claim an Xvfb image is hardware evidence.
+Inspect images manually. A successful process only proves a PNG was written; it does not prove the correct state rendered. For handheld changes, include separately labelled real-device evidence where possible.
+
+Generated captures are written below `artifacts/`, which is ignored by Git. Do not commit screenshots of personal ROM lists, usernames, tokens or other private data.
