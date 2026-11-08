@@ -39,7 +39,7 @@ local function flavours()
           hint = "Binary missing or not executable." },
         { label = "Launcher script",   path = "/opt/muos/script/launch/ext-dolphinrt.sh", kind = "exec", crit = true,
           hint = "muOS cannot start games." },
-        { label = "Core list: GameCube", kind = "manifest", sys = "Nintendo GameCube", path = "MUOS/info/manifest  >  Nintendo GameCube",
+        { label = "Core list: GameCube", kind = "manifest", sys = "Nintendo Gamecube", path = "MUOS/info/manifest  >  Nintendo Gamecube",
           hint = "Run Task > Dolphin Rt-Core > Register GameCube and Wii." },
         { label = "Core list: Wii",      kind = "manifest", sys = "Nintendo Wii", path = "MUOS/info/manifest  >  Nintendo Wii",
           hint = "Run Task > Dolphin Rt-Core > Register GameCube and Wii." },
@@ -180,7 +180,7 @@ local function rom_roots()
         end
     end
     if #out == 0 then
-        out = { { path = "/mnt/mmc/ROMS/Nintendo GameCube", system = "GC" },
+        out = { { path = "/mnt/mmc/ROMS/Nintendo Gamecube", system = "GC" },
                 { path = "/mnt/mmc/ROMS/Nintendo Wii",      system = "Wii" } }
     end
     return out

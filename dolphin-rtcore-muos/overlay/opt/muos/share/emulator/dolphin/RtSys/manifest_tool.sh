@@ -259,7 +259,8 @@ manifest_apply() {
             printf '%s' "$json" | jq '{catalogue, lookup, default, friendly, bios, external, runtime} + (if .governor then {governor} else {} end)' \
                 | write_atomic "$file" || die "cannot write split manifest: $file"
         done
-        rm -f "$USERM/core/$NS/$OLD_GC_NAME.json" "$USERM/core/$NS/$OLD_WII_NAME.json"
+        [ "$OLD_GC_NAME" = "$GC_KEY" ] || rm -f "$USERM/core/$NS/$OLD_GC_NAME.json"
+        [ "$OLD_WII_NAME" = "$WII_KEY" ] || rm -f "$USERM/core/$NS/$OLD_WII_NAME.json"
     fi
 
     printf '# Dolphin Rt:Core - switch_weapon state\nMODE=%s\n' "$n" > "$STATE.tmp" && mv -f "$STATE.tmp" "$STATE"
@@ -277,7 +278,7 @@ manifest_current() {
         jq -e --arg gk "$GC_KEY" --arg wk "$WII_KEY" \
             --arg oldgc "$OLD_GC_NAME" --arg oldwii "$OLD_WII_NAME" \
             --argjson gc "$GC_JSON" --argjson wii "$WII_JSON" \
-            '(.[$gk]==$gc) and (.[$wk]==$wii) and (has($oldgc)|not) and (has($oldwii)|not)' "$file" >/dev/null 2>&1 || return 1
+            '(.[$gk]==$gc) and (.[$wk]==$wii) and (($oldgc==$gk) or (has($oldgc)|not)) and (($oldwii==$wk) or (has($oldwii)|not))' "$file" >/dev/null 2>&1 || return 1
     else
         for spec in "$GC_KEY|$GC_JSON" "$WII_KEY|$WII_JSON"; do
             key="${spec%%|*}"
@@ -288,7 +289,8 @@ manifest_current() {
                 '.catalogue==$expected.catalogue and .default==$expected.default and .friendly==$expected.friendly and .external==$expected.external' \
                 "$file" >/dev/null 2>&1 || return 1
         done
-        [ ! -e "$USERM/core/$NS/$OLD_GC_NAME.json" ] && [ ! -e "$USERM/core/$NS/$OLD_WII_NAME.json" ] || return 1
+        [ "$OLD_GC_NAME" = "$GC_KEY" ] || [ ! -e "$USERM/core/$NS/$OLD_GC_NAME.json" ] || return 1
+        [ "$OLD_WII_NAME" = "$WII_KEY" ] || [ ! -e "$USERM/core/$NS/$OLD_WII_NAME.json" ] || return 1
     fi
     jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" \
         '.["nintendogamecube"]==$gc and .["nintendowii"]==$wii' "$USERM/assign.json" >/dev/null 2>&1

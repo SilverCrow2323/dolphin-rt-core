@@ -63,9 +63,9 @@ RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assi
 RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
 sh "$TOOL" apply 1
-jq -e '.["Nintendo GameCube"].namespace=="Nintendo" and .["Nintendo Wii"].namespace=="Nintendo" and has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
+jq -e '.["Nintendo Gamecube"].namespace=="Nintendo" and .["Nintendo Wii"].namespace=="Nintendo" and has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
 [ -s "$AS/info/manifest/core.json.rtcore.bak" ]
-jq -e '.nintendogamecube=="Nintendo GameCube" and .nintendowii=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
+jq -e '.nintendogamecube=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
 ok "Andromeda single manifest registers the Nintendo systems and preserves other systems"
 [ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 1 ]
 ok "Andromeda automatic assignment refresh runs"
@@ -87,7 +87,7 @@ RT_MUOS_ROOT="$S" RT_MUOS_STORE_DIR="$SS" RT_MUOS_ASSIGN_DIR="$S/share/info/assi
 RT_MUOS_MANIFEST_DIR="$S/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 RT_MUOS_ASSIGN_REFRESH="$S/script/system/assign.sh" RT_TEST_REFRESH_LOG="$S/refresh.log" \
 sh "$TOOL" apply 1
-jq -e '(.catalogue=="Nintendo GameCube") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo GameCube.json" >/dev/null
+jq -e '(.catalogue=="Nintendo Gamecube") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Gamecube.json" >/dev/null
 jq -e '(.catalogue=="Nintendo Wii") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Wii.json" >/dev/null
 [ -f "$SS/info/manifest/core/Existing/Existing.json" ]
 ok "Split manifest stores both systems under the Nintendo namespace and preserves existing files"
@@ -95,16 +95,16 @@ ok "Split manifest stores both systems under the Nintendo namespace and preserve
 # Jacaranda: legacy info/assign/*.ini format, with user files in the same folder preserved.
 J="$TMP/jacaranda"
 JS="$TMP/jacaranda-store"
-mkdir -p "$J/config/system" "$J/share/info/assign/Nintendo GameCube" "$JS"
+mkdir -p "$J/config/system" "$J/share/info/assign/Nintendo Gamecube" "$JS"
 printf '2601.1_JACARANDA\n' > "$J/config/system/version"
-printf 'keep me\n' > "$J/share/info/assign/Nintendo GameCube/user-note.txt"
+printf 'keep me\n' > "$J/share/info/assign/Nintendo Gamecube/user-note.txt"
 RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
 RT_MUOS_MANIFEST_DIR="$J/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 sh "$TOOL" apply 1
-[ -s "$J/share/info/assign/Nintendo GameCube/global.ini" ]
+[ -s "$J/share/info/assign/Nintendo Gamecube/global.ini" ]
 [ -s "$J/share/info/assign/Nintendo Wii/global.ini" ]
-[ -s "$J/share/info/assign/Nintendo GameCube/dolphin - rtprime - upright.ini" ]
-grep -q 'keep me' "$J/share/info/assign/Nintendo GameCube/user-note.txt"
+[ -s "$J/share/info/assign/Nintendo Gamecube/dolphin - rtprime - upright.ini" ]
+grep -q 'keep me' "$J/share/info/assign/Nintendo Gamecube/user-note.txt"
 ok "Jacaranda legacy assignment installs GameCube/Wii profiles without deleting unrelated files"
 RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
 RT_MUOS_MANIFEST_DIR="$J/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
@@ -113,8 +113,8 @@ ok "Jacaranda ensure accepts an already-current legacy installation"
 RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
 RT_MUOS_MANIFEST_DIR="$J/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 sh "$TOOL" remove
-[ ! -e "$J/share/info/assign/Nintendo GameCube/dolphin - rtprime - upright.ini" ]
-[ -f "$J/share/info/assign/Nintendo GameCube/user-note.txt" ]
+[ ! -e "$J/share/info/assign/Nintendo Gamecube/dolphin - rtprime - upright.ini" ]
+[ -f "$J/share/info/assign/Nintendo Gamecube/user-note.txt" ]
 ok "Jacaranda remove cleans only Rt:Core profile files"
 
 printf '\nmuOS registration tests: %d passed, %d failed\n' "$pass" "$fail"
