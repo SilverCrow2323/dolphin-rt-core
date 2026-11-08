@@ -72,6 +72,18 @@ Build everything from source: `dolphin-rtcore-muos/tools/build-muxupd.sh`, `port
 test the Knulli/ROCKNIX ports with `tests/test_ports_dryrun.sh`;
 build ready-to-install port archives (shared `core/` + **your** aarch64 `dolphin`) with `tools/make-port-release.sh k|r --binary /path/to/dolphin`.
 
+## 📚 Documentation & developer tools
+
+- **[Engineering guide](docs/REPO_GUIDE.md)** — repository map, development, quality and release workflow.
+- **[Frontend documentation index](docs/README.md)** — UI architecture, screens, paths, profiles and testing.
+- **[GitHub Wiki source](wiki/Home.md)** — concise user/developer pages; publish with `tools/publish-wiki.sh`.
+- **UI screenshots:** `tools/capture-ui.sh --screens "boot,library,settings,triage"`.
+- **Visual asset audit:** `python3 tools/asset_inventory.py --contact-sheet` (Pillow optional).
+
+The screenshot helper uses the frontend's existing opt-in `core/devshot.lua` hook; it does not modify application source. Generated reports and captures stay under `artifacts/`.
+
+---
+ 
 ## 📥 Install (muOS Andromeda)
 
 1. Copy `Dolphin_RtCore_v12_0_0_Andromeda.muxupd` into the **`ARCHIVE`** folder of the ROM card and install it from **Archive Manager**.
