@@ -1,0 +1,5 @@
+# Local generated evidence and reports
+/artifacts/
+**/__pycache__/
+*.py[cod]
+.DS_Store
