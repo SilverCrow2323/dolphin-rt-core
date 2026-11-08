@@ -105,6 +105,28 @@ function M.init()
         { "stream_library", "ui.screens.stream_library" },
         { "stream_settings", "ui.screens.stream_settings" },
     }) do M.register(s[1], s[2]) end
+
+    -- Stable built-in action IDs are the first consumers of NEXUS. Keep the
+    -- callbacks here so navigation remains the single owner of transitions.
+    if not Nexus.has_action("navigation.back") then
+        M.register_action("navigation.back", function() M.back(); return true end,
+            { title = "Back", group = "navigation", order = 10 })
+    end
+    if not Nexus.has_action("navigation.open_library") then
+        M.register_action("navigation.open_library", function()
+            M.go("library")
+            return true
+        end, { title = "Open library", group = "navigation", order = 20 })
+    end
+    if not Nexus.has_action("system.open_drawer") then
+        M.register_action("system.open_drawer", function()
+            local ok, panel = pcall(require, "ui.system_panel")
+            if not ok or not panel or not panel.open then return false, "system drawer unavailable" end
+            panel.open()
+            return true
+        end, { title = "Open system drawer", group = "system", order = 30 })
+    end
+
     local ok, SP = pcall(require, "ui.system_panel")
     if ok and SP and SP.init then SP.init() end
     local okS, Settings = pcall(require, "core.settings")
