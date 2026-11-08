@@ -20,11 +20,20 @@ make_assign_stub() {
     cat > "$root/script/system/assign.sh" <<'STUB'
 #!/bin/sh
 set -eu
-mkdir -p "$RT_MUOS_STORE_DIR/info/manifest"
-if [ -r "$RT_MUOS_STORE_DIR/info/manifest/core.json" ]; then
-    jq -r 'to_entries[] | select(.value.namespace=="Nintendo") | .key' "$RT_MUOS_STORE_DIR/info/manifest/core.json" >/dev/null
+manifest="$RT_MUOS_STORE_DIR/info/manifest"
+mkdir -p "$manifest"
+pairs="$(mktemp)"
+trap 'rm -f "$pairs"' EXIT
+if [ -r "$manifest/core.json" ]; then
+    jq -r 'to_entries[] | . as $system | (.value.friendly // [])[] | [., $system.key] | @tsv' "$manifest/core.json" >> "$pairs"
 fi
-printf '{ "nintendogamecube": "Nintendo GameCube", "nintendowii": "Nintendo Wii" }\n' > "$RT_MUOS_STORE_DIR/info/manifest/assign.json"
+if [ -d "$manifest/core" ]; then
+    find "$manifest/core" -type f -name '*.json' -print | LC_ALL=C sort | while IFS= read -r file; do
+        key="$(basename "$file" .json)"
+        jq -r --arg key "$key" '(.friendly // [])[] | [., $key] | @tsv' "$file"
+    done >> "$pairs"
+fi
+jq -Rn '[inputs | split("\t")] as $pairs | reduce $pairs[] as $pair ({}; .[$pair[0]] = $pair[1])' < "$pairs" > "$manifest/assign.json"
 echo refresh >> "$RT_TEST_REFRESH_LOG"
 STUB
     chmod 755 "$root/script/system/assign.sh"
@@ -46,7 +55,7 @@ A="$TMP/andromeda"
 AS="$TMP/andromeda-store"
 mkdir -p "$A/config/system" "$A/share/info/manifest" "$AS/info/manifest"
 printf '2606.0_ANDROMEDA\n' > "$A/config/system/version"
-cat > "$A/share/info/manifest/core.json" <<'JSON'
+cat > "$AS/info/manifest/core.json" <<'JSON'
 {"Nintendo DS":{"name":"Nintendo DS","namespace":"Nintendo","catalogue":"Nintendo DS","default":"nds","friendly":["nds"],"bios":[],"external":{}},"Sony PlayStation":{"name":"Sony PlayStation","namespace":"Sony","catalogue":"Sony PlayStation","default":"pcsx","friendly":["ps"],"bios":[],"external":{}}}
 JSON
 make_assign_stub "$A"
@@ -55,6 +64,7 @@ RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
 sh "$TOOL" apply 1
 jq -e '.["Nintendo GameCube"].namespace=="Nintendo" and .["Nintendo Wii"].namespace=="Nintendo" and has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
+[ -s "$AS/info/manifest/core.json.rtcore.bak" ]
 jq -e '.nintendogamecube=="Nintendo GameCube" and .nintendowii=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
 ok "Andromeda single manifest registers the Nintendo systems and preserves other systems"
 [ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 1 ]

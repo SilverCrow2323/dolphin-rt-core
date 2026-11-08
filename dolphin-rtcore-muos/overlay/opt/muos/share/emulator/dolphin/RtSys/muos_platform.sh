@@ -39,7 +39,7 @@ elif [ -r "$RT_MUOS_MANIFEST_DIR/core.json" ]; then
     RT_MUOS_REGISTRATION_LAYOUT="single"
 else
     case "$RT_MUOS_RELEASE" in
-        Jacaranda|Goose|Pixie|Banana)
+        Jacaranda)
             RT_MUOS_REGISTRATION_LAYOUT="legacy-assign"
             ;;
         *)
