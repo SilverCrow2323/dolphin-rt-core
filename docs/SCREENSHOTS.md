@@ -13,7 +13,7 @@ The muOS LÖVE frontend already contains an opt-in screenshot hook in `core/devs
 From the repository root:
 
 ```sh
-tools/capture-ui.sh library
+bash tools/capture-ui.sh library
 tools/capture-ui.sh triage artifacts/screenshots/triage.png
 ```
 
