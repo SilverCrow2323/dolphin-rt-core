@@ -20,7 +20,7 @@ The helper reads `/opt/muos/config/system/version` (or muOS's `GET_VAR system ve
 | Detected API | Registration strategy |
 |---|---|
 | `info/manifest/core.json` | Merge only Rt:Core's GameCube/Wii definitions into the user manifest; preserve unrelated systems and keep a one-time backup |
-| `info/manifest/core/<Namespace>/<System>.json` | Write only `Nintendo/Nintendo GameCube.json` and `Nintendo/Nintendo Wii.json` |
+| `info/manifest/core/<Namespace>/<System>.json` | Write only `Nintendo/Nintendo Gamecube.json` and `Nintendo/Nintendo Wii.json` |
 | Legacy `info/assign/<System>/*.ini` | Stage the two system folders atomically and preserve unrelated user files |
 
 After a manifest update, the helper invokes muOS's own `script/system/assign.sh -p -v` to regenerate `assign.json`. A valid core definition without its content-to-system aliases may still be absent from automatic Content Explorer assignment.

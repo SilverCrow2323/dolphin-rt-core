@@ -9,6 +9,9 @@ OUT="${1:-$ROOT/artifacts/compatibility-site}"
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 [[ "$OUT" != "$ROOT" ]] || { echo "Refusing to build the website into the repository root" >&2; exit 2; }
+case "$ROOT/" in
+    "$OUT/"*) echo "Refusing to build into a parent directory of the repository" >&2; exit 2 ;;
+esac
 
 for file in index.html manifest.json sw.js; do
     [[ -f "$ROOT/$file" ]] || { echo "Required website file is missing: $file" >&2; exit 1; }

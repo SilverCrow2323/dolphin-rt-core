@@ -10,6 +10,8 @@ on:
       - "assets/spdw_symbol.png"
       - "assets/gamecube.svg"
       - "assets/wii.svg"
+      - "dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json"
+      - "dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json"
       - "tools/build-compat-site.sh"
       - ".github/workflows/deploy-compatibility.yml"
   workflow_dispatch:
