@@ -30,9 +30,10 @@ eq(Nexus.register_action("library.rescan", function(force)
     return true, force
 end, { title = "Rescan library", group = "library" }), true, "register action")
 eq(Nexus.has_action("library.rescan"), true, "has action")
-local ok, value = Nexus.run_action("library.rescan", "deep")
+local ok, value, detail = Nexus.run_action("library.rescan", "deep")
 eq(ok, true, "run action")
-eq(value, "deep", "action return value")
+eq(value, true, "action result")
+eq(detail, "deep", "action detail")
 eq(called, 1, "action called once")
 
 local bad = Nexus.register_action("library.rescan", function() end, {})
