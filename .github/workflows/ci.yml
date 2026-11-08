@@ -49,3 +49,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash tests/test_ports_dryrun.sh
+
+  repository-tooling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check helper syntax
+        run: |
+          bash -n tools/capture-ui.sh tools/publish-wiki.sh
+          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py
+      - name: Test asset inventory
+        run: python -m unittest tests/test_repo_tools.py -v
