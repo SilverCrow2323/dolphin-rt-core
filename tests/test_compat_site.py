@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import tempfile
@@ -90,6 +91,18 @@ class CompatibilitySiteTests(unittest.TestCase):
             tmp.flush()
             result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_wiki_navigation_references_resolve(self):
+        wiki = ROOT / "wiki"
+        pages = {path.stem for path in wiki.glob("*.md")}
+        self.assertIn("Home", pages)
+        self.assertIn("_Sidebar", pages)
+        self.assertIn("_Footer", pages)
+        self.assertGreaterEqual(len(pages), 15)
+        for path in wiki.glob("*.md"):
+            references = re.findall(r"\\[\\[([A-Za-z0-9_-]+)\\]\\]", path.read_text(encoding="utf-8"))
+            for target in references:
+                self.assertIn(target, pages, f"{path.name} links to missing Wiki page {target}")
 
 
 if __name__ == "__main__":
