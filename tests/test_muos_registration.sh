@@ -89,7 +89,7 @@ RT_MUOS_ASSIGN_REFRESH="$S/script/system/assign.sh" RT_TEST_REFRESH_LOG="$S/refr
 sh "$TOOL" apply 1
 jq -e '(.catalogue=="Nintendo Gamecube") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Gamecube.json" >/dev/null
 jq -e '(.catalogue=="Nintendo Wii") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Wii.json" >/dev/null
-[ -f "$SS/info/manifest/core/Existing/Existing.json" ]
+[ -f "$S/share/info/manifest/core/Existing/Existing.json" ]
 ok "Split manifest stores both systems under the Nintendo namespace and preserves existing files"
 
 # Jacaranda: legacy info/assign/*.ini format, with user files in the same folder preserved.
