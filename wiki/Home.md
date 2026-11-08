@@ -6,14 +6,14 @@
 
 **The practical handbook for the handheld core, frontend, compatibility database and Rt:Stream.**
 
-[Repository](https://github.com/SilverCrow3/dolphin-rt-core) · [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases) · [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues) · [Compatibility site source](https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/index.html)
+[Repository](https://github.com/SilverCrow2323/dolphin-rt-core) · [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases) · [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues) · [Compatibility site source](https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/index.html)
 
 </div>
 
 ---
 
 > [!IMPORTANT]
- > Compatibility results are community reports, not universal guarantees. Always match the exact console, game region, handheld, firmware, Rt:Core build and profile before applying settings.
+> Compatibility results are community reports, not universal guarantees. Always match the exact console, game region, handheld, firmware, Rt:Core build and profile before applying settings.
 
 ## Choose your path
 
