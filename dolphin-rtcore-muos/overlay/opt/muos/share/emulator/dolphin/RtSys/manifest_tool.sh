@@ -269,6 +269,21 @@ manifest_apply() {
     say "[OK] muOS $RT_MUOS_VERSION ($RT_MUOS_RELEASE), manifest layout: $RT_MUOS_REGISTRATION_LAYOUT; Content Explorer assign map refreshed"
 }
 
+do_apply() {
+    n="${1:-$(cur_mode)}"
+    validate_sources "$n"
+    GC_KEY="$(sys_name "$SW/gc/mode $n")"
+    WII_KEY="$(sys_name "$SW/wii/mode $n")"
+    if [ "$RT_MUOS_REGISTRATION_LAYOUT" = "legacy-assign" ]; then
+        legacy_apply "$n"
+        say "[OK] Legacy GameCube/Wii assignments installed for muOS $RT_MUOS_VERSION"
+    elif [ "$RT_MUOS_REGISTRATION_LAYOUT" = "single" ] || [ "$RT_MUOS_REGISTRATION_LAYOUT" = "split" ]; then
+        manifest_apply "$n"
+    else
+        die "unsupported muOS registration layout: $RT_MUOS_REGISTRATION_LAYOUT"
+    fi
+}
+
 manifest_current() {
     need_jq
     build_both "$1" 2>/dev/null || return 1
@@ -348,7 +363,7 @@ do_status() {
 }
 
 case "${1:-status}" in
-    apply)  manifest_apply "${2:-$(cur_mode)}" ;;
+    apply)  do_apply "${2:-$(cur_mode)}" ;;
     ensure)
         n="$(cur_mode)"
         validate_sources "$n"
