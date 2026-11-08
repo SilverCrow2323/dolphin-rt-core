@@ -14,7 +14,10 @@ gh auth setup-git >/dev/null
 # Initialise the Wiki feature if it has not been enabled yet.
 gh repo edit "$REPO" --enable-wiki
 [[ -d "$ROOT/wiki" ]] || { echo "Missing wiki/ source directory" >&2; exit 1; }
-git clone "$WIKI_URL" "$TMP/wiki"
+if ! git clone "$WIKI_URL" "$TMP/wiki"; then
+  echo "Could not clone the Wiki. If it has no pages yet, open the Wiki tab, create and save the first page named Home, then rerun this script. Also verify Wiki write access." >&2
+  exit 1
+fi
 find "$ROOT/wiki" -maxdepth 1 -type f -name '*.md' -exec cp {} "$TMP/wiki/" \;
 cd "$TMP/wiki"
 git add -- '*.md'
