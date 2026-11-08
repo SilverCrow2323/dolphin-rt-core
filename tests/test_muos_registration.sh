@@ -21,10 +21,10 @@ make_assign_stub() {
 #!/bin/sh
 set -eu
 mkdir -p "$RT_MUOS_STORE_DIR/info/manifest"
-if [ -r "$MUOS_STORE_DIR/info/manifest/core.json" ]; then
-    jq -r 'to_entries[] | select(.value.namespace=="Nintendo") | .key' "$MUOS_STORE_DIR/info/manifest/core.json" >/dev/null
+if [ -r "$RT_MUOS_STORE_DIR/info/manifest/core.json" ]; then
+    jq -r 'to_entries[] | select(.value.namespace=="Nintendo") | .key' "$RT_MUOS_STORE_DIR/info/manifest/core.json" >/dev/null
 fi
-printf '{ "nintendogamecube": "Nintendo GameCube", "nintendowii": "Nintendo Wii" }\n' > "$MUOS_STORE_DIR/info/manifest/assign.json"
+printf '{ "nintendogamecube": "Nintendo GameCube", "nintendowii": "Nintendo Wii" }\n' > "$RT_MUOS_STORE_DIR/info/manifest/assign.json"
 echo refresh >> "$RT_TEST_REFRESH_LOG"
 STUB
     chmod 755 "$root/script/system/assign.sh"

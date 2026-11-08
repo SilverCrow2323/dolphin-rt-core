@@ -28,9 +28,6 @@ case "$RT_MUOS_VERSION" in
     *ANDROMEDA*) RT_MUOS_RELEASE="Andromeda" ;;
     *JACARANDA*) RT_MUOS_RELEASE="Jacaranda" ;;
     *SUPERNOVA*) RT_MUOS_RELEASE="Supernova" ;;
-    *GOOSE*) RT_MUOS_RELEASE="Goose" ;;
-    *PIXIE*) RT_MUOS_RELEASE="Pixie" ;;
-    *BANANA*) RT_MUOS_RELEASE="Banana" ;;
     *) RT_MUOS_RELEASE="Unknown" ;;
 esac
 

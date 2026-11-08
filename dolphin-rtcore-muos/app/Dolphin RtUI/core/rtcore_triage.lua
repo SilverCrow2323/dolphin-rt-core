@@ -39,7 +39,7 @@ local function flavours()
           hint = "Binary missing or not executable." },
         { label = "Launcher script",   path = "/opt/muos/script/launch/ext-dolphinrt.sh", kind = "exec", crit = true,
           hint = "muOS cannot start games." },
-        { label = "Core list: GameCube", kind = "manifest", sys = "Nintendo Gamecube", path = "MUOS/info/manifest  >  Nintendo Gamecube",
+        { label = "Core list: GameCube", kind = "manifest", sys = "Nintendo GameCube", path = "MUOS/info/manifest  >  Nintendo GameCube",
           hint = "Run Task > Dolphin Rt-Core > Register GameCube and Wii." },
         { label = "Core list: Wii",      kind = "manifest", sys = "Nintendo Wii", path = "MUOS/info/manifest  >  Nintendo Wii",
           hint = "Run Task > Dolphin Rt-Core > Register GameCube and Wii." },
@@ -94,15 +94,24 @@ local function shell_line(cmd)
     return s
 end
 
--- Andromeda keeps cores in a manifest (one core.json on 2606.0, one file per system on newer
--- builds) instead of info/assign/*.ini. True when `sys` is registered in either layout.
+-- Match the installer: single-file manifest, per-namespace manifests, or Jacaranda's
+-- legacy assign folder. Manifest layouts also require the generated Content Explorer alias.
 local function manifest_has(sys)
     local m = R("/run/muos/storage") .. "/info/manifest"
+    local alias = tostring(sys):lower():gsub("[^a-z0-9]", "")
+    local core_json = m .. "/core.json"
+    local split_json = m .. "/core/Nintendo/" .. sys .. ".json"
+    local assign_json = m .. "/assign.json"
+    local legacy_ini = R("/opt/muos/share/info/assign") .. "/" .. sys .. "/global.ini"
     local cmd = string.format(
-        "if [ -s %s ] && jq -e --arg k %s 'has($k)' %s >/dev/null 2>&1; then echo 1; "
+        "if [ -s %s ] && jq -e --arg k %s 'has($k)' %s >/dev/null 2>&1; then "
+        .. "jq -e --arg a %s --arg k %s '.[ $a ] == $k' %s >/dev/null 2>&1 && echo 1 || echo 0; "
+        .. "elif [ -s %s ]; then jq -e --arg a %s --arg k %s '.[ $a ] == $k' %s >/dev/null 2>&1 && echo 1 || echo 0; "
         .. "elif [ -s %s ]; then echo 1; else echo 0; fi",
-        sh.shq(m .. "/core.json"), sh.shq(sys), sh.shq(m .. "/core.json"),
-        sh.shq(m .. "/core/Nintendo/" .. sys .. ".json"))
+        sh.shq(core_json), sh.shq(sys), sh.shq(core_json),
+        sh.shq(alias), sh.shq(sys), sh.shq(assign_json),
+        sh.shq(split_json), sh.shq(alias), sh.shq(sys), sh.shq(assign_json),
+        sh.shq(legacy_ini))
     return shell_line(cmd):match("^1") ~= nil
 end
 

@@ -116,7 +116,7 @@ build_both() {
     WII_JSON="$(build_system "$SW/wii/mode $n")" || die "cannot build Wii manifest entry"
     for item in "$GC_JSON" "$WII_JSON"; do
         printf '%s' "$item" | jq -e '(.namespace=="Nintendo") and ((.external|length)>0) and (.default as $d | .external | has($d))' >/dev/null \
-            || die "invalid profile manifest entry for $(printf '%s' "$item" | jq -r '.name // "unknown")"
+            || { system_name="$(printf '%s' "$item" | jq -r '.name // "unknown"')"; die "invalid profile manifest entry for $system_name"; }
     done
 }
 
@@ -346,7 +346,7 @@ do_status() {
 }
 
 case "${1:-status}" in
-    apply)  do_apply "${2:-$(cur_mode)}" ;;
+    apply)  manifest_apply "${2:-$(cur_mode)}" ;;
     ensure)
         n="$(cur_mode)"
         validate_sources "$n"

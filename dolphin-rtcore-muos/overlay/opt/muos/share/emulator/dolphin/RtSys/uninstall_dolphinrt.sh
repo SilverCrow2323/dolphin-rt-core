@@ -91,7 +91,8 @@ fi
 # ── Directories ────────────────────────────────────────────
 remove_dir "/opt/muos/share/emulator/dolphin" "Dolphin emulator root"
 # (legacy, pre-Andromeda) assign folders: harmless when absent
-[ -d "/opt/muos/share/info/assign/Nintendo Gamecube" ] && remove_dir "/opt/muos/share/info/assign/Nintendo Gamecube" "GameCube assign"
+[ -d "/opt/muos/share/info/assign/Nintendo GameCube" ] && remove_dir "/opt/muos/share/info/assign/Nintendo GameCube" "GameCube assign"
+[ -d "/opt/muos/share/info/assign/Nintendo Gamecube" ] && remove_dir "/opt/muos/share/info/assign/Nintendo Gamecube" "Legacy GameCube assign"
 [ -d "/opt/muos/share/info/assign/Nintendo Wii" ] && remove_dir "/opt/muos/share/info/assign/Nintendo Wii" "Wii assign"
 
 # ── Task folders (pattern: "Dolphin Rt*Core") ──────────────
