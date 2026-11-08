@@ -37,7 +37,7 @@ One-time repository setup is still required: open **Settings → Pages → Build
 - Shareable filter links using `system`, `q`, `region`, `boot`, `rating`, `sort`, `device` and `muos`. Favourites are not shared because they are local to each browser.
 - PWA shell cache and last-known JSON fallback when offline.
 
-Device and muOS filter options are built from the actual report metadata at load time. Empty or unknown metadata is not silently guessed; reports without a recorded firmware remain visible under **All muOS versions**.\n\nDevice and firmware filter options are built from actual `test_environment.device` and `test_environment.muos_version` values in the reports. Empty values are not guessed; reports without a recorded firmware remain visible under **All muOS versions**.
+Device and firmware filters are built from the actual `test_environment.device` and `test_environment.muos_version` values in the reports. Empty values are not guessed; reports without a recorded firmware remain visible under **All muOS versions**.
 
 ## Data and rating principles
 
