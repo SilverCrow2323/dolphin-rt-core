@@ -106,6 +106,19 @@ function M.init()
         { "stream_settings", "ui.screens.stream_settings" },
     }) do M.register(s[1], s[2]) end
 
+    -- Every registered screen gets a stable navigation action. This makes
+    -- the complete screen map discoverable by diagnostics and future menus.
+    for _, entry in ipairs(Nexus.list_screens()) do
+        local target = entry.id
+        local action_id = "navigation.go." .. target
+        if not Nexus.has_action(action_id) then
+            M.register_action(action_id, function(params)
+                return M.go(target, params)
+            end, { title = "Open " .. (entry.metadata.title or target),
+                   group = "navigation", screen = target, order = 100 })
+        end
+    end
+
     -- Stable built-in action IDs are the first consumers of NEXUS. Keep the
     -- callbacks here so navigation remains the single owner of transitions.
     if not Nexus.has_action("navigation.back") then
@@ -197,14 +210,15 @@ end
 
 -- Navigate with a short fade. `params` is handed to enter().
 function M.go(name, params, opts)
-    if not Nexus.has_screen(name) then Notify.show("error", "Unknown screen: " .. tostring(name)); return end
-    if fade.phase ~= "idle" then return end
+    if not Nexus.has_screen(name) then Notify.show("error", "Unknown screen: " .. tostring(name)); return false, "unknown screen" end
+    if fade.phase ~= "idle" then return false, "transition in progress" end
     if not (opts and opts.no_push) and current_name and current_name ~= name then
         stack[#stack + 1] = { name = current_name, params = current and current.params,
                               state = capture(current) }
     end
     fade.phase, fade.t, fade.dir = "out", 0, 1
     fade.target = { name = name, params = params }
+    return true
 end
 
 function M.go_instant(name, params)
