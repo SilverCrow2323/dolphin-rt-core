@@ -170,7 +170,7 @@ body.theme-wii{ --wm-opacity:.12; }
 .cover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.10) 0%,transparent 20%,transparent 45%,rgba(0,0,0,.55) 72%,rgba(0,0,0,.94) 100%);pointer-events:none;}
 .cover.placeholder-gc{background:radial-gradient(ellipse at 50% 40%,#4c1d95 0%,#1e1b4b 60%,#0a0618 100%);}
 .cover.placeholder-wii{background:radial-gradient(ellipse at 50% 40%,#7dd3fc 0%,#38bdf8 40%,#0284c7 100%);}
-.cover.placeholder-gc::before,.cover.placeholder-wii::before{content:'';position:absolute;inset:12% 12% 30%;background:url('https://i.ibb.co/zWGDwXS7/dolphinrt-finalcuticon.png') center/contain no-repeat;pointer-events:none;z-index:1;}
+.cover.placeholder-gc::before,.cover.placeholder-wii::before{content:'';position:absolute;inset:12% 12% 30%;background:url('./assets/dolphinrt_icon.png') center/contain no-repeat;pointer-events:none;z-index:1;}
 .cover.placeholder-gc::before{opacity:.24;}
 .cover.placeholder-wii::before{opacity:.30;}
 
@@ -522,7 +522,7 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 <header id="header">
   <div class="header-inner">
     <div class="brand">
-      <img id="brandIcon" class="brand-icon" src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/gamecube.svg" alt="">
+      <img id="brandIcon" class="brand-icon" src="./assets/gamecube.svg" alt="">
       <div>
         <div class="brand-title">Dolphin <span class="rt">Rt</span>:Core</div>
         <div class="brand-sub">Compatibility Database for muOS · H700</div>
@@ -538,8 +538,8 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
     <div class="console-toggle" id="consoleToggle" role="button" tabindex="0" aria-label="Choose console" aria-pressed="false">
       <div class="track">
         <div class="slider"></div>
-        <div class="opt active" data-c="gc"><img src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/gamecube.svg" alt="">GameCube</div>
-        <div class="opt" data-c="wii"><img src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/wii.svg" alt="">Wii</div>
+        <div class="opt active" data-c="gc"><img src="./assets/gamecube.svg" alt="">GameCube</div>
+        <div class="opt" data-c="wii"><img src="./assets/wii.svg" alt="">Wii</div>
       </div>
     </div>
   </div>
@@ -562,8 +562,10 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 <div class="filter-bar">
   <div class="filter-inner">
     <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="searchInput" placeholder="Search game title or Game ID…" autocomplete="off" aria-label="Search game title, Game ID or test notes"><button class="clear" id="clearSearch">✕</button></div>
-    <select id="regionFilter" aria-label="Filter by region" style="max-width:170px;"><option value="all">🌍 Region</option><option value="PAL">🇪🇺 PAL</option><option value="NTSC">🇺🇸 NTSC</option><option value="JPN">🇯🇵 JPN</option></select>
-    <select id="bootFilter" aria-label="Filter by boot result" style="max-width:170px;"><option value="all">💿 Boot</option><option value="YES">✅ Boots</option><option value="CRASH">⚠️ Crash</option><option value="NO">❌ No boot</option></select>
+    <select id="regionFilter" aria-label="Filter by region" style="max-width:150px;"><option value="all">🌍 Region</option><option value="PAL">🇪🇺 PAL</option><option value="NTSC">🇺🇸 NTSC</option><option value="JPN">🇯🇵 JPN</option></select>
+    <select id="bootFilter" aria-label="Filter by boot result" style="max-width:150px;"><option value="all">💿 Boot</option><option value="YES">✅ Boots</option><option value="CRASH">⚠️ Crash</option><option value="NO">❌ No boot</option></select>
+    <select id="deviceFilter" aria-label="Filter by tested handheld" style="max-width:190px;"><option value="all">🎮 All devices</option></select>
+    <select id="muosFilter" aria-label="Filter by muOS version" style="max-width:190px;"><option value="all">🧩 All muOS versions</option></select>
     <select id="sortSelect" aria-label="Sort compatibility results" style="max-width:190px;"><option value="rating-desc">⭐ Best first</option><option value="recent">🆕 Recent</option><option value="rating-asc">⭐ Worst first</option><option value="title-asc">📝 A → Z</option><option value="title-desc">📝 Z → A</option><option value="tests-desc">🧪 Most tested</option></select>
     <div class="seg"><button id="vGrid" class="active" title="Grid"><i class="fa-solid fa-border-all"></i></button></div>
     <button class="btn btn-sm" id="favFilter" title="Favorites" aria-label="Show favorites only" aria-pressed="false"><i class="fa-solid fa-heart"></i></button>
@@ -713,8 +715,8 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
         <div class="mini-toggle" id="gsConsoleToggle">
           <div class="track">
             <div class="slider"></div>
-            <div class="opt active" data-c="gc"><img src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/gamecube.svg" style="width:16px;height:16px;" alt="">GC</div>
-            <div class="opt" data-c="wii"><img src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/wii.svg" style="width:16px;height:16px;" alt="">Wii</div>
+            <div class="opt active" data-c="gc"><img src="./assets/gamecube.svg" style="width:16px;height:16px;" alt="">GC</div>
+            <div class="opt" data-c="wii"><img src="./assets/wii.svg" style="width:16px;height:16px;" alt="">Wii</div>
           </div>
         </div>
         <div class="seg"><button id="gsTabBrowse" class="active"><i class="fa-solid fa-compass"></i> Browse</button><button id="gsTabUpload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button></div>
@@ -799,7 +801,7 @@ const PLAY_OK_COLOR='#00ff66';
 const PLAY_WARN_COLOR='#ffcc00';
 const PLAY_NO_COLOR='#ff3344';
 
-const state={console:'gc',rawGames:[],groupedGames:[],filtered:[],settings:[],search:'',region:'all',boot:'all',sort:'rating-desc',stars:'all',favOnly:false,searchIndex:null,gsConsole:'gc'};
+const state={console:'gc',rawGames:[],groupedGames:[],filtered:[],settings:[],search:'',region:'all',boot:'all',device:'all',muos:'all',sort:'rating-desc',stars:'all',favOnly:false,searchIndex:null,gsConsole:'gc'};
 const $=id=>document.getElementById(id);
 const $$=s=>document.querySelectorAll(s);
 
@@ -834,6 +836,36 @@ function getFavs(){try{return JSON.parse(localStorage.getItem(FAV_KEY)||'[]');}c
 function isFav(k){return getFavs().includes(k);}
 function toggleFav(k){let f=getFavs();if(f.includes(k))f=f.filter(x=>x!==k);else f.push(k);try{localStorage.setItem(FAV_KEY,JSON.stringify(f));}catch(e){}return f.includes(k);}
 function favKey(item){return (item.game||'').toLowerCase().trim();}
+
+function populateEnvironmentFilters(){
+  const devices=new Set(),muosVersions=new Set();
+  (state.rawGames||[]).forEach(game=>{
+    (game.entries||[]).forEach(entry=>{
+      const env=entry.test_environment||{};
+      const device=String(env.device||'').trim();
+      const version=String(env.muos_version||'').trim();
+      if(device)devices.add(device);
+      if(version)muosVersions.add(version);
+    });
+  });
+  const fill=(id,label,values,selected)=>{
+    const select=$(id);
+    if(!select)return 'all';
+    select.replaceChildren();
+    const all=document.createElement('option');
+    all.value='all';all.textContent=label;select.appendChild(all);
+    [...values].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true,sensitivity:'base'})).forEach(value=>{
+      const option=document.createElement('option');
+      option.value=value;option.textContent=value;select.appendChild(option);
+    });
+    const valid=[...select.options].some(option=>option.value===selected);
+    select.value=valid?selected:'all';
+    return valid?selected:'all';
+  };
+  state.device=fill('deviceFilter','🎮 All devices',devices,state.device);
+  state.muos=fill('muosFilter','🧩 All muOS versions',muosVersions,state.muos);
+}
+
 function shareCurrentView(){
   const params=new URLSearchParams();
   params.set('system',state.console==='gc'?'gc':'wii');
@@ -842,6 +874,8 @@ function shareCurrentView(){
   if(state.boot!=='all')params.set('boot',state.boot);
   if(state.stars!=='all')params.set('rating',state.stars);
   if(state.sort!=='rating-desc')params.set('sort',state.sort);
+  if(state.device!=='all')params.set('device',state.device);
+  if(state.muos!=='all')params.set('muos',state.muos);
   const url=new URL(location.href);url.search=params.toString();url.hash='';
   const value=url.toString();
   if(navigator.clipboard&&navigator.clipboard.writeText){
@@ -858,6 +892,8 @@ function restoreSharedView(){
   const sort=params.get('sort');
   state.sort=['rating-desc','recent','rating-asc','title-asc','title-desc','tests-desc'].includes(sort)?sort:'rating-desc';
   const rating=params.get('rating');state.stars=/^[0-5]$/.test(rating||'')?rating:'all';
+  state.device=(params.get('device')||'all').trim()||'all';
+  state.muos=(params.get('muos')||'all').trim()||'all';
   $('searchInput').value=q;$('clearSearch').style.display=q?'block':'none';
   $('regionFilter').value=state.region;$('bootFilter').value=state.boot;$('sortSelect').value=state.sort;
   $('favFilter').setAttribute('aria-pressed','false');
@@ -938,10 +974,25 @@ function aggregateEntries(entries){
 
 function applyFilters(){
   state.filtered=state.groupedGames.filter(item=>{
-    if(state.search){const q=state.search;const ok=item.game.toLowerCase().includes(q)||(item.agg.gameId||'').toLowerCase().includes(q)||item.allRegions.some(r=>(r.gameId||'').toLowerCase().includes(q))||item.allRegions.some(r=>r.entries.some(e=>(e.test_details?.considerations||'').toLowerCase().includes(q)));if(!ok)return false;}
+    if(state.search){
+      const q=state.search;
+      const ok=item.game.toLowerCase().includes(q)||(item.agg.gameId||'').toLowerCase().includes(q)||
+        item.allRegions.some(r=>(r.gameId||'').toLowerCase().includes(q))||
+        item.allRegions.some(r=>r.entries.some(e=>{
+          const env=e.test_environment||{},details=e.test_details||{};
+          return String(details.considerations||'').toLowerCase().includes(q)||
+            String(env.device||'').toLowerCase().includes(q)||
+            String(env.muos_version||'').toLowerCase().includes(q)||
+            String(env.tester||'').toLowerCase().includes(q)||
+            String(details.core_profile||'').toLowerCase().includes(q);
+        }));
+      if(!ok)return false;
+    }
     if(state.stars!=='all'){const s=parseInt(state.stars);if(item.agg.bestRating!==s)return false;}
     if(state.region!=='all'){const has=item.allRegions.some(r=>state.region==='NTSC'?r.region.includes('NTSC'):r.region===state.region);if(!has)return false;}
     if(state.boot!=='all'&&item.agg.bestBoot!==state.boot)return false;
+    if(state.device!=='all'&&!item.allRegions.some(r=>r.entries.some(e=>String(e.test_environment?.device||'').trim()===state.device)))return false;
+    if(state.muos!=='all'&&!item.allRegions.some(r=>r.entries.some(e=>String(e.test_environment?.muos_version||'').trim()===state.muos)))return false;
     if(state.favOnly&&!isFav(favKey(item)))return false;
     if(state.tester){const has=item.allRegions.some(r=>r.entries.some(e=>(e.test_environment?.tester||'').toLowerCase()===state.tester));if(!has)return false;}
     return true;
@@ -1845,6 +1896,7 @@ async function loadGames(){
     if(!_gamesCache){const data=await fetchJson(URL_GAMES);_gamesCache={games:data.games||[],last_update:data.last_update};}
     $('retryDataBtn').style.display='none';
     state.rawGames=_gamesCache.games||[];
+    populateEnvironmentFilters();
     state.searchIndex=null;
     buildSearchIndex();
     const targetSys=state.console==='gc'?'GC':'Wii';
@@ -1891,7 +1943,7 @@ function _applyConsole(target){
     t.classList.toggle('wii',target==='wii');
     t.querySelectorAll('.opt').forEach(o=>o.classList.toggle('active',o.dataset.c===target));
   });
-  const icon=target==='gc'?'https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/gamecube.svg':'https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/wii.svg';
+  const icon=target==='gc'?'./assets/gamecube.svg':'./assets/wii.svg';
   $('brandIcon').src=icon;
   const consoleToggle=$('consoleToggle');if(consoleToggle)consoleToggle.setAttribute('aria-pressed',target==='wii'?'true':'false');
   try{localStorage.setItem('dolphin-rtcore-console',target);}catch(e){}
@@ -1924,14 +1976,16 @@ function init(){
   $('clearSearch').addEventListener('click',()=>{$('searchInput').value='';$('clearSearch').style.display='none';state.search='';applyFilters();renderGames();});
   $('regionFilter').addEventListener('change',e=>{state.region=e.target.value;applyFilters();renderGames();});
   $('bootFilter').addEventListener('change',e=>{state.boot=e.target.value;applyFilters();renderGames();});
+  $('deviceFilter').addEventListener('change',e=>{state.device=e.target.value;applyFilters();renderGames();});
+  $('muosFilter').addEventListener('change',e=>{state.muos=e.target.value;applyFilters();renderGames();});
   $('sortSelect').addEventListener('change',e=>{state.sort=e.target.value;applyFilters();renderGames();});
   $('favFilter').addEventListener('click',()=>{state.favOnly=!state.favOnly;$('favFilter').style.color=state.favOnly?'var(--hot)':'';$('favFilter').setAttribute('aria-pressed',state.favOnly?'true':'false');applyFilters();renderGames();});
   $('shareViewBtn').addEventListener('click',shareCurrentView);
   $('retryDataBtn').addEventListener('click',()=>{$('empty').style.display='none';$('loading').style.display='block';_gamesCache=null;loadGames();});
   $('resetBtn').addEventListener('click',()=>{
     $('searchInput').value='';$('clearSearch').style.display='none';
-    $('regionFilter').value='all';$('bootFilter').value='all';$('sortSelect').value='rating-desc';
-    Object.assign(state,{search:'',region:'all',boot:'all',sort:'rating-desc',stars:'all',favOnly:false,tester:''});
+    $('regionFilter').value='all';$('bootFilter').value='all';$('deviceFilter').value='all';$('muosFilter').value='all';$('sortSelect').value='rating-desc';
+    Object.assign(state,{search:'',region:'all',boot:'all',device:'all',muos:'all',sort:'rating-desc',stars:'all',favOnly:false,tester:''});
     $('favFilter').style.color='';$('favFilter').setAttribute('aria-pressed','false');
     $$('.rating-pill').forEach(p=>p.classList.remove('active'));
     applyFilters();renderGames();toast('Filters reset');

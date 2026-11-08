@@ -75,9 +75,23 @@ class CompatibilitySiteTests(unittest.TestCase):
     def test_share_and_retry_controls_are_present(self):
         self.assertIn('id="retryDataBtn"', self.html)
         self.assertIn('id="shareViewBtn"', self.html)
-        for key in ("system", "q", "region", "boot", "rating", "sort"):
+        for key in ("system", "q", "region", "boot", "rating", "sort", "device", "muos"):
             self.assertIn("params.set('"+key+"'", self.html)
             self.assertIn("params.get('"+key+"'", self.html)
+
+    def test_device_and_firmware_filters_are_data_driven(self):
+        self.assertIn('id="deviceFilter"', self.html)
+        self.assertIn('id="muosFilter"', self.html)
+        self.assertIn("populateEnvironmentFilters()", self.html)
+        self.assertIn("test_environment?.device", self.html)
+        self.assertIn("test_environment?.muos_version", self.html)
+        environments = [
+            entry.get("test_environment", {})
+            for group in self.games["games"]
+            for entry in group.get("entries", [])
+        ]
+        self.assertTrue(any(item.get("device") for item in environments))
+        self.assertTrue(any(item.get("muos_version") for item in environments))
 
     def test_inline_javascript_syntax_when_node_is_available(self):
         node = shutil.which("node")

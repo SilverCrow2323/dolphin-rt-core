@@ -28,14 +28,14 @@ When Pages is enabled for the repository, configure it to publish from the `main
 ## Features
 
 - Separate GameCube and Wii themes.
-- Search by title, Game ID and test notes; filter by region, boot result and rating.
+- Search by title, Game ID, test notes, tester, device, firmware and profile; filter by region, boot result, rating, tested handheld and muOS version.
 - Sort by rating, recency, title or number of tests.
 - Browser-local favourites.
 - Detail modal, test history, GameSettings discovery and pre-filled GitHub issue hand-off.
-- Shareable filter links using `system`, `q`, `region`, `boot`, `rating` and `sort`. Favourites are not shared because they are local to each browser.
+- Shareable filter links using `system`, `q`, `region`, `boot`, `rating`, `sort`, `device` and `muos`. Favourites are not shared because they are local to each browser.
 - PWA shell cache and last-known JSON fallback when offline.
 
-## Data and rating principles
+Device and muOS filter options are built from the actual report metadata at load time. Empty or unknown metadata is not silently guessed; reports without a recorded firmware remain visible under **All muOS versions**.\n\n## Data and rating principles
 
 Compatibility data is community-submitted, not a universal guarantee. Interpret every report with its device, firmware, game region/revision, Rt:Core version and profile. Do not turn an untested game into a positive result by inference.
 
