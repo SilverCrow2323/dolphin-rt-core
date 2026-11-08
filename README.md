@@ -90,7 +90,7 @@ The screenshot helper uses the frontend's existing opt-in `core/devshot.lua` hoo
 
 1. Copy `Dolphin_RtCore_v12_0_0_Andromeda.muxupd` into the **`ARCHIVE`** folder of the ROM card and install it from **Archive Manager**.
    The package carries the integrity manifest (`manifest.sha256`) that Andromeda requires, and registers
-   **Nintendo Gamecube** and **Nintendo Wii** in the core list by itself when the installation ends.
+   **Nintendo GameCube** and **Nintendo Wii** in the core list by itself when the installation ends.
 2. Make sure the `dolphin` binary sits at `/opt/muos/share/emulator/dolphin/dolphin`.
 3. Open **Dolphin Rt:Core** from *Applications*. If GameCube/Wii are not listed as systems, run
    *Task Toolkit ▸ Dolphin Rt-Core ▸ Register GameCube and Wii* (the app also checks this at every start).
