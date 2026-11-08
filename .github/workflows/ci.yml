@@ -61,7 +61,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
       - name: Check helper syntax
         run: |
-          bash -n tools/capture-ui.sh tools/publish-wiki.sh
+          bash -n tools/capture-ui.sh tools/publish-wiki.sh tools/build-compat-site.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
           bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh

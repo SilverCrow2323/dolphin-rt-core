@@ -14,7 +14,7 @@ Open `http://localhost:8000`. Do not use `file://`: fetch, service workers and b
 
 ## Publish
 
-The app needs no Node build step. To publish through GitHub Pages, the repository owner must enable Pages and select the `main` branch with the repository root as the publishing source. The committed HTML source alone does not guarantee a public Pages URL.
+The app needs no Node build step. The repository includes `.github/workflows/deploy-compatibility.yml`, which builds a minimal publication folder and deploys it whenever site files reach `main`. One-time setup is required: **Settings → Pages → Build and deployment → Source → GitHub Actions**. Pull requests never publish. The expected URL after the first successful deployment is `https://silvercrow2323.github.io/dolphin-rt-core/`.
 
 ## Data sources
 

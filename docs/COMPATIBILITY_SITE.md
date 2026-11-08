@@ -21,9 +21,11 @@ python3 -m http.server 8000
 
 Open `http://localhost:8000`. Do not open the HTML file via `file://`; browser fetch, service-worker and storage behavior differ.
 
-## GitHub Pages
+## GitHub Pages deployment
 
-When Pages is enabled for the repository, configure it to publish from the `main` branch and repository root. The app needs no Node build step. If Pages is not enabled, the tracked HTML remains the site source but is not automatically public.
+The repository includes `.github/workflows/deploy-compatibility.yml`. When changes to the site or its artwork reach `main`, the workflow builds a minimal publication directory and deploys it to Pages. It does **not** publish the emulator sources, package archives, ROM data or the rest of the repository.
+
+One-time repository setup is still required: open **Settings → Pages → Build and deployment → Source** and select **GitHub Actions**. The workflow runs only from `main` or by manual dispatch; pull requests do not publish. The expected project-site URL is `https://silvercrow2323.github.io/dolphin-rt-core/` after a successful first deployment.
 
 ## Features
 

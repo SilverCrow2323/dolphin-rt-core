@@ -1,0 +1,52 @@
+name: Deploy Compatibility Database
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "manifest.json"
+      - "sw.js"
+      - "assets/spdw_symbol.png"
+      - "assets/gamecube.svg"
+      - "assets/wii.svg"
+      - "tools/build-compat-site.sh"
+      - ".github/workflows/deploy-compatibility.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Build minimal Compatibility Database site
+        run: bash tools/build-compat-site.sh "$RUNNER_TEMP/compatibility-site"
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "$RUNNER_TEMP/compatibility-site"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Compatibility Database
+        id: deployment
+        uses: actions/deploy-pages@v4

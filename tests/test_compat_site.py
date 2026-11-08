@@ -93,6 +93,37 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertTrue(any(item.get("device") for item in environments))
         self.assertTrue(any(item.get("muos_version") for item in environments))
 
+    def test_project_pages_build_is_minimal_and_complete(self):
+        builder = ROOT / "tools" / "build-compat-site.sh"
+        self.assertTrue(builder.is_file())
+        with tempfile.TemporaryDirectory(prefix="rtcore-pages-") as tmp:
+            output = Path(tmp) / "site"
+            result = subprocess.run(
+                ["bash", str(builder), str(output)],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            expected = {
+                ".nojekyll",
+                "index.html",
+                "manifest.json",
+                "sw.js",
+                "assets/spdw_symbol.png",
+                "assets/gamecube.svg",
+                "assets/wii.svg",
+            }
+            actual = {
+                str(path.relative_to(output))
+                for path in output.rglob("*")
+                if path.is_file()
+            }
+            self.assertEqual(actual, expected)
+            deployed_html = (output / "index.html").read_text(encoding="utf-8")
+            self.assertIn('href="./"', deployed_html)
+            self.assertNotIn("README.md", actual)
+            self.assertFalse((output / "dolphin-rtcore-muos").exists())
+
     def test_inline_javascript_syntax_when_node_is_available(self):
         node = shutil.which("node")
         if not node:
