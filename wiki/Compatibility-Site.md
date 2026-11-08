@@ -14,7 +14,7 @@ Open `http://localhost:8000`. Do not use `file://`: fetch, service workers and b
 
 ## Publish
 
-The app needs no Node build step. The repository includes `.github/workflows/deploy-compatibility.yml`, which builds a minimal publication folder and deploys it whenever site files reach `main`. One-time setup is required: **Settings → Pages → Build and deployment → Source → GitHub Actions**. Pull requests never publish. The expected URL after the first successful deployment is `https://silvercrow2323.github.io/dolphin-rt-core/`.
+The app needs no Node build step. The repository includes `.github/workflows/deploy-compatibility.yml`, which builds a minimal publication folder and deploys it whenever site files reach `main`. One-time setup is required: **Settings → Pages → Build and deployment → Source → GitHub Actions**. Pull requests never publish. The expected URL after the first successful deployment is `https://silvercrow2323.github.io/dolphin-rt-core/`. The build publishes only `index.html`, `manifest.json`, `sw.js`, `.nojekyll` and the three local UI assets; it does not upload the project source tree.
 
 ## Data sources
 

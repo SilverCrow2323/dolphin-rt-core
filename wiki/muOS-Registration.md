@@ -10,7 +10,7 @@ The helper reads the muOS version from `/opt/muos/config/system/version` (or `GE
 
 | Layout | Typical generation | What the helper changes |
 |---|---|---|
-| Single `core.json` | Andromeda 2606.0 | Adds or replaces only `Nintendo GameCube` and `Nintendo Wii`; creates a one-time backup before changing an existing user manifest |
+| Single `core.json` | Andromeda 2606.0 | Adds or replaces only `Nintendo Gamecube` and `Nintendo Wii`; creates a one-time backup before changing an existing user manifest |
 | Split `core/<Namespace>/<System>.json` | Newer manifest-based builds | Writes the two system files below `core/Nintendo/`; leaves every other manifest untouched |
 | Legacy `info/assign/<System>/*.ini` | Jacaranda and older releases | Stages the two system folders and copies only Rt:Core profile INIs |
 
