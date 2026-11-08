@@ -100,7 +100,7 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn("_Footer", pages)
         self.assertGreaterEqual(len(pages), 15)
         for path in wiki.glob("*.md"):
-            references = re.findall(r"\\[\\[([A-Za-z0-9_-]+)\\]\\]", path.read_text(encoding="utf-8"))
+            references = re.findall(r"\[\[([A-Za-z0-9_-]+)\]\]", path.read_text(encoding="utf-8"))
             for target in references:
                 self.assertIn(target, pages, f"{path.name} links to missing Wiki page {target}")
 
