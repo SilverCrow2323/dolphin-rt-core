@@ -57,9 +57,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install manifest test dependency
+        run: sudo apt-get update && sudo apt-get install -y jq
       - name: Check helper syntax
         run: |
           bash -n tools/capture-ui.sh tools/publish-wiki.sh
+          sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
+          sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
+          bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh
+          bash -n tests/test_muos_registration.sh
           python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
+      - name: Test muOS generation detection and core registration
+        run: bash tests/test_muos_registration.sh
       - name: Test repository and website tooling
         run: python -m unittest tests/test_repo_tools.py tests/test_compat_site.py -v

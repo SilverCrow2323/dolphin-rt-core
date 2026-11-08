@@ -20,7 +20,7 @@ make_assign_stub() {
     cat > "$root/script/system/assign.sh" <<'STUB'
 #!/bin/sh
 set -eu
-mkdir -p "$MUOS_STORE_DIR/info/manifest"
+mkdir -p "$RT_MUOS_STORE_DIR/info/manifest"
 if [ -r "$MUOS_STORE_DIR/info/manifest/core.json" ]; then
     jq -r 'to_entries[] | select(.value.namespace=="Nintendo") | .key' "$MUOS_STORE_DIR/info/manifest/core.json" >/dev/null
 fi
@@ -77,8 +77,8 @@ RT_MUOS_ROOT="$S" RT_MUOS_STORE_DIR="$SS" RT_MUOS_ASSIGN_DIR="$S/share/info/assi
 RT_MUOS_MANIFEST_DIR="$S/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 RT_MUOS_ASSIGN_REFRESH="$S/script/system/assign.sh" RT_TEST_REFRESH_LOG="$S/refresh.log" \
 sh "$TOOL" apply 1
-jq -e '.catalogue=="Nintendo GameCube" and .external|length>0' "$SS/info/manifest/core/Nintendo/Nintendo GameCube.json" >/dev/null
-jq -e '.catalogue=="Nintendo Wii" and .external|length>0' "$SS/info/manifest/core/Nintendo/Nintendo Wii.json" >/dev/null
+jq -e '(.catalogue=="Nintendo GameCube") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo GameCube.json" >/dev/null
+jq -e '(.catalogue=="Nintendo Wii") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Wii.json" >/dev/null
 [ -f "$SS/info/manifest/core/Existing/Existing.json" ]
 ok "Split manifest stores both systems under the Nintendo namespace and preserves existing files"
 
