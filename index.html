@@ -4,9 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Dolphin Rt:Core · Compatibility Database</title>
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/spdw_symbol.png" />
+<link rel="icon" type="image/png" href="./assets/spdw_symbol.png" />
 <link rel="manifest" href="./manifest.json" />
 <meta name="theme-color" content="#7c3aed" />
+<meta name="description" content="Community-tested GameCube and Wii compatibility results for Dolphin Rt:Core handheld builds. Search games, compare real device tests and share your results." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Dolphin Rt:Core · Compatibility Database" />
+<meta property="og:description" content="Community-tested GameCube and Wii compatibility for Dolphin Rt:Core." />
+<meta name="twitter:card" content="summary" />
+<meta name="color-scheme" content="dark light" />
 <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=JetBrains+Mono:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -493,9 +499,21 @@ body.theme-wii .te-head{flex-direction:row-reverse;}
 body.theme-wii .te-env{align-items:flex-start;}
 body.theme-wii .form-section-head{flex-direction:row-reverse;text-align:right;}
 body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex-end;}
+/* Accessibility and progressive enhancement */
+:focus-visible{outline:3px solid var(--accent-2);outline-offset:3px;}
+.skip-link{position:fixed;left:14px;top:-64px;z-index:9999;padding:10px 14px;border-radius:8px;background:var(--accent);color:#fff;font-weight:900;text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,.35);}
+.skip-link:focus{top:14px;}
+.site-footer-links{display:flex;justify-content:center;gap:10px 18px;flex-wrap:wrap;margin-top:12px;}
+.site-footer-links a{color:var(--accent-2);text-decoration:none;font-weight:800;}
+.site-footer-links a:hover{text-decoration:underline;}
+#retryDataBtn{margin-top:18px;}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+}
 </style>
 </head>
 <body class="theme-gc">
+<a class="skip-link" href="#main-content">Skip to compatibility results</a>
 
 <noscript><style>body > *:not(noscript){display:none !important;}</style><div style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:#08080f;color:#f1f5f9;text-align:center;font-family:sans-serif;"><div style="max-width:520px;"><h1 style="font-size:32px;margin:0 0 14px;font-family:Audiowide,sans-serif;color:#a855f7;">JavaScript richiesto</h1><p style="font-size:16px;line-height:1.6;color:#a8b3c2;margin:0;">Questa pagina necessita JavaScript per caricare il database di compatibilit\u00e0. Abilita JavaScript nel browser e ricarica.</p></div></div></noscript>
 
@@ -504,23 +522,24 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 <header id="header">
   <div class="header-inner">
     <div class="brand">
-      <img id="brandIcon" class="brand-icon" src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/gamecube.svg" alt="">
+      <img id="brandIcon" class="brand-icon" src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/gamecube.svg" alt="">
       <div>
         <div class="brand-title">Dolphin <span class="rt">Rt</span>:Core</div>
         <div class="brand-sub">Compatibility Database for muOS · H700</div>
       </div>
     </div>
     <nav class="nav">
-      <a href="https://github.com/SilverCrow2323/Dolphin-Core-for-MuOS" target="_blank" rel="noopener" class="nav-btn"><i class="fa-brands fa-github"></i><span>Repo</span></a>
-      <a href="https://github.com/SilverCrow2323/Dolphin-Core-for-MuOS/releases" target="_blank" rel="noopener" class="nav-btn"><i class="fa-solid fa-download"></i><span>Release</span></a>
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core" target="_blank" rel="noopener" class="nav-btn"><i class="fa-brands fa-github"></i><span>Repo</span></a>
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases" target="_blank" rel="noopener" class="nav-btn"><i class="fa-solid fa-download"></i><span>Release</span></a>
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/wiki" target="_blank" rel="noopener" class="nav-btn"><i class="fa-solid fa-book-open"></i><span>Wiki</span></a>
       <button class="nav-btn" id="reportBtn"><i class="fa-solid fa-clipboard-list"></i><span>Report</span></button>
       <button class="nav-btn accent" id="gsBtn"><i class="fa-solid fa-sliders"></i><span>GameSettings</span><span class="badge" id="gsBadge" style="display:none;">0</span></button>
     </nav>
-    <div class="console-toggle" id="consoleToggle" role="button" tabindex="0">
+    <div class="console-toggle" id="consoleToggle" role="button" tabindex="0" aria-label="Choose console" aria-pressed="false">
       <div class="track">
         <div class="slider"></div>
-        <div class="opt active" data-c="gc"><img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/gamecube.svg" alt="">GameCube</div>
-        <div class="opt" data-c="wii"><img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/wii.svg" alt="">Wii</div>
+        <div class="opt active" data-c="gc"><img src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/gamecube.svg" alt="">GameCube</div>
+        <div class="opt" data-c="wii"><img src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/wii.svg" alt="">Wii</div>
       </div>
     </div>
   </div>
@@ -542,29 +561,30 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 
 <div class="filter-bar">
   <div class="filter-inner">
-    <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchInput" placeholder="Search game title or Game ID…" autocomplete="off"><button class="clear" id="clearSearch">✕</button></div>
-    <select id="regionFilter" style="max-width:170px;"><option value="all">🌍 Region</option><option value="PAL">🇪🇺 PAL</option><option value="NTSC">🇺🇸 NTSC</option><option value="JPN">🇯🇵 JPN</option></select>
-    <select id="bootFilter" style="max-width:170px;"><option value="all">💿 Boot</option><option value="YES">✅ Boots</option><option value="CRASH">⚠️ Crash</option><option value="NO">❌ No boot</option></select>
-    <select id="sortSelect" style="max-width:190px;"><option value="rating-desc">⭐ Best first</option><option value="recent">🆕 Recent</option><option value="rating-asc">⭐ Worst first</option><option value="title-asc">📝 A → Z</option><option value="title-desc">📝 Z → A</option><option value="tests-desc">🧪 Most tested</option></select>
+    <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="searchInput" placeholder="Search game title or Game ID…" autocomplete="off" aria-label="Search game title, Game ID or test notes"><button class="clear" id="clearSearch">✕</button></div>
+    <select id="regionFilter" aria-label="Filter by region" style="max-width:170px;"><option value="all">🌍 Region</option><option value="PAL">🇪🇺 PAL</option><option value="NTSC">🇺🇸 NTSC</option><option value="JPN">🇯🇵 JPN</option></select>
+    <select id="bootFilter" aria-label="Filter by boot result" style="max-width:170px;"><option value="all">💿 Boot</option><option value="YES">✅ Boots</option><option value="CRASH">⚠️ Crash</option><option value="NO">❌ No boot</option></select>
+    <select id="sortSelect" aria-label="Sort compatibility results" style="max-width:190px;"><option value="rating-desc">⭐ Best first</option><option value="recent">🆕 Recent</option><option value="rating-asc">⭐ Worst first</option><option value="title-asc">📝 A → Z</option><option value="title-desc">📝 Z → A</option><option value="tests-desc">🧪 Most tested</option></select>
     <div class="seg"><button id="vGrid" class="active" title="Grid"><i class="fa-solid fa-border-all"></i></button></div>
-    <button class="btn btn-sm" id="favFilter" title="Favorites"><i class="fa-solid fa-heart"></i></button>
+    <button class="btn btn-sm" id="favFilter" title="Favorites" aria-label="Show favorites only" aria-pressed="false"><i class="fa-solid fa-heart"></i></button>
+    <button class="btn btn-sm" id="shareViewBtn" title="Copy a shareable link to the current filters" aria-label="Share current filters"><i class="fa-solid fa-share-nodes"></i></button>
     <button class="btn btn-sm" id="resetBtn" title="Reset"><i class="fa-solid fa-rotate-left"></i></button>
   </div>
 </div>
 
 <div class="rating-pills" id="ratingPills">
-  <button class="rating-pill" data-r="5"><div class="rp-stars">★★★★★</div><div class="rp-name">Perfect</div><div class="rp-count" id="c5">0</div></button>
-  <button class="rating-pill" data-r="4"><div class="rp-stars">★★★★</div><div class="rp-name">Great</div><div class="rp-count" id="c4">0</div></button>
-  <button class="rating-pill" data-r="3"><div class="rp-stars">★★★</div><div class="rp-name">Playable</div><div class="rp-count" id="c3">0</div></button>
-  <button class="rating-pill" data-r="2"><div class="rp-stars">★★</div><div class="rp-name">Poor</div><div class="rp-count" id="c2">0</div></button>
-  <button class="rating-pill" data-r="1"><div class="rp-stars">★</div><div class="rp-name">Broken</div><div class="rp-count" id="c1">0</div></button>
-  <button class="rating-pill" data-r="0"><div class="rp-stars">✕</div><div class="rp-name">No Boot</div><div class="rp-count" id="c0">0</div></button>
+  <button class="rating-pill" data-r="5" aria-label="Filter rating: perfect" aria-pressed="false"><div class="rp-stars">★★★★★</div><div class="rp-name">Perfect</div><div class="rp-count" id="c5">0</div></button>
+  <button class="rating-pill" data-r="4" aria-label="Filter rating: great" aria-pressed="false"><div class="rp-stars">★★★★</div><div class="rp-name">Great</div><div class="rp-count" id="c4">0</div></button>
+  <button class="rating-pill" data-r="3" aria-label="Filter rating: playable" aria-pressed="false"><div class="rp-stars">★★★</div><div class="rp-name">Playable</div><div class="rp-count" id="c3">0</div></button>
+  <button class="rating-pill" data-r="2" aria-label="Filter rating: poor" aria-pressed="false"><div class="rp-stars">★★</div><div class="rp-name">Poor</div><div class="rp-count" id="c2">0</div></button>
+  <button class="rating-pill" data-r="1" aria-label="Filter rating: broken" aria-pressed="false"><div class="rp-stars">★</div><div class="rp-name">Broken</div><div class="rp-count" id="c1">0</div></button>
+  <button class="rating-pill" data-r="0" aria-label="Filter rating: games that do not boot" aria-pressed="false"><div class="rp-stars">✕</div><div class="rp-name">No Boot</div><div class="rp-count" id="c0">0</div></button>
 </div>
 
-<main class="main-wrap">
+<main class="main-wrap" id="main-content" tabindex="-1">
   <div id="loading" style="text-align:center;padding:60px 0;margin-top:20px;"><div class="spinner" style="margin:0 auto 14px;"></div><p style="color:var(--text-muted);font-size:15px;">Loading database…</p></div>
   <div id="gamesGrid" class="games-grid" style="display:none;margin-top:20px;"></div>
-  <div id="empty" class="empty" style="display:none;margin-top:20px;"><i class="fa-solid fa-folder-open"></i><h3>No games found</h3><p id="emptyMsg">Try changing your filters or search query.</p></div>
+  <div id="empty" class="empty" style="display:none;margin-top:20px;"><i class="fa-solid fa-folder-open"></i><h3>No games found</h3><p id="emptyMsg">Try changing your filters or search query.</p><button class="btn btn-primary" type="button" id="retryDataBtn" style="display:none;">Retry database load</button></div>
 </main>
 
 <div class="modal-back" id="gameModal">
@@ -693,8 +713,8 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
         <div class="mini-toggle" id="gsConsoleToggle">
           <div class="track">
             <div class="slider"></div>
-            <div class="opt active" data-c="gc"><img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/gamecube.svg" style="width:16px;height:16px;" alt="">GC</div>
-            <div class="opt" data-c="wii"><img src="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/wii.svg" style="width:16px;height:16px;" alt="">Wii</div>
+            <div class="opt active" data-c="gc"><img src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/gamecube.svg" style="width:16px;height:16px;" alt="">GC</div>
+            <div class="opt" data-c="wii"><img src="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/wii.svg" style="width:16px;height:16px;" alt="">Wii</div>
           </div>
         </div>
         <div class="seg"><button id="gsTabBrowse" class="active"><i class="fa-solid fa-compass"></i> Browse</button><button id="gsTabUpload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button></div>
@@ -749,17 +769,24 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 <footer style="border-top:2px solid var(--border);margin-top:44px;">
   <div style="max-width:1280px;margin:0 auto;padding:22px;text-align:center;font-size:14px;color:var(--text-dim);">
     <p><strong style="color:var(--text-muted);">Dolphin Rt:Core Compatibility Database</strong></p>
-    <p style="margin-top:4px;">Community data · <a href="https://github.com/SilverCrow2323/Dolphin-Core-for-MuOS" style="color:var(--accent);text-decoration:none;">SPDW Factory</a> · <span id="lastUpdate">—</span></p>
+    <p style="margin-top:4px;">Community-tested results · Data updated: <span id="lastUpdate">—</span></p>
+    <nav class="site-footer-links" aria-label="Project resources">
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core" target="_blank" rel="noopener">Source repository</a>
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/wiki" target="_blank" rel="noopener">Documentation Wiki</a>
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/issues/new?labels=test-report" target="_blank" rel="noopener">Submit a test</a>
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/docs/COMPATIBILITY_SITE.md" target="_blank" rel="noopener">How this database works</a>
+    </nav>
+    <p style="margin-top:12px;font-size:12px;">Results are community reports, not universal guarantees. Compare device, firmware, game region and Rt:Core version.</p>
   </div>
 </footer>
 
 <script>
 'use strict';
-const URL_GAMES="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/data/games_data.json";
-const URL_SETTINGS="https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/data/gamesettings.json";
-const URL_GAMES_FALLBACK="https://cdn.jsdelivr.net/gh/SilverCrow2323/Dolphin-Core-for-MuOS@main/data/games_data.json";
-const URL_SETTINGS_FALLBACK="https://cdn.jsdelivr.net/gh/SilverCrow2323/Dolphin-Core-for-MuOS@main/data/gamesettings.json";
-const GITHUB_ISSUE="https://github.com/SilverCrow2323/Dolphin-Core-for-MuOS/issues/new";
+const URL_GAMES="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/data/games_data.json";
+const URL_SETTINGS="https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/data/gamesettings.json";
+const URL_GAMES_FALLBACK="https://cdn.jsdelivr.net/gh/SilverCrow2323/dolphin-rt-core@main/dolphin-rtcore-muos/app/Dolphin%20RtUI/data/games_data.json";
+const URL_SETTINGS_FALLBACK="https://cdn.jsdelivr.net/gh/SilverCrow2323/dolphin-rt-core@main/dolphin-rtcore-muos/app/Dolphin%20RtUI/data/gamesettings.json";
+const GITHUB_ISSUE="https://github.com/SilverCrow2323/dolphin-rt-core/issues/new";
 const FAV_KEY="dolphin-rtcore-favs-v2";
 const FLAGS={'PAL':'eu','NTSC':'us','NTSC / USA':'us','JPN':'jp','NTSC-J':'jp','NTSC / JPN':'jp'};
 const REGION_COVER={'NTSC / USA':'US','PAL':'EN','NTSC / JPN':'JP','NTSC-J':'JP','NTSC':'US','JPN':'JP'};
@@ -807,6 +834,35 @@ function getFavs(){try{return JSON.parse(localStorage.getItem(FAV_KEY)||'[]');}c
 function isFav(k){return getFavs().includes(k);}
 function toggleFav(k){let f=getFavs();if(f.includes(k))f=f.filter(x=>x!==k);else f.push(k);try{localStorage.setItem(FAV_KEY,JSON.stringify(f));}catch(e){}return f.includes(k);}
 function favKey(item){return (item.game||'').toLowerCase().trim();}
+function shareCurrentView(){
+  const params=new URLSearchParams();
+  params.set('system',state.console==='gc'?'gc':'wii');
+  if(state.search)params.set('q',state.search);
+  if(state.region!=='all')params.set('region',state.region);
+  if(state.boot!=='all')params.set('boot',state.boot);
+  if(state.stars!=='all')params.set('rating',state.stars);
+  if(state.sort!=='rating-desc')params.set('sort',state.sort);
+  const url=new URL(location.href);url.search=params.toString();url.hash='';
+  const value=url.toString();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(value).then(()=>toast('Share link copied')).catch(()=>window.prompt('Copy this compatibility view link:',value));
+  }else window.prompt('Copy this compatibility view link:',value);
+}
+function restoreSharedView(){
+  const params=new URLSearchParams(location.search);
+  const system=(params.get('system')||'').toLowerCase();
+  if(system==='gc'||system==='wii')state.console=system;
+  const q=(params.get('q')||'').trim();state.search=q.toLowerCase();
+  const region=params.get('region');state.region=['PAL','NTSC','JPN'].includes(region)?region:'all';
+  const boot=params.get('boot');state.boot=['YES','CRASH','NO'].includes(boot)?boot:'all';
+  const sort=params.get('sort');
+  state.sort=['rating-desc','recent','rating-asc','title-asc','title-desc','tests-desc'].includes(sort)?sort:'rating-desc';
+  const rating=params.get('rating');state.stars=/^[0-5]$/.test(rating||'')?rating:'all';
+  $('searchInput').value=q;$('clearSearch').style.display=q?'block':'none';
+  $('regionFilter').value=state.region;$('bootFilter').value=state.boot;$('sortSelect').value=state.sort;
+  $('favFilter').setAttribute('aria-pressed','false');
+  $('.rating-pill').forEach(p=>{p.setAttribute('aria-pressed',p.dataset.r===state.stars?'true':'false');p.classList.toggle('active',p.dataset.r===state.stars);});
+}
 
 function splitTitle(t){t=String(t||'');let m=t.match(/^(.+?):\s+(.+)$/);if(m)return{main:m[1],sub:m[2]};m=t.match(/^(.+?)\s+-\s+(.+)$/);if(m)return{main:m[1],sub:m[2]};return{main:t,sub:null};}
 
@@ -883,7 +939,7 @@ function aggregateEntries(entries){
 function applyFilters(){
   state.filtered=state.groupedGames.filter(item=>{
     if(state.search){const q=state.search;const ok=item.game.toLowerCase().includes(q)||(item.agg.gameId||'').toLowerCase().includes(q)||item.allRegions.some(r=>(r.gameId||'').toLowerCase().includes(q))||item.allRegions.some(r=>r.entries.some(e=>(e.test_details?.considerations||'').toLowerCase().includes(q)));if(!ok)return false;}
-    if(state.stars!=='all'){const s=parseInt(state.stars);if(s===0){if(item.agg.bestRating!==0)return false;}else if(s===1){if(item.agg.bestRating>1)return false;}else if(item.agg.bestRating!==s)return false;}
+    if(state.stars!=='all'){const s=parseInt(state.stars);if(item.agg.bestRating!==s)return false;}
     if(state.region!=='all'){const has=item.allRegions.some(r=>state.region==='NTSC'?r.region.includes('NTSC'):r.region===state.region);if(!has)return false;}
     if(state.boot!=='all'&&item.agg.bestBoot!==state.boot)return false;
     if(state.favOnly&&!isFav(favKey(item)))return false;
@@ -1787,6 +1843,7 @@ function injectJsonLd(){
 async function loadGames(){
   try{
     if(!_gamesCache){const data=await fetchJson(URL_GAMES);_gamesCache={games:data.games||[],last_update:data.last_update};}
+    $('retryDataBtn').style.display='none';
     state.rawGames=_gamesCache.games||[];
     state.searchIndex=null;
     buildSearchIndex();
@@ -1799,7 +1856,8 @@ async function loadGames(){
     setTimeout(tryDeepLink,80);
   }catch(e){
     $('loading').style.display='none';$('empty').style.display='block';
-    $('emptyMsg').innerHTML='<span style="color:var(--bad);">Error loading games:</span> '+escapeHtml(e.message);
+    $('retryDataBtn').style.display='inline-flex';
+    $('emptyMsg').innerHTML='<span style="color:var(--bad);">Could not load compatibility data:</span> '+escapeHtml(e.message)+'. Check your connection and retry.';
   }
 }
 async function loadSettings(){
@@ -1833,8 +1891,9 @@ function _applyConsole(target){
     t.classList.toggle('wii',target==='wii');
     t.querySelectorAll('.opt').forEach(o=>o.classList.toggle('active',o.dataset.c===target));
   });
-  const icon=target==='gc'?'https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/gamecube.svg':'https://raw.githubusercontent.com/SilverCrow2323/Dolphin-Core-for-MuOS/main/assets/wii.svg';
+  const icon=target==='gc'?'https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/gamecube.svg':'https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/wii.svg';
   $('brandIcon').src=icon;
+  const consoleToggle=$('consoleToggle');if(consoleToggle)consoleToggle.setAttribute('aria-pressed',target==='wii'?'true':'false');
   try{localStorage.setItem('dolphin-rtcore-console',target);}catch(e){}
   loadGames();
 }
@@ -1848,6 +1907,7 @@ function init(){
   }
   const toggle=$('consoleToggle');
   toggle.addEventListener('click',e=>{const opt=e.target.closest('.opt');const target=opt?opt.dataset.c:(state.console==='gc'?'wii':'gc');if(target!==state.console)setConsole(target);});
+  toggle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setConsole(state.console==='gc'?'wii':'gc');}});
   // Keyboard arrow nav on grid
   $('gamesGrid').addEventListener('keydown',e=>{
     if(!e.target.matches('[data-idx]'))return;
@@ -1865,16 +1925,18 @@ function init(){
   $('regionFilter').addEventListener('change',e=>{state.region=e.target.value;applyFilters();renderGames();});
   $('bootFilter').addEventListener('change',e=>{state.boot=e.target.value;applyFilters();renderGames();});
   $('sortSelect').addEventListener('change',e=>{state.sort=e.target.value;applyFilters();renderGames();});
-  $('favFilter').addEventListener('click',()=>{state.favOnly=!state.favOnly;$('favFilter').style.color=state.favOnly?'var(--hot)':'';applyFilters();renderGames();});
+  $('favFilter').addEventListener('click',()=>{state.favOnly=!state.favOnly;$('favFilter').style.color=state.favOnly?'var(--hot)':'';$('favFilter').setAttribute('aria-pressed',state.favOnly?'true':'false');applyFilters();renderGames();});
+  $('shareViewBtn').addEventListener('click',shareCurrentView);
+  $('retryDataBtn').addEventListener('click',()=>{$('empty').style.display='none';$('loading').style.display='block';_gamesCache=null;loadGames();});
   $('resetBtn').addEventListener('click',()=>{
     $('searchInput').value='';$('clearSearch').style.display='none';
     $('regionFilter').value='all';$('bootFilter').value='all';$('sortSelect').value='rating-desc';
     Object.assign(state,{search:'',region:'all',boot:'all',sort:'rating-desc',stars:'all',favOnly:false,tester:''});
-    $('favFilter').style.color='';
+    $('favFilter').style.color='';$('favFilter').setAttribute('aria-pressed','false');
     $$('.rating-pill').forEach(p=>p.classList.remove('active'));
     applyFilters();renderGames();toast('Filters reset');
   });
-  $$('.rating-pill').forEach(p=>p.addEventListener('click',()=>{const r=p.dataset.r;state.stars=state.stars===r?'all':r;$$('.rating-pill').forEach(x=>x.classList.toggle('active',x.dataset.r===state.stars));applyFilters();renderGames();}));
+  $('.rating-pill').forEach(p=>p.addEventListener('click',()=>{const r=p.dataset.r;state.stars=state.stars===r?'all':r;$('.rating-pill').forEach(x=>{x.classList.toggle('active',x.dataset.r===state.stars);x.setAttribute('aria-pressed',x.dataset.r===state.stars?'true':'false');});applyFilters();renderGames();}));
   $('gmClose').addEventListener('click',closeGameModal);
   $('gmCloseBtn').addEventListener('click',closeGameModal);
   $('gameModal').addEventListener('click',e=>{if(e.target===$('gameModal'))closeGameModal();});
@@ -1921,6 +1983,9 @@ function init(){
 init();
 let bootConsole='gc';
 try{bootConsole=localStorage.getItem('dolphin-rtcore-console')||'gc';}catch(e){}
+state.console=bootConsole;
+restoreSharedView();
+bootConsole=state.console;
 setConsole(bootConsole,true);
 loadSettings();
 setTimeout(updateStats,200);

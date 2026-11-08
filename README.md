@@ -75,9 +75,11 @@ build ready-to-install port archives (shared `core/` + **your** aarch64 `dolphin
 ## 📚 Documentation & developer tools
 
 - **[Engineering guide](docs/REPO_GUIDE.md)** — repository map, development, quality and release workflow.
+- **[Compatibility Database website](index.html)** — searchable community reports, GameSettings and test submission.
+- **[Website maintenance guide](docs/COMPATIBILITY_SITE.md)** — data sources, PWA behavior and publishing checks.
 - **[Frontend documentation index](docs/README.md)** — UI architecture, screens, paths, profiles and testing.
 - **[GitHub Wiki source](wiki/Home.md)** — concise user/developer pages; publish with `bash tools/publish-wiki.sh`.
-- **UI screenshots:** `bash tools/capture-ui.sh --screens "boot,library,settings,triage"`.
+- **UI screenshots:** `bash tools/capture-ui.sh --screens "boot,library,settings,triage"` or capture every registered screen with `bash tools/capture-ui.sh --all`.
 - **Visual asset audit:** `python3 tools/asset_inventory.py --contact-sheet` (Pillow optional).
 
 The screenshot helper uses the frontend's existing opt-in `core/devshot.lua` hook; it does not modify application source. Generated reports and captures stay under `artifacts/`.

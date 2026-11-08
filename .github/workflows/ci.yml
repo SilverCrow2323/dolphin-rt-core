@@ -60,6 +60,6 @@ jobs:
       - name: Check helper syntax
         run: |
           bash -n tools/capture-ui.sh tools/publish-wiki.sh
-          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py
-      - name: Test asset inventory
-        run: python -m unittest tests/test_repo_tools.py -v
+          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
+      - name: Test repository and website tooling
+        run: python -m unittest tests/test_repo_tools.py tests/test_compat_site.py -v

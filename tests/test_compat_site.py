@@ -1,0 +1,96 @@
+from __future__ import annotations
+
+import json
+import shutil
+import subprocess
+import tempfile
+import unittest
+from html.parser import HTMLParser
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SITE = ROOT / "index.html"
+APP_DATA = ROOT / "dolphin-rtcore-muos" / "app" / "Dolphin RtUI" / "data"
+
+
+class ScriptCollector(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.inside = False
+        self.external = False
+        self.current: list[str] = []
+        self.scripts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag.lower() == "script":
+            self.external = "src" in dict(attrs)
+            self.inside = not self.external
+            self.current = []
+
+    def handle_data(self, data: str) -> None:
+        if self.inside:
+            self.current.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() == "script" and self.inside:
+            self.scripts.append("".join(self.current))
+            self.inside = False
+            self.current = []
+
+
+class CompatibilitySiteTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.html = SITE.read_text(encoding="utf-8")
+        cls.manifest = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
+        cls.games = json.loads((APP_DATA / "games_data.json").read_text(encoding="utf-8"))
+        cls.settings = json.loads((APP_DATA / "gamesettings.json").read_text(encoding="utf-8"))
+
+    def test_website_reads_current_repository_data_files(self):
+        self.assertIn("dolphin-rtcore-muos/app/Dolphin%20RtUI/data/games_data.json", self.html)
+        self.assertIn("dolphin-rtcore-muos/app/Dolphin%20RtUI/data/gamesettings.json", self.html)
+        self.assertNotIn("Dolphin-Core-for-MuOS", self.html)
+        self.assertIn("dolphin-rt-core/issues/new", self.html)
+
+    def test_compatibility_json_contract(self):
+        self.assertIsInstance(self.games, dict)
+        self.assertIsInstance(self.games.get("games"), list)
+        self.assertGreater(len(self.games["games"]), 0)
+        self.assertIsInstance(self.settings, dict)
+        self.assertIsInstance(self.settings.get("settings"), list)
+        for group in self.games["games"]:
+            self.assertIsInstance(group, dict)
+            self.assertIsInstance(group.get("game_info"), dict)
+            self.assertIsInstance(group.get("entries"), list)
+
+    def test_manifest_icons_are_local_and_present(self):
+        self.assertEqual(self.manifest.get("start_url"), "./")
+        self.assertEqual(self.manifest.get("scope"), "./")
+        for icon in self.manifest.get("icons", []):
+            path = icon["src"]
+            self.assertTrue(path.startswith("./assets/"), path)
+            self.assertTrue((ROOT / path.removeprefix("./")).is_file(), path)
+
+    def test_share_and_retry_controls_are_present(self):
+        self.assertIn('id="retryDataBtn"', self.html)
+        self.assertIn('id="shareViewBtn"', self.html)
+        for key in ("system", "q", "region", "boot", "rating", "sort"):
+            self.assertIn("params.set('"+key+"'", self.html)
+            self.assertIn("params.get('"+key+"'", self.html)
+
+    def test_inline_javascript_syntax_when_node_is_available(self):
+        node = shutil.which("node")
+        if not node:
+            self.skipTest("Node.js is not installed on this host")
+        parser = ScriptCollector()
+        parser.feed(self.html)
+        self.assertTrue(parser.scripts, "No inline application script found")
+        with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as tmp:
+            tmp.write("\n".join(parser.scripts))
+            tmp.flush()
+            result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+
+if __name__ == "__main__":
+    unittest.main()
