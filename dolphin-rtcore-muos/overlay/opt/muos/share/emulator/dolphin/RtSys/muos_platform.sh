@@ -33,9 +33,10 @@ esac
 
 # The filesystem capability wins over the marketing version string. This also
 # handles point releases and downstream builds that retain the same manifest API.
-if [ -d "$RT_MUOS_MANIFEST_DIR/core" ]; then
+RT_MUOS_USER_MANIFEST_DIR="$RT_MUOS_STORE_DIR/info/manifest"
+if [ -d "$RT_MUOS_MANIFEST_DIR/core" ] || [ -d "$RT_MUOS_USER_MANIFEST_DIR/core" ]; then
     RT_MUOS_REGISTRATION_LAYOUT="split"
-elif [ -r "$RT_MUOS_MANIFEST_DIR/core.json" ]; then
+elif [ -r "$RT_MUOS_MANIFEST_DIR/core.json" ] || [ -r "$RT_MUOS_USER_MANIFEST_DIR/core.json" ]; then
     RT_MUOS_REGISTRATION_LAYOUT="single"
 else
     case "$RT_MUOS_RELEASE" in
