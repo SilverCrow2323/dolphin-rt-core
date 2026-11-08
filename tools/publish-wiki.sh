@@ -10,6 +10,7 @@ trap cleanup EXIT
 command -v git >/dev/null 2>&1 || { echo "git is required" >&2; exit 1; }
 command -v gh >/dev/null 2>&1 || { echo "GitHub CLI (gh) is required; run gh auth login first" >&2; exit 1; }
 gh auth status >/dev/null
+gh auth setup-git >/dev/null
 [[ -d "$ROOT/wiki" ]] || { echo "Missing wiki/ source directory" >&2; exit 1; }
 git clone "$WIKI_URL" "$TMP/wiki"
 find "$ROOT/wiki" -maxdepth 1 -type f -name '*.md' -exec cp {} "$TMP/wiki/" \;
