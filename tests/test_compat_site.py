@@ -63,6 +63,10 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertIsInstance(group, dict)
             self.assertIsInstance(group.get("game_info"), dict)
             self.assertIsInstance(group.get("entries"), list)
+            for report in group["entries"]:
+                for section in ("game_info", "test_review", "test_details", "test_environment"):
+                    self.assertIsInstance(report.get(section), dict, f"missing {section} in {group['game_info'].get('game')}")
+                self.assertIn(report["game_info"].get("system"), ("GC", "Wii"))
 
     def test_manifest_icons_are_local_and_present(self):
         self.assertEqual(self.manifest.get("start_url"), "./")

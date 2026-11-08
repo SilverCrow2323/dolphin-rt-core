@@ -29,7 +29,7 @@ Raw GitHub is the primary endpoint; jsDelivr is the fallback. Same-origin artwor
 
 - GameCube and Wii views and themes.
 - Text search over title, Game ID, notes, tester, device, firmware and profile.
-- Filters for region, boot result, exact rating, device and muOS version.
+- Filters for region, boot result, exact rating, device and muOS version; device/firmware options follow the currently selected console.
 - Sort by rating, recency, title or report count.
 - Favourites stored locally in the browser.
 - Shareable URLs for console and active filters.

@@ -839,7 +839,8 @@ function favKey(item){return (item.game||'').toLowerCase().trim();}
 
 function populateEnvironmentFilters(){
   const devices=new Set(),muosVersions=new Set();
-  (state.rawGames||[]).forEach(game=>{
+  const targetSys=state.console==='gc'?'GC':'Wii';
+  (state.rawGames||[]).filter(game=>String(game.game_info?.system||'').trim()===targetSys).forEach(game=>{
     (game.entries||[]).forEach(entry=>{
       const env=entry.test_environment||{};
       const device=String(env.device||'').trim();

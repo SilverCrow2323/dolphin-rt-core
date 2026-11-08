@@ -76,6 +76,7 @@ build ready-to-install port archives (shared `core/` + **your** aarch64 `dolphin
 
 - **[Engineering guide](docs/REPO_GUIDE.md)** — repository map, development, quality and release workflow.
 - **[Compatibility Database website](index.html)** — searchable community reports, GameSettings and test submission.
+- **[GitHub Pages deploy workflow](.github/workflows/deploy-compatibility.yml)** — publishes only the static site files after Pages is enabled.
 - **[Website maintenance guide](docs/COMPATIBILITY_SITE.md)** — data sources, PWA behavior and publishing checks.
 - **[muOS registration architecture](docs/MUOS_REGISTRATION.md)** — Andromeda, split-manifest and legacy detection.
 - **[Frontend documentation index](docs/README.md)** — UI architecture, screens, paths, profiles and testing.
