@@ -24,7 +24,7 @@ bash tools/capture-ui.sh --screens "boot,library,settings,triage" --out-dir arti
 bash tools/capture-ui.sh --all --out-dir artifacts/screenshots
 ```
 
-`--all` follows the screen registrations in `ui/init.lua`. If one screen fails, the batch continues and reports a final success/failure count instead of abandoning the remaining captures.
+`--all` reads the screen registrations directly from `ui/init.lua` at runtime, so newly registered screens are included automatically and removed screens are not captured accidentally. Use `--list` to print the discovered screen IDs without requiring LÖVE. If one screen fails, the batch continues and reports a final success/failure count instead of abandoning the remaining captures.
 
 ## Options
 
