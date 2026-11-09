@@ -152,9 +152,9 @@ local function start_launch(g)
   os.remove(Stream.DIR .. "/h_launch.done")
   local ok, result, err = pcall(Stream.spawn, "health.sh",
       "http://" .. Stream.s.HOST .. ":47989/serverinfo", Stream.DIR .. "/h_launch.done")
-  if not ok or result == false then
+  if not ok or (result ~= true and result ~= 0) then
     launching = nil
-    return false, tostring(err or result)
+    return false, tostring(err or ("could not start health preflight (status " .. tostring(result) .. ")"))
   end
   SFX.play("menu_select")
   return true
