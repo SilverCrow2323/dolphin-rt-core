@@ -90,3 +90,7 @@ The Stream browser exposes refresh, stable tab/view/system-filter/sort selection
 ## Rt:Stream Settings NEXUS actions
 
 Stream Settings exposes indexed selection, choice changes, validated HOST/port/MAC text updates, text-editor opening, selected diagnostic/tool execution, mode cancellation and a redacted state snapshot. The state action intentionally reports only whether a host is configured; it never returns the host, MAC, PIN or token values.
+
+## NEXUS action reference
+
+See [NEXUS action reference](NEXUS.md) for the stable action catalog, argument contracts and safety guarantees across LÖVE screens.
