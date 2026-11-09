@@ -81,7 +81,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: dolphin-rtui-screen-captures
-          path: "$RUNNER_TEMP/dolphin-rtui-screenshots/*.png"
+          path: "${{ runner.temp }}/dolphin-rtui-screenshots/*.png"
           if-no-files-found: error
           retention-days: 14
 
