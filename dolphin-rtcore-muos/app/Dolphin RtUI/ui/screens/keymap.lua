@@ -183,11 +183,12 @@ local function commit_remap()
     local r = S.remap
     if not r or r.phase ~= "confirm" then return false, "no captured mapping to confirm" end
     local section = SYSTEM_CFG[S.system].section
-    local previous = Ini.get(S.lines, section, r.row.key)
+    local previous_lines = {}
+    for i, line in ipairs(S.lines) do previous_lines[i] = line end
     Ini.set(S.lines, section, r.row.key, r.new_value)
     local ok, err = Ini.write_lines(S.path, S.lines)
     if not ok then
-        Ini.set(S.lines, section, r.row.key, previous or "")
+        S.lines = previous_lines
         Notify.show("error", "Could not save controller mapping")
         return false, tostring(err or "controller mapping write failed")
     end
