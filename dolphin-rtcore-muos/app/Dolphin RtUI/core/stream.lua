@@ -34,8 +34,14 @@ function M.configured() return M.s.HOST ~= nil and M.s.HOST ~= "" end
 function M.set(key, value)
   value = tostring(value or "")
   if not value:match("^[%w%.:%-_ ]*$") then return false, "characters not allowed" end
+  local previous = M.s[key]
   M.s[key] = value
-  return write(DIR .. "/stream.conf", L.serialize_conf(M.s))
+  local ok = write(DIR .. "/stream.conf", L.serialize_conf(M.s))
+  if not ok then
+    M.s[key] = previous
+    return false, "could not persist stream.conf"
+  end
+  return true
 end
 
 function M.stat(app)
