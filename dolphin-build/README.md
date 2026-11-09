@@ -1,40 +1,51 @@
-# dolphin-build — build the emulator, with the source
+# dolphin-build — reproducible ARM64 builds
 
-The `dolphin` binary used so far (`Dolphin 2412-81-dirty`, aarch64) opens windows only through **fbdev** (muOS / Knulli and their
-Mali framebuffer). **ROCKNIX on the H700 has no fbdev path and no X server** (its wlroots is built with `-Dxwayland=disabled`):
-it needs a build whose no-GUI frontend can talk **Wayland**. This folder builds one, and it also makes the build reproducible,
-which is what the GPL asks of anyone who ships the binary.
+This directory builds the upstream Dolphin revision pinned in [`DOLPHIN_REF`](DOLPHIN_REF), applies only the patches for the selected platform, and packages the exact corresponding GPL source.
 
-## What it builds
-| `--target` | Window platforms | Patches |
-| :--- | :--- | :--- |
-| `rocknix` | Wayland (+ headless) | ROCKNIX's `000, 011, 012, 013, 015` — see [`patches/rocknix-wayland/PROVENANCE.md`](patches/rocknix-wayland/PROVENANCE.md) |
-| `fbdev` | fbdev (+ headless): same feature set as the current muOS/Knulli binary | none (add yours in `patches/local/`) |
+## Build matrix
 
-Base: upstream Dolphin commit pinned in [`DOLPHIN_REF`](DOLPHIN_REF) (`6094cfc`, release **2606**). The old binary is 2412 plus 81 commits
-plus local changes nobody has the source of; **2606 is a different base**, so behaviour can differ. Profiles use plain Dolphin keys that
-are stable across these versions, but test.
+| Target | Runtime/display path | Frontend | Intended use |
+|---|---|---|---|
+| `muos` | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | muOS Andromeda on H700, launched by Rt:Core / Rt:UI |
+| `knulli` | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | Knulli H700 |
+| `rocknix` | Wayland + SDL/EGL/GLES | NoGUI | ROCKNIX H700; applies the platform patch series |
+| `desktop` | X11 + Wayland | Qt GUI and/or NoGUI | Generic ARM64 Linux desktop and diagnostics |
 
-Flags worth knowing: no Qt, no Vulkan (Panfrost on the H700 has none), no Discord/RetroAchievements/mGBA/analytics (less code and fewer
-runtime libraries), `-mtune=cortex-a53` (scheduling only: no new instructions, still runs on every aarch64 core), LTO on by default.
+The embedded targets intentionally use Dolphin's **NoGUI frontend**. This does not mean games render without graphics; it means Dolphin does not create its own desktop management window. The game is rendered through the selected backend. muOS already provides its own user-facing GUI through the Rt:Core LÖVE application and muOS launcher. A Qt desktop window is not a suitable replacement for that firmware integration.
 
-## Run it
-- **In CI (recommended):** GitHub → Actions → *Build Dolphin (aarch64)* → Run workflow. Native arm64 runner, Debian trixie, ~1–3 h.
-  It uploads `dolphin`, `BUILDINFO.txt` and `source-<ref>.tar.xz` as an artifact.
-- **On an arm64 Debian/Ubuntu box:** `sudo ./build-dolphin.sh --target rocknix --deps`
-- **Check the patches only (1 minute, any machine):** `./verify-patches.sh --syntax`
+The desktop target builds upstream's two frontends separately:
+- `dolphin`: NoGUI frontend.
+- `dolphin-gui`: Qt desktop frontend.
 
-Then build the port archive with it: `tools/make-port-release.sh r --binary out/dolphin`.
+## Local usage
 
-## What is verified, and what is not
-| Verified here | Not verified |
-| :--- | :--- |
-| the five patches apply cleanly, in order, to the pinned upstream commit | **a full build** (this machine has 1 core / 3 GB: Dolphin does not fit) |
-| `PlatformWayland.cpp`, `EGLWayland.cpp`, `GLContext.cpp` compile (C++23, syntax only) against the real Wayland headers | the first CI run may need a dependency added to the list in `build-dolphin.sh` |
-| every `-D` flag exists in the patched CMake files | **running on a device**: Panfrost GLES3 on a Mali-G31 may be slower or lack features Dolphin wants |
-| the launcher picks `--platform=wayland` only when the binary has it (tests) | whether the pad / hotkey patch (`000`) needs extra mapping in the profiles |
+Run on a native AArch64 Debian/Ubuntu host, or use GitHub Actions:
 
-## GPL
-Dolphin is GPL-2.0-or-later. Whoever distributes a binary built here must offer the corresponding source: `source-<ref>.tar.xz`
-(upstream tree + the applied patches + these scripts) is produced next to every binary for exactly that. Put your own changes in
-`patches/local/` so they are part of it.
+```bash
+# muOS Andromeda / H700
+./build-dolphin.sh --target muos --frontend nogui --out ./out/muos
+
+# Knulli / H700
+./build-dolphin.sh --target knulli --frontend nogui --out ./out/knulli
+
+# ROCKNIX / H700
+./verify-patches.sh
+./build-dolphin.sh --target rocknix --frontend nogui --out ./out/rocknix
+
+# ARM64 Linux desktop: both frontends
+./build-dolphin.sh --target desktop --frontend both --out ./out/desktop
+```
+
+Options include `--ref SHA`, `--jobs N`, `--no-lto`, `--tune cortex-a53|none`, `--deps`, and `--no-deps`. H700 tuning uses `-mtune=cortex-a53` only: it does not require additional CPU instructions, preserving AArch64 compatibility.
+
+## CI artifacts
+
+The native ARM64 workflow builds muOS, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
+
+## Release engineering rules
+
+1. Keep the upstream commit pinned; do not silently float to upstream HEAD.
+2. Keep platform-specific patches isolated. ROCKNIX Wayland patches must not leak into muOS/Knulli fbdev builds.
+3. Preserve the muOS launcher contract: `/opt/muos/share/emulator/dolphin/dolphin -e ROM -u EMUDIR`.
+4. Never label a build hardware-tested until it has been launched on the actual device.
+5. Distribute the exact corresponding source archive with every binary, as required by the GPL.
