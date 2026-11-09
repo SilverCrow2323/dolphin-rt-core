@@ -8,7 +8,7 @@ local games={
     {app="Metroid",title="Metroid",kind="gc"},
 }
 local configured=true
-local spawn_result=true
+local spawn_result=0
 local settings={stream_view=1}
 love={graphics={},timer={}}
 local old_remove=os.remove
