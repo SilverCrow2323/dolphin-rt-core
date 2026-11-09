@@ -216,6 +216,14 @@ function M.init()
         end
     end
 
+    local hotkeys_screen = Nexus.get_screen("hotkeys")
+    if hotkeys_screen and hotkeys_screen.register_actions then
+        local ok, registered, detail = pcall(hotkeys_screen.register_actions, M)
+        if not ok or registered == false then
+            log("hotkeys NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     local diagnostics_screen = Nexus.get_screen("diagnostics")
     if diagnostics_screen and diagnostics_screen.register_actions then
         local ok, registered, detail = pcall(diagnostics_screen.register_actions, M)
