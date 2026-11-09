@@ -106,7 +106,9 @@ assert(tostring(missing_reason):match("unknown action"), "unknown action is expl
 
 local actions = Nexus.list_actions()
 eq(#actions, 5, "action catalog size")
-eq(actions[1].id, "library.rescan", "action catalog sorted")
+eq(actions[1].id, "batch.second", "action catalog sorts by metadata order then action ID")
+eq(actions[2].id, "library.rescan", "default-order action follows alphabetically")
+eq(actions[5].id, "batch.first", "explicit high-order action sorts last")
 eq(actions[1].metadata.private, nil, "action metadata excludes nested values")
 actions[1].metadata.title = "Tampered action"
 eq(Nexus.list_actions()[1].metadata.title, "Rescan library", "action catalog is defensive")
