@@ -93,7 +93,7 @@ function M.inspect(catalog)
         end
     end
 
-    if report.screen_count == 0 then
+    if valid and report.screen_count == 0 then
         issue("empty_catalog", "NEXUS catalog contains no registered screens", "screens")
     end
 
