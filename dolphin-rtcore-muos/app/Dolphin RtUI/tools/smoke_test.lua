@@ -1,34 +1,54 @@
--- tools/smoke_test.lua — esegui con:  xvfb-run -a love . --smoke
--- Apre ogni schermata registrata, chiama enter/update(0.1)/draw una volta,
--- e scrive l'esito in data/logs/smoke.txt. Non modifica nulla.
-local SCREENS = {
-  "boot","library","game","cheats","hotkeys","settings","rt_editor",
-  "folders","about","diagnostics","controller_map","controller_profiles",
-  "triage","rt_profiles","gameset_browser","keymap","gameset_explorer",
-  "compat_list","cheatdb","mods","stream_library","stream_settings",
-}
-local failures, ok = {}, 0
+-- tools/smoke_test.lua — run with: xvfb-run -a love . --smoke
+-- Exercise every declared screen, including modules that failed to register.
+local failures, passed = 0, 0
+
 local function run()
   local UI = require("ui")
-  local out = io.open("data/logs/smoke.txt","w")
-  out:write("smoke test ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
-  for _, name in ipairs(SCREENS) do
-    local ok2, err = pcall(function()
-      UI.go_instant(name, {})
+  local manifest = UI.screen_manifest()
+  os.execute("mkdir -p data/logs 2>/dev/null")
+  local out, open_err = io.open("data/logs/smoke.txt", "w")
+  if not out then
+    print("[smoke] cannot write data/logs/smoke.txt: " .. tostring(open_err))
+    love.event.quit(1)
+    return
+  end
+
+  out:write("Dolphin Rt:UI screen smoke test ", os.date("%Y-%m-%d %H:%M:%S"), "\n")
+  for _, entry in ipairs(manifest) do
+    local name = entry.id
+    local ok, err = pcall(function()
+      if not UI.catalog then error("UI catalog API unavailable") end
+      local catalog = UI.catalog()
+      local found = false
+      for _, screen in ipairs(catalog.screens or {}) do
+        if screen.id == name then found = true; break end
+      end
+      if not found then error("screen module failed to register: " .. tostring(entry.module)) end
+      if UI.go_instant(name, {}) == false then error("navigation rejected screen: " .. name) end
       UI.update(0.1)
       UI.draw()
     end)
-    if ok2 then ok = ok + 1; out:write("  [OK]   ", name, "\n")
-    else failures[#failures+1] = name; out:write("  [FAIL] ", name, ": ", tostring(err), "\n") end
+    if ok then
+      passed = passed + 1
+      out:write("  [OK]   ", name, "\n")
+    else
+      failures = failures + 1
+      out:write("  [FAIL] ", name, ": ", tostring(err), "\n")
+    end
   end
-  out:write(("\nRESULT: %d/%d OK, %d FAIL\n"):format(ok, #SCREENS, #failures))
+
+  out:write(("\nRESULT: %d/%d OK, %d FAIL\n"):format(passed, #manifest, failures))
   out:close()
-  print(("smoke: %d/%d OK, %d FAIL"):format(ok, #SCREENS, #failures))
-  love.event.quit(#failures == 0 and 0 or 1)
+  print(("smoke: %d/%d OK, %d FAIL"):format(passed, #manifest, failures))
+  love.event.quit(failures == 0 and #manifest > 0 and 0 or 1)
 end
--- installa un hook: alla prima love.update chiama run()
-local _orig_update = love.update or function() end
+
+local original_update = love.update or function() end
 love.update = function(dt)
-  love.update = _orig_update
-  pcall(run)
+  love.update = original_update
+  local ok, err = pcall(run)
+  if not ok then
+    print("[smoke] fatal: " .. tostring(err))
+    love.event.quit(1)
+  end
 end
