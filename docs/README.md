@@ -66,3 +66,7 @@ The Mod Vault exposes category switching, selected-item toggling, category-wide 
 ## ROM Folders NEXUS actions
 
 The ROM Folders screen exposes refresh, browse, open, add (GC/Wii), remove, finish/rescan and state actions. Removal is restricted to the registered-folder list; adding is restricted to active browse mode and the two supported system IDs.
+
+## Compatibility List NEXUS actions
+
+The Compatibility browser exposes database refresh, stable filter IDs (`all`, `playable`, `issues`, `not_playable`), owned-library filtering, initial-letter navigation, open-owned-game and a read-only state snapshot. Games absent from the local library remain non-launchable.
