@@ -72,6 +72,13 @@ if (( ALL )) || [[ -n "$SCREENS" ]]; then
   (( ALL == 0 )) || SCREENS="$(IFS=,; echo "${KNOWN_SCREENS[*]}")"
   OUT_DIR="${OUT_DIR:-$ROOT/artifacts/screenshots}"
   mkdir -p "$OUT_DIR"
+  # Reuse one virtual display for the whole batch. Starting a fresh Xvfb
+  # instance for every screen makes multi-resolution CI captures needlessly slow.
+  if [[ -z "${DISPLAY:-}" ]] && command -v xvfb-run >/dev/null 2>&1; then
+    exec xvfb-run -a env DOLPHINUI_RES="${DOLPHINUI_RES:-}" \
+      bash "$ROOT/tools/capture-ui.sh" --screens "$SCREENS" \
+        --out-dir "$OUT_DIR" --delay "$DELAY" --pads "$PADS"
+  fi
   IFS=',' read -r -a names <<< "$SCREENS"
   completed=0
   failed=0
