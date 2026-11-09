@@ -73,6 +73,9 @@ end
 function M.register_action(id, callback, metadata)
     return Nexus.register_action(id, callback, metadata)
 end
+function M.register_actions(entries)
+    return Nexus.register_actions(entries)
+end
 function M.run_action(id, ...)
     local ok, result, detail = Nexus.run_action(id, ...)
     if not ok then
@@ -106,139 +109,18 @@ function M.init()
         { "stream_settings", "ui.screens.stream_settings" },
     }) do M.register(s[1], s[2]) end
 
-    -- Let feature screens publish stable NEXUS actions after all screens
-    -- exist, while keeping navigation ownership in this module.
-    local library_screen = Nexus.get_screen("library")
-    if library_screen and library_screen.register_actions then
-        local ok, registered, detail = pcall(library_screen.register_actions, M)
-        if not ok or registered == false then
-            log("library NEXUS actions: " .. tostring(ok and detail or registered))
+    -- Feature screens publish NEXUS actions through one audited manifest.
+    -- Failures are isolated per adapter; later screens still register.
+    local AdapterBootstrap = require("core.nexus_adapters")
+    local adapter_stats = AdapterBootstrap.register(
+        function(screen_id) return Nexus.get_screen(screen_id) end,
+        M,
+        function(screen_id, reason)
+            log(screen_id .. " NEXUS actions: " .. tostring(reason))
         end
-    end
-
-    local profile_screen = Nexus.get_screen("rt_profiles")
-    if profile_screen and profile_screen.register_actions then
-        local ok, registered, detail = pcall(profile_screen.register_actions, M)
-        if not ok or registered == false then
-            log("profile NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local editor_screen = Nexus.get_screen("rt_editor")
-    if editor_screen and editor_screen.register_actions then
-        local ok, registered, detail = pcall(editor_screen.register_actions, M)
-        if not ok or registered == false then
-            log("editor NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    for _, screen_id in ipairs({ "gameset_browser", "gameset_explorer" }) do
-        local screen = Nexus.get_screen(screen_id)
-        if screen and screen.register_actions then
-            local ok, registered, detail = pcall(screen.register_actions, M)
-            if not ok or registered == false then
-                log(screen_id .. " NEXUS actions: " .. tostring(ok and detail or registered))
-            end
-        end
-    end
-
-    local settings_screen = Nexus.get_screen("settings")
-    if settings_screen and settings_screen.register_actions then
-        local ok, registered, detail = pcall(settings_screen.register_actions, M)
-        if not ok or registered == false then
-            log("settings NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local mods_screen = Nexus.get_screen("mods")
-    if mods_screen and mods_screen.register_actions then
-        local ok, registered, detail = pcall(mods_screen.register_actions, M)
-        if not ok or registered == false then
-            log("mods NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local folders_screen = Nexus.get_screen("folders")
-    if folders_screen and folders_screen.register_actions then
-        local ok, registered, detail = pcall(folders_screen.register_actions, M)
-        if not ok or registered == false then
-            log("folders NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local compat_screen = Nexus.get_screen("compat_list")
-    if compat_screen and compat_screen.register_actions then
-        local ok, registered, detail = pcall(compat_screen.register_actions, M)
-        if not ok or registered == false then
-            log("compatibility NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local triage_screen = Nexus.get_screen("triage")
-    if triage_screen and triage_screen.register_actions then
-        local ok, registered, detail = pcall(triage_screen.register_actions, M)
-        if not ok or registered == false then
-            log("triage NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    for _, screen_id in ipairs({ "controller_profiles", "controller_map" }) do
-        local screen = Nexus.get_screen(screen_id)
-        if screen and screen.register_actions then
-            local ok, registered, detail = pcall(screen.register_actions, M)
-            if not ok or registered == false then
-                log(screen_id .. " NEXUS actions: " .. tostring(ok and detail or registered))
-            end
-        end
-    end
-
-    local cheatdb_screen = Nexus.get_screen("cheatdb")
-    if cheatdb_screen and cheatdb_screen.register_actions then
-        local ok, registered, detail = pcall(cheatdb_screen.register_actions, M)
-        if not ok or registered == false then
-            log("cheatdb NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local stream_screen = Nexus.get_screen("stream_library")
-    if stream_screen and stream_screen.register_actions then
-        local ok, registered, detail = pcall(stream_screen.register_actions, M)
-        if not ok or registered == false then
-            log("stream library NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local stream_settings_screen = Nexus.get_screen("stream_settings")
-    if stream_settings_screen and stream_settings_screen.register_actions then
-        local ok, registered, detail = pcall(stream_settings_screen.register_actions, M)
-        if not ok or registered == false then
-            log("stream settings NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local cheats_screen = Nexus.get_screen("cheats")
-    if cheats_screen and cheats_screen.register_actions then
-        local ok, registered, detail = pcall(cheats_screen.register_actions, M)
-        if not ok or registered == false then
-            log("cheats NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local hotkeys_screen = Nexus.get_screen("hotkeys")
-    if hotkeys_screen and hotkeys_screen.register_actions then
-        local ok, registered, detail = pcall(hotkeys_screen.register_actions, M)
-        if not ok or registered == false then
-            log("hotkeys NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local diagnostics_screen = Nexus.get_screen("diagnostics")
-    if diagnostics_screen and diagnostics_screen.register_actions then
-        local ok, registered, detail = pcall(diagnostics_screen.register_actions, M)
-        if not ok or registered == false then
-            log("diagnostics NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
+    )
+    log(string.format("NEXUS adapters: %d registered, %d missing, %d failed",
+        adapter_stats.registered, adapter_stats.missing, adapter_stats.failed))
 
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
@@ -256,13 +138,13 @@ function M.init()
     -- Stable built-in action IDs are the first consumers of NEXUS. Keep the
     -- callbacks here so navigation remains the single owner of transitions.
     if not Nexus.has_action("navigation.back") then
-        M.register_action("navigation.back", function() M.back(); return true end,
-            { title = "Back", group = "navigation", order = 10 })
+        M.register_action("navigation.back", function()
+            return M.back()
+        end, { title = "Back", group = "navigation", order = 10 })
     end
     if not Nexus.has_action("navigation.open_library") then
         M.register_action("navigation.open_library", function()
-            M.go("library")
-            return true
+            return M.go("library")
         end, { title = "Open library", group = "navigation", order = 20 })
     end
     if not Nexus.has_action("system.open_drawer") then
@@ -356,7 +238,10 @@ function M.go(name, params, opts)
 end
 
 function M.go_instant(name, params)
-    if not Nexus.has_screen(name) then Notify.show("error", "Unknown screen: " .. tostring(name)); return false end
+    if not Nexus.has_screen(name) then
+        Notify.show("error", "Unknown screen: " .. tostring(name))
+        return false, "unknown screen"
+    end
     stack = {}
     fade.phase = "idle"
     enter(name, params)
@@ -368,11 +253,15 @@ function M.is_root()
 end
 
 function M.back()
+    -- Do not consume the back stack while another transition owns navigation.
+    -- Callers (including NEXUS actions) receive an explicit rejection instead
+    -- of a false success or a silently lost history entry.
+    if fade.phase ~= "idle" then return false, "transition in progress" end
     local prev = table.remove(stack)
-    if fade.phase ~= "idle" then return end
     fade.phase, fade.t, fade.dir = "out", 0, -1
     fade.target = prev and { name = prev.name, params = prev.params, state = prev.state }
                        or { name = "library" }
+    return true
 end
 function M.current() return current_name end
 
