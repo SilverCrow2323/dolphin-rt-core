@@ -8,7 +8,7 @@ love={graphics={},timer={}}
 local raw={}; local saved={}
 package.preload["ui.sfx"]=function() return {play=function() end} end
 package.preload["core.state"]=function() return {raw_input=false} end
-package.preload["ui.input"]=function() return {from_raw=function(n) return n==1 and "A" or nil} end end
+package.preload["ui.input"]=function() return {from_raw=function(n) return n==1 and "A" or nil end} end
 package.preload["core.app_input"]=function() return {pad_map=function() return {A=1,B=2} end} end
 package.preload["ui.kit"]=function()
   local function list()
