@@ -341,7 +341,11 @@ do_remove() {
         single)
             need_jq
             file="$USERM/core.json"
-            [ -s "$file" ] || { say "no user core.json to clean"; return 0; }
+            [ -s "$file" ] || {
+                refresh_assign absent
+                say "no user core.json to clean; Content Explorer assignment map refreshed"
+                return 0
+            }
             out="$(jq --arg gk "$GC_KEY" --arg wk "$WII_KEY" \
                       --arg oldgc "$OLD_GC_NAME" --arg oldwii "$OLD_WII_NAME" \
                       'del(.[$gk]) | del(.[$wk]) | del(.[$oldgc]) | del(.[$oldwii])' "$file")" || die "could not remove Rt:Core entries"
