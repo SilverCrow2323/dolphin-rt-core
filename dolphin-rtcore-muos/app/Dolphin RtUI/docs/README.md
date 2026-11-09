@@ -61,3 +61,29 @@ stable entry points for menus, shortcuts and diagnostics.
 ## Environment
 `DOLPHINUI_FPS=30` caps the UI · `DOLPHINUI_TRIAGE_ROOT=<dir>` fake muOS tree for the triage ·
 `DOLPHINUI_SHOT=out.png:2.5` headless screenshot (dev).
+
+### NEXUS integrity diagnostics
+
+`core/nexus_diagnostics.lua` provides a read-only integrity report over the public
+catalog returned by `ui.catalog()`. It checks that every registered screen has its
+generated `navigation.go.<screen-id>` action, that generated route metadata declares
+the `navigation` group and matching screen, and that action targets resolve to known
+screens. It also rejects empty registries, malformed or duplicate catalog entries, and sparse/non-array catalog keys. It does not execute
+callbacks, mutate the registry, or probe hardware/runtime availability.
+
+Example from a developer console or diagnostic integration:
+
+```lua
+local UI = require("ui")
+local NexusDiagnostics = require("core.nexus_diagnostics")
+local report = NexusDiagnostics.inspect(UI.catalog())
+print(NexusDiagnostics.format(report))
+```
+
+The report is suitable for support bundles and automated tests. A PASS means the
+registry relationships are internally consistent; it is not a claim that every
+screen has been exercised on physical muOS hardware.
+
+From the Diagnostics screen, press L1/R1 to open the live NEXUS report. A refresh
+rebuilds the catalog snapshot; X exports it to `data/logs/nexus_report.txt`. The
+report view is read-only and can be scrolled with the D-pad / L2 / R2.
