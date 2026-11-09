@@ -57,7 +57,7 @@ eq(invalid_callback, false, "reject non-function callback")
 
 local batch_ok, batch_count = Nexus.register_actions({
     { id = "batch.first", callback = function() return true end,
-      metadata = { group = "batch" } },
+      metadata = { group = "batch", order = 10000 } },
     { id = "batch.second", callback = function() return true end,
       metadata = { group = "batch" } },
 })
