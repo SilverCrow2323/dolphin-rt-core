@@ -174,7 +174,8 @@ function S.register_actions(ui)
                   return false, "input must be a logical button name or raw button number"
               end
               local accepted = S.raw_pad(input)
-              return accepted == true, accepted and nil or "input was not recognised"
+              if accepted == true then return true end
+              return false, "input was not recognised"
           end },
         { id = "hotkeys.finish_capture", title = "Finish hotkey capture", order = 110,
           run = function(commit)
