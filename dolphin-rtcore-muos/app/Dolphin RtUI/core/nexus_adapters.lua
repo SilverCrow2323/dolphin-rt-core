@@ -43,14 +43,15 @@ function M.register(get_screen, ui, report)
     local stats = { attempted = 0, registered = 0, missing = 0, failed = 0 }
 
     for _, screen_id in ipairs(ADAPTERS) do
+        stats.attempted = stats.attempted + 1
         local ok_get, screen = pcall(get_screen, screen_id)
         if not ok_get then
             stats.failed = stats.failed + 1
             if report then pcall(report, screen_id, screen) end
         elseif type(screen) ~= "table" or type(screen.register_actions) ~= "function" then
             stats.missing = stats.missing + 1
+            if report then pcall(report, screen_id, "adapter unavailable") end
         else
-            stats.attempted = stats.attempted + 1
             local ok, result, detail = pcall(screen.register_actions, ui)
             if not ok or result == false then
                 stats.failed = stats.failed + 1
