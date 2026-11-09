@@ -70,6 +70,19 @@ eq(sparse.ok, false, "sparse and keyed catalogs fail closed")
 eq(sparse.issues[1].code, "invalid_screen_entries", "sparse screen array classified")
 eq(sparse.issues[1].message:match(": 2$") ~= nil, true, "array hole and non-array key detected")
 
+local invalid_actions = Diagnostics.inspect({
+    screens = {},
+    actions = {
+        { id = "" },
+        { id = "not valid" },
+        { id = "shortcut.valid" },
+        { id = "shortcut.valid" },
+    },
+})
+eq(invalid_actions.ok, false, "invalid action identifiers fail closed")
+eq(invalid_actions.issues[1].code, "invalid_action_entries", "invalid action entries classified")
+eq(invalid_actions.issues[1].message:match(": 3$") ~= nil, true, "empty, malformed, and duplicate action IDs rejected")
+
 local empty = Diagnostics.inspect({ screens = {}, actions = {} })
 eq(empty.ok, true, "valid empty catalog passes")
 eq(empty.screen_count, 0, "empty screen count")
