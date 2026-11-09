@@ -32,7 +32,7 @@ if [ "$DEPS" = yes ] || { [ "$DEPS" = auto ] && [ "$(id -u)" = 0 ] && command -v
     libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev liblzma-dev \
     libpng-dev zlib1g-dev libbz2-dev libegl-dev libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev libxi-dev \
     libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev
-  if [ "$TARGET" = desktop ] || [ "$TARGET" = muos-qt ]; then apt-get install -y -qq --no-install-recommends qt6-base-dev libqt6svg6-dev qt6-qpa-plugins; fi
+  if [ "$TARGET" = desktop ] || [ "$TARGET" = muos-qt ]; then apt-get install -y -qq --no-install-recommends qt6-base-dev qt6-base-private-dev libqt6svg6-dev qt6-qpa-plugins; fi
 fi
 
 W="$OUT/work"; SRC="$W/dolphin"; rm -rf "$W"; mkdir -p "$SRC" "$OUT"; cd "$SRC"
