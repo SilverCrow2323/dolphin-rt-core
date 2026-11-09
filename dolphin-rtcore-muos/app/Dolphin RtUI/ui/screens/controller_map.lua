@@ -224,30 +224,106 @@ function S.raw_pad(b)
 end
 
 local function save_and_reload()
+    if not S.dir then return false, "controller profile directory unavailable" end
     local cfg = SYS_CFG[S.system]
     local path = S.dir .. "/" .. cfg.fname
-    local lines = Ini.read_lines(path)
-    for _, r in ipairs(S.rows) do
-        Ini.set(lines, cfg.section, r.key, r.value)
+    local ok, lines = pcall(Ini.read_lines, path)
+    if not ok or type(lines) ~= "table" or #lines == 0 then
+        return false, tostring(lines or "controller INI is empty or unreadable")
     end
-    Ini.write_lines(path, lines)
+    local wrote, err = pcall(function()
+        for _, row in ipairs(S.rows) do Ini.set(lines, cfg.section, row.key, row.value) end
+    end)
+    if not wrote then return false, tostring(err) end
+    local saved, result = pcall(Ini.write_lines, path, lines)
+    if not saved then return false, tostring(result) end
+    if result ~= true then return false, "could not write " .. path end
+    S.reload()
+    return true
+end
+
+local function start_remap(row)
+    if S.remap then return false, "a remap capture is already active" end
+    if not row then return false, "no controller mapping selected" end
+    S.remap = { row = row, phase = "wait", t = 0, timeout = 5.0 }
+    SFX.play("menu_select")
+    return true
+end
+
+local function confirm_remap()
+    if not S.remap or S.remap.phase ~= "confirm" then
+        return false, "no captured controller input to confirm"
+    end
+    local row = S.remap.row
+    local old_value = row.value
+    row.value = S.remap.new_value
+    local ok, err = save_and_reload()
+    if not ok then
+        row.value = old_value
+        Notify.show("error", "Could not save controller mapping: " .. tostring(err))
+        return false, err
+    end
+    S.remap = nil
+    SFX.play("newupdate")
+    Notify.show("success", "Remapped: " .. native_label(row.key))
+    return true
+end
+
+local function cancel_remap()
+    if not S.remap then return false, "no remap capture is active" end
+    S.remap = nil
+    SFX.play("menu_back")
+    return true
+end
+
+-- NEXUS actions preserve the capture/confirm boundary: raw input must still
+-- arrive through S.raw_pad before a mapping can be committed.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local specs = {
+        { id = "controller_map.select", title = "Select controller mapping", order = 10,
+          run = function(index)
+              if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.rows then
+                  return false, "mapping index out of range"
+              end
+              if S.remap then return false, "cancel the active capture before changing selection" end
+              S.sel = index
+              return true
+          end },
+        { id = "controller_map.start_remap_selected", title = "Start selected mapping capture", order = 20,
+          run = function() return start_remap(S.rows[S.sel]) end },
+        { id = "controller_map.confirm_remap", title = "Confirm captured controller input", order = 30,
+          run = confirm_remap },
+        { id = "controller_map.cancel_remap", title = "Cancel controller input capture", order = 40,
+          run = cancel_remap },
+        { id = "controller_map.state", title = "Get controller mapping state", order = 50,
+          run = function()
+              local row = S.rows[S.sel]
+              return { system = S.system, profile = S.name, directory = S.dir,
+                  selected_index = S.sel, selected_key = row and row.key,
+                  selected_value = row and row.value, mapping_count = #S.rows,
+                  capture_phase = S.remap and S.remap.phase or nil,
+                  captured_value = S.remap and S.remap.new_value or nil }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "controller", order = spec.order, screen = "controller_map",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 function S.pad(b)
     if S.remap then
         if S.remap.phase == "confirm" then
-            if b == "A" then
-                local row = S.remap.row
-                row.value = S.remap.new_value
-                save_and_reload()
-                S.remap = nil
-                SFX.play("newupdate")
-                Notify.show("success", "Remapped: " .. native_label(row.key))
-            elseif b == "B" then
-                S.remap = nil; SFX.play("menu_back")
-            end
+            if b == "A" then confirm_remap()
+            elseif b == "B" then cancel_remap() end
         elseif S.remap.phase == "wait" and b == "B" then
-            S.remap = nil; SFX.play("menu_back")
+            cancel_remap()
         end
         return
     end
@@ -257,8 +333,7 @@ function S.pad(b)
     elseif b == "DOWN" then
         if S.sel < #S.rows then S.sel = S.sel + 1; SFX.play("menu_move") end
     elseif b == "A" and row then
-        S.remap = { row = row, phase = "wait", t = 0, timeout = 5.0 }
-        SFX.play("menu_select")
+        start_remap(row)
     elseif b == "B" then
         require("ui").back()
     end
