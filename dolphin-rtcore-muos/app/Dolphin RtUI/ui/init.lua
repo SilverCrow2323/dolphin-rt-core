@@ -174,6 +174,14 @@ function M.init()
         end
     end
 
+    local triage_screen = Nexus.get_screen("triage")
+    if triage_screen and triage_screen.register_actions then
+        local ok, registered, detail = pcall(triage_screen.register_actions, M)
+        if not ok or registered == false then
+            log("triage NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
     for _, entry in ipairs(Nexus.list_screens()) do
