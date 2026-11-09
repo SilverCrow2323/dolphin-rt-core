@@ -7,8 +7,8 @@
 #
 # Output (in --out, default ./out): dolphin, BUILDINFO.txt, source-<ref>.tar.xz  (the GPL "corresponding source")
 #
-# STATUS: the patch series and the new Wayland sources are verified (see verify-patches.sh); a full build has NOT been run
-# yet. The first run may need dependency tweaks: BUILDINFO.txt and the log tell you what.
+# STATUS: patch validation is provided by verify-patches.sh. The native ARM64 CI build is the authoritative
+# build/test path; output discovery expects upstream's Binaries/dolphin-emu-nogui executable.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REF="$(tr -d '[:space:]' < "$HERE/DOLPHIN_REF")"; TARGET=""; OUT="$PWD/out"; JOBS="$(nproc)"; LTO=ON; TUNE=cortex-a53; DEPS=auto
