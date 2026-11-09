@@ -372,7 +372,7 @@ local function draw_nexus_report()
     local line = S.nexus_lines[S.nexus_top + i]
     if not line then break end
     local color = K.C.dim
-    if line:match("MISSING") or line:match("unknown_action") or line:match("missing_navigation") then
+    if line:match("MISSING") or line:match("unknown_action") or line:match("missing_navigation") or line:match("invalid_navigation") or line:match("invalid_catalog") or line:match("invalid_.*_entries") then
       color = K.C.bad
     elseif line:match("PASS") or line:match("ROUTE OK") then color = K.C.ok end
     K.text("mono", K.clip("mono", line, K.W - m * 2 - 24),
