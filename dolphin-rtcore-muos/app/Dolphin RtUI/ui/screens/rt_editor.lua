@@ -180,9 +180,12 @@ local function current_value(item)
     return v, true
 end
 local function set_value(item, value)
-    local f = file_of(item); if not f then return end
+    if S.locked and S.mode ~= "game" then return false, "profile is locked" end
+    local f = file_of(item)
+    if not f then return false, "configuration file unavailable" end
     Ini.set(f.lines, item.sec, item.key, value)
     S.dirty = true
+    return true
 end
 
 local function build_list()
@@ -218,42 +221,74 @@ end
 local function fmt_num(n) local s = string.format("%.2f", n); return (s:gsub("0+$", ""):gsub("%.$", "")) end
 
 local function change(row, dir)
-    if not row then return end
+    if not row then return false, "no option selected" end
+    if S.locked and S.mode ~= "game" then
+        Notify.show("warning", "Profilo bloccato: copialo per modificarlo")
+        return false, "profile is locked"
+    end
     local g = row.guide; local kind = type_of(g)
     local cur = row.value or (g and g.default) or ""
     if kind == "bool" then
         local nv = (tostring(cur):lower() == "true") and "False" or "True"
-        set_value(row.item, nv); row.value = nv; SFX.play("menu_toggleoption")
+        local ok, err = set_value(row.item, nv)
+        if not ok then return false, err end
+        row.value = nv; SFX.play("menu_toggleoption")
+        return true
     elseif kind == "int" or kind == "float" then
         local n = (tonumber(cur) or 0) + dir * step_of(g)
         local t = g.type
         if t.min and n < t.min then n = t.min end
         if t.max and n > t.max then n = t.max end
         local nv = (kind == "int") and tostring(math.floor(n + 0.5)) or fmt_num(n)
-        set_value(row.item, nv); row.value = nv; SFX.play("menu_toggleoption")
+        local ok, err = set_value(row.item, nv)
+        if not ok then return false, err end
+        row.value = nv; SFX.play("menu_toggleoption")
+        return true
     end
+    return false, "selected option is not editable"
 end
 
 local function apply_recommend(row)
-    if not row or not row.guide then return end
+    if not row or not row.guide then return false, "no option selected" end
+    if S.locked and S.mode ~= "game" then
+        Notify.show("warning", "Profilo bloccato: copialo per modificarlo")
+        return false, "profile is locked"
+    end
     local rec = (row.guide.muos and row.guide.muos.rec) or row.guide.recommend
-    if not rec or rec == "" then Notify.show("info", "No recommendation"); return end
+    if not rec or rec == "" then Notify.show("info", "No recommendation"); return false, "no recommendation available" end
     rec = tostring(rec):gsub("%s*%b()%s*$", "")
     local lo = rec:match("^(%-?[%d%.]+)%s*%-%s*[%d%.]+$")
     if lo then rec = lo end
-    set_value(row.item, rec); row.value = rec
+    local ok, err = set_value(row.item, rec)
+    if not ok then return false, err end
+    row.value = rec
     SFX.play("menu_select"); Notify.show("info", "Set to " .. rec)
+    return true
 end
 
 local function save()
+    if S.locked and S.mode ~= "game" then return false, "profile is locked" end
+    local function write(file)
+        if not file or type(file.path) ~= "string" then
+            return false, "configuration file unavailable"
+        end
+        local ok, result = pcall(Ini.write_lines, file.path, file.lines)
+        if not ok then return false, tostring(result) end
+        if result ~= true then return false, "could not write " .. file.path end
+        return true
+    end
     if S.mode == "game" then
-        if S.file then Ini.write_lines(S.file.path, S.file.lines) end
+        local ok, err = write(S.file)
+        if not ok then Notify.show("error", "Save failed: " .. tostring(err)); return false, err end
     else
         for _, name in ipairs({ "Dolphin.ini", "GFX.ini" }) do
-            Ini.write_lines(S.files[name].path, S.files[name].lines)
+            local ok, err = write(S.files and S.files[name])
+            if not ok then Notify.show("error", "Save failed: " .. tostring(err)); return false, err end
         end
     end
-    S.dirty = false; SFX.play("menu_select"); Notify.show("success", "Saved")
+    S.dirty = false
+    SFX.play("menu_select"); Notify.show("success", "Saved")
+    return true
 end
 
 function S.enter(params)
@@ -286,6 +321,58 @@ end
 
 function S.leave() end
 function S.update(dt) S.list:update(dt) end
+
+-- NEXUS adapters reuse the editor's existing INI, guide and lock semantics.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected_row() return S.list and S.list:cur() or nil end
+    local specs = {
+        { id = "editor.save", title = "Save editor changes", order = 10,
+          run = function()
+              if S.locked and S.mode ~= "game" then return false, "profile is locked" end
+              if not S.dirty then return false, "there are no unsaved changes" end
+              return save()
+          end },
+        { id = "editor.change_selected", title = "Change selected option", order = 20,
+          run = function(direction)
+              if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+              return change(selected_row(), direction)
+          end },
+        { id = "editor.recommend_selected", title = "Apply selected recommendation", order = 30,
+          run = function() return apply_recommend(selected_row()) end },
+        { id = "editor.switch_tab", title = "Switch editor tab", order = 40,
+          run = function(tab_id)
+              if type(tab_id) ~= "string" then return false, "tab ID is required" end
+              for i, tab in ipairs(Cats.tabs_for(S.mode)) do
+                  if tab.id == tab_id then
+                      S.tab = i; build_list(); SFX.play("menu_pagescroll")
+                      return true
+                  end
+              end
+              return false, "unknown editor tab: " .. tab_id
+          end },
+        { id = "editor.state", title = "Get editor state", order = 50,
+          run = function()
+              local row = selected_row()
+              local tab = Cats.tabs_for(S.mode)[S.tab]
+              return {
+                  mode = S.mode, profile = S.profile, game_id = S.game_id,
+                  tab = tab and tab.id,
+                  selected = row and row.item and (row.item.sec .. "." .. row.item.key) or nil,
+                  dirty = S.dirty == true, locked = S.locked == true,
+              }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "editor", order = spec.order, screen = "rt_editor",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
 
 local function try_back()
     local function out() require("ui").back() end

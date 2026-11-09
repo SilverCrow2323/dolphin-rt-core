@@ -38,3 +38,15 @@ Dolphin Rt:Core.
 - Contributing UI work → **STYLEGUIDE.md**.
 - Adding a screen → **SCREENS.md** + **PATHS.md**.
 - Debugging a boot issue → **TROUBLESHOOTING.md**.
+
+## Rt:Editor NEXUS actions
+
+The editor publishes stable actions after screen initialization:
+
+- `editor.save` — persist pending INI changes; reports write failures and retains dirty state.
+- `editor.change_selected` — adjust the selected supported value by one step (`-1` or `1`).
+- `editor.recommend_selected` — apply the selected option's guide recommendation.
+- `editor.switch_tab` — switch by stable tab ID (`core`, `video`, `hacks`, etc.).
+- `editor.state` — return mode, profile/game, tab, selected option, dirty and lock state.
+
+Locked profiles reject edits and saves at the editor boundary. Actions reuse the screen's existing INI and guide logic.
