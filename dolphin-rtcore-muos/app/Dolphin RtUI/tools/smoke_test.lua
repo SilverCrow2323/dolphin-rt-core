@@ -64,7 +64,6 @@ local function run()
     assert(UI.current() == "library", "back history entry was lost during transition")
   end)
   if nav_ok then
-    passed = passed + 1
     out:write("  [OK]   navigation back during transition\n")
   else
     failures = failures + 1
