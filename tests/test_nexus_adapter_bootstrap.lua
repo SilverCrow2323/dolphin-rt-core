@@ -44,9 +44,11 @@ eq(stats.failed, 2, "failed adapters")
 eq(#calls, 18, "later adapters continue after failures")
 eq(calls[1], "library", "manifest order preserved")
 eq(calls[#calls], "diagnostics", "last adapter still runs")
-eq(#errors, 2, "both failures reported")
+eq(#errors, 4, "missing adapters and failures reported")
 eq(errors[1].id, "rt_editor", "exception reported")
 eq(errors[2].id, "settings", "explicit rejection reported")
+eq(errors[3].id, "mods", "first missing adapter reported")
+eq(errors[4].id, "folders", "second missing adapter reported")
 
 -- Lookup failures count as failed attempts, and a broken diagnostic sink must
 -- not interrupt the remaining manifest entries.
