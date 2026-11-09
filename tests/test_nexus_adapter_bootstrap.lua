@@ -40,7 +40,10 @@ for _, id in ipairs(Bootstrap.list()) do
             if id == "rt_editor" then error("synthetic adapter crash") end
             if id == "settings" then
                 ui.register_action("partial.settings", function() return true end, {})
-                return false, "synthetic rejection"
+                -- Deliberately ignore the duplicate rejection: bootstrap must
+                -- still discard the whole adapter batch.
+                ui.register_action("partial.settings", function() return true end, {})
+                return true
             end
             if id == "rt_profiles" then
                 ui.register_action("rt_profiles.test", function() return true end, {})
