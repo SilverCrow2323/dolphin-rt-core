@@ -106,8 +106,13 @@ local function build_settings()
 end
 
 local function refresh_nexus_report()
+  local catalog
   local ok, UI = pcall(require, "ui")
-  local catalog = ok and UI and UI.catalog and UI.catalog() or {}
+  if ok and type(UI) == "table" and type(UI.catalog) == "function" then
+    local catalog_ok, value = pcall(UI.catalog)
+    if catalog_ok then catalog = value end
+  end
+  -- A failed/missing catalog is an integrity error, never an empty PASS.
   S.nexus_report = NexusDiagnostics.inspect(catalog)
   S.nexus_lines = {}
   for line in NexusDiagnostics.format(S.nexus_report):gmatch("[^\n]+") do
