@@ -31,8 +31,8 @@ local function run()
         if screen.id == name then found = true; break end
       end
       if not found then error("screen module failed to register: " .. tostring(entry.module)) end
-      if UI.go_instant(name, {}) == false then error("navigation rejected screen: " .. name) end
       local errors_before = #ui_errors
+      if UI.go_instant(name, {}) == false then error("navigation rejected screen: " .. name) end
       UI.update(0.1)
       UI.draw()
       if #ui_errors > errors_before then
