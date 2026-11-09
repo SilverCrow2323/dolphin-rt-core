@@ -331,6 +331,7 @@ function S.register_actions(ui)
     local specs = {
         { id = "editor.save", title = "Save editor changes", order = 10,
           run = function()
+              if S.locked and S.mode ~= "game" then return false, "profile is locked" end
               if not S.dirty then return false, "there are no unsaved changes" end
               return save()
           end },
