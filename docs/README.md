@@ -86,3 +86,7 @@ The Cheat Database exposes refresh, stable filters (`all`, `boost`, `mine`), ini
 ## Rt:Stream Library NEXUS actions
 
 The Stream browser exposes refresh, stable tab/view/system-filter/sort selection, indexed selection, favourite toggling, launch preflight, cancellation and a state snapshot. Launch actions use the same host-configuration and pre-flight checks as the pad UI; they do not bypass the health check.
+
+## Rt:Stream Settings NEXUS actions
+
+Stream Settings exposes indexed selection, choice changes, validated HOST/port/MAC text updates, text-editor opening, selected diagnostic/tool execution, mode cancellation and a redacted state snapshot. The state action intentionally reports only whether a host is configured; it never returns the host, MAC, PIN or token values.
