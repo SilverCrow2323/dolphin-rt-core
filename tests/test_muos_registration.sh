@@ -95,7 +95,7 @@ sh "$TOOL" remove
 [ ! -e "$SS/info/manifest/core/Nintendo/Nintendo Gamecube.json" ]
 [ ! -e "$SS/info/manifest/core/Nintendo/Nintendo Wii.json" ]
 [ -f "$S/share/info/manifest/core/Existing/Existing.json" ]
-jq -e 'has("nintendogamecube")|not and has("nintendowii")|not' "$SS/info/manifest/assign.json" >/dev/null
+jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' "$SS/info/manifest/assign.json" >/dev/null
 ok "Split manifest remove cleans only GameCube/Wii and refreshes the Content Explorer map"
 
 # Jacaranda: legacy info/assign/*.ini format, with user files in the same folder preserved.
@@ -127,14 +127,17 @@ printf '\nmuOS registration tests: %d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]
  "$A/refresh.log")" -eq 1 ]
 ok "Andromeda ensure is idempotent"
+BROKEN="$TMP/broken-sources"
+cp -a "$SOURCES" "$BROKEN"
+rm -f "$BROKEN/gc/mode 1/global.ini" "$BROKEN/wii/mode 1/global.ini"
 RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
-RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$BROKEN" \
 RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
 sh "$TOOL" remove
 jq -e 'has("Nintendo Gamecube")|not' "$AS/info/manifest/core.json" >/dev/null
 jq -e 'has("Nintendo Wii")|not' "$AS/info/manifest/core.json" >/dev/null
 jq -e 'has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
-jq -e 'has("nintendogamecube")|not and has("nintendowii")|not' "$AS/info/manifest/assign.json" >/dev/null
+jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' "$AS/info/manifest/assign.json" >/dev/null
 ok "Andromeda remove deletes only Rt:Core systems and refreshes the Content Explorer map"
 
 # Split-manifest generation: systems are written under core/Nintendo/*.json.
