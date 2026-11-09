@@ -79,6 +79,23 @@ jobs:
             DOLPHINUI_RES="$resolution" bash ../../../tools/capture-ui.sh --all --delay 0.7 --out-dir "$output"
             actual="$(find "$output" -maxdepth 1 -type f -name '*.png' | wc -l)"
             test "$actual" -eq "$expected"
+            python3 - "$output" "$resolution" <<'PY'
+          from pathlib import Path
+          import struct
+          import sys
+
+          folder = Path(sys.argv[1])
+          expected_size = tuple(map(int, sys.argv[2].split("x")))
+          for image in sorted(folder.glob("*.png")):
+              with image.open("rb") as stream:
+                  header = stream.read(24)
+              if header[:8] != b"\\x89PNG\\r\\n\\x1a\\n":
+                  raise SystemExit(f"{image.name}: invalid PNG signature")
+              actual_size = struct.unpack(">II", header[16:24])
+              if actual_size != expected_size:
+                  raise SystemExit(f"{image.name}: {actual_size}, expected {expected_size}")
+          print(f"Verified {actual} PNG dimensions at {sys.argv[2]}.")
+          PY
             echo "Captured $actual/$expected screens at $resolution."
           done
       - uses: actions/upload-artifact@v4
