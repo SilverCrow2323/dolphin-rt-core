@@ -93,6 +93,10 @@ function M.inspect(catalog)
         end
     end
 
+    if report.screen_count == 0 then
+        issue("empty_catalog", "NEXUS catalog contains no registered screens", "screens")
+    end
+
     table.sort(report.screens, function(a, b) return a.id < b.id end)
     table.sort(report.actions, function(a, b) return a.id < b.id end)
     table.sort(report.issues, function(a, b)
