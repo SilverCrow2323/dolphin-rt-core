@@ -27,10 +27,11 @@ local function start_scan()
     S.job = Triage.begin()
     S.shown = 0
     S.step_clock = 0
+    S.report_path = nil
 end
 
 function S.enter()
-    S.t, S.mode, S.csel = 0, "cards", 1
+    S.t, S.mode, S.sel, S.csel = 0, "cards", 1, 1
     K.set_accent("teal")
     start_scan()
 end
