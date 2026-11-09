@@ -74,6 +74,68 @@ local function set_tab(d)
     if i ~= S.tab then load_tab(i); SFX.play("menu_pagescroll") end
 end
 
+-- NEXUS actions reuse the existing Mod Vault model and persistence helper.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected() return S.list and S.list:cur() or nil end
+    local function require_game()
+        if not S.game then return false, "Mod Vault is read-only without a selected game" end
+        return true
+    end
+    local specs = {
+        { id = "mods.switch_tab", title = "Switch Mod Vault category", order = 10,
+          run = function(tab_id)
+              if type(tab_id) ~= "string" then return false, "category ID is required" end
+              for i, category in ipairs(Mods.CATS) do
+                  if category.id == tab_id then load_tab(i); SFX.play("menu_pagescroll"); return true end
+              end
+              return false, "unknown Mod Vault category: " .. tab_id
+          end },
+        { id = "mods.toggle_selected", title = "Toggle selected mod", order = 20,
+          run = function()
+              local ok, err = require_game(); if not ok then return false, err end
+              local row = selected()
+              if not row then return false, "no mod selected" end
+              local off = S.off[S.tab]
+              off[row.name] = (not off[row.name]) or nil
+              save(); SFX.play("menu_toggleoption")
+              return true
+          end },
+        { id = "mods.set_all", title = "Enable or disable all mods in category", order = 30,
+          run = function(enabled)
+              local ok, err = require_game(); if not ok then return false, err end
+              if type(enabled) ~= "boolean" then return false, "enabled must be a boolean" end
+              local off = S.off[S.tab]
+              if enabled then
+                  for key in pairs(off) do off[key] = nil end
+              else
+                  for _, row in ipairs(S.list.items) do off[row.name] = true end
+              end
+              save(); SFX.play("menu_toggleoption")
+              return true
+          end },
+        { id = "mods.state", title = "Get Mod Vault state", order = 40,
+          run = function()
+              local row = selected()
+              local on, total = counts(S.tab)
+              return { game_id = S.game and S.game.id, game_title = S.game and S.game.title,
+                  category = Mods.CATS[S.tab] and Mods.CATS[S.tab].id,
+                  selected = row and row.name,
+                  enabled = row and (not S.game or not S.off[S.tab][row.name]) or nil,
+                  enabled_count = on, total_count = total, read_only = not S.game }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "mods", order = spec.order, screen = "mods",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
+
 function S.pad(b)
     local r = S.list:cur()
     local off = S.off[S.tab]
