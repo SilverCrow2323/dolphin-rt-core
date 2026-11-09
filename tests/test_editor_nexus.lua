@@ -55,15 +55,15 @@ package.preload["core.guide_db"] = function()
             local items = {}
             for _, k in ipairs({"InternalResolution","AspectRatio","DisableFog","FastDepthCalc",
                 "ShaderCompilationMode","MSAA","MaxAnisotropy","SafeTextureCacheColorSamples","VSync"}) do
-                items[k] = item(k, k == "DisableFog" or k == "FastDepthCalc" or k == "VSync" and "bool" or "int")
+                items[k] = item(k, (k == "DisableFog" or k == "FastDepthCalc" or k == "VSync") and "bool" or "int")
             end
             return { sections = { Settings = { items = items } } }
         end
         local core = {}
         for _, k in ipairs({"CPUCore","CPUThread","Overclock","OverclockEnable","EnableIdleSkipping",
             "Framelimit","Fastmem","MMU","SyncGPU","EmulationSpeed","TimingVariance","FPRF"}) do
-            core[k] = item(k, k == "CPUThread" or k == "OverclockEnable" or k == "EnableIdleSkipping"
-                or k == "Fastmem" or k == "MMU" or k == "SyncGPU" or k == "FPRF" and "bool" or "int",
+            core[k] = item(k, (k == "CPUThread" or k == "OverclockEnable" or k == "EnableIdleSkipping"
+                or k == "Fastmem" or k == "MMU" or k == "SyncGPU" or k == "FPRF") and "bool" or "int",
                 k == "CPUCore" and "3" or nil)
         end
         return { sections = { Core = { items = core },
