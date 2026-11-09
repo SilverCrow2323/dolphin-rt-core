@@ -841,9 +841,16 @@ function S.register_actions(ui)
         return S.list and S.list:cur() or nil
     end
     local function find_row(key)
+        local labels = {
+            RtProfile = "Profile", RtProfileVariant = "Tier",
+            GameSettings = "GameSettings", Controller = U.is_wii(S.game) and "Wii Mote" or "GameCube Pad",
+            Hotkeys = "Hotkeys",
+        }
+        local label = labels[key] or key
         for _, row in ipairs(S.rows or {}) do
-            if row.kind ~= "section" and row.key == key then return row end
-            if row.kind == "choice" and row.get and row.label == key then return row end
+            if row.kind == "choice" and row.get and (row.key == key or row.label == label) then
+                return row
+            end
         end
     end
     local specs = {
