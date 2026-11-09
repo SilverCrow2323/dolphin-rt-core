@@ -211,10 +211,26 @@ function S.register_actions(ui)
             id = "profiles.refresh", title = "Refresh profile list", order = 10,
             run = function()
                 if S.phase ~= "browse" then return false, "profile picker is not ready" end
+                local current = S.rows and S.rows[S.sel]
+                local keep_name = current and current.profile and current.profile.name
                 local _, groups = scan()
                 S.groups = groups
                 build_rows()
-                S.sel = math.max(1, math.min(S.sel or 1, #S.rows))
+                local restored = false
+                if keep_name then
+                    for i, row in ipairs(S.rows) do
+                        if row.profile and row.profile.name == keep_name then
+                            S.sel, restored = i, true
+                            break
+                        end
+                    end
+                end
+                if not restored then
+                    S.sel = 1
+                    for i, row in ipairs(S.rows) do
+                        if not row.head then S.sel = i; break end
+                    end
+                end
                 return true
             end,
         },
