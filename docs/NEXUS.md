@@ -184,3 +184,26 @@ NEXUS is the toolkit-independent action registry used by the LÖVE frontend. Scr
 | `diagnostics.state` | — | Read viewer, category and setting state |
 
 Log deletion actions only open the existing confirmation flow; they never delete files merely because an action was invoked.
+
+## Hotkey Designer
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `hotkeys.refresh_profiles` | — | Refresh profiles and preserve selection |
+| `hotkeys.select_profile` | 1-based index | Select a profile |
+| `hotkeys.open_profile` | exact safe profile name | Open an existing profile |
+| `hotkeys.open_selected_profile` | — | Open the selected profile |
+| `hotkeys.select_action` | 1-based index | Select a hotkey binding |
+| `hotkeys.set_device` | `keyboard` or `pad` | Change binding target |
+| `hotkeys.change_key` | `-1` or `1` | Change emitted keyboard key |
+| `hotkeys.clear_selected` | — | Clear selected binding |
+| `hotkeys.start_capture` | — | Begin raw input capture |
+| `hotkeys.capture_input` | logical name or raw button number | Add captured input |
+| `hotkeys.finish_capture` | boolean | Commit or cancel capture |
+| `hotkeys.duplicate_profile` | — | Duplicate the current profile |
+| `hotkeys.reload` | — | Discard unsaved edits and reload from disk |
+| `hotkeys.save` | — | Persist the current profile |
+| `hotkeys.request_back` | — | Leave through the existing unsaved-changes confirmation |
+| `hotkeys.state` | — | Read profile, selected binding, dirty/capture and conflict state |
+
+Hotkey profile names are restricted to existing safe directory names. The exit action uses the same unsaved-changes confirmation as controller navigation.
