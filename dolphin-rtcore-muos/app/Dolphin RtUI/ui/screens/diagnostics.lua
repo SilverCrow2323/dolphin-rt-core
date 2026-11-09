@@ -5,6 +5,7 @@ local Notify   = require("ui.notify")
 local Modal    = require("ui.modal")
 local Settings = require("core.settings")
 local sh       = require("core.sh")
+local FS       = require("core.fs")
 local NexusDiagnostics = require("core.nexus_diagnostics")
 
 local S = {}
@@ -133,14 +134,22 @@ end
 
 local function export_nexus_report()
   if not S.nexus_report then refresh_nexus_report() end
-  local f = io.open("data/logs/nexus_report.txt", "w")
+  FS.mkdir_p("data/logs")
+  local f, open_err = io.open("data/logs/nexus_report.txt", "w")
   if not f then
-    Notify.show("error", "Cannot write NEXUS report")
+    Notify.show("error", "Cannot write NEXUS report: " .. tostring(open_err))
     return
   end
-  f:write(NexusDiagnostics.format(S.nexus_report), "\n\n")
-  for _, line in ipairs(S.nexus_lines) do f:write(line, "\n") end
-  f:close()
+  local ok, write_err = pcall(function()
+    f:write(NexusDiagnostics.format(S.nexus_report), "\n\n")
+    for _, line in ipairs(S.nexus_lines) do f:write(line, "\n") end
+  end)
+  local close_ok, close_err = f:close()
+  if not ok or not close_ok then
+    Notify.show("error", "NEXUS report export failed: " ..
+      tostring(write_err or close_err or "write error"))
+    return
+  end
   Notify.show("success", "NEXUS report saved")
 end
 
@@ -190,6 +199,7 @@ function S.pad(b)
   -- while a log viewer or settings panel is active.
   if (b == "L1" or b == "R1") and S.mode ~= "nexus" then
     refresh_nexus_report()
+    S.viewer = nil
     S.mode = "nexus"
     SFX.play("menu_flip")
     return
@@ -404,7 +414,7 @@ function S.draw()
     { key = "A", label = S.mode == "nexus" and "Refresh" or (S.viewer and "Close" or (S.mode == "settings" and "Change" or "Open")) },
     { key = "X", label = S.mode == "nexus" and "Export report" or "Clear" },
     { key = "Y", label = S.mode == "nexus" and " " or "Settings" },
-    { key = "L1/R1", label = "NEXUS report" },
+    { key = "L1/R1", label = S.mode == "nexus" and "Back to logs" or "NEXUS report" },
     { key = "START", label = S.mode == "nexus" and " " or "Clear all" },
     { key = "B", label = "Back" },
   })
