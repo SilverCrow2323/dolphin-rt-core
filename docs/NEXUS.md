@@ -207,3 +207,17 @@ Log deletion actions only open the existing confirmation flow; they never delete
 | `hotkeys.state` | — | Read profile, selected binding, dirty/capture and conflict state |
 
 Hotkey profile names are restricted to existing safe directory names. The exit action uses the same unsaved-changes confirmation as controller navigation.
+
+## Per-game Cheats & Boost
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `cheats.refresh` | — | Reload per-game entries and restart missing-data sync |
+| `cheats.switch_tab` | `boost`, `fps`, `cheats` | Switch Boost/FPS/Cheats tab |
+| `cheats.select` | 1-based row index | Select a cheat entry |
+| `cheats.toggle_selected` | — | Toggle selected entry |
+| `cheats.bulk_toggle` | — | Run the existing tab-specific bulk operation |
+| `cheats.apply` | — | Apply enabled entries to Dolphin |
+| `cheats.state` | — | Read per-game entry counts, selected entry and sync state |
+
+The screen distinguishes persisted per-game toggle state from applying enabled codes to Dolphin; the two operations remain separate.
