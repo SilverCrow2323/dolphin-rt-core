@@ -65,6 +65,30 @@ if (( LIST )); then
   exit $?
 fi
 
+is_registered_screen() {
+  registered_screens | grep -Fxq -- "$1"
+}
+
+# Reject unknown IDs before starting LÖVE. Otherwise a typo can produce a
+# perfectly valid PNG of an empty/error screen and look like a successful run.
+if [[ -n "$SCREEN" ]] && ! is_registered_screen "$SCREEN"; then
+  echo "Unknown screen: $SCREEN" >&2
+  echo "Registered screens:" >&2
+  registered_screens >&2
+  exit 2
+fi
+if [[ -n "$SCREENS" ]]; then
+  IFS=',' read -r -a requested <<< "$SCREENS"
+  for name in "${requested[@]}"; do
+    name="$(printf '%s' "$name" | xargs)"
+    [[ -n "$name" ]] || continue
+    if ! is_registered_screen "$name"; then
+      echo "Unknown screen in batch: $name" >&2
+      exit 2
+    fi
+  done
+fi
+
 command -v "$LOVE_BIN" >/dev/null 2>&1 || {
   echo "LÖVE executable not found: $LOVE_BIN (set LOVE_BIN)" >&2; exit 1;
 }
