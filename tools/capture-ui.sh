@@ -66,7 +66,7 @@ if (( LIST )); then
 fi
 
 is_registered_screen() {
-  registered_screens | grep -Fxq -- "$1"
+  registered_screens | grep -Fx -- "$1" >/dev/null
 }
 
 # Reject unknown IDs before starting LÖVE. Otherwise a typo can produce a
