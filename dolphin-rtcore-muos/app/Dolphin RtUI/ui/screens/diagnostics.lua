@@ -186,6 +186,15 @@ local function step_choice(row, d)
 end
 
 function S.pad(b)
+  -- L1/R1 opens the registry report from the diagnostics screen, including
+  -- while a log viewer or settings panel is active.
+  if (b == "L1" or b == "R1") and S.mode ~= "nexus" then
+    refresh_nexus_report()
+    S.mode = "nexus"
+    SFX.play("menu_flip")
+    return
+  end
+
   if S.mode == "nexus" then
     local max_top = math.max(0, #S.nexus_lines - 22)
     if b == "UP" then S.nexus_top = math.max(0, S.nexus_top - 1)
