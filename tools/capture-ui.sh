@@ -86,17 +86,17 @@ if (( ALL )) || [[ -n "$SCREENS" ]]; then
     [[ -n "$SCREENS" ]] || { echo "No screens found in ui/init.lua" >&2; exit 1; }
   fi
 
-  OUT_DIR="\${OUT_DIR:-$ROOT/artifacts/screenshots}"
+  OUT_DIR="${OUT_DIR:-$ROOT/artifacts/screenshots}"
   mkdir -p "$OUT_DIR"
   OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 
   # One LÖVE process cycles through the requested screens and writes one PNG
   # per screen. This avoids restarting the emulator UI 22 times per resolution.
   IFS=',' read -r -a names <<< "$SCREENS"
-  for name in "\${names[@]}"; do
+  for name in "${names[@]}"; do
     name="$(printf '%s' "$name" | xargs)"
     [[ -n "$name" ]] || continue
-    safe="\${name//[^a-zA-Z0-9_-]/_}"
+    safe="${name//[^a-zA-Z0-9_-]/_}"
     rm -f -- "$OUT_DIR/$safe.png"
   done
 
@@ -104,28 +104,28 @@ if (( ALL )) || [[ -n "$SCREENS" ]]; then
   export DOLPHINUI_SHOT_DIR="$OUT_DIR"
   export DOLPHINUI_SHOT_DELAY="$DELAY"
   export DOLPHINUI_SHOT_PADS="$PADS"
-  export SDL_AUDIODRIVER="\${SDL_AUDIODRIVER:-dummy}"
-  export LIBGL_ALWAYS_SOFTWARE="\${LIBGL_ALWAYS_SOFTWARE:-1}"
+  export SDL_AUDIODRIVER="${SDL_AUDIODRIVER:-dummy}"
+  export LIBGL_ALWAYS_SOFTWARE="${LIBGL_ALWAYS_SOFTWARE:-1}"
 
   runner=("$LOVE_BIN" .)
-  if [[ -z "\${DISPLAY:-}" ]] && command -v xvfb-run >/dev/null 2>&1; then
-    runner=(xvfb-run -a "\${runner[@]}")
-  elif [[ -z "\${DISPLAY:-}" ]]; then
+  if [[ -z "${DISPLAY:-}" ]] && command -v xvfb-run >/dev/null 2>&1; then
+    runner=(xvfb-run -a "${runner[@]}")
+  elif [[ -z "${DISPLAY:-}" ]]; then
     echo "No DISPLAY and xvfb-run is unavailable. Install Xvfb or set DISPLAY." >&2
     exit 1
   fi
 
   (
     cd "$APP"
-    "\${runner[@]}"
+    "${runner[@]}"
   )
 
   completed=0
   failed=0
-  for name in "\${names[@]}"; do
+  for name in "${names[@]}"; do
     name="$(printf '%s' "$name" | xargs)"
     [[ -n "$name" ]] || continue
-    safe="\${name//[^a-zA-Z0-9_-]/_}"
+    safe="${name//[^a-zA-Z0-9_-]/_}"
     if [[ -s "$OUT_DIR/$safe.png" ]]; then
       completed=$((completed + 1))
     else
