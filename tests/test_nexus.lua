@@ -109,9 +109,18 @@ eq(#actions, 5, "action catalog size")
 eq(actions[1].id, "batch.second", "action catalog sorts by metadata order then action ID")
 eq(actions[2].id, "library.rescan", "default-order action follows alphabetically")
 eq(actions[5].id, "batch.first", "explicit high-order action sorts last")
-eq(actions[1].metadata.private, nil, "action metadata excludes nested values")
-actions[1].metadata.title = "Tampered action"
-eq(Nexus.list_actions()[1].metadata.title, "Rescan library", "action catalog is defensive")
+local library_action
+for _, entry in ipairs(actions) do
+    if entry.id == "library.rescan" then library_action = entry end
+end
+assert(library_action, "library action remains in the catalog")
+eq(library_action.metadata.private, nil, "action metadata excludes nested values")
+library_action.metadata.title = "Tampered action"
+local library_again
+for _, entry in ipairs(Nexus.list_actions()) do
+    if entry.id == "library.rescan" then library_again = entry end
+end
+eq(library_again.metadata.title, "Rescan library", "action catalog is defensive")
 
 Nexus.clear()
 eq(#Nexus.list_screens(), 0, "clear removes screens")
