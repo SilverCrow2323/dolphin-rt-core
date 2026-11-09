@@ -80,6 +80,13 @@ local duplicate_batch = Nexus.register_actions({
 eq(duplicate_batch, false, "batch rejects duplicate IDs")
 eq(Nexus.has_action("batch.duplicate"), false, "duplicate batch is atomic")
 
+local invalid_batch = Nexus.register_actions({
+    { id = "batch.never", callback = function() return true end },
+    { id = "batch.invalid", callback = false },
+})
+eq(invalid_batch, false, "batch rejects invalid callback")
+eq(Nexus.has_action("batch.never"), false, "invalid callback leaves batch uncommitted")
+
 Nexus.register_action("test.failure", function() error("expected failure") end, {})
 local failed, reason = Nexus.run_action("test.failure")
 eq(failed, false, "catch action error")
