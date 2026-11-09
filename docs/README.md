@@ -70,3 +70,7 @@ The ROM Folders screen exposes refresh, browse, open, add (GC/Wii), remove, fini
 ## Compatibility List NEXUS actions
 
 The Compatibility browser exposes database refresh, stable filter IDs (`all`, `playable`, `issues`, `not_playable`), owned-library filtering, initial-letter navigation, open-owned-game and a read-only state snapshot. Games absent from the local library remain non-launchable.
+
+## Rt:Core Env Triage NEXUS actions
+
+The triage screen exposes rescan, flavour selection, checklist inspection, check selection, report saving and a state snapshot. Report saving is only allowed after the incremental scan completes; scan progress and verdict remain owned by the triage engine.

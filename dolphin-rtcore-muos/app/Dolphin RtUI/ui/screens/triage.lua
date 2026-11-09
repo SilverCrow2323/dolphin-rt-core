@@ -27,10 +27,11 @@ local function start_scan()
     S.job = Triage.begin()
     S.shown = 0
     S.step_clock = 0
+    S.report_path = nil
 end
 
 function S.enter()
-    S.t, S.mode, S.csel = 0, "cards", 1
+    S.t, S.mode, S.sel, S.csel = 0, "cards", 1, 1
     K.set_accent("teal")
     start_scan()
 end
@@ -52,6 +53,78 @@ function S.update(dt)
 end
 
 local function flavour() return S.job and S.job.flavours[S.sel] end
+
+-- NEXUS adapters expose the incremental triage lifecycle and report operation.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local specs = {
+        { id = "triage.rescan", title = "Rescan Rt:Core environment", order = 10,
+          run = function()
+              start_scan(); S.mode = "cards"; S.sel = 1; S.csel = 1
+              SFX.play("menu_toggleoption")
+              return true
+          end },
+        { id = "triage.select_flavour", title = "Select triage flavour", order = 20,
+          run = function(index)
+              if type(index) ~= "number" or index % 1 ~= 0 then return false, "flavour index must be an integer" end
+              local count = S.job and #S.job.flavours or 0
+              if index < 1 or index > count then return false, "flavour index out of range" end
+              S.sel, S.csel = index, 1
+              return true
+          end },
+        { id = "triage.inspect", title = "Inspect selected flavour checks", order = 30,
+          run = function()
+              if not S.job or not S.job.done then return false, "triage scan is not complete" end
+              S.mode = (S.mode == "cards") and "checks" or "cards"
+              S.csel = 1
+              SFX.play("menu_select")
+              return true
+          end },
+        { id = "triage.select_check", title = "Select a triage check", order = 40,
+          run = function(index)
+              if S.mode ~= "checks" then return false, "check list is not active" end
+              local fl = flavour()
+              if not fl or type(index) ~= "number" or index % 1 ~= 0
+                  or index < 1 or index > #fl.checks then
+                  return false, "check index out of range"
+              end
+              S.csel = index
+              return true
+          end },
+        { id = "triage.save_report", title = "Save triage report", order = 50,
+          run = function()
+              if not S.job or not S.job.done then return false, "triage scan is not complete" end
+              local ok, path = pcall(Triage.save_report, S.job)
+              if not ok or type(path) ~= "string" or path == "" then
+                  return false, tostring(path or "could not write triage report")
+              end
+              S.report_path = path
+              require("ui.notify").show("success", "Report saved: " .. path, 3.5)
+              SFX.play("menu_select")
+              return true, path
+          end },
+        { id = "triage.state", title = "Get triage state", order = 60,
+          run = function()
+              local job, fl = S.job, flavour()
+              local check = (S.mode == "checks" and fl and fl.checks[S.csel]) or nil
+              return { done = job and job.done == true or false,
+                  progress = job and Triage.progress(job) or 0,
+                  verdict = job and job.verdict or nil,
+                  selected_flavour = fl and fl.id or nil,
+                  mode = S.mode, selected_check = check and check.label or nil,
+                  report_path = S.report_path }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "triage", order = spec.order, screen = "triage",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
 
 function S.pad(b)
     local j = S.job
