@@ -20,8 +20,9 @@ The UI initializes feature adapters from the ordered manifest in
 `core/nexus_adapters.lua`. Use `list()` for a defensive copy of the
 registered adapter IDs; do not maintain a second screen-to-adapter list.
 
-Each adapter receives the existing UI context through
-`screen.register_actions(UI)`. Missing adapters are counted and logged, and an
+Each adapter receives a UI-compatible staging proxy through
+`screen.register_actions(UI)`. Actions are committed as one validated batch
+only after the adapter succeeds. Missing adapters are counted and logged, and an
 exception or explicit `false` result is reported without preventing later
 adapters or core navigation actions from registering. Bootstrap diagnostics
 summarize attempted, registered, missing and failed adapters.
