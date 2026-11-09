@@ -17,6 +17,22 @@ L1/R1 filter or tab · L2/R2 letter jump · START settings · START+SELECT quit 
 - `ui/` — design system (`kit.lua`), navigation (`init.lua`), screens.
 - `core/nexus.lua` — NEXUS registry for stable screen IDs, screen metadata and named actions. `ui/init.lua` exposes `register_action`, `run_action` and `catalog`; navigation transitions remain owned by the UI layer.
 
+### Library action contract
+
+The Library screen publishes these NEXUS action IDs after screen registration:
+
+| Action | Arguments | Behavior |
+|---|---|---|
+| `library.rescan` | none | Starts the incremental ROM scan; rejects a second concurrent scan |
+| `library.launch_selected` | none | Launches the currently selected game |
+| `library.open_selected_options` | none | Opens options for the selected game |
+| `library.toggle_selected_favorite` | none | Toggles the selected game's favorite state |
+| `library.set_filter` | `GC`, `WII`, `FAV`, or `1`–`3` | Changes the active Library filter and preserves selection when possible |
+
+Actions that require a selected game return a controlled failure when the selection is empty.
+The filter action validates its argument before changing screen state. The action registry
+does not bypass Library logic or take ownership of navigation transitions.
+
 ### NEXUS contract
 - Screen modules are registered once by stable ID; unknown IDs are rejected before navigation.
 - Action IDs are explicit names (for example `library.rescan`) and callbacks are invoked through a protected call.

@@ -106,6 +106,16 @@ function M.init()
         { "stream_settings", "ui.screens.stream_settings" },
     }) do M.register(s[1], s[2]) end
 
+    -- Let feature screens publish stable NEXUS actions after all screens
+    -- exist, while keeping navigation ownership in this module.
+    local library_screen = Nexus.get_screen("library")
+    if library_screen and library_screen.register_actions then
+        local ok, registered, detail = pcall(library_screen.register_actions, M)
+        if not ok or registered == false then
+            log("library NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
     for _, entry in ipairs(Nexus.list_screens()) do

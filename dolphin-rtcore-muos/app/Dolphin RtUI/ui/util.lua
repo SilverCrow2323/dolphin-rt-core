@@ -276,7 +276,7 @@ local function ulog(msg)
 end
 
 function U.launch(g)
-    if not g then return end
+    if not g then return false, "no game selected" end
     local Notify = require("ui.notify")
     local Settings = require("core.settings")
     local card = function(k, d) return U.card_get(g, "LAUNCH", k) or d end
@@ -327,13 +327,16 @@ function U.launch(g)
     ulog(("launch %s [%s] rom=%s profile=%s/%s controller=%s hotkeys=%s cheats=%s mods=%s"):format(
         tostring(g.id), tostring(g.system), tostring(g.path), opts.profile, tostring(opts.variant),
         opts.controller, opts.hotkeys, tostring(opts.cheats), tostring(opts.mods)))
-    local ok, res = pcall(require("core.launcher").launch, g, opts)
+    local ok, res, detail = pcall(require("core.launcher").launch, g, opts)
     if not ok then
         ulog("launch error: " .. tostring(res))
         Notify.show("error", "Launch failed: " .. tostring(res))
+        return false, tostring(res)
     elseif res == false then
         ulog("launcher returned false (dev mode, missing ROM path or launch.sh)")
+        return false, detail or "launcher rejected the request"
     end
+    return true
 end
 
 return U
