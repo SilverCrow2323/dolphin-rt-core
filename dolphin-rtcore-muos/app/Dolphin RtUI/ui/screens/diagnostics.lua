@@ -140,12 +140,15 @@ local function export_nexus_report()
     Notify.show("error", "Cannot write NEXUS report: " .. tostring(open_err))
     return
   end
-  local ok, write_err = pcall(function()
-    f:write(NexusDiagnostics.format(S.nexus_report), "\n\n")
-    for _, line in ipairs(S.nexus_lines) do f:write(line, "\n") end
-  end)
+  local write_ok, write_err = f:write(NexusDiagnostics.format(S.nexus_report), "\n\n")
+  if write_ok then
+    for _, line in ipairs(S.nexus_lines) do
+      write_ok, write_err = f:write(line, "\n")
+      if not write_ok then break end
+    end
+  end
   local close_ok, close_err = f:close()
-  if not ok or not close_ok then
+  if not write_ok or not close_ok then
     Notify.show("error", "NEXUS report export failed: " ..
       tostring(write_err or close_err or "write error"))
     return
