@@ -60,8 +60,8 @@ jobs:
             libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
             liblzma-dev libpng-dev zlib1g-dev libbz2-dev libegl-dev \
             libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev \
-            libxi-dev libwayland-dev wayland-protocols libxkbcommon-dev \
-            libdecor-0-dev
+            libxi-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxext-dev \
+            libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev
 
       - name: Install Qt GUI dependencies
         if: matrix.frontend == 'gui'
