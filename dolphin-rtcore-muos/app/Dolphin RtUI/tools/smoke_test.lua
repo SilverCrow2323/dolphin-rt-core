@@ -33,6 +33,9 @@ local function run()
       if not found then error("screen module failed to register: " .. tostring(entry.module)) end
       local errors_before = #ui_errors
       if UI.go_instant(name, {}) == false then error("navigation rejected screen: " .. name) end
+      -- Exercise harmless D-pad movement without triggering launch/mutation actions.
+      UI.hat("down")
+      UI.hat("up")
       UI.update(0.1)
       UI.draw()
       if #ui_errors > errors_before then
