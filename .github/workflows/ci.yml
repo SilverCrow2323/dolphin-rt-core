@@ -51,6 +51,43 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash tests/test_ports_dryrun.sh
 
+  love-ui-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dolphin-rtcore-muos/app/Dolphin RtUI
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install LÖVE and virtual display
+        run: sudo apt-get update && sudo apt-get install -y love xvfb
+      - name: Exercise every declared LÖVE screen
+        run: |
+          xvfb-run -a love . --smoke
+          test -s data/logs/smoke.txt
+          grep -qE '^RESULT: [1-9][0-9]*/[1-9][0-9]* OK, 0 FAIL  repository-tooling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install manifest test dependency
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Check helper syntax
+        run: |
+          bash -n tools/capture-ui.sh tools/publish-wiki.sh tools/build-compat-site.sh
+          sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
+          sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
+          bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh
+          bash -n tests/test_muos_registration.sh
+          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
+      - name: Test muOS generation detection and core registration
+        run: bash tests/test_muos_registration.sh
+      - name: Test repository and website tooling
+        run: python -m unittest tests/test_repo_tools.py tests/test_compat_site.py -v
+ data/logs/smoke.txt
+          cat data/logs/smoke.txt
+
   repository-tooling:
     runs-on: ubuntu-latest
     steps:
