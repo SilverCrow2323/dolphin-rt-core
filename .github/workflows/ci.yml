@@ -61,11 +61,29 @@ jobs:
       - name: Install LÖVE and virtual display
         run: sudo apt-get update && sudo apt-get install -y love xvfb
       - name: Exercise every declared LÖVE screen
+        env:
+          SDL_AUDIODRIVER: dummy
         run: |
           xvfb-run -a love . --smoke
           test -s data/logs/smoke.txt
           grep -Fq "0 FAIL" data/logs/smoke.txt
           cat data/logs/smoke.txt
+      - name: Capture every registered screen
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: |
+          mkdir -p "$RUNNER_TEMP/dolphin-rtui-screenshots"
+          bash ../../../tools/capture-ui.sh --all --delay 0.7 --out-dir "$RUNNER_TEMP/dolphin-rtui-screenshots"
+          expected="$(bash ../../../tools/capture-ui.sh --list | wc -l)"
+          actual="$(find "$RUNNER_TEMP/dolphin-rtui-screenshots" -maxdepth 1 -type f -name '*.png' | wc -l)"
+          test "$actual" -eq "$expected"
+          echo "Captured $actual/$expected screen images."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-rtui-screen-captures
+          path: "$RUNNER_TEMP/dolphin-rtui-screenshots/*.png"
+          if-no-files-found: error
+          retention-days: 14
 
   repository-tooling:
     runs-on: ubuntu-latest
