@@ -3,10 +3,14 @@
 
 local M = {}
 
+local function valid_id(id)
+    return type(id) == "string" and id:match("^[%w_%-%.]+$") ~= nil
+end
+
 local function index_by_id(entries)
     local out, invalid = {}, 0
     for _, entry in ipairs(entries) do
-        if type(entry) ~= "table" or type(entry.id) ~= "string" or entry.id == "" then
+        if type(entry) ~= "table" or not valid_id(entry.id) then
             invalid = invalid + 1
         elseif out[entry.id] then
             invalid = invalid + 1
