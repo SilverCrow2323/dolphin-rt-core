@@ -53,6 +53,7 @@ jobs:
 
   love-ui-smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: dolphin-rtcore-muos/app/Dolphin RtUI
