@@ -46,3 +46,24 @@ does not bypass Library logic or take ownership of navigation transitions.
 ## Environment
 `DOLPHINUI_FPS=30` caps the UI · `DOLPHINUI_TRIAGE_ROOT=<dir>` fake muOS tree for the triage ·
 `DOLPHINUI_SHOT=out.png:2.5` headless screenshot (dev).
+
+### NEXUS integrity diagnostics
+
+`core/nexus_diagnostics.lua` provides a read-only integrity report over the public
+catalog returned by `ui.catalog()`. It checks that every registered screen has its
+generated `navigation.go.<screen-id>` action and that action metadata does not point
+to an unknown screen. It does not execute callbacks, mutate the registry, or probe
+hardware/runtime availability.
+
+Example from a developer console or diagnostic integration:
+
+```lua
+local UI = require("ui")
+local NexusDiagnostics = require("core.nexus_diagnostics")
+local report = NexusDiagnostics.inspect(UI.catalog())
+print(NexusDiagnostics.format(report))
+```
+
+The report is suitable for support bundles and automated tests. A PASS means the
+registry relationships are internally consistent; it is not a claim that every
+screen has been exercised on physical muOS hardware.
