@@ -71,8 +71,9 @@ eq(sparse.issues[1].code, "invalid_screen_entries", "sparse screen array classif
 eq(sparse.issues[1].message:match(": 2$") ~= nil, true, "array hole and non-array key detected")
 
 local invalid_actions = Diagnostics.inspect({
-    screens = {},
+    screens = { { id = "library" } },
     actions = {
+        { id = "navigation.go.library", metadata = { group = "navigation", screen = "library" } },
         { id = "" },
         { id = "not valid" },
         { id = "shortcut.valid" },
