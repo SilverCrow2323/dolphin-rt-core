@@ -25,6 +25,7 @@ eq(clean.action_count, 3, "action count")
 eq(clean.navigation_count, 2, "navigation count")
 eq(#clean.issues, 0, "no issues")
 eq(clean.screens[1].navigation_action_valid, true, "navigation metadata valid")
+eq(Diagnostics.format(clean):find("\nStatus:", 1, true) ~= nil, true, "formatted report uses real line breaks")
 
 local broken = Diagnostics.inspect({
     screens = {
@@ -47,6 +48,7 @@ local wrong_route = Diagnostics.inspect({
 })
 eq(wrong_route.ok, false, "misdirected navigation fails")
 eq(wrong_route.issues[1].code, "invalid_navigation_action", "misdirected route classified")
+eq(wrong_route.screens[1].navigation_action_valid, false, "invalid route is not marked healthy")
 
 local invalid_entries = Diagnostics.inspect({
     screens = { false, { id = "library" }, { id = "library" } },
