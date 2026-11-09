@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Builds the Dolphin no-GUI binary for an aarch64 handheld.  Run it ON an aarch64 Debian/Ubuntu machine (or in the CI job).
 #
-#   ./build-dolphin.sh --target muos                # muOS Andromeda / H700 (fbdev + SDL/EGL, no Qt)
+#   ./build-dolphin.sh --target muos                # muOS Andromeda / H700 (FBDev + SDL/EGL, NoGUI)
+#   ./build-dolphin.sh --target muos-qt --frontend gui # EXPERIMENTAL: Qt GUI on EGLFS
 #   ./build-dolphin.sh --target knulli              # Knulli / H700 (fbdev + SDL/EGL, no Qt)
 #   ./build-dolphin.sh --target rocknix             # ROCKNIX Wayland (patches 000,011,012,013,015)
 #   ./build-dolphin.sh --target desktop --frontend both  # ARM64 Linux Qt GUI + NoGUI
@@ -18,9 +19,10 @@ while [ $# -gt 0 ]; do case "$1" in
   --target) TARGET="$2"; shift 2;; --frontend) FRONTEND="$2"; shift 2;; --ref) REF="$2"; shift 2;; --out) OUT="$2"; shift 2;; --jobs) JOBS="$2"; shift 2;;
   --no-lto) LTO=OFF; shift;; --tune) TUNE="$2"; shift 2;; --deps) DEPS=yes; shift;; --no-deps) DEPS=no; shift;;
   *) echo "unknown option $1"; exit 2;; esac; done
-case "$TARGET" in muos|knulli|fbdev|rocknix|desktop) ;; *) echo "usage: $0 --target muos|knulli|rocknix|desktop [options]"; exit 2;; esac
+case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) ;; *) echo "usage: $0 --target muos|knulli|rocknix|desktop [options]"; exit 2;; esac
 case "$FRONTEND" in nogui|gui|both) ;; *) echo "usage: $0 --target TARGET --frontend nogui|gui|both"; exit 2;; esac
-if [ "$TARGET" != desktop ] && [ "$FRONTEND" != nogui ]; then echo "Qt GUI builds are desktop-only; muOS/Knulli/ROCKNIX use their native launcher UI with NoGUI"; exit 2; fi
+if [ "$TARGET" = muos-qt ] && [ "$FRONTEND" != gui ]; then echo "muos-qt is a GUI-only experimental target"; exit 2; fi
+if [ "$TARGET" != desktop ] && [ "$TARGET" != muos-qt ] && [ "$FRONTEND" != nogui ]; then echo "Qt GUI builds are supported only by desktop and experimental muos-qt"; exit 2; fi
 [ "$(uname -m)" = aarch64 ] || echo "WARNING: this is $(uname -m), the result will not run on the handheld"
 
 if [ "$DEPS" = yes ] || { [ "$DEPS" = auto ] && [ "$(id -u)" = 0 ] && command -v apt-get >/dev/null; }; then
@@ -30,7 +32,7 @@ if [ "$DEPS" = yes ] || { [ "$DEPS" = auto ] && [ "$(id -u)" = 0 ] && command -v
     libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev liblzma-dev \
     libpng-dev zlib1g-dev libbz2-dev libegl-dev libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev libxi-dev \
     libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev
-  if [ "$TARGET" = desktop ]; then apt-get install -y -qq --no-install-recommends qt6-base-dev libqt6svg6-dev; fi
+  if [ "$TARGET" = desktop ] || [ "$TARGET" = muos-qt ]; then apt-get install -y -qq --no-install-recommends qt6-base-dev libqt6svg6-dev qt6-qpa-plugins; fi
 fi
 
 W="$OUT/work"; SRC="$W/dolphin"; rm -rf "$W"; mkdir -p "$SRC" "$OUT"; cd "$SRC"
@@ -45,7 +47,7 @@ for p in "$HERE"/patches/local/*.patch; do [ -f "$p" ] && PATCHES+=("$p"); done
 for p in "${PATCHES[@]}"; do patch -p1 -s < "$p" && echo "applied $(basename "$p")"; done
 
 ENABLE_QT=OFF; ENABLE_X11=OFF; ENABLE_WAYLAND=OFF
-case "$TARGET" in desktop) ENABLE_QT=ON; ENABLE_X11=ON;; rocknix) ENABLE_WAYLAND=ON;; esac
+case "$TARGET" in desktop) ENABLE_QT=ON; ENABLE_X11=ON;; muos-qt) ENABLE_QT=ON;; rocknix) ENABLE_WAYLAND=ON;; esac
 FLAGS=(-DCMAKE_BUILD_TYPE=Release -DENABLE_NOGUI=ON "-DENABLE_QT=$ENABLE_QT" -DENABLE_HEADLESS=OFF -DENABLE_TESTS=OFF
   -DENABLE_ANALYTICS=OFF -DENABLE_AUTOUPDATE=OFF -DENABLE_CLI_TOOL=OFF -DENCODE_FRAMEDUMPS=OFF -DUSE_DISCORD_PRESENCE=OFF
   -DUSE_MGBA=OFF -DUSE_RETRO_ACHIEVEMENTS=OFF -DENABLE_LLVM=OFF -DENABLE_VULKAN=OFF "-DENABLE_LTO=$LTO"
