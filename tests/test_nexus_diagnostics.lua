@@ -51,7 +51,7 @@ eq(wrong_route.issues[1].code, "invalid_navigation_action", "misdirected route c
 eq(wrong_route.screens[1].navigation_action_valid, false, "invalid route is not marked healthy")
 
 local invalid_entries = Diagnostics.inspect({
-    screens = { false, { id = "library" }, { id = "library" } },
+    screens = { false, { id = "" }, { id = "library" }, { id = "library" } },
     actions = {},
 })
 eq(invalid_entries.ok, false, "invalid registry entries fail")
