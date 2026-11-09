@@ -129,14 +129,21 @@ write_atomic() {
 }
 
 refresh_assign() {
+    expected="${1:-present}"
     tool="${RT_MUOS_ASSIGN_REFRESH:-$RT_MUOS_ROOT/script/system/assign.sh}"
     [ -x "$tool" ] || die "manifest is updated, but muOS automatic assignment tool is missing: $tool"
     "$tool" -p -v || die "muOS assign.sh failed; check MUOS/log/assign_gen.txt"
     sync
     # Content Explorer consumes this generated alias map as well as the core manifest.
-    jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" \
-        '.["nintendogamecube"]==$gc and .["nintendowii"]==$wii' "$USERM/assign.json" >/dev/null 2>&1 \
-        || die "muOS assign.sh completed but assign.json does not map Nintendo GameCube/Wii; check MUOS/log/assign_gen.txt"
+    if [ "$expected" = "absent" ]; then
+        jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' \
+            "$USERM/assign.json" >/dev/null 2>&1 \
+            || die "muOS assign.sh completed but stale Nintendo GameCube/Wii aliases remain in assign.json"
+    else
+        jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" \
+            '.["nintendogamecube"]==$gc and .["nintendowii"]==$wii' "$USERM/assign.json" >/dev/null 2>&1 \
+            || die "muOS assign.sh completed but assign.json does not map Nintendo GameCube/Wii; check MUOS/log/assign_gen.txt"
+    fi
 }
 
 legacy_replace_system() {
@@ -313,9 +320,19 @@ manifest_current() {
 
 do_remove() {
     n="$(cur_mode)"
-    validate_sources "$n"
-    GC_KEY="$(sys_name "$SW/gc/mode $n")"
-    WII_KEY="$(sys_name "$SW/wii/mode $n")"
+    # Removal must remain possible even if the source profile tree was damaged
+    # or removed. Prefer current system names when available, otherwise use
+    # the canonical names shipped by earlier Rt:Core releases.
+    if [ -s "$SW/gc/mode $n/global.ini" ]; then
+        GC_KEY="$(sys_name "$SW/gc/mode $n")"
+    else
+        GC_KEY="$OLD_GC_NAME"
+    fi
+    if [ -s "$SW/wii/mode $n/global.ini" ]; then
+        WII_KEY="$(sys_name "$SW/wii/mode $n")"
+    else
+        WII_KEY="$OLD_WII_NAME"
+    fi
     case "$RT_MUOS_REGISTRATION_LAYOUT" in
         legacy-assign)
             legacy_remove
@@ -329,14 +346,14 @@ do_remove() {
                       --arg oldgc "$OLD_GC_NAME" --arg oldwii "$OLD_WII_NAME" \
                       'del(.[$gk]) | del(.[$wk]) | del(.[$oldgc]) | del(.[$oldwii])' "$file")" || die "could not remove Rt:Core entries"
             printf '%s\n' "$out" | write_atomic "$file" || die "could not write $file"
-            refresh_assign
+            refresh_assign absent
             say "[OK] Removed Rt:Core entries from the single-file manifest"
             ;;
         split)
             need_jq
             rm -f "$USERM/core/$NS/$GC_KEY.json" "$USERM/core/$NS/$WII_KEY.json" \
                   "$USERM/core/$NS/$OLD_GC_NAME.json" "$USERM/core/$NS/$OLD_WII_NAME.json"
-            refresh_assign
+            refresh_assign absent
             say "[OK] Removed Rt:Core entries from the split manifest"
             ;;
         *) die "unsupported muOS registration layout: $RT_MUOS_REGISTRATION_LAYOUT" ;;
