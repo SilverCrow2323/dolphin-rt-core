@@ -150,7 +150,11 @@ function S.register_actions(ui)
                 if S.scanning then return false, "scan already in progress" end
                 S.need_scan = false
                 local ok, err = pcall(Library.scan_begin)
-                if not ok then return false, tostring(err) end
+                if not ok then
+                    local detail = tostring(err)
+                    detail = detail:match(":%d+:%s*(.*)$") or detail
+                    return false, detail
+                end
                 S.scanning, S.scan_t, S.scan_seen = true, 0, 0
                 return true
             end,
