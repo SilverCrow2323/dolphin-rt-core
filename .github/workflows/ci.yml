@@ -40,6 +40,7 @@ jobs:
           luajit tests/test_stream_lib.lua 2>/dev/null || (cd "dolphin-rtcore-muos/app/Dolphin RtUI" && luajit ../../../tests/test_stream_lib.lua)
           luajit tests/test_nexus.lua
           luajit tests/test_ui_navigation_contract.lua
+          luajit tests/test_nexus_adapter_bootstrap.lua
           luajit tests/test_profile_nexus.lua
           luajit tests/test_editor_nexus.lua
           luajit tests/test_gamesettings_nexus.lua
