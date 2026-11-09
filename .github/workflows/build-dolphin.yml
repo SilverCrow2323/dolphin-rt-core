@@ -1,0 +1,124 @@
+name: Build Dolphin (aarch64)
+
+on:
+  push:
+    branches: [dolphin_bin]
+    paths:
+      - "dolphin-build/**"
+      - ".github/workflows/build-dolphin.yml"
+  pull_request:
+    branches: [dolphin_bin]
+    paths:
+      - "dolphin-build/**"
+      - ".github/workflows/build-dolphin.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dolphin-aarch64-build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }} / ${{ matrix.frontend }} (native ARM64)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: muos
+            frontend: nogui
+          - target: muos-qt
+            frontend: gui
+          - target: knulli
+            frontend: nogui
+          - target: rocknix
+            frontend: nogui
+          - target: desktop
+            frontend: nogui
+          - target: desktop
+            frontend: gui
+
+    steps:
+      - name: Checkout dolphin_bin
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Show native runner resources
+        run: |
+          uname -a
+          uname -m
+          nproc
+          free -h
+          df -h
+
+      - name: Install common Dolphin build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build git patch pkg-config python3 \
+            ca-certificates xz-utils binutils \
+            libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
+            libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
+            liblzma-dev libpng-dev zlib1g-dev libbz2-dev libegl-dev \
+            libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev \
+            libxi-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxext-dev \
+            libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev
+
+      - name: Install Qt GUI dependencies
+        if: matrix.target == 'desktop' || matrix.target == 'muos-qt'
+        run: |
+          sudo apt-get install -y --no-install-recommends qt6-base-dev qt6-base-private-dev libqt6svg6-dev qt6-qpa-plugins
+
+      - name: Verify Wayland patch series
+        if: matrix.target == 'rocknix'
+        run: bash dolphin-build/verify-patches.sh
+
+      - name: Build Dolphin ${{ matrix.target }} / ${{ matrix.frontend }}
+        env:
+          TARGET: ${{ matrix.target }}
+          FRONTEND: ${{ matrix.frontend }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
+          bash dolphin-build/build-dolphin.sh \
+            --target "$TARGET" \
+            --frontend "$FRONTEND" \
+            --out "$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND" \
+            --jobs "$(nproc)" \
+            --no-deps
+
+      - name: Verify build outputs
+        env:
+          TARGET: ${{ matrix.target }}
+          FRONTEND: ${{ matrix.frontend }}
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
+          if [ "$FRONTEND" = gui ]; then
+            test -x "$OUT/dolphin-gui"
+            file "$OUT/dolphin-gui"
+            readelf -h "$OUT/dolphin-gui" | grep -E 'Class:|Machine:'
+          else
+            test -x "$OUT/dolphin"
+            file "$OUT/dolphin"
+            readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
+          fi
+          test -s "$OUT/BUILDINFO.txt"
+          SOURCE_ARCHIVE="$(find "$OUT" -maxdepth 1 -type f -name 'source-*.tar.xz' -print -quit)"
+          test -n "$SOURCE_ARCHIVE"
+          sha256sum "$OUT"/dolphin* "$OUT/BUILDINFO.txt" "$SOURCE_ARCHIVE"
+
+      - name: Upload binary, build info and GPL corresponding source
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-${{ matrix.target }}-${{ matrix.frontend }}-aarch64-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/dolphin*
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/BUILDINFO.txt
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/source-*.tar.xz
+          if-no-files-found: error
+          retention-days: 30

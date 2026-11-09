@@ -1,0 +1,111 @@
+# Dolphin Rt:Core R - options. F: submenu, key, LABEL, description. C: key, value, label, overrides (-C Section.Key=Value;...)
+F	GAME	rtc_gamesettings	GAME SETTINGS	Apply the per-game .ini fixes shipped with the core.
+C	rtc_gamesettings	on	On	
+C	rtc_gamesettings	off	Off	
+F	GAME	rtc_textures	HD TEXTURES	Load custom textures from core/Load/Textures.
+C	rtc_textures	off	Off	
+C	rtc_textures	on	On	
+F	GAME	rtc_cheats	CHEATS	Enable cheat codes.
+C	rtc_cheats	off	Off	
+C	rtc_cheats	on	On	
+F	GAME	rtc_fps	SHOW FPS	Show the FPS counter.
+C	rtc_fps	off	Off	
+C	rtc_fps	on	On	
+F	CONTROLS	rtc_pad	CONTROLLER	Stick layout used by the controller profiles.
+C	rtc_pad	2	2 sticks	
+C	rtc_pad	1	1 stick	
+C	rtc_pad	0	No sticks	
+F	CONTROLS	rtc_orient	WIIMOTE POSITION	Wii only. How the Wiimote is held.
+C	rtc_orient	upright	Upright	
+C	rtc_orient	sideways	Sideways	
+F	CONTROLS	rtc_exit	SAFE EXIT	Button combo that closes the game cleanly.
+C	rtc_exit	select_start	Select + Start	
+C	rtc_exit	mode_start	Menu + Start	
+F	GRAPHICS	rtc_res	INTERNAL RESOLUTION	Render scale. 1x is native (640x480); higher is much heavier.
+C	rtc_res	auto	Profile default	
+C	rtc_res	1	1x (native)	GFX.Settings.InternalResolution=1
+C	rtc_res	2	2x	GFX.Settings.InternalResolution=2
+C	rtc_res	3	3x	GFX.Settings.InternalResolution=3
+F	GRAPHICS	rtc_aspect	ASPECT RATIO	How the picture is fitted to the screen.
+C	rtc_aspect	auto	Profile default	
+C	rtc_aspect	game	Game default (auto)	GFX.Settings.AspectRatio=0
+C	rtc_aspect	169	Force 16:9	GFX.Settings.AspectRatio=1
+C	rtc_aspect	43	Force 4:3	GFX.Settings.AspectRatio=2
+C	rtc_aspect	stretch	Stretch to screen	GFX.Settings.AspectRatio=3
+F	GRAPHICS	rtc_wide	WIDESCREEN HACK	Stretch 4:3 games to 16:9 without distortion (can glitch some games).
+C	rtc_wide	auto	Profile default	
+C	rtc_wide	on	On	GFX.Settings.WideScreenHack=True
+C	rtc_wide	off	Off	GFX.Settings.WideScreenHack=False
+F	GRAPHICS	rtc_aniso	ANISOTROPIC FILTERING	Sharper textures at an angle. Costs GPU time.
+C	rtc_aniso	auto	Profile default	
+C	rtc_aniso	0	Off	GFX.Enhancements.MaxAnisotropy=0
+C	rtc_aniso	1	2x	GFX.Enhancements.MaxAnisotropy=1
+C	rtc_aniso	2	4x	GFX.Enhancements.MaxAnisotropy=2
+C	rtc_aniso	3	8x	GFX.Enhancements.MaxAnisotropy=3
+C	rtc_aniso	4	16x	GFX.Enhancements.MaxAnisotropy=4
+F	GRAPHICS	rtc_filter	FORCE TEXTURE FILTERING	Smooth every texture, even ones the game wants blocky.
+C	rtc_filter	auto	Profile default	
+C	rtc_filter	on	On	GFX.Enhancements.ForceFiltering=True
+C	rtc_filter	off	Off	GFX.Enhancements.ForceFiltering=False
+F	GRAPHICS	rtc_msaa	ANTI-ALIASING (MSAA)	Smooths edges. Very heavy on this GPU.
+C	rtc_msaa	auto	Profile default	
+C	rtc_msaa	1	Off	GFX.Settings.MSAA=1
+C	rtc_msaa	2	2x	GFX.Settings.MSAA=2
+C	rtc_msaa	4	4x	GFX.Settings.MSAA=4
+F	GRAPHICS	rtc_vsync	V-SYNC	Wait for the screen refresh (removes tearing, can lower FPS).
+C	rtc_vsync	auto	Profile default	
+C	rtc_vsync	on	On	GFX.Hardware.VSync=True
+C	rtc_vsync	off	Off	GFX.Hardware.VSync=False
+F	GRAPHICS	rtc_shaders	SHADER COMPILATION	How shaders are built when a game first needs them.
+C	rtc_shaders	auto	Profile default	
+C	rtc_shaders	0	Synchronous (stutter, no glitches)	GFX.Settings.ShaderCompilationMode=0
+C	rtc_shaders	1	Synchronous ubershaders	GFX.Settings.ShaderCompilationMode=1
+C	rtc_shaders	2	Asynchronous ubershaders	GFX.Settings.ShaderCompilationMode=2
+C	rtc_shaders	3	Asynchronous (skip drawing, fastest)	GFX.Settings.ShaderCompilationMode=3
+F	GRAPHICS	rtc_efb	EFB ACCESS FROM CPU	Needed by some effects (e.g. lens flares); slows games down.
+C	rtc_efb	auto	Profile default	
+C	rtc_efb	on	On	GFX.Hacks.EFBAccessEnable=True
+C	rtc_efb	off	Off	GFX.Hacks.EFBAccessEnable=False
+F	GRAPHICS	rtc_light	PIXEL LIGHTING	Per-pixel lighting. Heavy.
+C	rtc_light	auto	Profile default	
+C	rtc_light	on	On	GFX.Settings.EnablePixelLighting=True
+C	rtc_light	off	Off	GFX.Settings.EnablePixelLighting=False
+F	PERFORMANCE	rtc_speed	EMULATION SPEED	Game speed limit.
+C	rtc_speed	auto	Profile default	
+C	rtc_speed	50	50%	Dolphin.Core.EmulationSpeed=0.5
+C	rtc_speed	75	75%	Dolphin.Core.EmulationSpeed=0.75
+C	rtc_speed	100	100%	Dolphin.Core.EmulationSpeed=1.0
+C	rtc_speed	125	125%	Dolphin.Core.EmulationSpeed=1.25
+C	rtc_speed	150	150%	Dolphin.Core.EmulationSpeed=1.5
+C	rtc_speed	0	Unlimited	Dolphin.Core.EmulationSpeed=0.0
+F	PERFORMANCE	rtc_oc	CPU CLOCK	Emulated CPU speed. Below 1x can speed up heavy games (and desync some).
+C	rtc_oc	auto	Profile default	
+C	rtc_oc	0.5	0.5x	Dolphin.Core.OverclockEnable=True;Dolphin.Core.Overclock=0.5
+C	rtc_oc	0.75	0.75x	Dolphin.Core.OverclockEnable=True;Dolphin.Core.Overclock=0.75
+C	rtc_oc	1.5	1.5x	Dolphin.Core.OverclockEnable=True;Dolphin.Core.Overclock=1.5
+C	rtc_oc	2	2x	Dolphin.Core.OverclockEnable=True;Dolphin.Core.Overclock=2.0
+C	rtc_oc	1	1x (normal)	Dolphin.Core.OverclockEnable=False;Dolphin.Core.Overclock=1.0
+F	PERFORMANCE	rtc_dual	DUAL CORE	Run CPU and GPU emulation on separate threads.
+C	rtc_dual	auto	Profile default	
+C	rtc_dual	on	On	Dolphin.Core.CPUThread=True
+C	rtc_dual	off	Off	Dolphin.Core.CPUThread=False
+F	PERFORMANCE	rtc_mmu	MMU EMULATION	Needed by a few games; slower.
+C	rtc_mmu	auto	Profile default	
+C	rtc_mmu	on	On	Dolphin.Core.MMU=True
+C	rtc_mmu	off	Off	Dolphin.Core.MMU=False
+F	AUDIO	rtc_vol	VOLUME	Emulated volume.
+C	rtc_vol	auto	Profile default	
+C	rtc_vol	100	100%	Dolphin.DSP.Volume=100
+C	rtc_vol	75	75%	Dolphin.DSP.Volume=75
+C	rtc_vol	50	50%	Dolphin.DSP.Volume=50
+C	rtc_vol	25	25%	Dolphin.DSP.Volume=25
+C	rtc_vol	0	Mute	Dolphin.DSP.Volume=0
+F	AUDIO	rtc_dsp	AUDIO ENGINE (HLE)	On = fast high-level audio. Off = accurate but very heavy.
+C	rtc_dsp	auto	Profile default	
+C	rtc_dsp	on	On	Dolphin.Core.DSPHLE=True
+C	rtc_dsp	off	Off	Dolphin.Core.DSPHLE=False
+F	SYSTEM	rtc_platform	WINDOW PLATFORM	How Dolphin opens its window. Auto picks Wayland, then X11 if this build has them, else the framebuffer.
+C	rtc_platform	auto	Auto	
+C	rtc_platform	wayland	Wayland	
+C	rtc_platform	x11	X11	
+C	rtc_platform	fbdev	Framebuffer	

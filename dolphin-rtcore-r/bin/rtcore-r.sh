@@ -13,6 +13,9 @@ CORE="$ROOT/core"
 DEVICE="${RTCORE_DEVICE:-${DEVICE:-rg35xx-h}}"
 [ -f "$ROOT/config/devices/$DEVICE.conf" ] && . "$ROOT/config/devices/$DEVICE.conf"
 
+# ROCKNIX's own launchers start with this: PATH, XDG_RUNTIME_DIR, WAYLAND_DISPLAY, SDL variables
+[ -z "${RTCORE_DRYRUN:-}" ] && [ -f /etc/profile ] && . /etc/profile
+
 ROM="$1"
 PROFILE="${2:-${DEFAULT_PROFILE:-default}}"
 LOGDIR="$ROOT/logs"; mkdir -p "$LOGDIR"
@@ -57,6 +60,24 @@ EXTRA=()
 [ "$CHEATS" = on ] && EXTRA+=(-C Dolphin.Core.EnableCheats=True)
 [ "$FPS" = on ]    && EXTRA+=(-C GFX.Settings.ShowFPS=True)
 
+# Generic options from config/options.tsv: per game > per system > global > "auto" (= keep what the profile says).
+# Only overrides of the exact shape Section.Key=Value (Dolphin|GFX) are ever passed to Dolphin.
+APPLIED=""
+OPTS_TSV="$ROOT/config/options.tsv"
+if [ -f "$OPTS_TSV" ]; then
+  while IFS=$'\t' read -r kind _sub okey _label _desc; do
+    [ "$kind" = F ] || continue
+    ov_val="$(opt "$okey" auto)"
+    [ "$ov_val" = auto ] && continue
+    ov_list="$(awk -F'\t' -v k="$okey" -v v="$ov_val" '$1=="C" && $2==k && $3==v {print $5; exit}' "$OPTS_TSV")"
+    [ -n "$ov_list" ] || continue
+    IFS=';' read -ra ov_parts <<< "$ov_list"
+    for ov in "${ov_parts[@]}"; do
+      if [[ "$ov" =~ ^(Dolphin|GFX)\.[A-Za-z]+\.[A-Za-z0-9_]+=[A-Za-z0-9._+-]+$ ]]; then EXTRA+=(-C "$ov"); APPLIED+=" $ov"; fi
+    done
+  done < "$OPTS_TSV"
+fi
+
 esc() { printf '%s' "$1" | sed -e 's/[\\#&]/\\&/g'; }
 
 watcher() {
@@ -91,6 +112,7 @@ fi
 
 {
 echo "=== $(date '+%F %T') | $SYS | $PROFILE | pad=$NUMSTICKS $ORIENT | gs=$GSET tex=$TEX ch=$CHEATS fps=$FPS exit=$EXITC | $(basename "$ROM") ==="
+[ -n "$APPLIED" ] && echo "options applied:$APPLIED"
 cd "$CORE/Config" || exit 1
 PROFILE_BASE="${PROFILE%-sideways}"; PROFILE_BASE="${PROFILE_BASE%-upright}"
 for f in Dolphin.ini GFX.ini; do
@@ -117,6 +139,15 @@ cd "$CORE" || exit 1
 export HOME="${UD:-$ROOT}"; [ -d "$HOME" ] || export HOME="$ROOT"
 export SDL_GAMECONTROLLERCONFIG="${SDL_GUID},${PAD_NAME},${SDL_MAP},platform:Linux,"
 
+# --- window platform: use what this build was compiled with. Wayland (ROCKNIX patches) > X11 > the default (fbdev).
+PLATFORM_WANT="$(opt rtc_platform auto)"
+if [ "$PLATFORM_WANT" = auto ]; then
+  PLATFORM_WANT=""
+  if   [ -n "${WAYLAND_DISPLAY:-}" ] && grep -a -q 'PlatformWaylandE' "$CORE/dolphin" 2>/dev/null; then PLATFORM_WANT=wayland
+  elif [ -n "${DISPLAY:-}" ]         && grep -a -q 'PlatformX11E'     "$CORE/dolphin" 2>/dev/null; then PLATFORM_WANT=x11; fi
+fi
+case "$PLATFORM_WANT" in wayland|x11|fbdev) EXTRA+=("--platform=$PLATFORM_WANT"); echo "window platform: $PLATFORM_WANT";; esac
+
 if [ -n "${RTCORE_DRYRUN:-}" ]; then
   echo "[dry-run] ROOT=$ROOT CORE=$CORE UD=$UD SYS=$SYS"
   echo "[dry-run] SDL_GAMECONTROLLERCONFIG=$SDL_GAMECONTROLLERCONFIG"
@@ -124,9 +155,31 @@ if [ -n "${RTCORE_DRYRUN:-}" ]; then
   exit 0
 fi
 
+# --- shared libraries: the binary asks for unversioned names (e.g. libEGL.so) that a runtime image often only has
+# as libEGL.so.1. Link what exists into <release>/lib and say what is still missing.
+missing_libs() { LD_TRACE_LOADED_OBJECTS=1 ./dolphin 2>&1 | sed -n 's/^[[:space:]]*\(lib[^ ]*\) => not found.*/\1/p'; }
+export LD_LIBRARY_PATH="$ROOT/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+mkdir -p "$ROOT/lib"
+for l in $(missing_libs); do
+  base="${l%%.so*}.so"
+  for d in /usr/lib /usr/lib64 /lib /usr/lib/aarch64-linux-gnu /usr/lib/mali; do
+    c="$(ls "$d/$base".* "$d/$base" 2>/dev/null | head -n 1)"
+    [ -n "$c" ] && [ -e "$c" ] && { ln -sf "$c" "$ROOT/lib/$l"; echo "lib shim: $l -> $c"; break; }
+  done
+done
+STILL="$(missing_libs | tr '\n' ' ')"
+[ -n "$STILL" ] && echo "MISSING LIBRARIES: $STILL"
+
+type set_kill >/dev/null 2>&1 && set_kill set "dolphin"      # ROCKNIX: lets its exit hotkey stop this process
 watcher & WPID=$!
+T0=$(date +%s)
 ./dolphin -e "$ROM" -u "$CORE" "${EXTRA[@]}"
-echo "exit=$?"
+RC=$?
+echo "exit=$RC after $(( $(date +%s) - T0 ))s"
+if [ "$RC" -ne 0 ] && [ $(( $(date +%s) - T0 )) -lt 6 ]; then
+  echo "--- the emulator stopped right away: diagnostics (also: ./rtcore.sh doctor) ---"
+  bash "$ROOT/tools/doctor.sh" --brief 2>&1 | sed 's/^/  /'
+fi
 kill $WPID 2>/dev/null
 } >> "$LOG" 2>&1
 exit 0

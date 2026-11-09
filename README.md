@@ -46,7 +46,7 @@ texture packs, controller profiles) is plain Dolphin data and is shared by every
 | **muOS 2606.0 Andromeda** (*Sloppy Kofi*) | ✅ **v12.0.0 — current** | `Dolphin_RtCore_v12_0_0_Andromeda.muxupd` | Everything in this README. Registers itself in the Andromeda core manifest, signed-manifest install, Rt:Stream built in. |
 | **muOS 2601.1 Funky Jacaranda** | 🟡 **Legacy line** — v11.5.1 "Triptych" | `Dolphin_RtCore_v11_5_1_Triptych_Bundle.muxupd` | Uses the old `info/assign/*.ini` registry. Stays available; a v12 backport is **planned**, not built. |
 | **Knulli** (Batocera-based) | ✅ **Rt:Core K 0.2.0** — [`dolphin-rtcore-k/`](dolphin-rtcore-k) | `get.sh` / `install.sh` | EmulationStation integration (systems `wii` + `gamecube`, profiles as per-game cores, per-game options, safe exit). Tested by the maintainer on an RG35XX-H, Knulli Scarab 2026/05/11. Bring your own `core/dolphin`. |
-| **ROCKNIX** | 🟠 **Experimental** — [`dolphin-rtcore-r/`](dolphin-rtcore-r) | `install.sh` | A derivative of Rt:Core K adapted from the ROCKNIX sources (paths, ES custom systems, `system.cfg`). Passes dry-run tests on a fake filesystem; **never run on a device**. Per-game option menu is not available (see its README). |
+| **ROCKNIX** | 🟠 **Experimental** — [`dolphin-rtcore-r/`](dolphin-rtcore-r) | `install.sh` | **Tested on a device:** installs, shows the systems and 23 per-game options in EmulationStation, but **the emulator does not start** — the current binary can only open windows through fbdev, ROCKNIX runs Wayland/Panfrost. Needs a Dolphin built for ROCKNIX: [`dolphin-build/`](dolphin-build) does that (patches verified, **build not yet run**). `./rtcore.sh doctor` explains it. |
 
 > [!NOTE]
 > "Experimental" means it exists and passes automated dry-run tests but has not been run on hardware. This table only lists
@@ -64,6 +64,7 @@ One repository, one folder per deliverable:
 | [`dolphin-rtcore-muos/`](dolphin-rtcore-muos) | **muOS Andromeda** build: shared app + emulator tree, muOS-only overlay, `tools/build-muxupd.sh`, `tools/verify-muxupd.sh` |
 | [`dolphin-rtcore-k/`](dolphin-rtcore-k) | **Knulli** port (Rt:Core K) |
 | [`dolphin-rtcore-r/`](dolphin-rtcore-r) | **ROCKNIX** port (experimental) |
+| [`dolphin-build/`](dolphin-build) | **Build the emulator** for aarch64: Wayland patches (from ROCKNIX), build script, arm64 CI workflow, GPL source tarball |
 | [`portal/`](portal) | **PC side**: Rt:Stream Portal, wire protocol (`portal/docs/PROTOCOL.md`), packaging for deb / rpm / Arch / AppImage |
 | `Core_History/` | Earlier releases (v11.5.00 "Triptych" and older, the Jacaranda line) |
 | `data/`, `assets/`, `docs/` | Compatibility database, artwork, documentation |
