@@ -42,11 +42,15 @@ local function start_browse()
 end
 
 local function add(system)
-    if S.mode ~= "browse" then return end
+    if S.mode ~= "browse" then return false, "folder browser is not active" end
+    if system ~= "GC" and system ~= "Wii" then return false, "system must be GC or Wii" end
     if Settings.add_rom_path(S.cwd, system) then
         SFX.play("menu_toggleoption")
         Notify.show("success", system .. " folder added — rescan from Settings")
-    else Notify.show("info", "Already in the list") end
+        return true
+    end
+    Notify.show("info", "Already in the list")
+    return false, "folder is already registered"
 end
 
 function S.pad(b)
@@ -78,6 +82,71 @@ local function draw_row(r, x, y, w, h, focused)
         K.pill(tostring(r.system or "GC"):upper(), x + w - 12, y + h / 2, tostring(r.system):lower() == "wii" and K.ACC.wii or K.ACC.gc, true)
     else K.text("body", K.clip("body", r.label, w - 40), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
         K.text("body", "›", x + w - 22, y + h / 2 - 9, K.C.faint) end
+end
+
+-- NEXUS adapters keep folder navigation and ROM-path mutations in this screen.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected() return S.list and S.list:cur() or nil end
+    local specs = {
+        { id = "folders.refresh", title = "Refresh ROM folder view", order = 10,
+          run = function()
+              if S.mode == "browse" then show_dir(S.cwd) else show_set() end
+              return true
+          end },
+        { id = "folders.start_browse", title = "Browse for ROM folder", order = 20,
+          run = function()
+              if S.mode ~= "set" then return false, "folder browser is already active" end
+              start_browse()
+              return true
+          end },
+        { id = "folders.open_selected", title = "Open selected folder", order = 30,
+          run = function()
+              local row = selected()
+              if not row then return false, "no folder entry selected" end
+              if S.mode == "set" and row.add then start_browse(); return true end
+              if S.mode == "browse" and row.dir then show_dir(row.dir); return true end
+              return false, "selected entry cannot be opened"
+          end },
+        { id = "folders.add_selected", title = "Add current folder for a system", order = 40,
+          run = function(system) return add(system) end },
+        { id = "folders.remove_selected", title = "Remove selected ROM folder", order = 50,
+          run = function()
+              if S.mode ~= "set" then return false, "return to the folder list before removing paths" end
+              local row = selected()
+              if not row or not row.idx then return false, "no registered folder selected" end
+              local ok, err = pcall(Settings.remove_rom_path, row.idx)
+              if not ok then return false, tostring(err) end
+              SFX.play("menu_back"); show_set()
+              return true
+          end },
+        { id = "folders.finish", title = "Save folders and rescan library", order = 60,
+          run = function()
+              if S.mode ~= "set" then return false, "finish browsing before leaving" end
+              local ok, result = pcall(Library.scan)
+              if not ok or result == false then return false, tostring(result or "library scan failed") end
+              ui.back()
+              return true
+          end },
+        { id = "folders.state", title = "Get ROM folder state", order = 70,
+          run = function()
+              local row = selected()
+              return { mode = S.mode, cwd = S.cwd,
+                  selected_path = row and (row.path or row.dir),
+                  selected_system = row and row.system,
+                  selected_is_add = row and row.add == true,
+                  registered_count = #(Settings.get("rom_paths") or {}) }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "folders", order = spec.order, screen = "folders",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 function S.draw()
