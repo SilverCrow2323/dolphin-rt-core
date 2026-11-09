@@ -150,6 +150,14 @@ function M.init()
         end
     end
 
+    local mods_screen = Nexus.get_screen("mods")
+    if mods_screen and mods_screen.register_actions then
+        local ok, registered, detail = pcall(mods_screen.register_actions, M)
+        if not ok or registered == false then
+            log("mods NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
     for _, entry in ipairs(Nexus.list_screens()) do
