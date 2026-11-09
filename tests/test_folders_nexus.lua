@@ -46,7 +46,7 @@ end,back=function() backs=backs+1; return true end}
 local ok,err=Screen.register_actions(UI)
 assert(ok,err)
 for _,id in ipairs({"folders.refresh","folders.start_browse","folders.open_selected",
-    "folders.add_selected","folders.remove_selected","folders.finish","folders.state"}) do
+    "folders.add_selected","folders.return_to_list","folders.remove_selected","folders.finish","folders.state"}) do
     assert(actions[id],"missing action: "..id)
 end
 
@@ -70,6 +70,7 @@ assert(actions["folders.add_selected"].run("Wii"))
 assert(#paths==2 and paths[2].system=="Wii")
 local invalid,invalid_err=actions["folders.add_selected"].run("PS2")
 assert(invalid==false and tostring(invalid_err):match("GC or Wii"))
+assert(actions["folders.return_to_list"].run())
 assert(actions["folders.finish"].run())
 assert(scans==1 and backs==1,"finish should rescan then navigate back")
 io.popen=old_popen
