@@ -167,3 +167,20 @@ NEXUS is the toolkit-independent action registry used by the LÖVE frontend. Scr
 - Stream connection state is redacted; the NEXUS state action never returns host/MAC/token values.
 - Failed Stream configuration writes roll back the in-memory setting.
 
+## Diagnostics
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `diagnostics.refresh` | — | Refresh log categories and session tail |
+| `diagnostics.select_category` | 1-based index | Select a log category |
+| `diagnostics.open_selected` | — | Open the latest log in the selected category |
+| `diagnostics.scroll_viewer` | integer delta | Scroll the open log viewer |
+| `diagnostics.close_viewer` | — | Close the log viewer |
+| `diagnostics.request_clear_selected` | — | Request deletion through the existing confirmation modal |
+| `diagnostics.request_clear_all` | — | Request all-log deletion through confirmation |
+| `diagnostics.switch_mode` | `list` or `settings` | Switch diagnostics mode |
+| `diagnostics.select_setting` | 1-based index | Select a log setting |
+| `diagnostics.change_setting` | `-1` or `1` | Change selected log setting |
+| `diagnostics.state` | — | Read viewer, category and setting state |
+
+Log deletion actions only open the existing confirmation flow; they never delete files merely because an action was invoked.
