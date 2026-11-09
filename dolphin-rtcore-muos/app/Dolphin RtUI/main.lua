@@ -158,23 +158,32 @@ end
 
 function love.draw()
   local ww, wh = love.graphics.getDimensions()
-  if ww == KitK.W and wh == KitK.H then draw_all(); return DevShot.after_draw() end
-  if _ui_canvas == nil then
-    local ok, c = pcall(love.graphics.newCanvas, KitK.W, KitK.H)
-    if ok and c then c:setFilter("linear", "linear") end
-    _ui_canvas = ok and c or false
+  if ww == KitK.W and wh == KitK.H then
+    draw_all()
+  else
+    if _ui_canvas == nil then
+      local ok, c = pcall(love.graphics.newCanvas, KitK.W, KitK.H)
+      if ok and c then c:setFilter("linear", "linear") end
+      _ui_canvas = ok and c or false
+    end
+    if not _ui_canvas then
+      draw_all()
+    else
+      love.graphics.push("all")
+      love.graphics.setCanvas(_ui_canvas)
+      love.graphics.clear(0.03, 0.03, 0.05, 1)
+      love.graphics.origin()
+      draw_all()
+      love.graphics.pop()
+      local sc = math.min(ww / KitK.W, wh / KitK.H)
+      love.graphics.setColor(1, 1, 1, 1)
+      love.graphics.draw(_ui_canvas, math.floor((ww - KitK.W * sc) / 2),
+                         math.floor((wh - KitK.H * sc) / 2), 0, sc, sc)
+    end
   end
-  if not _ui_canvas then return draw_all() end
-  love.graphics.push("all")
-  love.graphics.setCanvas(_ui_canvas)
-  love.graphics.clear(0.03, 0.03, 0.05, 1)
-  love.graphics.origin()
-  draw_all()
-  love.graphics.pop()
-  local sc = math.min(ww / KitK.W, wh / KitK.H)
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(_ui_canvas, math.floor((ww - KitK.W * sc) / 2),
-                     math.floor((wh - KitK.H * sc) / 2), 0, sc, sc)
+  -- Screenshot capture must run after every render path, including scaled
+  -- handheld resolutions; otherwise the capture process never terminates.
+  DevShot.after_draw()
 end
 
 -- ── Input debug logger ─────────────────────────────────────
