@@ -121,7 +121,8 @@ local function refresh_nexus_report()
   for _, screen in ipairs(S.nexus_report.screens) do
     S.nexus_lines[#S.nexus_lines + 1] = string.format(
       "SCREEN  %-22s %s", screen.id,
-      screen.has_navigation_action and "ROUTE OK" or "MISSING ROUTE")
+      screen.navigation_action_valid and "ROUTE OK" or
+        (screen.has_navigation_action and "INVALID ROUTE" or "MISSING ROUTE"))
   end
   for _, action in ipairs(S.nexus_report.actions) do
     local target = action.screen and (" -> " .. action.screen) or ""
@@ -372,7 +373,7 @@ local function draw_nexus_report()
     local line = S.nexus_lines[S.nexus_top + i]
     if not line then break end
     local color = K.C.dim
-    if line:match("MISSING") or line:match("unknown_action") or line:match("missing_navigation") or line:match("invalid_navigation") or line:match("invalid_catalog") or line:match("invalid_.*_entries") then
+    if line:match("MISSING") or line:match("INVALID ROUTE") or line:match("unknown_action") or line:match("missing_navigation") or line:match("invalid_navigation") or line:match("invalid_catalog") or line:match("invalid_.*_entries") then
       color = K.C.bad
     elseif line:match("PASS") or line:match("ROUTE OK") then color = K.C.ok end
     K.text("mono", K.clip("mono", line, K.W - m * 2 - 24),
@@ -395,7 +396,7 @@ function S.draw()
     { key = "X", label = S.mode == "nexus" and "Export report" or "Clear" },
     { key = "Y", label = S.mode == "nexus" and " " or "Settings" },
     { key = "L1/R1", label = "NEXUS report" },
-    { key = "START", label = "Clear all" },
+    { key = "START", label = S.mode == "nexus" and " " or "Clear all" },
     { key = "B", label = "Back" },
   })
 end
