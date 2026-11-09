@@ -177,7 +177,7 @@ function S.register_actions(ui)
             id = "library.toggle_selected_favorite", title = "Toggle selected favorite", order = 40,
             run = function()
                 local g = selected()
-                if not g then return false, "no game selected" end
+                if not g or not g.id then return false, "selected game has no valid ID" end
                 toggle_fav(g)
                 return true
             end,
@@ -208,7 +208,7 @@ function S.register_actions(ui)
         local ok, err = ui.register_action(spec.id, spec.run, {
             title = spec.title, group = "library", screen = "library", order = spec.order,
         })
-        if not ok and not (ui.catalog and false) then
+        if not ok then
             -- Duplicate registration is reported by NEXUS; keep initialization
             -- resilient while making the failure visible in the UI log.
             failures[#failures + 1] = spec.id .. ": " .. tostring(err)
