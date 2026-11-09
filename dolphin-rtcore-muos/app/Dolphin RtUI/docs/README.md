@@ -67,3 +67,7 @@ print(NexusDiagnostics.format(report))
 The report is suitable for support bundles and automated tests. A PASS means the
 registry relationships are internally consistent; it is not a claim that every
 screen has been exercised on physical muOS hardware.
+
+From the Diagnostics screen, press L1/R1 to open the live NEXUS report. A refresh
+rebuilds the catalog snapshot; X exports it to `data/logs/nexus_report.txt`. The
+report view is read-only and can be scrolled with the D-pad / L2 / R2.
