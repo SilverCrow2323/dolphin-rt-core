@@ -27,12 +27,17 @@ local function build_all()
     for _, e in ipairs(S.all) do if e.boost then S.boosts = S.boosts + 1 end end
 end
 
-local function rebuild()
+local function rebuild(keep_id)
     local items, f = {}, FILTERS[S.filter]
     for _, e in ipairs(S.all) do
         if f == "ALL" or (f == "BOOST" and e.boost) or (f == "MINE" and e.owned) then items[#items + 1] = e end
     end
     S.list:set(items, false)
+    if keep_id then
+        for i, entry in ipairs(items) do
+            if entry.id == keep_id then S.list.sel = i; S.list:_aim(true); break end
+        end
+    end
 end
 
 function S.enter()
@@ -56,6 +61,65 @@ local function jump(d)
             S.list.sel = j; S.list:_aim(); SFX.play("menu_pagescroll"); return
         end
     end
+end
+
+-- NEXUS adapters reuse the cheat database and local-library ownership index.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected() return S.list and S.list:cur() or nil end
+    local specs = {
+        { id = "cheatdb.refresh", title = "Refresh cheat database", order = 10,
+          run = function()
+              local keep = selected()
+              local keep_id = keep and keep.id
+              local ok, err = pcall(build_all)
+              if not ok then return false, tostring(err) end
+              rebuild(keep_id)
+              return true
+          end },
+        { id = "cheatdb.set_filter", title = "Set cheat database filter", order = 20,
+          run = function(filter_id)
+              local indexes = { all = 1, boost = 2, mine = 3 }
+              if type(filter_id) ~= "string" or not indexes[filter_id] then
+                  return false, "filter must be all, boost or mine"
+              end
+              local keep = selected()
+              S.filter = indexes[filter_id]
+              rebuild(keep and keep.id)
+              SFX.play("menu_pagescroll")
+              return true
+          end },
+        { id = "cheatdb.jump_letter", title = "Jump to next or previous title initial", order = 30,
+          run = function(direction)
+              if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+              if #S.list.items == 0 then return false, "no cheat titles match the current filter" end
+              jump(direction)
+              return true
+          end },
+        { id = "cheatdb.open_selected", title = "Open selected cheat entry", order = 40,
+          run = function()
+              local entry = selected()
+              if not entry then return false, "no cheat entry selected" end
+              return ui.go("cheats", { game_id = entry.id, title = entry.title })
+          end },
+        { id = "cheatdb.state", title = "Get cheat database state", order = 50,
+          run = function()
+              local entry = selected()
+              return { filter = FILTERS[S.filter], selected_id = entry and entry.id,
+                  selected_title = entry and entry.title, selected_owned = entry and entry.owned or false,
+                  selected_boost = entry and entry.boost or false,
+                  result_count = #S.list.items, database_count = #(S.all or {}), boost_count = S.boosts or 0 }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "cheats", order = spec.order, screen = "cheatdb",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 function S.pad(b)
