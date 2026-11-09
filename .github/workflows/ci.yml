@@ -86,7 +86,8 @@ jobs:
 
           folder = Path(sys.argv[1])
           expected_size = tuple(map(int, sys.argv[2].split("x")))
-          for image in sorted(folder.glob("*.png")):
+          images = sorted(folder.glob("*.png"))
+          for image in images:
             with image.open("rb") as stream:
               header = stream.read(24)
             if header[:8] != b"\x89PNG\r\n\x1a\n":
@@ -94,7 +95,7 @@ jobs:
             actual_size = struct.unpack(">II", header[16:24])
             if actual_size != expected_size:
               raise SystemExit(f"{image.name}: {actual_size}, expected {expected_size}")
-          print(f"Verified {actual} PNG dimensions at {sys.argv[2]}.")
+          print(f"Verified {len(images)} PNG dimensions at {sys.argv[2]}.")
           PY
             echo "Captured $actual/$expected screens at $resolution."
           done
