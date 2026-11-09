@@ -124,6 +124,14 @@ function M.init()
         end
     end
 
+    local editor_screen = Nexus.get_screen("rt_editor")
+    if editor_screen and editor_screen.register_actions then
+        local ok, registered, detail = pcall(editor_screen.register_actions, M)
+        if not ok or registered == false then
+            log("editor NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
     for _, entry in ipairs(Nexus.list_screens()) do
