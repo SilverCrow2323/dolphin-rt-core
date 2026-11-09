@@ -56,6 +56,7 @@ local invalid_entries = Diagnostics.inspect({
 })
 eq(invalid_entries.ok, false, "invalid registry entries fail")
 eq(invalid_entries.issues[1].code, "invalid_screen_entries", "invalid screen entries classified")
+eq(invalid_entries.issues[1].message:match(": 3$") ~= nil, true, "empty, malformed, and duplicate IDs are all rejected")
 
 local empty = Diagnostics.inspect({ screens = {}, actions = {} })
 eq(empty.ok, true, "valid empty catalog passes")
