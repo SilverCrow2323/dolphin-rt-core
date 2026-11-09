@@ -110,7 +110,7 @@ local function refresh_nexus_report()
   local catalog = ok and UI and UI.catalog and UI.catalog() or {}
   S.nexus_report = NexusDiagnostics.inspect(catalog)
   S.nexus_lines = {}
-  for line in NexusDiagnostics.format(S.nexus_report):gmatch("[^\\n]+") do
+  for line in NexusDiagnostics.format(S.nexus_report):gmatch("[^\n]+") do
     S.nexus_lines[#S.nexus_lines + 1] = line
   end
   for _, screen in ipairs(S.nexus_report.screens) do
@@ -132,8 +132,8 @@ local function export_nexus_report()
     Notify.show("error", "Cannot write NEXUS report")
     return
   end
-  f:write(NexusDiagnostics.format(S.nexus_report), "\\n\\n")
-  for _, line in ipairs(S.nexus_lines) do f:write(line, "\\n") end
+  f:write(NexusDiagnostics.format(S.nexus_report), "\n\n")
+  for _, line in ipairs(S.nexus_lines) do f:write(line, "\n") end
   f:close()
   Notify.show("success", "NEXUS report saved")
 end
@@ -379,6 +379,7 @@ function S.draw()
   K.bg_workshop(K.t or 0)
   draw_header()
   if S.viewer then draw_viewer()
+  elseif S.mode == "nexus" then draw_nexus_report()
   elseif S.mode == "settings" then draw_settings()
   else
     draw_session_box()
@@ -387,7 +388,8 @@ function S.draw()
   K.footer({
     { key = "A", label = S.mode == "nexus" and "Refresh" or (S.viewer and "Close" or (S.mode == "settings" and "Change" or "Open")) },
     { key = "X", label = S.mode == "nexus" and "Export report" or "Clear" },
-    { key = "Y", label = S.mode == "nexus" and "NEXUS" or "Settings" },\n    { key = "L1/R1", label = "NEXUS report" },
+    { key = "Y", label = S.mode == "nexus" and " " or "Settings" },
+    { key = "L1/R1", label = "NEXUS report" },
     { key = "START", label = "Clear all" },
     { key = "B", label = "Back" },
   })
