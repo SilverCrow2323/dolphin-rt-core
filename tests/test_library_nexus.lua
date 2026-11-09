@@ -6,20 +6,23 @@ local function eq(actual, expected, label)
         tostring(expected) .. ", got " .. tostring(actual))
 end
 
-local Library = { games = {}, scan_calls = 0 }
-function Library.scan_begin() Library.scan_calls = Library.scan_calls + 1 end
+local Library = { games = {}, scan_calls = 0, scan_error = nil }
+function Library.scan_begin()
+    if Library.scan_error then error(Library.scan_error) end
+    Library.scan_calls = Library.scan_calls + 1
+end
 
 local values = { favorites = {} }
 local Settings = {
     get = function(key) return values[key] end,
     set = function(key, value) values[key] = value end,
 }
-local launch_calls = 0
+local launch_calls, launch_result, launch_reason = 0, true, nil
 local Util = {
     is_wii = function(game) return game.system == "WII" end,
     launch = function(game)
         launch_calls = launch_calls + 1
-        return true
+        return launch_result, launch_reason
     end,
 }
 local sfx_calls = 0
@@ -107,6 +110,12 @@ ok, reason = actions["library.rescan"]()
 eq(ok, false, "rescan rejects concurrent scan")
 eq(reason, "scan already in progress", "concurrent scan reason")
 Screen.scanning = false
+Library.scan_error = "synthetic scan failure"
+ok, reason = actions["library.rescan"]()
+eq(ok, false, "rescan reports scan-start failure")
+eq(reason, "synthetic scan failure", "scan failure reason is preserved")
+eq(Screen.scanning, false, "failed scan does not enter scanning state")
+Library.scan_error = nil
 ok = actions["library.rescan"]()
 eq(ok, true, "rescan starts when idle")
 eq(Library.scan_calls, 1, "scan begins exactly once")
@@ -119,9 +128,14 @@ values.favorites = {}
 Screen.enter()
 eq(Screen.list:cur().id, gc.id, "default GC filter selects first game")
 
+launch_result, launch_reason = false, "launch blocked by test"
+ok, reason = actions["library.launch_selected"]()
+eq(ok, false, "launch propagates launcher rejection")
+eq(reason, "launch blocked by test", "launcher rejection reason is preserved")
+launch_result, launch_reason = true, nil
 ok = actions["library.launch_selected"]()
 eq(ok, true, "launch selected game")
-eq(launch_calls, 1, "launch delegate called once")
+eq(launch_calls, 2, "launch delegate called for both attempts")
 
 go_result, go_detail = false, "transition in progress"
 ok, reason = actions["library.open_selected_options"]()
