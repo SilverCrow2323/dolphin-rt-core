@@ -221,3 +221,19 @@ Hotkey profile names are restricted to existing safe directory names. The exit a
 | `cheats.state` | — | Read per-game entry counts, selected entry and sync state |
 
 The screen distinguishes persisted per-game toggle state from applying enabled codes to Dolphin; the two operations remain separate.
+
+## Per-game launch screen
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `game.launch` | — | Launch the active game |
+| `game.select_row` | 1-based index | Select a non-section option |
+| `game.change_selected` | `-1` or `1` | Change a selected choice or toggle |
+| `game.set_choice` | choice key/label, available value | Set a validated launch choice |
+| `game.set_overlay` | overlay ID, boolean | Set FPS/VPS/Speed/OSD overlay |
+| `game.run_selected` | — | Run the selected action through its existing callback |
+| `game.open_editor` | — | Open the selected profile, hotkey, GameSettings or controller editor |
+| `game.request_reset` | — | Request reset through the existing confirmation modal |
+| `game.state` | — | Read game, selected option, launch profile and editor state |
+
+Launch choices are validated against the selected row's actual available values. Reset remains confirmation-gated.
