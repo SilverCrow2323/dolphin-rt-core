@@ -24,6 +24,7 @@ eq(clean.screen_count, 2, "screen count")
 eq(clean.action_count, 3, "action count")
 eq(clean.navigation_count, 2, "navigation count")
 eq(#clean.issues, 0, "no issues")
+eq(clean.screens[1].navigation_action_valid, true, "navigation metadata valid")
 
 local broken = Diagnostics.inspect({
     screens = {
@@ -39,6 +40,20 @@ eq(broken.ok, false, "broken registry fails")
 eq(#broken.issues, 2, "both defects detected")
 eq(broken.issues[1].code, "missing_navigation_action", "missing route classified")
 eq(broken.issues[2].code, "unknown_action_screen", "unknown target classified")
+
+local wrong_route = Diagnostics.inspect({
+    screens = { { id = "library", metadata = {} } },
+    actions = { { id = "navigation.go.library", metadata = { group = "shortcut", screen = "elsewhere" } } },
+})
+eq(wrong_route.ok, false, "misdirected navigation fails")
+eq(wrong_route.issues[1].code, "invalid_navigation_action", "misdirected route classified")
+
+local invalid_entries = Diagnostics.inspect({
+    screens = { false, { id = "library" }, { id = "library" } },
+    actions = {},
+})
+eq(invalid_entries.ok, false, "invalid registry entries fail")
+eq(invalid_entries.issues[1].code, "invalid_screen_entries", "invalid screen entries classified")
 
 local empty = Diagnostics.inspect({ screens = {}, actions = {} })
 eq(empty.ok, true, "valid empty catalog passes")
