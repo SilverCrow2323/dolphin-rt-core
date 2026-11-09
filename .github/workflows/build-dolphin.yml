@@ -17,13 +17,23 @@ concurrency:
 
 jobs:
   build:
-    name: Build ${{ matrix.target }} (native ARM64)
+    name: Build ${{ matrix.target }} / ${{ matrix.frontend }} (native ARM64)
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
-        target: [fbdev, rocknix]
+        include:
+          - target: muos
+            frontend: nogui
+          - target: knulli
+            frontend: nogui
+          - target: rocknix
+            frontend: nogui
+          - target: desktop
+            frontend: nogui
+          - target: desktop
+            frontend: gui
 
     steps:
       - name: Checkout dolphin_bin
@@ -40,7 +50,7 @@ jobs:
           free -h
           df -h
 
-      - name: Install Dolphin build dependencies
+      - name: Install common Dolphin build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
@@ -53,42 +63,56 @@ jobs:
             libxi-dev libwayland-dev wayland-protocols libxkbcommon-dev \
             libdecor-0-dev
 
+      - name: Install Qt GUI dependencies
+        if: matrix.frontend == 'gui'
+        run: |
+          sudo apt-get install -y --no-install-recommends qt6-base-dev libqt6svg6-dev
+
       - name: Verify Wayland patch series
         if: matrix.target == 'rocknix'
         run: bash dolphin-build/verify-patches.sh
 
-      - name: Build Dolphin ${{ matrix.target }}
+      - name: Build Dolphin ${{ matrix.target }} / ${{ matrix.frontend }}
         env:
           TARGET: ${{ matrix.target }}
+          FRONTEND: ${{ matrix.frontend }}
         run: |
-          mkdir -p "$RUNNER_TEMP/dolphin-$TARGET"
+          mkdir -p "$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
           bash dolphin-build/build-dolphin.sh \
             --target "$TARGET" \
-            --out "$RUNNER_TEMP/dolphin-$TARGET" \
+            --frontend "$FRONTEND" \
+            --out "$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND" \
             --jobs "$(nproc)" \
             --no-deps
 
       - name: Verify build outputs
         env:
           TARGET: ${{ matrix.target }}
+          FRONTEND: ${{ matrix.frontend }}
         run: |
-          OUT="$RUNNER_TEMP/dolphin-$TARGET"
-          test -x "$OUT/dolphin"
+          OUT="$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
+          if [ "$FRONTEND" = gui ]; then
+            test -x "$OUT/dolphin-gui"
+            file "$OUT/dolphin-gui"
+            readelf -h "$OUT/dolphin-gui" | grep -E 'Class:|Machine:'
+          else
+            test -x "$OUT/dolphin"
+            file "$OUT/dolphin"
+            readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
+          fi
           test -s "$OUT/BUILDINFO.txt"
           SOURCE_ARCHIVE="$(find "$OUT" -maxdepth 1 -type f -name 'source-*.tar.xz' -print -quit)"
           test -n "$SOURCE_ARCHIVE"
-          file "$OUT/dolphin"
-          sha256sum "$OUT/dolphin" "$OUT/BUILDINFO.txt" "$SOURCE_ARCHIVE"
-          readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
+          sha256sum "$OUT"/dolphin* "$OUT/BUILDINFO.txt" "$SOURCE_ARCHIVE"
 
       - name: Upload binary, build info and GPL corresponding source
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: dolphin-${{ matrix.target }}-aarch64-${{ github.sha }}
+          name: dolphin-${{ matrix.target }}-${{ matrix.frontend }}-aarch64-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/dolphin-${{ matrix.target }}/dolphin
-            ${{ runner.temp }}/dolphin-${{ matrix.target }}/BUILDINFO.txt
-            ${{ runner.temp }}/dolphin-${{ matrix.target }}/source-*.tar.xz
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/dolphin*
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/BUILDINFO.txt
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/source-*.tar.xz
           if-no-files-found: error
           retention-days: 30
