@@ -54,3 +54,7 @@ Locked profiles reject edits and saves at the editor boundary. Actions reuse the
 ## GameSettings NEXUS actions
 
 The GameSettings browser exposes refresh, tab switching, open/expand and state actions. The per-game explorer exposes refresh, open/create, activate/deactivate, confirmation-based deletion requests and a state snapshot. Deletion remains behind the existing confirmation modal; the NEXUS action only requests that confirmation.
+
+## Settings NEXUS actions
+
+The Settings screen exposes stable actions to switch sections (`LIBRARY`, `EDITORS`, `DISPLAY`, `SYSTEM`, `ABOUT`), change the selected choice/toggle, run the selected action row, and retrieve a read-only state snapshot. Actions reuse the screen's existing setters and operation callbacks.

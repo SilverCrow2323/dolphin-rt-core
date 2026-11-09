@@ -220,6 +220,78 @@ local function go_section(i, dir)
     SFX.play("menu_pagescroll")
 end
 
+local cycle
+
+-- NEXUS actions share the same row models and setting setters as the pad UI.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected() return S.list and S.list:cur() or nil end
+    local specs = {
+        { id = "settings.switch_section", title = "Switch settings section", order = 10,
+          run = function(section_id)
+              if type(section_id) ~= "string" then return false, "section ID is required" end
+              for i, category in ipairs(CATS) do
+                  if category.id == section_id then go_section(i, 1); return true end
+              end
+              return false, "unknown settings section: " .. section_id
+          end },
+        { id = "settings.change_selected", title = "Change selected setting", order = 20,
+          run = function(direction)
+              if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+              local row = selected()
+              if not row then return false, "no setting selected" end
+              if row.kind == "choice" then
+                  local ok, err = pcall(cycle, row, direction)
+                  if not ok then return false, tostring(err) end
+                  return true
+              elseif row.kind == "toggle" then
+                  local value = direction > 0
+                  local ok, err = pcall(row.set, value)
+                  if not ok then return false, tostring(err) end
+                  SFX.play("menu_toggleoption")
+                  return true
+              end
+              return false, "selected row is not a changeable setting"
+          end },
+        { id = "settings.run_selected", title = "Run selected settings action", order = 30,
+          run = function()
+              local row = selected()
+              if not row or row.kind ~= "action" or type(row.run) ~= "function" then
+                  return false, "selected row is not an action"
+              end
+              local ok, err = pcall(row.run)
+              if not ok then return false, tostring(err) end
+              return true
+          end },
+        { id = "settings.state", title = "Get settings screen state", order = 40,
+          run = function()
+              local row = selected()
+              local value
+              if row and (row.kind == "choice" or row.kind == "toggle") and type(row.get) == "function" then
+                  local ok, result = pcall(row.get)
+                  if ok then value = result end
+              end
+              return {
+                  section = CATS[S.sec] and CATS[S.sec].id,
+                  selected = row and row.label,
+                  kind = row and row.kind,
+                  value = value,
+                  section_index = S.sec,
+                  selection = S.list and S.list.sel or nil,
+              }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "settings", order = spec.order, screen = "settings",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
+
 function S.enter() S.t = 0; build() end
 
 function S.update(dt)
@@ -232,7 +304,7 @@ function S.update(dt)
 end
 
 -- ── input ──────────────────────────────────────────────────
-local function cycle(row, d)
+cycle = function(row, d)
     local vals = row.values or ((type(row.list) == "function") and row.list() or row.list) or {}
     if #vals == 0 then return end
     local cur, idx = row.get(), 1
