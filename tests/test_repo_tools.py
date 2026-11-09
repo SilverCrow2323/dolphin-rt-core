@@ -12,6 +12,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 INVENTORY = REPO / "tools" / "asset_inventory.py"
+CAPTURE = REPO / "tools" / "capture-ui.sh"
+UI_REGISTRY = REPO / "dolphin-rtcore-muos" / "app" / "Dolphin RtUI" / "ui" / "init.lua"
 
 
 class AssetInventoryTests(unittest.TestCase):
@@ -54,6 +56,23 @@ class AssetInventoryTests(unittest.TestCase):
             self.assertEqual(json.loads((output / "assets.json").read_text()), [])
             with (output / "assets.csv").open(newline="", encoding="utf-8") as stream:
                 self.assertEqual(list(csv.DictReader(stream)), [])
+
+
+class ScreenshotDiscoveryTests(unittest.TestCase):
+    def test_list_matches_registered_screens_without_love_runtime(self):
+        import re
+
+        source = UI_REGISTRY.read_text(encoding="utf-8")
+        expected = re.findall(
+            r'\{\s*"([^"]+)"\s*,\s*"ui\.screens\.[^"]+"\s*\}',
+            source,
+            flags=re.MULTILINE,
+        )
+        result = subprocess.run(
+            ["bash", str(CAPTURE), "--list"], check=True, capture_output=True, text=True,
+        )
+        self.assertEqual(result.stdout.splitlines(), expected)
+        self.assertGreater(len(expected), 0)
 
 
 if __name__ == "__main__":

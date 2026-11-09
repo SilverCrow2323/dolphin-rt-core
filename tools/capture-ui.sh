@@ -4,14 +4,8 @@ set -Eeuo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 APP="$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI"
 LOVE_BIN="${LOVE_BIN:-love}"
-SCREEN="" OUTPUT="" DELAY="1.5" PADS="" SCREENS="" OUT_DIR="" ALL=0
+SCREEN="" OUTPUT="" DELAY="1.5" PADS="" SCREENS="" OUT_DIR="" ALL=0 LIST=0
 
-# Keep this list aligned with the registrations in ui/init.lua.
-KNOWN_SCREENS=(
-  boot library game cheats hotkeys settings rt_editor folders about diagnostics
-  controller_map controller_profiles triage rt_profiles gameset_browser keymap
-  gameset_explorer compat_list cheatdb mods stream_library stream_settings
-)
 
 usage() {
   cat <<'EOF'
@@ -20,9 +14,11 @@ Usage:
   bash tools/capture-ui.sh --screen NAME [--output FILE.png] [--delay SECONDS] [--pads "R1,A"]
   bash tools/capture-ui.sh --screens "boot,library,settings,triage" [--out-dir DIR]
   bash tools/capture-ui.sh --all [--out-dir DIR]
+  bash tools/capture-ui.sh --list
 
 Options:
   --all             Capture every screen registered by the frontend.
+  --list            Print registered screen IDs without launching LÖVE.
   --screens LIST    Capture a comma-separated list of screens.
   --pads SEQUENCE   Inject logical gamepad presses before capture.
   --delay SECONDS   Seconds before capture (default: 1.5).
@@ -37,6 +33,7 @@ while (($#)); do
   case "$1" in
     --help|-h) usage; exit 0 ;;
     --all) ALL=1; shift ;;
+    --list) LIST=1; shift ;;
     --screen) SCREEN="${2:?missing screen name}"; shift 2 ;;
     --output) OUTPUT="${2:?missing output path}"; shift 2 ;;
     --delay) DELAY="${2:?missing delay}"; shift 2 ;;
@@ -54,6 +51,20 @@ while (($#)); do
 done
 
 [[ -d "$APP" ]] || { echo "Frontend directory not found: $APP" >&2; exit 1; }
+
+registered_screens() {
+  local registry="$APP/ui/init.lua"
+  [[ -f "$registry" ]] || { echo "Screen registry not found: $registry" >&2; return 1; }
+  grep -oE '[{][[:space:]]*"[^"]+"[[:space:]]*,[[:space:]]*"ui[.]screens[.][^"]+"[[:space:]]*[}]' "$registry" |
+    sed -E 's/^[{][[:space:]]*"([^"]+)".*$/\1/'
+}
+
+if (( LIST )); then
+  (( ALL == 0 )) && [[ -z "$SCREEN$SCREENS$OUTPUT" ]] || { echo "--list cannot be combined with capture options." >&2; exit 2; }
+  registered_screens
+  exit $?
+fi
+
 command -v "$LOVE_BIN" >/dev/null 2>&1 || {
   echo "LÖVE executable not found: $LOVE_BIN (set LOVE_BIN)" >&2; exit 1;
 }
@@ -69,7 +80,10 @@ if (( ALL )) || [[ -n "$SCREENS" ]]; then
   [[ -z "$SCREEN" && -z "$OUTPUT" ]] || {
     echo "Batch mode cannot be combined with --screen or a positional screen" >&2; exit 2;
   }
-  (( ALL == 0 )) || SCREENS="$(IFS=,; echo "${KNOWN_SCREENS[*]}")"
+  if (( ALL )); then
+    SCREENS="$(registered_screens | paste -sd, -)"
+    [[ -n "$SCREENS" ]] || { echo "No screens found in ui/init.lua" >&2; exit 1; }
+  fi
   OUT_DIR="${OUT_DIR:-$ROOT/artifacts/screenshots}"
   mkdir -p "$OUT_DIR"
   IFS=',' read -r -a names <<< "$SCREENS"
