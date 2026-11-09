@@ -64,13 +64,41 @@ function M.list_screens()
     return out
 end
 
+function M.register_actions(entries)
+    if type(entries) ~= "table" then return false, "action batch must be a table" end
+    local pending, seen = {}, {}
+    for index = 1, #entries do
+        local entry = entries[index]
+        if type(entry) ~= "table" then
+            return false, "action batch entry must be a table"
+        end
+        local id, callback = entry.id, entry.callback
+        if not valid_id(id) then return false, "invalid action id" end
+        if type(callback) ~= "function" then
+            return false, "action callback must be a function"
+        end
+        if actions[id] or seen[id] then
+            return false, "action already registered: " .. id
+        end
+        seen[id] = true
+        pending[#pending + 1] = {
+            id = id, run = callback, metadata = copy_meta(entry.metadata),
+        }
+    end
+
+    -- Validate the complete batch before mutating the registry. A failed
+    -- adapter can never leave a partially registered action set behind.
+    for _, entry in ipairs(pending) do
+        entry.metadata.id = entry.id
+        actions[entry.id] = entry
+    end
+    return true, #pending
+end
+
 function M.register_action(id, callback, metadata)
-    if not valid_id(id) then return false, "invalid action id" end
-    if type(callback) ~= "function" then return false, "action callback must be a function" end
-    if actions[id] then return false, "action already registered: " .. id end
-    actions[id] = { id = id, run = callback, metadata = copy_meta(metadata) }
-    actions[id].metadata.id = id
-    return true
+    return M.register_actions({ {
+        id = id, callback = callback, metadata = metadata,
+    } })
 end
 
 function M.has_action(id)
