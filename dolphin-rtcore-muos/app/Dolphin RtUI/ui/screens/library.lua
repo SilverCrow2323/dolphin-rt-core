@@ -160,7 +160,8 @@ function S.register_actions(ui)
             run = function()
                 local g = selected()
                 if not g then return false, "no game selected" end
-                launch(g)
+                local ok, err = launch(g)
+                if ok == false then return false, err or "launch request was rejected" end
                 return true
             end,
         },
