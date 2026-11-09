@@ -52,7 +52,7 @@ for _,id in ipairs({"cheats.refresh","cheats.switch_tab","cheats.select","cheats
 Screen.enter({game_id="GAME-1",title="Test Game"})
 local state=actions["cheats.state"].run()
 assert(state.game_id=="GAME-1" and state.title=="Test Game" and state.boost_count==1)
-assert(actions["cheats.select"].run(2)==false,"category headers must not be selectable")
+assert(actions["cheats.select"].run(1)==false,"category headers must not be selectable")
 assert(actions["cheats.toggle_selected"].run()==false,"header row must not toggle")
 assert(actions["cheats.switch_tab"].run("fps"))
 assert(actions["cheats.select"].run(1))
