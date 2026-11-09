@@ -101,7 +101,7 @@ function M.format(report)
         lines[#lines + 1] = "[" .. tostring(item.code) .. "] " ..
             tostring(item.subject or "-") .. ": " .. tostring(item.message)
     end
-    return table.concat(lines, "\\n")
+    return table.concat(lines, "\n")
 end
 
 return M
