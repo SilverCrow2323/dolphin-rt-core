@@ -216,6 +216,14 @@ function M.init()
         end
     end
 
+    local keymap_screen = Nexus.get_screen("keymap")
+    if keymap_screen and keymap_screen.register_actions then
+        local ok, registered, detail = pcall(keymap_screen.register_actions, M)
+        if not ok or registered == false then
+            log("keymap NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     local game_screen = Nexus.get_screen("game")
     if game_screen and game_screen.register_actions then
         local ok, registered, detail = pcall(game_screen.register_actions, M)
