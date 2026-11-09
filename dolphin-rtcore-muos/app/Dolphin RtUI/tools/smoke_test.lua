@@ -1,6 +1,13 @@
 -- tools/smoke_test.lua — run with: xvfb-run -a love . --smoke
 -- Exercise every declared screen, including modules that failed to register.
 local failures, passed = 0, 0
+local ui_errors = {}
+local original_print = print
+print = function(...)
+  local first = tostring(select(1, ...))
+  if first:match("^%[rtui%] ") then ui_errors[#ui_errors + 1] = first end
+  original_print(...)
+end
 
 local function run()
   local UI = require("ui")
@@ -25,8 +32,12 @@ local function run()
       end
       if not found then error("screen module failed to register: " .. tostring(entry.module)) end
       if UI.go_instant(name, {}) == false then error("navigation rejected screen: " .. name) end
+      local errors_before = #ui_errors
       UI.update(0.1)
       UI.draw()
+      if #ui_errors > errors_before then
+        error(table.concat(ui_errors, "\\n", errors_before + 1))
+      end
     end)
     if ok then
       passed = passed + 1
