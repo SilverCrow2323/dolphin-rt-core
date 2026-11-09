@@ -235,7 +235,10 @@ function M.go(name, params, opts)
 end
 
 function M.go_instant(name, params)
-    if not Nexus.has_screen(name) then Notify.show("error", "Unknown screen: " .. tostring(name)); return false end
+    if not Nexus.has_screen(name) then
+        Notify.show("error", "Unknown screen: " .. tostring(name))
+        return false, "unknown screen"
+    end
     stack = {}
     fade.phase = "idle"
     enter(name, params)
