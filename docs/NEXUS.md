@@ -9,6 +9,7 @@ NEXUS is the toolkit-independent action registry used by the LÖVE frontend. Scr
 - Return `true` for success. A second return value may carry a result.
 - Return `false, error_message` when an operation is rejected or cannot complete.
 - Navigation actions propagate transition-busy rejections; callers must not treat a rejected Back/Open operation as success.
+- Instant navigation rejects unknown screen IDs with `false, "unknown screen"` and leaves the current history untouched.
 - The registry protects callbacks with `pcall`; exceptions become failed action results.
 - State actions return snapshots. Callers must treat them as read-only.
 - Screen adapters must reuse the screen's existing business logic; do not duplicate persistence or navigation rules in NEXUS.
@@ -20,10 +21,10 @@ The UI initializes feature adapters from the ordered manifest in
 registered adapter IDs; do not maintain a second screen-to-adapter list.
 
 Each adapter receives the existing UI context through
-`screen.register_actions(UI)`. Missing adapters are counted, and an
+`screen.register_actions(UI)`. Missing adapters are counted and logged, and an
 exception or explicit `false` result is reported without preventing later
 adapters or core navigation actions from registering. Bootstrap diagnostics
-summarize registered, missing and failed adapters.
+summarize attempted, registered, missing and failed adapters.
 
 ## Navigation
 
