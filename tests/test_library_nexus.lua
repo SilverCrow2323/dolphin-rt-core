@@ -73,11 +73,9 @@ local UI = {
 local registered, register_error = Screen.register_actions(UI)
 eq(registered, true, "register all library actions")
 eq(register_error, nil, "no registration error")
-eq(#(function()
-    local ids = {}
-    for id in pairs(actions) do ids[#ids + 1] = id end
-    return ids
-end)(), 5, "five library actions registered")
+local action_count = 0
+for _ in pairs(actions) do action_count = action_count + 1 end
+eq(action_count, 5, "five library actions registered")
 
 for _, id in ipairs({
     "library.rescan", "library.launch_selected", "library.open_selected_options",
