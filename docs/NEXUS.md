@@ -237,3 +237,17 @@ The screen distinguishes persisted per-game toggle state from applying enabled c
 | `game.state` | — | Read game, selected option, launch profile and editor state |
 
 Launch choices are validated against the selected row's actual available values. Reset remains confirmation-gated.
+
+## Legacy Keymap screen
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `keymap.switch_system` | — | Switch GameCube/Wii mapping |
+| `keymap.select` | 1-based index | Select a mapping row |
+| `keymap.start_remap` | — | Begin input capture |
+| `keymap.capture_input` | non-negative raw button number | Capture a physical input |
+| `keymap.confirm_remap` | — | Persist the captured mapping |
+| `keymap.cancel_remap` | — | Cancel remapping |
+| `keymap.state` | — | Read system, selected mapping and capture state |
+
+The primary per-profile mapping workflow remains `controller_map`; this adapter keeps the registered legacy screen discoverable and testable. Failed INI writes leave the remap uncommitted.
