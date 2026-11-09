@@ -58,6 +58,18 @@ eq(invalid_entries.ok, false, "invalid registry entries fail")
 eq(invalid_entries.issues[1].code, "invalid_screen_entries", "invalid screen entries classified")
 eq(invalid_entries.issues[1].message:match(": 3$") ~= nil, true, "empty, malformed, and duplicate IDs are all rejected")
 
+local sparse = Diagnostics.inspect({
+    screens = {
+        [1] = { id = "library" },
+        [3] = { id = "orphan" },
+        unexpected = { id = "hidden" },
+    },
+    actions = {},
+})
+eq(sparse.ok, false, "sparse and keyed catalogs fail closed")
+eq(sparse.issues[1].code, "invalid_screen_entries", "sparse screen array classified")
+eq(sparse.issues[1].message:match(": 2$") ~= nil, true, "array hole and non-array key detected")
+
 local empty = Diagnostics.inspect({ screens = {}, actions = {} })
 eq(empty.ok, true, "valid empty catalog passes")
 eq(empty.screen_count, 0, "empty screen count")
