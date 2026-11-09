@@ -7,11 +7,12 @@ This directory builds the upstream Dolphin revision pinned in [`DOLPHIN_REF`](DO
 | Target | Runtime/display path | Frontend | Intended use |
 |---|---|---|---|
 | `muos` | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | muOS Andromeda on H700, launched by Rt:Core / Rt:UI |
+| `muos-qt` | Qt GUI, EGLFS intended; X11/Wayland disabled | Qt GUI | Experimental muOS/H700 Qt frontend; runtime compatibility unverified |
 | `knulli` | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | Knulli H700 |
 | `rocknix` | Wayland + SDL/EGL/GLES | NoGUI | ROCKNIX H700; applies the platform patch series |
 | `desktop` | X11 + Wayland | Qt GUI and/or NoGUI | Generic ARM64 Linux desktop and diagnostics |
 
-The embedded targets intentionally use Dolphin's **NoGUI frontend**. This does not mean games render without graphics; it means Dolphin does not create its own desktop management window. The game is rendered through the selected backend. muOS already provides its own user-facing GUI through the Rt:Core LÖVE application and muOS launcher. A Qt desktop window is not a suitable replacement for that firmware integration.
+The embedded targets intentionally use Dolphin's **NoGUI frontend**. This does not mean games render without graphics; it means Dolphin does not create its own desktop management window. The game is rendered through the selected backend. muOS already provides its own user-facing GUI through the Rt:Core LÖVE application and muOS launcher. A Qt desktop window is not a suitable replacement for that firmware integration. An additional `muos-qt` experiment tests whether Dolphin Qt can run directly through Qt EGLFS without X11/Wayland; it is separate from the recommended NoGUI path and is not considered usable until tested on real muOS hardware.
 
 The desktop target builds upstream's two frontends separately:
 - `dolphin`: NoGUI frontend.
@@ -24,6 +25,9 @@ Run on a native AArch64 Debian/Ubuntu host, or use GitHub Actions:
 ```bash
 # muOS Andromeda / H700
 ./build-dolphin.sh --target muos --frontend nogui --out ./out/muos
+
+# Experimental Qt frontend for muOS (compile test; device/runtime validation required)
+./build-dolphin.sh --target muos-qt --frontend gui --out ./out/muos-qt
 
 # Knulli / H700
 ./build-dolphin.sh --target knulli --frontend nogui --out ./out/knulli
@@ -40,7 +44,7 @@ Options include `--ref SHA`, `--jobs N`, `--no-lto`, `--tune cortex-a53|none`, `
 
 ## CI artifacts
 
-The native ARM64 workflow builds muOS, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
+The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt GUI, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. The `muos-qt` job proves compilation only. Its Qt EGLFS platform plugin, Qt libraries, EGL/GLES driver, input, display sizing, Dolphin rendering and shutdown behavior must all be validated on the actual muOS device. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
 
 ## Release engineering rules
 
