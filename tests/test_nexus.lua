@@ -55,6 +55,31 @@ eq(invalid_action_id, false, "reject invalid action id")
 local invalid_callback = Nexus.register_action("test.invalid_callback", "not a callback", {})
 eq(invalid_callback, false, "reject non-function callback")
 
+local batch_ok, batch_count = Nexus.register_actions({
+    { id = "batch.first", callback = function() return true end,
+      metadata = { group = "batch" } },
+    { id = "batch.second", callback = function() return true end,
+      metadata = { group = "batch" } },
+})
+eq(batch_ok, true, "register valid action batch")
+eq(batch_count, 2, "batch registration count")
+eq(Nexus.has_action("batch.first"), true, "first batch action committed")
+eq(Nexus.has_action("batch.second"), true, "second batch action committed")
+
+local collision_ok = Nexus.register_actions({
+    { id = "batch.third", callback = function() return true end },
+    { id = "library.rescan", callback = function() return true end },
+})
+eq(collision_ok, false, "batch rejects existing registry collision")
+eq(Nexus.has_action("batch.third"), false, "failed batch commits no earlier actions")
+
+local duplicate_batch = Nexus.register_actions({
+    { id = "batch.duplicate", callback = function() return true end },
+    { id = "batch.duplicate", callback = function() return true end },
+})
+eq(duplicate_batch, false, "batch rejects duplicate IDs")
+eq(Nexus.has_action("batch.duplicate"), false, "duplicate batch is atomic")
+
 Nexus.register_action("test.failure", function() error("expected failure") end, {})
 local failed, reason = Nexus.run_action("test.failure")
 eq(failed, false, "catch action error")
@@ -73,7 +98,7 @@ eq(missing, false, "unknown action")
 assert(tostring(missing_reason):match("unknown action"), "unknown action is explained")
 
 local actions = Nexus.list_actions()
-eq(#actions, 3, "action catalog size")
+eq(#actions, 5, "action catalog size")
 eq(actions[1].id, "library.rescan", "action catalog sorted")
 eq(actions[1].metadata.private, nil, "action metadata excludes nested values")
 actions[1].metadata.title = "Tampered action"
