@@ -158,6 +158,14 @@ function M.init()
         end
     end
 
+    local folders_screen = Nexus.get_screen("folders")
+    if folders_screen and folders_screen.register_actions then
+        local ok, registered, detail = pcall(folders_screen.register_actions, M)
+        if not ok or registered == false then
+            log("folders NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
     for _, entry in ipairs(Nexus.list_screens()) do
