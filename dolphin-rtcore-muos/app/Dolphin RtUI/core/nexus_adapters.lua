@@ -52,11 +52,12 @@ function M.register(get_screen, ui, report)
             stats.missing = stats.missing + 1
             if report then pcall(report, screen_id, "adapter unavailable") end
         else
-            local staged, staged_ids = {}, {}
+            local staged, staged_ids, stage_error = {}, {}, nil
             local adapter_ui = setmetatable({
                 register_action = function(id, callback, metadata)
                     if staged_ids[id] then
-                        return false, "action already staged: " .. tostring(id)
+                        stage_error = "action already staged: " .. tostring(id)
+                        return false, stage_error
                     end
                     staged_ids[id] = true
                     staged[#staged + 1] = {
@@ -68,7 +69,7 @@ function M.register(get_screen, ui, report)
 
             local ok, result, detail = pcall(screen.register_actions, adapter_ui)
             local committed, commit_result, commit_detail = false, false, nil
-            if ok and result ~= false then
+            if ok and result ~= false and not stage_error then
                 if type(ui.register_actions) == "function" then
                     committed, commit_result, commit_detail = pcall(ui.register_actions, staged)
                     committed = committed and commit_result ~= false
@@ -77,11 +78,12 @@ function M.register(get_screen, ui, report)
                 end
             end
 
-            if not ok or result == false or not committed then
+            if not ok or result == false or stage_error or not committed then
                 stats.failed = stats.failed + 1
                 if report then
                     local reason
                     if not ok then reason = result
+                    elseif stage_error then reason = stage_error
                     elseif result == false then reason = detail or "adapter rejected registration"
                     else reason = commit_detail or "adapter action batch rejected" end
                     pcall(report, screen_id, reason)
