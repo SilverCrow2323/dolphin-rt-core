@@ -1,0 +1,94 @@
+name: Build Dolphin (aarch64)
+
+on:
+  push:
+    branches: [dolphin_bin]
+    paths:
+      - "dolphin-build/**"
+      - ".github/workflows/build-dolphin.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dolphin-aarch64-build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }} (native ARM64)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [fbdev, rocknix]
+
+    steps:
+      - name: Checkout dolphin_bin
+        uses: actions/checkout@v4
+        with:
+          ref: dolphin_bin
+          fetch-depth: 1
+
+      - name: Show native runner resources
+        run: |
+          uname -a
+          uname -m
+          nproc
+          free -h
+          df -h
+
+      - name: Install Dolphin build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build git patch pkg-config python3 \
+            ca-certificates xz-utils binutils \
+            libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
+            libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
+            liblzma-dev libpng-dev zlib1g-dev libbz2-dev libegl-dev \
+            libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev \
+            libxi-dev libwayland-dev wayland-protocols libxkbcommon-dev \
+            libdecor-0-dev
+
+      - name: Verify Wayland patch series
+        if: matrix.target == 'rocknix'
+        run: bash dolphin-build/verify-patches.sh
+
+      - name: Build Dolphin ${{ matrix.target }}
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/dolphin-$TARGET"
+          bash dolphin-build/build-dolphin.sh \
+            --target "$TARGET" \
+            --out "$RUNNER_TEMP/dolphin-$TARGET" \
+            --jobs "$(nproc)" \
+            --no-deps
+
+      - name: Verify build outputs
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-$TARGET"
+          test -x "$OUT/dolphin"
+          test -s "$OUT/BUILDINFO.txt"
+          SOURCE_ARCHIVE="$(find "$OUT" -maxdepth 1 -type f -name 'source-*.tar.xz' -print -quit)"
+          test -n "$SOURCE_ARCHIVE"
+          file "$OUT/dolphin"
+          sha256sum "$OUT/dolphin" "$OUT/BUILDINFO.txt" "$SOURCE_ARCHIVE"
+          readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
+
+      - name: Upload binary, build info and GPL corresponding source
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-${{ matrix.target }}-aarch64-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}/dolphin
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}/BUILDINFO.txt
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}/source-*.tar.xz
+          if-no-files-found: error
+          retention-days: 30
