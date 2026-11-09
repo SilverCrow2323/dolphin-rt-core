@@ -55,8 +55,8 @@ done
 registered_screens() {
   local registry="$APP/ui/init.lua"
   [[ -f "$registry" ]] || { echo "Screen registry not found: $registry" >&2; return 1; }
-  grep -oE '\\{[[:space:]]*"[^"]+"[[:space:]]*,[[:space:]]*"ui\\.screens\\.[^"]+"[[:space:]]*\\}' "$registry" |
-    sed -E 's/^\\{[[:space:]]*"([^"]+)".*$/\\1/'
+  grep -oE '[{][[:space:]]*"[^"]+"[[:space:]]*,[[:space:]]*"ui[.]screens[.][^"]+"[[:space:]]*[}]' "$registry" |
+    sed -E 's/^[{][[:space:]]*"([^"]+)".*$/\1/'
 }
 
 if (( LIST )); then
