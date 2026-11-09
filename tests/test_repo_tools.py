@@ -91,6 +91,13 @@ class ScreenshotDiscoveryTests(unittest.TestCase):
                 self.assertIn("Unknown screen", result.stderr)
                 self.assertNotIn("LÖVE executable not found", result.stderr)
 
+        valid = subprocess.run(
+            ["bash", str(CAPTURE), "--screen", "library"],
+            capture_output=True, text=True, env=env,
+        )
+        self.assertEqual(valid.returncode, 1)
+        self.assertIn("LÖVE executable not found", valid.stderr)
+        self.assertNotIn("Unknown screen", valid.stderr)
 
 
 if __name__ == "__main__":
