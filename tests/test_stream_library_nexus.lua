@@ -8,6 +8,7 @@ local games={
     {app="Metroid",title="Metroid",kind="gc"},
 }
 local configured=true
+local spawn_result=true
 local settings={stream_view=1}
 love={graphics={},timer={}}
 local old_remove=os.remove
@@ -35,7 +36,7 @@ package.preload["core.stream"] = function()
         stat=function(app) return {fav=favs[app]==true,plays=app=="Zelda" and 4 or 0,last=app=="Zelda" and 10 or 0} end,
         check_health=function() end,poll_health=function() end,last_result=function() return nil end,
         configured=function() return configured end,
-        spawn=function() launches=launches+1; return true end,
+        spawn=function() launches=launches+1; return spawn_result end,
         read=function() return nil end,
         toggle_fav=function(app) favs[app]=not favs[app]; return favs[app] end,
         request_launch=function() return true end,
@@ -78,6 +79,10 @@ assert(actions["stream_library.state"].run().selected_app=="Zelda")
 assert(actions["stream_library.launch_selected"].run())
 assert(launches==1 and actions["stream_library.state"].run().launch_phase=="check")
 assert(actions["stream_library.cancel_launch"].run())
+spawn_result=256
+local spawn_failed,spawn_err=actions["stream_library.launch_selected"].run()
+assert(spawn_failed==false and tostring(spawn_err):match("health preflight"))
+assert(actions["stream_library.state"].run().launch_phase==nil)
 configured=false
 local blocked,blocked_err=actions["stream_library.launch_selected"].run()
 assert(blocked==false and tostring(blocked_err):match("not configured"))
