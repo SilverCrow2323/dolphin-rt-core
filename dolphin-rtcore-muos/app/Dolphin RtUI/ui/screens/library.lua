@@ -133,6 +133,93 @@ local function jump_letter(d)
     end
 end
 
+-- NEXUS action adapters. The UI layer owns navigation; this screen owns
+-- library semantics. Call once after screen registration in ui/init.lua.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function selected()
+        return cur()
+    end
+    local specs = {
+        {
+            id = "library.rescan", title = "Rescan ROM library", order = 10,
+            run = function()
+                if S.scanning then return false, "scan already in progress" end
+                S.need_scan = false
+                local ok, err = pcall(Library.scan_begin)
+                if not ok then return false, tostring(err) end
+                S.scanning, S.scan_t, S.scan_seen = true, 0, 0
+                return true
+            end,
+        },
+        {
+            id = "library.launch_selected", title = "Launch selected game", order = 20,
+            run = function()
+                local g = selected()
+                if not g then return false, "no game selected" end
+                launch(g)
+                return true
+            end,
+        },
+        {
+            id = "library.open_selected_options", title = "Open selected game options", order = 30,
+            run = function()
+                local g = selected()
+                if not g then return false, "no game selected" end
+                S.keep_id = g.id
+                return ui.go("game", { game = g })
+            end,
+        },
+        {
+            id = "library.toggle_selected_favorite", title = "Toggle selected favorite", order = 40,
+            run = function()
+                local g = selected()
+                if not g then return false, "no game selected" end
+                toggle_fav(g)
+                return true
+            end,
+        },
+        {
+            id = "library.set_filter", title = "Set library filter", order = 50,
+            run = function(filter)
+                local index = type(filter) == "number" and filter or nil
+                if not index and type(filter) == "string" then
+                    local wanted = filter:upper()
+                    for i, name in ipairs(FILTERS) do
+                        if name == wanted then index = i; break end
+                    end
+                end
+                if not index or index % 1 ~= 0 or index < 1 or index > #FILTERS then
+                    return false, "filter must be GC, WII, FAV, or index 1-3"
+                end
+                local g = selected()
+                S.filter = index
+                rebuild(g and g.id or nil)
+                return true
+            end,
+        },
+    }
+
+    local failures = {}
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "library", screen = "library", order = spec.order,
+        })
+        if not ok and not (ui.catalog and false) then
+            -- Duplicate registration is reported by NEXUS; keep initialization
+            -- resilient while making the failure visible in the UI log.
+            failures[#failures + 1] = spec.id .. ": " .. tostring(err)
+        end
+    end
+    if #failures > 0 then
+        return false, table.concat(failures, "; ")
+    end
+    return true
+end
+
 function S.leave() Mascot.release() end
 
 function S.pad(b)
