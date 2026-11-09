@@ -52,11 +52,38 @@ function M.register(get_screen, ui, report)
             stats.missing = stats.missing + 1
             if report then pcall(report, screen_id, "adapter unavailable") end
         else
-            local ok, result, detail = pcall(screen.register_actions, ui)
-            if not ok or result == false then
+            local staged, staged_ids = {}, {}
+            local adapter_ui = setmetatable({
+                register_action = function(id, callback, metadata)
+                    if staged_ids[id] then
+                        return false, "action already staged: " .. tostring(id)
+                    end
+                    staged_ids[id] = true
+                    staged[#staged + 1] = {
+                        id = id, callback = callback, metadata = metadata,
+                    }
+                    return true
+                end,
+            }, { __index = ui })
+
+            local ok, result, detail = pcall(screen.register_actions, adapter_ui)
+            local committed, commit_result, commit_detail = false, false, nil
+            if ok and result ~= false then
+                if type(ui.register_actions) == "function" then
+                    committed, commit_result, commit_detail = pcall(ui.register_actions, staged)
+                    committed = committed and commit_result ~= false
+                else
+                    commit_detail = "atomic action batch registrar unavailable"
+                end
+            end
+
+            if not ok or result == false or not committed then
                 stats.failed = stats.failed + 1
                 if report then
-                    local reason = ok and (detail or "adapter rejected registration") or result
+                    local reason
+                    if not ok then reason = result
+                    elseif result == false then reason = detail or "adapter rejected registration"
+                    else reason = commit_detail or "adapter action batch rejected" end
                     pcall(report, screen_id, reason)
                 end
             else
