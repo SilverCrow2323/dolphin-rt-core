@@ -14,6 +14,19 @@ NEXUS is the toolkit-independent action registry used by the LÖVE frontend. Scr
 - State actions return snapshots. Callers must treat them as read-only.
 - Screen adapters must reuse the screen's existing business logic; do not duplicate persistence or navigation rules in NEXUS.
 
+## Adapter bootstrap
+
+The UI initializes feature adapters from the ordered manifest in
+`core/nexus_adapters.lua`. Use `list()` for a defensive copy of the
+registered adapter IDs; do not maintain a second screen-to-adapter list.
+
+Each adapter receives a UI-compatible staging proxy through
+`screen.register_actions(UI)`. Actions are committed as one validated batch
+only after the adapter succeeds. Missing adapters are counted and logged, and an
+exception or explicit `false` result is reported without preventing later
+adapters or core navigation actions from registering. Bootstrap diagnostics
+summarize attempted, registered, missing and failed adapters.
+
 ## Navigation
 
 | Action | Arguments | Purpose |
@@ -253,3 +266,13 @@ Launch choices are validated against the selected row's actual available values.
 | `keymap.state` | — | Read system, selected mapping and capture state |
 
 The primary per-profile mapping workflow remains `controller_map`; this adapter keeps the registered legacy screen discoverable and testable. Failed INI writes leave the remap uncommitted.
+
+
+## Atomic adapter action registration
+
+Screen adapters register through a staging UI proxy during bootstrap. Their
+actions are committed as one batch only after the adapter completes
+successfully. Duplicate IDs, invalid callbacks, explicit adapter rejection or
+an exception leave the global registry unchanged for that adapter; later
+adapters still run. Direct callers can use `Nexus.register_actions(entries)`
+for the same all-or-nothing validation.
