@@ -74,3 +74,7 @@ The Compatibility browser exposes database refresh, stable filter IDs (`all`, `p
 ## Rt:Core Env Triage NEXUS actions
 
 The triage screen exposes rescan, flavour selection, checklist inspection, check selection, report saving and a state snapshot. Report saving is only allowed after the incremental scan completes; scan progress and verdict remain owned by the triage engine.
+
+## Controller profiles and mapping NEXUS actions
+
+The controller profile browser exposes refresh, GameCube/Wii selection, open-selected and state actions. The mapping editor exposes selection, raw-input capture, explicit confirmation/cancellation and a state snapshot. Mapping writes are checked; a failed INI write restores the in-memory value and keeps the capture available for retry.
