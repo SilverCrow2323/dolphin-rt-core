@@ -69,7 +69,8 @@ Screen.list.sel=2
 assert(actions["settings.run_selected"].run())
 assert(scans==1 and card_resets==1,"selected library action should run once")
 
-Screen.list.sel=1
+assert(actions["settings.switch_section"].run("DISPLAY"))
+Screen.list.sel=3
 local not_action,not_action_err=actions["settings.run_selected"].run()
 assert(not_action==false and tostring(not_action_err):match("not an action"))
 print("Settings NEXUS actions: all tests passed")
