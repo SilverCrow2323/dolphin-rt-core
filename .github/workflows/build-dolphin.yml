@@ -70,9 +70,9 @@ jobs:
             libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev
 
       - name: Install Qt GUI dependencies
-        if: matrix.frontend == 'gui'
+        if: matrix.target == 'desktop' || matrix.target == 'muos-qt'
         run: |
-          sudo apt-get install -y --no-install-recommends qt6-base-dev libqt6svg6-dev qt6-qpa-plugins
+          sudo apt-get install -y --no-install-recommends qt6-base-dev qt6-base-private-dev libqt6svg6-dev qt6-qpa-plugins
 
       - name: Verify Wayland patch series
         if: matrix.target == 'rocknix'
