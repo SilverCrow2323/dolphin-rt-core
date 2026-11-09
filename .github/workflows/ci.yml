@@ -40,6 +40,7 @@ jobs:
           luajit tests/test_stream_lib.lua 2>/dev/null || (cd "dolphin-rtcore-muos/app/Dolphin RtUI" && luajit ../../../tests/test_stream_lib.lua)
           luajit tests/test_nexus.lua
           luajit tests/test_nexus_diagnostics.lua
+          luajit tests/test_profile_nexus.lua
       - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
         run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd

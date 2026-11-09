@@ -194,6 +194,98 @@ local function create_new()
     end
 end
 
+-- NEXUS action adapters. Profile selection and creation stay owned by
+-- this screen; navigation remains delegated to ui/init.lua.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function selected_profile()
+        local row = S.rows and S.rows[S.sel]
+        return row and row.profile or nil
+    end
+
+    local specs = {
+        {
+            id = "profiles.refresh", title = "Refresh profile list", order = 10,
+            run = function()
+                if S.phase ~= "browse" then return false, "profile picker is not ready" end
+                local current = S.rows and S.rows[S.sel]
+                local keep_name = current and current.profile and current.profile.name
+                local _, groups = scan()
+                S.groups = groups
+                build_rows()
+                local restored = false
+                if keep_name then
+                    for i, row in ipairs(S.rows) do
+                        if row.profile and row.profile.name == keep_name then
+                            S.sel, restored = i, true
+                            break
+                        end
+                    end
+                end
+                if not restored then
+                    S.sel = 1
+                    for i, row in ipairs(S.rows) do
+                        if not row.head then S.sel = i; break end
+                    end
+                end
+                return true
+            end,
+        },
+        {
+            id = "profiles.create", title = "Create custom profile", order = 20,
+            run = function()
+                if S.phase ~= "browse" then return false, "profile picker is not ready" end
+                create_new()
+                return true
+            end,
+        },
+        {
+            id = "profiles.open_selected", title = "Open selected profile", order = 30,
+            run = function()
+                if S.phase ~= "browse" then return false, "profile picker is not ready" end
+                local p = selected_profile()
+                if not p then return false, "no profile selected" end
+                S.picked = p
+                S.phase = "pick"
+                SFX.play("menu_select")
+                return true
+            end,
+        },
+        {
+            id = "profiles.open", title = "Open profile by ID", order = 40,
+            run = function(name)
+                if S.phase ~= "browse" then return false, "profile picker is not ready" end
+                if type(name) ~= "string" or name == "" then
+                    return false, "profile name is required"
+                end
+                for i, row in ipairs(S.rows or {}) do
+                    if row.profile and row.profile.name == name then
+                        S.sel = i
+                        S.picked = row.profile
+                        S.phase = "pick"
+                        SFX.play("menu_select")
+                        return true
+                    end
+                end
+                return false, "profile not found: " .. name
+            end,
+        },
+    }
+
+    local failures = {}
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "profiles", screen = "rt_profiles", order = spec.order,
+        })
+        if not ok then failures[#failures + 1] = spec.id .. ": " .. tostring(err) end
+    end
+    if #failures > 0 then return false, table.concat(failures, "; ") end
+    return true
+end
+
 function S.pad(b)
     if S.phase ~= "browse" then return end
     local row = S.rows[S.sel]
