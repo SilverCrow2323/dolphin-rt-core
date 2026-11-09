@@ -17,7 +17,9 @@ local function index_by_id(entries)
 end
 
 function M.inspect(catalog)
-    catalog = type(catalog) == "table" and catalog or {}
+    local catalog_valid = type(catalog) == "table" and
+        type(catalog.screens) == "table" and type(catalog.actions) == "table"
+    if not catalog_valid then catalog = {} end
     local screens = index_by_id(catalog.screens)
     local actions = index_by_id(catalog.actions)
     local report = {
@@ -37,6 +39,11 @@ function M.inspect(catalog)
             message = message,
             subject = subject,
         }
+    end
+
+    if not catalog_valid then
+        issue("invalid_catalog",
+            "NEXUS catalog must provide screens and actions tables", "catalog")
     end
 
     for id, entry in pairs(screens) do
