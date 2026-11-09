@@ -82,3 +82,7 @@ The controller profile browser exposes refresh, GameCube/Wii selection, open-sel
 ## Cheat Database NEXUS actions
 
 The Cheat Database exposes refresh, stable filters (`all`, `boost`, `mine`), initial-letter navigation, open-selected and a state snapshot. Refresh preserves the selected cheat title when it remains in the active filter.
+
+## Rt:Stream Library NEXUS actions
+
+The Stream browser exposes refresh, stable tab/view/system-filter/sort selection, indexed selection, favourite toggling, launch preflight, cancellation and a state snapshot. Launch actions use the same host-configuration and pre-flight checks as the pad UI; they do not bypass the health check.
