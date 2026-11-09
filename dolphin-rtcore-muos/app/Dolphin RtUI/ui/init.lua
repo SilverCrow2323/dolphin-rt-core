@@ -73,6 +73,9 @@ end
 function M.register_action(id, callback, metadata)
     return Nexus.register_action(id, callback, metadata)
 end
+function M.register_actions(entries)
+    return Nexus.register_actions(entries)
+end
 function M.run_action(id, ...)
     local ok, result, detail = Nexus.run_action(id, ...)
     if not ok then
