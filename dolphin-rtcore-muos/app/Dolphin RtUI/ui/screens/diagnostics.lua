@@ -5,6 +5,7 @@ local Notify   = require("ui.notify")
 local Modal    = require("ui.modal")
 local Settings = require("core.settings")
 local sh       = require("core.sh")
+local NexusDiagnostics = require("core.nexus_diagnostics")
 
 local S = {}
 S.mode = "list"
@@ -12,6 +13,9 @@ S.list = K.List(K.MARGIN, 180, K.W - K.MARGIN * 2 - 14, K.BOT - 180, 46)
 S.settings_list = K.List(K.MARGIN, 110, K.W - K.MARGIN * 2 - 14, K.BOT - 110, 46)
 S.session_lines = {}
 S.viewer = nil
+S.nexus_report = nil
+S.nexus_lines = {}
+S.nexus_top = 0
 
 local CATS = {
   { id = "ui",      label = "UI Log",      icon = "list",    color = K.ACC.gc,    pattern = "data/logs/ui.log*" },
@@ -101,9 +105,43 @@ local function build_settings()
   S.settings_list.sel = 1
 end
 
+local function refresh_nexus_report()
+  local ok, UI = pcall(require, "ui")
+  local catalog = ok and UI and UI.catalog and UI.catalog() or {}
+  S.nexus_report = NexusDiagnostics.inspect(catalog)
+  S.nexus_lines = {}
+  for line in NexusDiagnostics.format(S.nexus_report):gmatch("[^\\n]+") do
+    S.nexus_lines[#S.nexus_lines + 1] = line
+  end
+  for _, screen in ipairs(S.nexus_report.screens) do
+    S.nexus_lines[#S.nexus_lines + 1] = string.format(
+      "SCREEN  %-22s %s", screen.id,
+      screen.has_navigation_action and "ROUTE OK" or "MISSING ROUTE")
+  end
+  for _, action in ipairs(S.nexus_report.actions) do
+    local target = action.screen and (" -> " .. action.screen) or ""
+    S.nexus_lines[#S.nexus_lines + 1] = "ACTION  " .. action.id .. target
+  end
+  S.nexus_top = 0
+end
+
+local function export_nexus_report()
+  if not S.nexus_report then refresh_nexus_report() end
+  local f = io.open("data/logs/nexus_report.txt", "w")
+  if not f then
+    Notify.show("error", "Cannot write NEXUS report")
+    return
+  end
+  f:write(NexusDiagnostics.format(S.nexus_report), "\\n\\n")
+  for _, line in ipairs(S.nexus_lines) do f:write(line, "\\n") end
+  f:close()
+  Notify.show("success", "NEXUS report saved")
+end
+
 function S.enter(params)
   S.mode = "list"
   S.viewer = nil
+  S.nexus_report = nil
   auto_clear()
   build_list()
   build_settings()
@@ -142,6 +180,18 @@ local function step_choice(row, d)
 end
 
 function S.pad(b)
+  if S.mode == "nexus" then
+    local max_top = math.max(0, #S.nexus_lines - 22)
+    if b == "UP" then S.nexus_top = math.max(0, S.nexus_top - 1)
+    elseif b == "DOWN" then S.nexus_top = math.min(max_top, S.nexus_top + 1)
+    elseif b == "L2" or b == "LEFT" then S.nexus_top = math.max(0, S.nexus_top - 12)
+    elseif b == "R2" or b == "RIGHT" then S.nexus_top = math.min(max_top, S.nexus_top + 12)
+    elseif b == "A" then refresh_nexus_report(); Notify.show("success", "NEXUS check refreshed")
+    elseif b == "X" then export_nexus_report()
+    elseif b == "B" or b == "L1" or b == "R1" then S.mode = "list"; SFX.play("menu_back") end
+    return
+  end
+
   -- viewer
   if S.viewer then
     local v = S.viewer
@@ -299,6 +349,32 @@ local function draw_viewer()
   end
 end
 
+local function draw_nexus_report()
+  local m = K.MARGIN
+  local report = S.nexus_report or {}
+  local status = report.ok and "REGISTRY HEALTHY" or "ISSUES DETECTED"
+  local status_color = report.ok and K.C.ok or K.C.bad
+  K.text("h", "NEXUS Registry", m, 82, K.C.text)
+  K.text("small", status, m, 108, status_color)
+  K.text("small", string.format("%d screens  ·  %d actions  ·  %d issues",
+    report.screen_count or 0, report.action_count or 0, #(report.issues or {})),
+    m + 170, 108, K.C.faint)
+  local y, h = 134, K.BOT - 146
+  K.panel(m, y, K.W - m * 2, h, { cut = 6 })
+  local line_h = 13
+  local visible = math.floor((h - 18) / line_h)
+  for i = 1, visible do
+    local line = S.nexus_lines[S.nexus_top + i]
+    if not line then break end
+    local color = K.C.dim
+    if line:match("MISSING") or line:match("unknown_action") or line:match("missing_navigation") then
+      color = K.C.bad
+    elseif line:match("PASS") or line:match("ROUTE OK") then color = K.C.ok end
+    K.text("mono", K.clip("mono", line, K.W - m * 2 - 24),
+      m + 12, y + 9 + (i - 1) * line_h, color, 0.9)
+  end
+end
+
 function S.draw()
   K.bg_workshop(K.t or 0)
   draw_header()
@@ -309,9 +385,9 @@ function S.draw()
     S.list:draw(draw_cat_row)
   end
   K.footer({
-    { key = "A", label = S.viewer and "Close" or (S.mode == "settings" and "Change" or "Open") },
-    { key = "X", label = "Clear" },
-    { key = "Y", label = "Settings" },
+    { key = "A", label = S.mode == "nexus" and "Refresh" or (S.viewer and "Close" or (S.mode == "settings" and "Change" or "Open")) },
+    { key = "X", label = S.mode == "nexus" and "Export report" or "Clear" },
+    { key = "Y", label = S.mode == "nexus" and "NEXUS" or "Settings" },\n    { key = "L1/R1", label = "NEXUS report" },
     { key = "START", label = "Clear all" },
     { key = "B", label = "Back" },
   })
