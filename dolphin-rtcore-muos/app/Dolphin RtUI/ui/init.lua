@@ -85,26 +85,36 @@ function M.catalog()
     return { screens = Nexus.list_screens(), actions = Nexus.list_actions() }
 end
 
+local SCREEN_MODULES = {
+    { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
+    { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
+    { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
+    { "hotkeys", "ui.screens.hotkeys" }, { "settings", "ui.screens.settings" },
+    { "rt_editor", "ui.screens.rt_editor" },
+    { "folders", "ui.screens.folders" }, { "about", "ui.screens.about" },
+    { "diagnostics", "ui.screens.diagnostics" },
+    { "controller_map", "ui.screens.controller_map" },
+    { "controller_profiles", "ui.screens.controller_profiles" },
+    { "triage", "ui.screens.triage" },
+    { "rt_profiles", "ui.screens.rt_profiles" },
+    { "gameset_browser", "ui.screens.gameset_browser" },
+    { "keymap", "ui.screens.keymap" },
+    { "gameset_explorer", "ui.screens.gameset_explorer" },
+    { "compat_list", "ui.screens.compat_list" },
+    { "stream_library", "ui.screens.stream_library" },
+    { "stream_settings", "ui.screens.stream_settings" },
+}
+
+function M.screen_manifest()
+    local out = {}
+    for i, entry in ipairs(SCREEN_MODULES) do
+        out[i] = { id = entry[1], module = entry[2] }
+    end
+    return out
+end
+
 function M.init()
-    for _, s in ipairs({
-        { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
-        { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
-        { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
-        { "hotkeys", "ui.screens.hotkeys" }, { "settings", "ui.screens.settings" },
-        { "rt_editor", "ui.screens.rt_editor" },
-        { "folders", "ui.screens.folders" }, { "about", "ui.screens.about" },
-        { "diagnostics", "ui.screens.diagnostics" },
-        { "controller_map", "ui.screens.controller_map" },
-        { "controller_profiles", "ui.screens.controller_profiles" },
-        { "triage", "ui.screens.triage" },
-        { "rt_profiles", "ui.screens.rt_profiles" },
-        { "gameset_browser", "ui.screens.gameset_browser" },
-        { "keymap", "ui.screens.keymap" },
-        { "gameset_explorer", "ui.screens.gameset_explorer" },
-        { "compat_list", "ui.screens.compat_list" },
-        { "stream_library", "ui.screens.stream_library" },
-        { "stream_settings", "ui.screens.stream_settings" },
-    }) do M.register(s[1], s[2]) end
+    for _, s in ipairs(SCREEN_MODULES) do M.register(s[1], s[2]) end
 
     -- Let feature screens publish stable NEXUS actions after all screens
     -- exist, while keeping navigation ownership in this module.
@@ -132,8 +142,12 @@ function M.init()
     -- Stable built-in action IDs are the first consumers of NEXUS. Keep the
     -- callbacks here so navigation remains the single owner of transitions.
     if not Nexus.has_action("navigation.back") then
-        M.register_action("navigation.back", function() M.back(); return true end,
-            { title = "Back", group = "navigation", order = 10 })
+        M.register_action("navigation.back", function()
+            local ok, reason = M.back()
+            -- A busy transition is a harmless no-op for action callers.
+            if not ok and reason == "transition in progress" then return true end
+            return ok, reason
+        end, { title = "Back", group = "navigation", order = 10 })
     end
     if not Nexus.has_action("navigation.open_library") then
         M.register_action("navigation.open_library", function()
@@ -244,11 +258,13 @@ function M.is_root()
 end
 
 function M.back()
+    -- Do not consume history while another transition owns the navigation state.
+    if fade.phase ~= "idle" then return false, "transition in progress" end
     local prev = table.remove(stack)
-    if fade.phase ~= "idle" then return end
     fade.phase, fade.t, fade.dir = "out", 0, -1
     fade.target = prev and { name = prev.name, params = prev.params, state = prev.state }
                        or { name = "library" }
+    return true
 end
 function M.current() return current_name end
 
