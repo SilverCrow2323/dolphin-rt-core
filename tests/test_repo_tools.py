@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -73,6 +74,30 @@ class ScreenshotDiscoveryTests(unittest.TestCase):
         )
         self.assertEqual(result.stdout.splitlines(), expected)
         self.assertGreater(len(expected), 0)
+
+    def test_capture_rejects_unknown_screens_before_launching_love(self):
+        env = os.environ.copy()
+        env["LOVE_BIN"] = "love-binary-that-does-not-exist"
+        for args in (
+            ["--screen", "not-a-real-screen"],
+            ["--screens", "library,not-a-real-screen"],
+        ):
+            with self.subTest(args=args):
+                result = subprocess.run(
+                    ["bash", str(CAPTURE), *args],
+                    capture_output=True, text=True, env=env,
+                )
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("Unknown screen", result.stderr)
+                self.assertNotIn("LÖVE executable not found", result.stderr)
+
+        valid = subprocess.run(
+            ["bash", str(CAPTURE), "--screen", "library"],
+            capture_output=True, text=True, env=env,
+        )
+        self.assertEqual(valid.returncode, 1)
+        self.assertIn("LÖVE executable not found", valid.stderr)
+        self.assertNotIn("Unknown screen", valid.stderr)
 
 
 if __name__ == "__main__":

@@ -65,6 +65,30 @@ if (( LIST )); then
   exit $?
 fi
 
+is_registered_screen() {
+  registered_screens | grep -Fx -- "$1" >/dev/null
+}
+
+# Reject unknown IDs before starting LÖVE. Otherwise a typo can produce a
+# perfectly valid PNG of an empty/error screen and look like a successful run.
+if [[ -n "$SCREEN" ]] && ! is_registered_screen "$SCREEN"; then
+  echo "Unknown screen: $SCREEN" >&2
+  echo "Registered screens:" >&2
+  registered_screens >&2
+  exit 2
+fi
+if [[ -n "$SCREENS" ]]; then
+  IFS=',' read -r -a requested <<< "$SCREENS"
+  for name in "${requested[@]}"; do
+    name="$(printf '%s' "$name" | xargs)"
+    [[ -n "$name" ]] || continue
+    if ! is_registered_screen "$name"; then
+      echo "Unknown screen in batch: $name" >&2
+      exit 2
+    fi
+  done
+fi
+
 command -v "$LOVE_BIN" >/dev/null 2>&1 || {
   echo "LÖVE executable not found: $LOVE_BIN (set LOVE_BIN)" >&2; exit 1;
 }
@@ -78,34 +102,65 @@ if (( ALL )) && [[ -n "$SCREENS" ]]; then
 fi
 if (( ALL )) || [[ -n "$SCREENS" ]]; then
   [[ -z "$SCREEN" && -z "$OUTPUT" ]] || {
-    echo "Batch mode cannot be combined with --screen or a positional screen" >&2; exit 2;
+    echo "Batch mode cannot be combined with --screen or a positional screen" >&2
+    exit 2
   }
   if (( ALL )); then
     SCREENS="$(registered_screens | paste -sd, -)"
     [[ -n "$SCREENS" ]] || { echo "No screens found in ui/init.lua" >&2; exit 1; }
   fi
+
   OUT_DIR="${OUT_DIR:-$ROOT/artifacts/screenshots}"
   mkdir -p "$OUT_DIR"
+  OUT_DIR="$(cd "$OUT_DIR" && pwd)"
+
+  # One LÖVE process cycles through the requested screens and writes one PNG
+  # per screen. This avoids restarting the emulator UI 22 times per resolution.
   IFS=',' read -r -a names <<< "$SCREENS"
+  for name in "${names[@]}"; do
+    name="$(printf '%s' "$name" | xargs)"
+    [[ -n "$name" ]] || continue
+    safe="${name//[^a-zA-Z0-9_-]/_}"
+    rm -f -- "$OUT_DIR/$safe.png"
+  done
+
+  export DOLPHINUI_SHOT_BATCH="$SCREENS"
+  export DOLPHINUI_SHOT_DIR="$OUT_DIR"
+  export DOLPHINUI_SHOT_DELAY="$DELAY"
+  export DOLPHINUI_SHOT_PADS="$PADS"
+  export SDL_AUDIODRIVER="${SDL_AUDIODRIVER:-dummy}"
+  export LIBGL_ALWAYS_SOFTWARE="${LIBGL_ALWAYS_SOFTWARE:-1}"
+
+  runner=("$LOVE_BIN" .)
+  if [[ -z "${DISPLAY:-}" ]] && command -v xvfb-run >/dev/null 2>&1; then
+    runner=(xvfb-run -a "${runner[@]}")
+  elif [[ -z "${DISPLAY:-}" ]]; then
+    echo "No DISPLAY and xvfb-run is unavailable. Install Xvfb or set DISPLAY." >&2
+    exit 1
+  fi
+
+  (
+    cd "$APP"
+    "${runner[@]}"
+  )
+
   completed=0
   failed=0
   for name in "${names[@]}"; do
     name="$(printf '%s' "$name" | xargs)"
     [[ -n "$name" ]] || continue
     safe="${name//[^a-zA-Z0-9_-]/_}"
-    if bash "$ROOT/tools/capture-ui.sh" --screen "$name" \
-        --output "$OUT_DIR/$safe.png" --delay "$DELAY" --pads "$PADS"; then
+    if [[ -s "$OUT_DIR/$safe.png" ]]; then
       completed=$((completed + 1))
     else
-      echo "FAILED: $name" >&2
+      echo "FAILED: $name (PNG missing or empty)" >&2
       failed=$((failed + 1))
     fi
   done
   echo "Batch capture: $completed succeeded, $failed failed."
-  (( failed == 0 ))
+  (( failed == 0 && completed > 0 ))
   exit $?
 fi
-
 [[ -n "$SCREEN" ]] || { usage >&2; exit 2; }
 OUTPUT="${OUTPUT:-$ROOT/artifacts/screenshots/$SCREEN.png}"
 mkdir -p "$(dirname -- "$OUTPUT")"
