@@ -9,14 +9,25 @@ end
 
 local function index_by_id(entries)
     local out, invalid = {}, 0
-    for _, entry in ipairs(entries) do
-        if type(entry) ~= "table" or not valid_id(entry.id) then
-            invalid = invalid + 1
-        elseif out[entry.id] then
+    local numeric_count, max_index = 0, 0
+    for key, entry in pairs(entries) do
+        if type(key) ~= "number" or key < 1 or key % 1 ~= 0 then
             invalid = invalid + 1
         else
-            out[entry.id] = entry
+            numeric_count = numeric_count + 1
+            if key > max_index then max_index = key end
+            if type(entry) ~= "table" or not valid_id(entry.id) then
+                invalid = invalid + 1
+            elseif out[entry.id] then
+                invalid = invalid + 1
+            else
+                out[entry.id] = entry
+            end
         end
+    end
+    -- A sparse array can make ipairs stop early and hide later entries.
+    if max_index > numeric_count then
+        invalid = invalid + (max_index - numeric_count)
     end
     return out, invalid
 end
