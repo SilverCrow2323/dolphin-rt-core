@@ -93,6 +93,46 @@ local function draw_row(row, x, y, w, h, focused)
     end
 end
 
+-- NEXUS adapters expose profile browsing and system selection.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local specs = {
+        { id = "controller_profiles.refresh", title = "Refresh controller profiles", order = 10,
+          run = function() scan(); return true end },
+        { id = "controller_profiles.switch_system", title = "Switch controller system", order = 20,
+          run = function(system)
+              if system ~= "GameCube" and system ~= "Wii" then return false, "system must be GameCube or Wii" end
+              if S.system ~= system then
+                  S.system = system; scan()
+                  K.set_accent(system == "Wii" and "wii" or "gc")
+                  SFX.play("menu_pagescroll")
+              end
+              return true
+          end },
+        { id = "controller_profiles.open_selected", title = "Open selected controller profile", order = 30,
+          run = function()
+              local row = S.list and S.list:cur()
+              if not row then return false, "no controller profile selected" end
+              return ui.go("controller_map", { dir = row.dir, name = row.name, system = S.system })
+          end },
+        { id = "controller_profiles.state", title = "Get controller profile browser state", order = 40,
+          run = function()
+              local row = S.list and S.list:cur()
+              return { system = S.system, selected_profile = row and row.name,
+                  selected_directory = row and row.dir, profile_count = #(S.list and S.list.items or {}) }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "controller", order = spec.order, screen = "controller_profiles",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
+
 function S.draw()
     K.bg()
     K.header("Controller Key Map", S.system .. " profiles", nil, { icon = "gamepad" })
