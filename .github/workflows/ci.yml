@@ -51,6 +51,62 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash tests/test_ports_dryrun.sh
 
+  love-ui-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: dolphin-rtcore-muos/app/Dolphin RtUI
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install LÖVE and virtual display
+        run: sudo apt-get update && sudo apt-get install -y love xvfb
+      - name: Exercise every declared LÖVE screen
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: |
+          xvfb-run -a love . --smoke
+          test -s data/logs/smoke.txt
+          grep -Fq "0 FAIL" data/logs/smoke.txt
+          cat data/logs/smoke.txt
+      - name: Capture every screen at supported display sizes
+        env:
+          SDL_AUDIODRIVER: dummy
+        run: |
+          expected="$(sed -nE 's/^RESULT: ([0-9]+)\/([0-9]+) OK, 0 FAIL$/\2/p' data/logs/smoke.txt)"
+          for resolution in 640x480 720x480 720x720; do
+            output="$RUNNER_TEMP/dolphin-rtui-screenshots/$resolution"
+            mkdir -p "$output"
+            DOLPHINUI_RES="$resolution" bash ../../../tools/capture-ui.sh --all --delay 0.7 --out-dir "$output"
+            actual="$(find "$output" -maxdepth 1 -type f -name '*.png' | wc -l)"
+            test "$actual" -eq "$expected"
+            python3 - "$output" "$resolution" <<'PY'
+          from pathlib import Path
+          import struct
+          import sys
+
+          folder = Path(sys.argv[1])
+          expected_size = tuple(map(int, sys.argv[2].split("x")))
+          images = sorted(folder.glob("*.png"))
+          for image in images:
+            with image.open("rb") as stream:
+              header = stream.read(24)
+            if header[:8] != b"\x89PNG\r\n\x1a\n":
+              raise SystemExit(f"{image.name}: invalid PNG signature")
+            actual_size = struct.unpack(">II", header[16:24])
+            if actual_size != expected_size:
+              raise SystemExit(f"{image.name}: {actual_size}, expected {expected_size}")
+          print(f"Verified {len(images)} PNG dimensions at {sys.argv[2]}.")
+          PY
+            echo "Captured $actual/$expected screens at $resolution."
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-rtui-screen-captures
+          path: "${{ runner.temp }}/dolphin-rtui-screenshots/**/*.png"
+          if-no-files-found: error
+          retention-days: 14
+
   repository-tooling:
     runs-on: ubuntu-latest
     steps:
