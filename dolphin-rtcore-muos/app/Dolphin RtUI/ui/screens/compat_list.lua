@@ -14,10 +14,10 @@ S.list = K.List(K.MARGIN, LY, 296, K.BOT - LY, 36)
 S.t, S.filter, S.mine_only = 0, 1, false
 
 local FILTERS = {
-    { label = "ALL",          test = function(g) return true end,                   color = "sys" },
-    { label = "PLAYABLE",     test = function(g) return g.playable_rank == 3 end,   color = "lime" },
-    { label = "ISSUES",       test = function(g) return g.playable_rank == 2 end,   color = "boost" },
-    { label = "NOT PLAYABLE", test = function(g) return g.playable_rank <= 1 end,   color = "hot" },
+    { id = "all",          label = "ALL",          test = function(g) return true end,                 color = "sys" },
+    { id = "playable",     label = "PLAYABLE",     test = function(g) return g.playable_rank == 3 end, color = "lime" },
+    { id = "issues",       label = "ISSUES",       test = function(g) return g.playable_rank == 2 end, color = "boost" },
+    { id = "not_playable", label = "NOT PLAYABLE", test = function(g) return g.playable_rank <= 1 end, color = "hot" },
 }
 
 local owned = {}          -- id -> gioco in libreria
@@ -78,6 +78,80 @@ function S.pad(b)
         if mine then SFX.play("menu_select"); require("ui").go("game", { game = mine })
         else SFX.play("error") end
     elseif b == "B" then require("ui").back() end
+end
+
+-- NEXUS adapters expose filtering and navigation without bypassing ownership checks.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected() return S.list and S.list:cur() or nil end
+    local specs = {
+        { id = "compat.refresh", title = "Refresh compatibility database", order = 10,
+          run = function()
+              local keep = selected()
+              local ok, err = pcall(Compat.load)
+              if not ok then return false, tostring(err) end
+              owned = {}
+              for _, game in ipairs(Library.games or {}) do
+                  if game.id and not owned[game.id] then owned[game.id] = game end
+              end
+              rebuild(keep)
+              return true
+          end },
+        { id = "compat.set_filter", title = "Set compatibility filter", order = 20,
+          run = function(filter_id)
+              if type(filter_id) ~= "string" then return false, "filter ID is required" end
+              local keep = selected()
+              for i, filter in ipairs(FILTERS) do
+                  if filter.id == filter_id then
+                      S.filter = i; rebuild(keep); SFX.play("menu_pagescroll")
+                      return true
+                  end
+              end
+              return false, "unknown compatibility filter: " .. filter_id
+          end },
+        { id = "compat.set_mine_only", title = "Filter to owned games", order = 30,
+          run = function(enabled)
+              if enabled == nil then enabled = not S.mine_only end
+              if type(enabled) ~= "boolean" then return false, "enabled must be a boolean" end
+              local keep = selected()
+              S.mine_only = enabled; rebuild(keep); SFX.play("menu_toggleoption")
+              return true
+          end },
+        { id = "compat.jump_letter", title = "Jump to next or previous title initial", order = 40,
+          run = function(direction)
+              if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+              if #S.list.items == 0 then return false, "no games match the current filter" end
+              jump_letter(direction)
+              return true
+          end },
+        { id = "compat.open_selected", title = "Open selected owned game", order = 50,
+          run = function()
+              local game = selected()
+              if not game then return false, "no game selected" end
+              local mine = owned[game.id]
+              if not mine then return false, "game is not in the local library" end
+              return ui.go("game", { game = mine })
+          end },
+        { id = "compat.state", title = "Get compatibility browser state", order = 60,
+          run = function()
+              local game = selected()
+              local summary = game and Compat.summary(game) or nil
+              return { filter = FILTERS[S.filter] and FILTERS[S.filter].id,
+                  mine_only = S.mine_only, selected_id = game and game.id,
+                  selected_title = game and game.title, selected_owned = game and owned[game.id] ~= nil or false,
+                  result_count = #S.list.items, database_count = Compat.count,
+                  playable_label = summary and summary.play_label or nil }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "compatibility", order = spec.order, screen = "compat_list",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 local function kind_col(k) return K.C[k] or K.C.dim end
