@@ -120,10 +120,11 @@ function S.register_actions(ui)
           run = function()
               local row = selected()
               local on, total = counts(S.tab)
+              local enabled
+              if row then enabled = not S.game or not S.off[S.tab][row.name] end
               return { game_id = S.game and S.game.id, game_title = S.game and S.game.title,
                   category = Mods.CATS[S.tab] and Mods.CATS[S.tab].id,
-                  selected = row and row.name,
-                  enabled = row and (not S.game or not S.off[S.tab][row.name]) or nil,
+                  selected = row and row.name, enabled = enabled,
                   enabled_count = on, total_count = total, read_only = not S.game }
           end },
     }
