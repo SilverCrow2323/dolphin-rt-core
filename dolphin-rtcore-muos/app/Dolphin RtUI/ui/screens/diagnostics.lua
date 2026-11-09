@@ -83,7 +83,132 @@ local MAX_KB     = { 256, 512, 1024, 2048 }
 local function build_settings()
   local rows = {
     { kind="choice", label="Log level", icon="info", values=LOG_LEVELS,
-      get = function() return Settings.get("log_level") or "info" end,
+      get = function() -- NEXUS exposes diagnostics without bypassing the screen's confirmation flows.
+function S.register_actions(ui)
+  if not ui or type(ui.register_action) ~= "function" then
+    return false, "UI action registrar unavailable"
+  end
+  local function selected_category()
+    local row = S.list and S.list:cur()
+    return row and row.cat or nil
+  end
+  local function selected_setting()
+    return S.settings_list and S.settings_list:cur() or nil
+  end
+  local function request_clear(cat)
+    if not cat then return false, "no diagnostics category selected" end
+    Modal.show("Clear " .. cat.label .. "?", "Delete all " .. cat.label .. " files?",
+      { accept_label = "Delete", cancel_label = "Cancel", color = K.C.bad,
+        on_accept = function()
+          clear_cat(cat)
+          S.viewer = nil
+          build_list()
+        end })
+    return true
+  end
+  local specs = {
+    { id = "diagnostics.refresh", title = "Refresh diagnostics", order = 10,
+      run = function()
+        local selected = S.list and S.list.sel or 1
+        build_list()
+        S.list.sel = math.max(1, math.min(selected, math.max(1, #S.list.items)))
+        S.session_lines = read_tail("data/logs/ui.log", 6)
+        return true
+      end },
+    { id = "diagnostics.select_category", title = "Select log category", order = 20,
+      run = function(index)
+        if S.mode ~= "list" or S.viewer then return false, "log category list is not active" end
+        if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.list.items then
+          return false, "diagnostics category index out of range"
+        end
+        S.list.sel = index
+        return true
+      end },
+    { id = "diagnostics.open_selected", title = "Open selected log", order = 30,
+      run = function()
+        if S.mode ~= "list" or S.viewer then return false, "log category list is not active" end
+        local cat = selected_category()
+        if not cat then return false, "no diagnostics category selected" end
+        open_viewer(cat)
+        return S.viewer ~= nil, S.viewer and nil or "no log files available"
+      end },
+    { id = "diagnostics.scroll_viewer", title = "Scroll log viewer", order = 40,
+      run = function(delta)
+        if not S.viewer then return false, "log viewer is not open" end
+        if type(delta) ~= "number" or delta % 1 ~= 0 then return false, "scroll delta must be an integer" end
+        local max_top = math.max(0, #S.viewer.lines - 18)
+        S.viewer.top = math.max(0, math.min(max_top, S.viewer.top + delta))
+        return true
+      end },
+    { id = "diagnostics.close_viewer", title = "Close log viewer", order = 50,
+      run = function()
+        if not S.viewer then return false, "log viewer is not open" end
+        S.viewer = nil
+        return true
+      end },
+    { id = "diagnostics.request_clear_selected", title = "Request selected log cleanup", order = 60,
+      run = function() return request_clear(selected_category()) end },
+    { id = "diagnostics.request_clear_all", title = "Request all-log cleanup", order = 70,
+      run = function()
+        Modal.show("Clear all logs?", "Delete every log file?",
+          { accept_label = "Delete all", cancel_label = "Cancel", color = K.C.bad,
+            on_accept = function()
+              os.execute("rm -f data/logs/*.log data/logs/*.log.1 2>/dev/null")
+              Notify.show("success", "All logs cleared")
+              build_list()
+            end })
+        return true
+      end },
+    { id = "diagnostics.switch_mode", title = "Switch diagnostics mode", order = 80,
+      run = function(mode)
+        if mode ~= "list" and mode ~= "settings" then return false, "mode must be list or settings" end
+        if S.viewer then return false, "close log viewer before switching mode" end
+        S.mode = mode
+        return true
+      end },
+    { id = "diagnostics.select_setting", title = "Select log setting", order = 90,
+      run = function(index)
+        if S.mode ~= "settings" then return false, "diagnostics settings are not active" end
+        if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.settings_list.items then
+          return false, "diagnostics setting index out of range"
+        end
+        S.settings_list.sel = index
+        return true
+      end },
+    { id = "diagnostics.change_setting", title = "Change selected log setting", order = 100,
+      run = function(direction)
+        if S.mode ~= "settings" then return false, "diagnostics settings are not active" end
+        if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+        local row = selected_setting()
+        if not row then return false, "no diagnostics setting selected" end
+        if row.kind == "choice" then step_choice(row, direction)
+        elseif row.kind == "toggle" then row.set(direction > 0); SFX.play("menu_toggleoption")
+        else return false, "selected diagnostics setting is not editable" end
+        return true
+      end },
+    { id = "diagnostics.state", title = "Get diagnostics state", order = 110,
+      run = function()
+        local category, setting = selected_category(), selected_setting()
+        return { mode = S.mode, viewer_open = S.viewer ~= nil,
+          viewer_line_count = S.viewer and #S.viewer.lines or 0,
+          viewer_top = S.viewer and S.viewer.top or nil,
+          selected_category = category and category.id or nil,
+          category_count = S.list and #S.list.items or 0,
+          selected_setting = setting and setting.label or nil,
+          setting_count = S.settings_list and #S.settings_list.items or 0,
+          session_line_count = #S.session_lines }
+      end },
+  }
+  for _, spec in ipairs(specs) do
+    local ok, err = ui.register_action(spec.id, spec.run, {
+      title = spec.title, group = "diagnostics", order = spec.order, screen = "diagnostics",
+    })
+    if not ok then return false, err or ("could not register " .. spec.id) end
+  end
+  return true
+end
+
+return Settings.get("log_level") or "info" end,
       set = function(v) Settings.set("log_level", v) end },
     { kind="choice", label="Retention", icon="trash", values=RET_DAYS,
       fmt = function(v) return v .. (v==1 and " day" or " days") end,
