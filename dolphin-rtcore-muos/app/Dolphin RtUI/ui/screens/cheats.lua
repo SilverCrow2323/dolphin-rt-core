@@ -220,6 +220,7 @@ function S.register_actions(ui)
           end },
         { id = "cheats.switch_tab", title = "Switch cheat tab", order = 20,
           run = function(tab_id)
+              if not S.game_id then return false, "no game is active" end
               local indexes = { boost = 1, fps = 2, cheats = 3 }
               if not indexes[tab_id] then return false, "tab must be boost, fps or cheats" end
               S.tab = indexes[tab_id]
@@ -229,6 +230,7 @@ function S.register_actions(ui)
           end },
         { id = "cheats.select", title = "Select cheat entry", order = 30,
           run = function(index)
+              if not S.game_id then return false, "no game is active" end
               if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.list.items then
                   return false, "cheat selection index out of range"
               end
@@ -238,11 +240,15 @@ function S.register_actions(ui)
           end },
         { id = "cheats.toggle_selected", title = "Toggle selected cheat", order = 40,
           run = function()
+              if not S.game_id then return false, "no game is active" end
               if not selected() then return false, "no cheat entry selected" end
               return toggle()
           end },
         { id = "cheats.bulk_toggle", title = "Bulk-toggle current cheat tab", order = 50,
-          run = function() return bulk() end },
+          run = function()
+              if not S.game_id then return false, "no game is active" end
+              return bulk()
+          end },
         { id = "cheats.apply", title = "Apply game cheats to Dolphin", order = 60,
           run = function()
               if not S.game_id then return false, "no game is active" end
