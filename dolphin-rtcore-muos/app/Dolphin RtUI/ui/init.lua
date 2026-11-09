@@ -132,8 +132,12 @@ function M.init()
     -- Stable built-in action IDs are the first consumers of NEXUS. Keep the
     -- callbacks here so navigation remains the single owner of transitions.
     if not Nexus.has_action("navigation.back") then
-        M.register_action("navigation.back", function() return M.back() end,
-            { title = "Back", group = "navigation", order = 10 })
+        M.register_action("navigation.back", function()
+            local ok, reason = M.back()
+            -- A busy transition is a harmless no-op for action callers.
+            if not ok and reason == "transition in progress" then return true end
+            return ok, reason
+        end, { title = "Back", group = "navigation", order = 10 })
     end
     if not Nexus.has_action("navigation.open_library") then
         M.register_action("navigation.open_library", function()
