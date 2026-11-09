@@ -27,7 +27,7 @@ end
 package.preload["ui.sfx"] = function() return {play=function() end} end
 package.preload["ui.util"] = function() return {clean_title=function(s)return s end} end
 package.preload["ui.notify"] = function() return {show=function() end} end
-package.preload["ui.modal"] = function() return {show=function(_,_,opts) modal_options=opts end} end
+package.preload["ui.modal"] = function() return {show=function(title,body,opts) modal_options=opts end} end
 package.preload["core.library"] = function() return library end
 package.preload["core.gameset_manager"] = function()
     return {
@@ -60,7 +60,7 @@ end
 
 local function registrar()
     local actions={}
-    local api={register_action=function(id,run,meta)
+    local api={go=ui.go,register_action=function(id,run,meta)
         if actions[id] then return false,"duplicate action" end
         actions[id]={run=run,meta=meta}; return true
     end}
