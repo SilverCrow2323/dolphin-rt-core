@@ -112,6 +112,12 @@ function S.register_actions(ui)
           end },
         { id = "folders.add_selected", title = "Add current folder for a system", order = 40,
           run = function(system) return add(system) end },
+        { id = "folders.return_to_list", title = "Return to registered folder list", order = 45,
+          run = function()
+              if S.mode ~= "browse" then return false, "folder browser is not active" end
+              show_set()
+              return true
+          end },
         { id = "folders.remove_selected", title = "Remove selected ROM folder", order = 50,
           run = function()
               if S.mode ~= "set" then return false, "return to the folder list before removing paths" end
