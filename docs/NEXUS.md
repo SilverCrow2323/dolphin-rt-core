@@ -265,3 +265,13 @@ Launch choices are validated against the selected row's actual available values.
 | `keymap.state` | — | Read system, selected mapping and capture state |
 
 The primary per-profile mapping workflow remains `controller_map`; this adapter keeps the registered legacy screen discoverable and testable. Failed INI writes leave the remap uncommitted.
+
+
+## Atomic adapter action registration
+
+Screen adapters register through a staging UI proxy during bootstrap. Their
+actions are committed as one batch only after the adapter completes
+successfully. Duplicate IDs, invalid callbacks, explicit adapter rejection or
+an exception leave the global registry unchanged for that adapter; later
+adapters still run. Direct callers can use `Nexus.register_actions(entries)`
+for the same all-or-nothing validation.
