@@ -84,8 +84,9 @@ eq(invalid_actions.issues[1].code, "invalid_action_entries", "invalid action ent
 eq(invalid_actions.issues[1].message:match(": 3$") ~= nil, true, "empty, malformed, and duplicate action IDs rejected")
 
 local empty = Diagnostics.inspect({ screens = {}, actions = {} })
-eq(empty.ok, true, "valid empty catalog passes")
+eq(empty.ok, false, "empty registry fails closed")
 eq(empty.screen_count, 0, "empty screen count")
+eq(empty.issues[1].code, "empty_catalog", "empty registry classified")
 
 local missing = Diagnostics.inspect(nil)
 eq(missing.ok, false, "missing catalog fails closed")
