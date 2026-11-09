@@ -58,3 +58,7 @@ The GameSettings browser exposes refresh, tab switching, open/expand and state a
 ## Settings NEXUS actions
 
 The Settings screen exposes stable actions to switch sections (`LIBRARY`, `EDITORS`, `DISPLAY`, `SYSTEM`, `ABOUT`), change the selected choice/toggle, run the selected action row, and retrieve a read-only state snapshot. Actions reuse the screen's existing setters and operation callbacks.
+
+## Mod Vault NEXUS actions
+
+The Mod Vault exposes category switching, selected-item toggling, category-wide enable/disable and a state snapshot. Mutating actions are rejected when the screen is opened without a selected game, preserving the installed-catalog read-only mode.
