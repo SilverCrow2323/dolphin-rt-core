@@ -62,3 +62,7 @@ The Settings screen exposes stable actions to switch sections (`LIBRARY`, `EDITO
 ## Mod Vault NEXUS actions
 
 The Mod Vault exposes category switching, selected-item toggling, category-wide enable/disable and a state snapshot. Mutating actions are rejected when the screen is opened without a selected game, preserving the installed-catalog read-only mode.
+
+## ROM Folders NEXUS actions
+
+The ROM Folders screen exposes refresh, browse, open, add (GC/Wii), remove, finish/rescan and state actions. Removal is restricted to the registered-folder list; adding is restricted to active browse mode and the two supported system IDs.
