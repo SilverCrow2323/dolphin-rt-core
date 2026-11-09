@@ -26,8 +26,8 @@ package.preload["ui.kit"]=function()
     List=list,set_accent=function() end,color=function() end,text=function() end,width=function() return 0 end,
     panel=function() end,draw_tool_icon=function() end,bg_workshop=function() end,footer=function() end}
 end
-package.preload["ui.sfx"]=function() return {play=function() end end end
-package.preload["ui.notify"]=function() return {show=function() end end end
+package.preload["ui.sfx"]=function() return {play=function() end} end
+package.preload["ui.notify"]=function() return {show=function() end} end
 package.preload["ui.modal"]=function() return {show=function(title,body,opts) modal={title=title,body=body,opts=opts} end} end
 package.preload["core.settings"]=function()
   return {get=function(k) return setting_values[k] end,set=function(k,v) setting_values[k]=v end}
