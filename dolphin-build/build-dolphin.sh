@@ -50,7 +50,7 @@ if [ "$TUNE" != none ]; then   # tune only (no new instructions), so the binary 
 
 cmake -S . -B build -G Ninja "${FLAGS[@]}"
 cmake --build build --target dolphin-nogui -j"$JOBS"
-BIN="$(find build -type f -name dolphin-nogui -perm -u+x | head -n 1)"; [ -n "$BIN" ] || { echo "dolphin-nogui was not produced"; exit 1; }
+BIN="$SRC/build/Binaries/dolphin-emu-nogui"; [ -x "$BIN" ] || { echo "dolphin-emu-nogui was not produced at $BIN"; find "$SRC/build" -type f -perm -u+x -name "*nogui*" -print; exit 1; }
 cp "$BIN" "$OUT/dolphin"; strip --strip-unneeded "$OUT/dolphin" 2>/dev/null || true; chmod 755 "$OUT/dolphin"
 
 {
