@@ -64,7 +64,7 @@ class ScreenshotDiscoveryTests(unittest.TestCase):
 
         source = UI_REGISTRY.read_text(encoding="utf-8")
         expected = re.findall(
-            r'^\s*\{\s*"([^"]+)"\s*,\s*"ui\.screens\.[^"]+"\s*\},?',
+            r'\{\s*"([^"]+)"\s*,\s*"ui\.screens\.[^"]+"\s*\}',
             source,
             flags=re.MULTILINE,
         )
