@@ -27,8 +27,8 @@ NEXUS is the toolkit-independent action registry used by the LÖVE frontend. Scr
 |---|---|---|
 | `library.rescan` | — | Rescan installed games |
 | `library.launch_selected` | — | Launch the selected local game |
-| `library.open_options` | — | Open selected game options |
-| `library.toggle_favorite` | — | Toggle the selected game's favourite state |
+| `library.open_selected_options` | — | Open selected game options |
+| `library.toggle_selected_favorite` | — | Toggle the selected game's favourite state |
 | `library.set_filter` | filter ID | Change the library filter |
 
 ## Rt:Profiles
