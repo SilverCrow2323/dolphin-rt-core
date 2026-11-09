@@ -14,9 +14,11 @@ Usage:
   bash tools/capture-ui.sh --screen NAME [--output FILE.png] [--delay SECONDS] [--pads "R1,A"]
   bash tools/capture-ui.sh --screens "boot,library,settings,triage" [--out-dir DIR]
   bash tools/capture-ui.sh --all [--out-dir DIR]
+  bash tools/capture-ui.sh --list
 
 Options:
   --all             Capture every screen registered by the frontend.
+  --list            Print registered screen IDs without launching LÖVE.
   --screens LIST    Capture a comma-separated list of screens.
   --pads SEQUENCE   Inject logical gamepad presses before capture.
   --delay SECONDS   Seconds before capture (default: 1.5).
