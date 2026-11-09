@@ -272,13 +272,13 @@ function M.init()
     -- Stable built-in action IDs are the first consumers of NEXUS. Keep the
     -- callbacks here so navigation remains the single owner of transitions.
     if not Nexus.has_action("navigation.back") then
-        M.register_action("navigation.back", function() M.back(); return true end,
-            { title = "Back", group = "navigation", order = 10 })
+        M.register_action("navigation.back", function()
+            return M.back()
+        end, { title = "Back", group = "navigation", order = 10 })
     end
     if not Nexus.has_action("navigation.open_library") then
         M.register_action("navigation.open_library", function()
-            M.go("library")
-            return true
+            return M.go("library")
         end, { title = "Open library", group = "navigation", order = 20 })
     end
     if not Nexus.has_action("system.open_drawer") then
@@ -384,11 +384,15 @@ function M.is_root()
 end
 
 function M.back()
+    -- Do not consume the back stack while another transition owns navigation.
+    -- Callers (including NEXUS actions) receive an explicit rejection instead
+    -- of a false success or a silently lost history entry.
+    if fade.phase ~= "idle" then return false, "transition in progress" end
     local prev = table.remove(stack)
-    if fade.phase ~= "idle" then return end
     fade.phase, fade.t, fade.dir = "out", 0, -1
     fade.target = prev and { name = prev.name, params = prev.params, state = prev.state }
                        or { name = "library" }
+    return true
 end
 function M.current() return current_name end
 
