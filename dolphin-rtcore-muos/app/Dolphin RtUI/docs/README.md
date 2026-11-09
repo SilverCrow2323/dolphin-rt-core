@@ -15,6 +15,13 @@ L1/R1 filter or tab · L2/R2 letter jump · START settings · START+SELECT quit 
 
 ## Layout
 - `ui/` — design system (`kit.lua`), navigation (`init.lua`), screens.
+- `core/nexus.lua` — NEXUS registry for stable screen IDs, screen metadata and named actions. `ui/init.lua` exposes `register_action`, `run_action` and `catalog`; navigation transitions remain owned by the UI layer.
+
+### NEXUS contract
+- Screen modules are registered once by stable ID; unknown IDs are rejected before navigation.
+- Action IDs are explicit names (for example `library.rescan`) and callbacks are invoked through a protected call.
+- `ui.catalog()` returns sorted screen and action metadata for diagnostics, menus and future integrations.
+- The registry does not execute shell commands or resolve arbitrary module paths from user input.
 - `core/` — launcher, library, settings, cheats, covers, triage.
 - `scripts/` — `launch.sh`, `rtcheats_sync.sh`, `overlay_exit.sh`.
 - `workshop/` — profiles, controllers, hotkeys, game cards (your data).
