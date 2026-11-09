@@ -16,15 +16,36 @@ manifest[1] = "tampered"
 eq(Bootstrap.list()[1], "library", "manifest is defensive")
 
 local calls, errors = {}, {}
+local committed = {}
+local ui_context = {
+    context = "ui-context",
+    register_actions = function(entries)
+        local staged = {}
+        for _, entry in ipairs(entries) do
+            if committed[entry.id] or staged[entry.id] then
+                return false, "action already registered: " .. entry.id
+            end
+            staged[entry.id] = entry
+        end
+        for id, entry in pairs(staged) do committed[id] = entry end
+        return true, #entries
+    end,
+}
 local screens = {}
 for _, id in ipairs(Bootstrap.list()) do
     screens[id] = {
         register_actions = function(ui)
-            eq(ui, "ui-context", id .. " receives UI context")
+            eq(ui.context, "ui-context", id .. " receives UI context")
             calls[#calls + 1] = id
             if id == "rt_editor" then error("synthetic adapter crash") end
-            if id == "settings" then return false, "synthetic rejection" end
-            if id == "rt_profiles" then return nil end -- legacy adapters may return nothing
+            if id == "settings" then
+                ui.register_action("partial.settings", function() return true end, {})
+                return false, "synthetic rejection"
+            end
+            if id == "rt_profiles" then
+                ui.register_action("rt_profiles.test", function() return true end, {})
+                return nil -- legacy adapters may return nothing
+            end
             return true
         end,
     }
@@ -33,7 +54,7 @@ screens.mods = nil
 screens.folders = nil
 local stats = Bootstrap.register(function(id)
     return screens[id]
-end, "ui-context", function(id, reason)
+end, ui_context, function(id, reason)
     errors[#errors + 1] = { id = id, reason = tostring(reason) }
 end)
 
@@ -49,13 +70,15 @@ eq(errors[1].id, "rt_editor", "exception reported")
 eq(errors[2].id, "settings", "explicit rejection reported")
 eq(errors[3].id, "mods", "first missing adapter reported")
 eq(errors[4].id, "folders", "second missing adapter reported")
+eq(committed["partial.settings"], nil, "rejected adapter commits no partial actions")
+assert(committed["rt_profiles.test"], "legacy nil-return adapter commits its staged action")
 
 -- Lookup failures count as failed attempts, and a broken diagnostic sink must
 -- not interrupt the remaining manifest entries.
 local lookup_stats = Bootstrap.register(function(id)
     if id == "library" then error("synthetic lookup crash") end
     return nil
-end, "unused", function()
+end, ui_context, function()
     error("synthetic diagnostic sink crash")
 end)
 eq(lookup_stats.attempted, 20, "lookup pass attempts every adapter")
