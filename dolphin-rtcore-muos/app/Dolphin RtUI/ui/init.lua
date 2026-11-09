@@ -132,6 +132,17 @@ function M.init()
         end
     end
 
+
+    for _, screen_id in ipairs({ "gameset_browser", "gameset_explorer" }) do
+        local screen = Nexus.get_screen(screen_id)
+        if screen and screen.register_actions then
+            local ok, registered, detail = pcall(screen.register_actions, M)
+            if not ok or registered == false then
+                log(screen_id .. " NEXUS actions: " .. tostring(ok and detail or registered))
+            end
+        end
+    end
+
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
     for _, entry in ipairs(Nexus.list_screens()) do

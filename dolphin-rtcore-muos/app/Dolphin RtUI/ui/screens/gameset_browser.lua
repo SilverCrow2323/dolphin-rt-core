@@ -148,14 +148,17 @@ local function refresh()
         elseif S.tab == 2 then return build_grouped("storage")
         else return build_grouped("database") end
     end)
+    local err
     if not ok or type(r) ~= "table" then
-        print("[gameset_browser] refresh failed: " .. tostring(r))
+        err = tostring(r)
+        print("[gameset_browser] refresh failed: " .. err)
         r = {}
     end
     S.rows = r
     S.list:set(S.rows, false)
     S.list.sel = 1
     K.set_accent(K.ACC[TABS[S.tab].color] or K.ACC.gc)
+    return err == nil, err
 end
 
 function S.enter()
@@ -283,6 +286,73 @@ function S.draw()
         { key = "L2 R2", label = "Letter" },
         { key = "B", label = "Back" },
     })
+end
+
+-- NEXUS adapters preserve browser selection and keep navigation in ui/init.lua.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function row_key(row)
+        if not row then return nil end
+        return tostring(row.kind) .. ":" .. tostring(row.id or row.title or "")
+    end
+    local specs = {
+        { id = "gameset_browser.refresh", title = "Refresh GameSettings browser", order = 10,
+          run = function()
+              local key = row_key(S.list and S.list:cur())
+              local ok, err = refresh()
+              if not ok then return false, err end
+              if key then
+                  for i, row in ipairs(S.rows) do
+                      if row_key(row) == key then S.list.sel = i; break end
+                  end
+              end
+              return true
+          end },
+        { id = "gameset_browser.switch_tab", title = "Switch GameSettings browser tab", order = 20,
+          run = function(tab_id)
+              if type(tab_id) ~= "string" then return false, "tab ID is required" end
+              for i, tab in ipairs(TABS) do
+                  if tab.id == tab_id then
+                      S.tab, S.expanded = i, {}
+                      local ok, err = refresh()
+                      if not ok then return false, err end
+                      SFX.play("menu_pagescroll")
+                      return true
+                  end
+              end
+              return false, "unknown GameSettings tab: " .. tab_id
+          end },
+        { id = "gameset_browser.open_selected", title = "Open or expand selected GameSettings entry", order = 30,
+          run = function()
+              local row = S.list and S.list:cur()
+              if not row then return false, "no GameSettings entry selected" end
+              if row.kind == "group" then
+                  S.expanded[row.title] = not S.expanded[row.title]
+                  local ok, err = refresh()
+                  if not ok then return false, err end
+                  return true
+              elseif row.kind == "library" or row.kind == "region" then
+                  return ui.go("gameset_explorer", { game_id = row.id, game_title = row.title })
+              end
+              return false, "unsupported GameSettings entry"
+          end },
+        { id = "gameset_browser.state", title = "Get GameSettings browser state", order = 40,
+          run = function()
+              local row = S.list and S.list:cur()
+              return { tab = TABS[S.tab] and TABS[S.tab].id,
+                  selected_kind = row and row.kind, game_id = row and row.id,
+                  title = row and row.title, expanded = row and row.expanded == true }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "gamesettings", order = spec.order, screen = "gameset_browser",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S

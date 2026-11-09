@@ -50,3 +50,7 @@ The editor publishes stable actions after screen initialization:
 - `editor.state` — return mode, profile/game, tab, selected option, dirty and lock state.
 
 Locked profiles reject edits and saves at the editor boundary. Actions reuse the screen's existing INI and guide logic.
+
+## GameSettings NEXUS actions
+
+The GameSettings browser exposes refresh, tab switching, open/expand and state actions. The per-game explorer exposes refresh, open/create, activate/deactivate, confirmation-based deletion requests and a state snapshot. Deletion remains behind the existing confirmation modal; the NEXUS action only requests that confirmation.
