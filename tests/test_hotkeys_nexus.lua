@@ -31,8 +31,8 @@ end
 package.preload["core.shell"]=function()
   return {shq=function(v)return "'"..v.."'" end,atomic_write=function(path,content) saved[path]=content; return true end}
 end
-package.preload["ui.notify"]=function() return {show=function() end end end
-package.preload["ui.modal"]=function() return {show=function() end end end
+package.preload["ui.notify"]=function() return {show=function() end} end
+package.preload["ui.modal"]=function() return {show=function() end} end
 io.open=function(path,mode)
   if mode=="r" then return nil end
   return {write=function() return true end,close=function() return true end}
