@@ -78,3 +78,7 @@ The triage screen exposes rescan, flavour selection, checklist inspection, check
 ## Controller profiles and mapping NEXUS actions
 
 The controller profile browser exposes refresh, GameCube/Wii selection, open-selected and state actions. The mapping editor exposes selection, raw-input capture, explicit confirmation/cancellation and a state snapshot. Mapping writes are checked; a failed INI write restores the in-memory value and keeps the capture available for retry.
+
+## Cheat Database NEXUS actions
+
+The Cheat Database exposes refresh, stable filters (`all`, `boost`, `mine`), initial-letter navigation, open-selected and a state snapshot. Refresh preserves the selected cheat title when it remains in the active filter.
