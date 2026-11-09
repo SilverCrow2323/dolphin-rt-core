@@ -9,6 +9,7 @@ Usage: rtcore.sh <command> [args]
   update  [opts]        download the latest release files from the repo, then install
   uninstall             remove the EmulationStation files and the theme logos
   run <ROM> [profile]   start a game directly (same as EmulationStation does)
+  doctor                explain why the emulator does not start (changes nothing)
   status                show where things are and the last log lines
 EOT
 }
@@ -17,6 +18,7 @@ case "${1:-install}" in
   update)    shift; exec "$ROOT/install.sh" --update "$@";;
   uninstall) shift; exec "$ROOT/uninstall.sh" "$@";;
   run)       shift; exec "$ROOT/bin/rtcore-r.sh" "$@";;
+  doctor)    shift; exec bash "$ROOT/tools/doctor.sh" "$@";;
   status)
     echo "version : $(cat "$ROOT/VERSION" 2>/dev/null)"
     echo "release : $ROOT"

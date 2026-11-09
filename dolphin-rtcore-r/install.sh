@@ -158,6 +158,9 @@ if [ "$DO_ES" = 1 ]; then
   }
   render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
   say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+  # per-game options menu (this ES reads a single es_features.cfg: our block is merged into the user's copy)
+  if [ "$DRY" = 1 ]; then bash "$ROOT/tools/es-features.sh" install "$ES_DIR" --dry
+  else bash "$ROOT/tools/es-features.sh" install "$ES_DIR" || say "WARNING: could not add the options menu; the profile can still be chosen per game"; fi
 fi
 
 if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then

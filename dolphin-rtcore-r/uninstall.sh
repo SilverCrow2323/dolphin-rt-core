@@ -6,10 +6,10 @@ ES_DIR=""
 [ -f "$ROOT/.installed" ] && ES_DIR="$(sed -n 's/^es_dir=//p' "$ROOT/.installed")"
 [ "${1:-}" = "--es-dir" ] && ES_DIR="$2"
 [ -z "$ES_DIR" ] && { echo "[rtcore-r] ERROR: EmulationStation folder unknown, pass --es-dir DIR" >&2; exit 1; }
-for f in es_systems_rtcore.cfg es_features_rtcore.cfg; do
+for f in es_systems_rtcore.cfg; do
   rm -f "$ES_DIR/$f" "$ES_DIR/$f.bak" && echo "[rtcore-r] removed $ES_DIR/$f"
 done
-bash "$ROOT/theme/install-theme.sh" --uninstall
+bash "$ROOT/tools/es-features.sh" remove "$ES_DIR"
 rm -f "$ROOT/.installed"
-if [ -x /etc/init.d/S31emulationstation ]; then /etc/init.d/S31emulationstation restart >/dev/null 2>&1 & fi
+command -v systemctl >/dev/null 2>&1 && systemctl restart emulationstation >/dev/null 2>&1 &
 echo "[rtcore-r] Done. This folder, your ROMs and your saves were left untouched."
