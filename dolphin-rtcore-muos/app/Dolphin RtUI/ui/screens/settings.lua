@@ -220,6 +220,8 @@ local function go_section(i, dir)
     SFX.play("menu_pagescroll")
 end
 
+local cycle
+
 -- NEXUS actions share the same row models and setting setters as the pad UI.
 function S.register_actions(ui)
     if not ui or type(ui.register_action) ~= "function" then
@@ -302,7 +304,7 @@ function S.update(dt)
 end
 
 -- ── input ──────────────────────────────────────────────────
-local function cycle(row, d)
+cycle = function(row, d)
     local vals = row.values or ((type(row.list) == "function") and row.list() or row.list) or {}
     if #vals == 0 then return end
     local cur, idx = row.get(), 1
