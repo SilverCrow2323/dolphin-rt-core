@@ -12,9 +12,10 @@ local IM     = require("ui.input")
 local K      = require("ui.kit")
 local Modal  = require("ui.modal")
 local Notify = require("ui.notify")
+local Nexus  = require("core.nexus")
 
 local M = {}
-local screens, current, current_name = {}, nil, nil
+local current, current_name = nil, nil
 local stack = {}                         -- back stack of { name, params }
 -- Transizione: la schermata uscente scivola di ~28 px e sfuma (OUT), poi la
 -- nuova entra dal lato opposto (IN). Direzione: avanti = sx, indietro = dx.
@@ -57,32 +58,112 @@ local function log(msg)
     end)
 end
 
-function M.register(name, mod_path)
+function M.register(name, mod_path, metadata)
     local ok, mod = pcall(require, mod_path)
-    if ok and type(mod) == "table" then screens[name] = mod
-    else log("screen '" .. name .. "' failed: " .. tostring(mod)) end
+    if ok and type(mod) == "table" then
+        local registered, err = Nexus.register_screen(name, mod, metadata or { title = name })
+        if not registered then log("screen '" .. name .. "' registry: " .. tostring(err)) end
+    else
+        log("screen '" .. name .. "' failed: " .. tostring(mod))
+    end
+end
+
+-- Public NEXUS hooks: stable action IDs can be invoked by menus, shortcuts
+-- and future integrations without coupling those callers to screen modules.
+function M.register_action(id, callback, metadata)
+    return Nexus.register_action(id, callback, metadata)
+end
+function M.run_action(id, ...)
+    local ok, result, detail = Nexus.run_action(id, ...)
+    if not ok then
+        log("action '" .. tostring(id) .. "' failed: " .. tostring(result))
+        Notify.show("error", "Action unavailable: " .. tostring(id))
+    end
+    return ok, result, detail
+end
+function M.catalog()
+    return { screens = Nexus.list_screens(), actions = Nexus.list_actions() }
+end
+
+local SCREEN_MODULES = {
+    { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
+    { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
+    { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
+    { "hotkeys", "ui.screens.hotkeys" }, { "settings", "ui.screens.settings" },
+    { "rt_editor", "ui.screens.rt_editor" },
+    { "folders", "ui.screens.folders" }, { "about", "ui.screens.about" },
+    { "diagnostics", "ui.screens.diagnostics" },
+    { "controller_map", "ui.screens.controller_map" },
+    { "controller_profiles", "ui.screens.controller_profiles" },
+    { "triage", "ui.screens.triage" },
+    { "rt_profiles", "ui.screens.rt_profiles" },
+    { "gameset_browser", "ui.screens.gameset_browser" },
+    { "keymap", "ui.screens.keymap" },
+    { "gameset_explorer", "ui.screens.gameset_explorer" },
+    { "compat_list", "ui.screens.compat_list" },
+    { "stream_library", "ui.screens.stream_library" },
+    { "stream_settings", "ui.screens.stream_settings" },
+}
+
+function M.screen_manifest()
+    local out = {}
+    for i, entry in ipairs(SCREEN_MODULES) do
+        out[i] = { id = entry[1], module = entry[2] }
+    end
+    return out
 end
 
 function M.init()
-    for _, s in ipairs({
-        { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
-        { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
-        { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
-        { "hotkeys", "ui.screens.hotkeys" }, { "settings", "ui.screens.settings" },
-        { "rt_editor", "ui.screens.rt_editor" },
-        { "folders", "ui.screens.folders" }, { "about", "ui.screens.about" },
-        { "diagnostics", "ui.screens.diagnostics" },
-        { "controller_map", "ui.screens.controller_map" },
-        { "controller_profiles", "ui.screens.controller_profiles" },
-        { "triage", "ui.screens.triage" },
-        { "rt_profiles", "ui.screens.rt_profiles" },
-        { "gameset_browser", "ui.screens.gameset_browser" },
-        { "keymap", "ui.screens.keymap" },
-        { "gameset_explorer", "ui.screens.gameset_explorer" },
-        { "compat_list", "ui.screens.compat_list" },
-        { "stream_library", "ui.screens.stream_library" },
-        { "stream_settings", "ui.screens.stream_settings" },
-    }) do M.register(s[1], s[2]) end
+    for _, s in ipairs(SCREEN_MODULES) do M.register(s[1], s[2]) end
+
+    -- Let feature screens publish stable NEXUS actions after all screens
+    -- exist, while keeping navigation ownership in this module.
+    local library_screen = Nexus.get_screen("library")
+    if library_screen and library_screen.register_actions then
+        local ok, registered, detail = pcall(library_screen.register_actions, M)
+        if not ok or registered == false then
+            log("library NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
+    -- Every registered screen gets a stable navigation action. This makes
+    -- the complete screen map discoverable by diagnostics and future menus.
+    for _, entry in ipairs(Nexus.list_screens()) do
+        local target = entry.id
+        local action_id = "navigation.go." .. target
+        if not Nexus.has_action(action_id) then
+            M.register_action(action_id, function(params)
+                return M.go(target, params)
+            end, { title = "Open " .. (entry.metadata.title or target),
+                   group = "navigation", screen = target, order = 100 })
+        end
+    end
+
+    -- Stable built-in action IDs are the first consumers of NEXUS. Keep the
+    -- callbacks here so navigation remains the single owner of transitions.
+    if not Nexus.has_action("navigation.back") then
+        M.register_action("navigation.back", function()
+            local ok, reason = M.back()
+            -- A busy transition is a harmless no-op for action callers.
+            if not ok and reason == "transition in progress" then return true end
+            return ok, reason
+        end, { title = "Back", group = "navigation", order = 10 })
+    end
+    if not Nexus.has_action("navigation.open_library") then
+        M.register_action("navigation.open_library", function()
+            M.go("library")
+            return true
+        end, { title = "Open library", group = "navigation", order = 20 })
+    end
+    if not Nexus.has_action("system.open_drawer") then
+        M.register_action("system.open_drawer", function()
+            local ok, panel = pcall(require, "ui.system_panel")
+            if not ok or not panel or not panel.open then return false, "system drawer unavailable" end
+            panel.open()
+            return true
+        end, { title = "Open system drawer", group = "system", order = 30 })
+    end
+
     local ok, SP = pcall(require, "ui.system_panel")
     if ok and SP and SP.init then SP.init() end
     local okS, Settings = pcall(require, "core.settings")
@@ -96,7 +177,7 @@ function M.init()
 end
 
 local function enter(name, params)
-    local scr = screens[name] or screens.library
+    local scr = Nexus.get_screen(name) or Nexus.get_screen("library")
     if not scr then return end
     if current and current.leave then pcall(current.leave) end
     current, current_name = scr, name
@@ -153,20 +234,23 @@ end
 
 -- Navigate with a short fade. `params` is handed to enter().
 function M.go(name, params, opts)
-    if not screens[name] then Notify.show("error", "Unknown screen: " .. tostring(name)); return end
-    if fade.phase ~= "idle" then return end
+    if not Nexus.has_screen(name) then Notify.show("error", "Unknown screen: " .. tostring(name)); return false, "unknown screen" end
+    if fade.phase ~= "idle" then return false, "transition in progress" end
     if not (opts and opts.no_push) and current_name and current_name ~= name then
         stack[#stack + 1] = { name = current_name, params = current and current.params,
                               state = capture(current) }
     end
     fade.phase, fade.t, fade.dir = "out", 0, 1
     fade.target = { name = name, params = params }
+    return true
 end
 
 function M.go_instant(name, params)
+    if not Nexus.has_screen(name) then Notify.show("error", "Unknown screen: " .. tostring(name)); return false end
     stack = {}
     fade.phase = "idle"
     enter(name, params)
+    return true
 end
 
 function M.is_root()
@@ -174,11 +258,13 @@ function M.is_root()
 end
 
 function M.back()
+    -- Do not consume history while another transition owns the navigation state.
+    if fade.phase ~= "idle" then return false, "transition in progress" end
     local prev = table.remove(stack)
-    if fade.phase ~= "idle" then return end
     fade.phase, fade.t, fade.dir = "out", 0, -1
     fade.target = prev and { name = prev.name, params = prev.params, state = prev.state }
                        or { name = "library" }
+    return true
 end
 function M.current() return current_name end
 

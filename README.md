@@ -72,6 +72,22 @@ Build everything from source: `dolphin-rtcore-muos/tools/build-muxupd.sh`, `port
 test the Knulli/ROCKNIX ports with `tests/test_ports_dryrun.sh`;
 build ready-to-install port archives (shared `core/` + **your** aarch64 `dolphin`) with `tools/make-port-release.sh k|r --binary /path/to/dolphin`.
 
+## 📚 Documentation & developer tools
+
+- **[Engineering guide](docs/REPO_GUIDE.md)** — repository map, development, quality and release workflow.
+- **[Compatibility Database website](index.html)** — searchable community reports, GameSettings and test submission.
+- **[GitHub Pages deploy workflow](.github/workflows/deploy-compatibility.yml)** — publishes only the static site files after Pages is enabled.
+- **[Website maintenance guide](docs/COMPATIBILITY_SITE.md)** — data sources, PWA behavior and publishing checks.
+- **[muOS registration architecture](docs/MUOS_REGISTRATION.md)** — Andromeda, split-manifest and legacy detection.
+- **[Frontend documentation index](docs/README.md)** — UI architecture, screens, paths, profiles and testing.
+- **[GitHub Wiki source](wiki/Home.md)** — concise user/developer pages; publish with `bash tools/publish-wiki.sh`.
+- **UI screenshots:** `bash tools/capture-ui.sh --screens "boot,library,settings,triage"` or capture every registered screen with `bash tools/capture-ui.sh --all`.
+- **Visual asset audit:** `python3 tools/asset_inventory.py --contact-sheet` (Pillow optional).
+
+The screenshot helper uses the frontend's existing opt-in `core/devshot.lua` hook; it does not modify application source. Generated reports and captures stay under `artifacts/`.
+
+---
+ 
 ## 📥 Install (muOS Andromeda)
 
 1. Copy `Dolphin_RtCore_v12_0_0_Andromeda.muxupd` into the **`ARCHIVE`** folder of the ROM card and install it from **Archive Manager**.
@@ -364,7 +380,7 @@ SafeTextureCacheColorSamples = 512
 
 It currently covers over **200 GameCube and Wii titles**.
 
-🌐 **[Open the Compatibility Matrix](https://silvercrow2323.github.io/Dolphin-Core-for-MuOS/)**
+🌐 **[Open the Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/)** *(published after enabling GitHub Pages for this repository)*
 
 **How to contribute:** if you have tested a game that isn't in the list, open a report using the community template:
 
@@ -411,7 +427,7 @@ It currently covers over **200 GameCube and Wii titles**.
 - 🏛️ **[Dolphin Core History & Archive](Core_History/README.md)** — original forum threads and legacy builds
 - 🌐 **[GitHub Repository](https://github.com/SilverCrow2323/dolphin-rt-core)**
 - 📦 **[Latest Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases/latest)**
-- 📊 **[Compatibility Database](https://silvercrow2323.github.io/Dolphin-Core-for-MuOS/)**
+- 📊 **[Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/)**
 - 📡 **[Rt:Stream PC Portal](portal)** — the PC side, in this repo (`portal/`): deb · rpm · Arch · AppImage
 - 💾 **[Official muOS Documentation](https://muos.dev)**
 - 🐬 **[Dolphin Emulator Project](https://dolphin-emu.org)**

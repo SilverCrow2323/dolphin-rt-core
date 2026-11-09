@@ -1,0 +1,104 @@
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+
+REPO = Path(__file__).resolve().parents[1]
+INVENTORY = REPO / "tools" / "asset_inventory.py"
+CAPTURE = REPO / "tools" / "capture-ui.sh"
+UI_REGISTRY = REPO / "dolphin-rtcore-muos" / "app" / "Dolphin RtUI" / "ui" / "init.lua"
+
+
+class AssetInventoryTests(unittest.TestCase):
+    def test_manifest_and_csv_are_reproducible(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "fixture"
+            (root / "assets").mkdir(parents=True)
+            sample = b'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"></svg>'
+            (root / "assets" / "mark.svg").write_bytes(sample)
+            (root / "assets" / "ignore.txt").write_text("not an image", encoding="utf-8")
+            output = Path(tmp) / "report"
+
+            subprocess.run(
+                [sys.executable, str(INVENTORY), "--root", str(root),
+                 "--output-dir", str(output)],
+                check=True, capture_output=True, text=True,
+            )
+
+            manifest = json.loads((output / "assets.json").read_text(encoding="utf-8"))
+            self.assertEqual(len(manifest), 1)
+            self.assertEqual(manifest[0]["path"], "assets/mark.svg")
+            self.assertEqual(manifest[0]["sha256"], hashlib.sha256(sample).hexdigest())
+            self.assertEqual(manifest[0]["bytes"], len(sample))
+
+            with (output / "assets.csv").open(newline="", encoding="utf-8") as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["path"], "assets/mark.svg")
+
+    def test_empty_repository_still_has_headers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "empty"
+            root.mkdir()
+            output = Path(tmp) / "report"
+            subprocess.run(
+                [sys.executable, str(INVENTORY), "--root", str(root),
+                 "--output-dir", str(output)],
+                check=True, capture_output=True, text=True,
+            )
+            self.assertEqual(json.loads((output / "assets.json").read_text()), [])
+            with (output / "assets.csv").open(newline="", encoding="utf-8") as stream:
+                self.assertEqual(list(csv.DictReader(stream)), [])
+
+
+class ScreenshotDiscoveryTests(unittest.TestCase):
+    def test_list_matches_registered_screens_without_love_runtime(self):
+        import re
+
+        source = UI_REGISTRY.read_text(encoding="utf-8")
+        expected = re.findall(
+            r'\{\s*"([^"]+)"\s*,\s*"ui\.screens\.[^"]+"\s*\}',
+            source,
+            flags=re.MULTILINE,
+        )
+        result = subprocess.run(
+            ["bash", str(CAPTURE), "--list"], check=True, capture_output=True, text=True,
+        )
+        self.assertEqual(result.stdout.splitlines(), expected)
+        self.assertGreater(len(expected), 0)
+
+    def test_capture_rejects_unknown_screens_before_launching_love(self):
+        env = os.environ.copy()
+        env["LOVE_BIN"] = "love-binary-that-does-not-exist"
+        for args in (
+            ["--screen", "not-a-real-screen"],
+            ["--screens", "library,not-a-real-screen"],
+        ):
+            with self.subTest(args=args):
+                result = subprocess.run(
+                    ["bash", str(CAPTURE), *args],
+                    capture_output=True, text=True, env=env,
+                )
+                self.assertEqual(result.returncode, 2)
+                self.assertIn("Unknown screen", result.stderr)
+                self.assertNotIn("LÖVE executable not found", result.stderr)
+
+        valid = subprocess.run(
+            ["bash", str(CAPTURE), "--screen", "library"],
+            capture_output=True, text=True, env=env,
+        )
+        self.assertEqual(valid.returncode, 1)
+        self.assertIn("LÖVE executable not found", valid.stderr)
+        self.assertNotIn("Unknown screen", valid.stderr)
+
+
+if __name__ == "__main__":
+    unittest.main()

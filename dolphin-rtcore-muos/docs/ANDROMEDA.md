@@ -1,24 +1,45 @@
-# Dolphin Rt:Core v12 — muOS 2606.0 Andromeda
+# Dolphin Rt:Core — muOS platform detection and registration
 
-## Install
-1. Copy `Dolphin_RtCore_v12_0_0_Andromeda.muxupd` into the `ARCHIVE` folder of the ROM card and install it from *Archive Manager*.
-   The package ships an integrity manifest (`manifest.sha256`) as Andromeda requires, and registers GameCube/Wii in the
-   core list by itself at the end of the installation.
-2. Put your `dolphin` binary in `/opt/muos/share/emulator/dolphin/` (it is not part of this package).
-3. If GameCube/Wii do not show up as systems: *Task Toolkit > Dolphin Rt-Core > Register GameCube and Wii*
-   (the app also does this every time it starts).
-4. Existing GameCube/Wii folders may need a fresh core choice: Content Explorer > folder > *Core Assignment*.
+## Current release support
 
-## Things to know
-- `core.json` on 2606.0 is **one file that replaces the bundled one**. The tool merges instead of replacing, but a
-  muOS update that adds systems will not show them until you remove our entries (`RtSys/uninstall_dolphinrt.sh`) or re-merge.
-  The original is kept once as `MUOS/info/manifest/core.json.rtcore.bak`.
-- Quit while playing: the muOS quit hotkey (kills `dolphin`), or START+SELECT via the Rt watcher.
+The current v12 package is documented for **muOS 2606.0 Andromeda**. The repository also retains the **muOS 2601.1 Jacaranda v11.5.1 legacy line**. A version-aware registration helper does not, by itself, make an Andromeda-only package a supported Jacaranda release: use the package and version listed in the root README.
 
-## Rt:Stream (PC side)
-The PC portal must serve, on the library port (default 8765):
-`/health`, `/library.tsv` and `/covers/<file>`; Sunshine answers on 47989 and games appear as Sunshine apps.
-`library.tsv` lines: `gc|wii <TAB> title <TAB> sunshine-app <TAB> covers/<file> <TAB> id <TAB> rom`.
-Different endpoints? Set `SYNC_LIBRARY_PATH` / `SYNC_COVER_PATH` in `tools/stream/paths.sh`.
-`lib/moonlight` needs libgamestream, libmoonlight-common, libavcodec 58 on the device; if any is missing the
-error names it (and Diagnostics lists it).
+## Install on Andromeda 2606.0
+
+1. Back up the SD card and Dolphin configuration.
+2. Copy the release `.muxupd` into the ROM card's `ARCHIVE` folder.
+3. Install it from muOS Archive Manager.
+4. Place your compatible aarch64 `dolphin` executable at `/opt/muos/share/emulator/dolphin/dolphin` (the project does not redistribute that binary).
+5. Open Dolphin Rt:Core. The installer and launcher run `RtSys/manifest_tool.sh ensure`; Task Toolkit also provides **Register GameCube and Wii**, **Profiles - Standard Only**, and **Profiles - All Tiers**.
+6. In Content Explorer, select a ROM folder, choose **Core Assignment**, then choose a profile.
+
+## Automatic muOS detection
+
+The helper reads `/opt/muos/config/system/version` (or muOS's `GET_VAR system version` helper), then probes the installed manifest structure. Filesystem capability takes priority over the codename:
+
+| Detected API | Registration strategy |
+|---|---|
+| `info/manifest/core.json` | Merge only Rt:Core's GameCube/Wii definitions into the user manifest; preserve unrelated systems and keep a one-time backup |
+| `info/manifest/core/<Namespace>/<System>.json` | Write only `Nintendo/Nintendo Gamecube.json` and `Nintendo/Nintendo Wii.json` |
+| Legacy `info/assign/<System>/*.ini` | Stage the two system folders atomically and preserve unrelated user files |
+
+After a manifest update, the helper invokes muOS's own `script/system/assign.sh -p -v` to regenerate `assign.json`. A valid core definition without its content-to-system aliases may still be absent from automatic Content Explorer assignment.
+
+Known version identifiers include `2606.0_ANDROMEDA`, `2601.1_JACARANDA`, and newer manifest-based builds. Unknown codenames are not a blocker when the filesystem exposes a supported manifest API.
+
+## Diagnostics
+
+```sh
+sh /opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh status
+sh /opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh ensure
+```
+
+Logs from the app launch-time check are stored in the frontend's `data/logs/manifest.log`. The muOS assignment generator writes its own report under `MUOS/log/assign_gen.txt`.
+
+## Rollback and uninstall
+
+Use the release-matched uninstall procedure. The registration helper removes only the two Rt:Core systems and their Dolphin profiles; it does not remove other Nintendo systems or user notes. Keep a card backup before upgrading firmware or changing package lines.
+
+## External emulator binary
+
+The Dolphin executable is a separately supplied dependency. Follow the repository's GPL source and redistribution notices for any binary you use.

@@ -62,10 +62,13 @@ fi
 
 cd "$APP_DIR" || exit 1
 
-# Register GameCube/Wii + Rt:Core profiles in the Andromeda core manifest (no-op when already current).
+# Detect the installed muOS registration API and repair stale GameCube/Wii assignments
+# before the frontend opens. The app remains launchable if registration fails.
 MT="/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh"
 if [ -x "$MT" ]; then
-    { sh "$MT" ensure >> "$LOG_DIR/manifest.log" 2>&1; } &
+    if ! sh "$MT" ensure >> "$LOG_DIR/manifest.log" 2>&1; then
+        echo "$(date '+%F %T') [WARN] core registration check failed; see manifest.log / run the Register task" >> "$LOG_DIR/frontend.log"
+    fi
 fi
 
 export DOLPHINUI_LOOP=1
