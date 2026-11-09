@@ -37,6 +37,29 @@ local function run()
     end
   end
 
+  -- Back must not consume the history entry while a transition is active.
+  local nav_ok, nav_err = pcall(function()
+    assert(UI.go_instant("library", {}), "cannot reset navigation to library")
+    assert(UI.go("settings", {}), "cannot begin navigation to settings")
+    local blocked, reason = UI.back()
+    assert(blocked == false and reason == "transition in progress",
+      "back during transition should be rejected without changing history")
+    UI.update(0.11)
+    UI.update(0.16)
+    assert(UI.current() == "settings", "settings transition did not complete")
+    assert(UI.back() == true, "back should be accepted after transition")
+    UI.update(0.11)
+    UI.update(0.16)
+    assert(UI.current() == "library", "back history entry was lost during transition")
+  end)
+  if nav_ok then
+    passed = passed + 1
+    out:write("  [OK]   navigation back during transition\n")
+  else
+    failures = failures + 1
+    out:write("  [FAIL] navigation back during transition: ", tostring(nav_err), "\n")
+  end
+
   out:write(("\nRESULT: %d/%d OK, %d FAIL\n"):format(passed, #manifest, failures))
   out:close()
   print(("smoke: %d/%d OK, %d FAIL"):format(passed, #manifest, failures))
