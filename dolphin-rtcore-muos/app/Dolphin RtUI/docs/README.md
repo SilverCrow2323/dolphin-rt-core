@@ -51,9 +51,10 @@ does not bypass Library logic or take ownership of navigation transitions.
 
 `core/nexus_diagnostics.lua` provides a read-only integrity report over the public
 catalog returned by `ui.catalog()`. It checks that every registered screen has its
-generated `navigation.go.<screen-id>` action and that action metadata does not point
-to an unknown screen. It does not execute callbacks, mutate the registry, or probe
-hardware/runtime availability.
+generated `navigation.go.<screen-id>` action, that generated route metadata declares
+the `navigation` group and matching screen, and that action targets resolve to known
+screens. It also rejects malformed or duplicate catalog entries. It does not execute
+callbacks, mutate the registry, or probe hardware/runtime availability.
 
 Example from a developer console or diagnostic integration:
 
