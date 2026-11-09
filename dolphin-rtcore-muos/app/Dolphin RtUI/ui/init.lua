@@ -132,6 +132,7 @@ function M.init()
         end
     end
 
+
     for _, screen_id in ipairs({ "gameset_browser", "gameset_explorer" }) do
         local screen = Nexus.get_screen(screen_id)
         if screen and screen.register_actions then
