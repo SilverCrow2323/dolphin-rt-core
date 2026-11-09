@@ -45,7 +45,7 @@ for p in "$HERE"/patches/local/*.patch; do [ -f "$p" ] && PATCHES+=("$p"); done
 for p in "${PATCHES[@]}"; do patch -p1 -s < "$p" && echo "applied $(basename "$p")"; done
 
 ENABLE_QT=OFF; ENABLE_X11=OFF; ENABLE_WAYLAND=OFF
-case "$TARGET" in desktop) ENABLE_QT=ON; ENABLE_X11=ON; ENABLE_WAYLAND=ON;; rocknix) ENABLE_WAYLAND=ON;; esac
+case "$TARGET" in desktop) ENABLE_QT=ON; ENABLE_X11=ON;; rocknix) ENABLE_WAYLAND=ON;; esac
 FLAGS=(-DCMAKE_BUILD_TYPE=Release -DENABLE_NOGUI=ON "-DENABLE_QT=$ENABLE_QT" -DENABLE_HEADLESS=OFF -DENABLE_TESTS=OFF
   -DENABLE_ANALYTICS=OFF -DENABLE_AUTOUPDATE=OFF -DENABLE_CLI_TOOL=OFF -DENCODE_FRAMEDUMPS=OFF -DUSE_DISCORD_PRESENCE=OFF
   -DUSE_MGBA=OFF -DUSE_RETRO_ACHIEVEMENTS=OFF -DENABLE_LLVM=OFF -DENABLE_VULKAN=OFF "-DENABLE_LTO=$LTO"
@@ -69,7 +69,7 @@ if [ "$FRONTEND" = gui ] || [ "$FRONTEND" = both ]; then
 fi
 
 {
-  echo "Dolphin Rt:Core build"; echo "date:      $(date -u '+%F %T') UTC"; echo "target:    $TARGET"
+  echo "Dolphin Rt:Core build"; echo "date:      $(date -u '+%F %T') UTC"; echo "target:    $TARGET"; echo "frontend:  $FRONTEND"
   echo "upstream:  $(git -C "$SRC" log -1 --format='%H %ad' --date=short)"
   echo "compiler:  $(c++ --version | head -n 1)"; echo "tune/lto:  $TUNE / $LTO"; echo "host:      $(uname -srm)"
   echo; echo "patches (sha256):"; for p in "${PATCHES[@]}"; do echo "  $(sha256sum "$p" | cut -c1-16)  $(basename "$p")"; done
