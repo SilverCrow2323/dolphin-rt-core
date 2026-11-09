@@ -143,11 +143,126 @@ local function move(d)
 end
 
 local function start_launch(g)
-  if not Stream.configured() then Notify.show("warning", "Set the PC address first (START)"); return end
+  if not g then return false, "no stream game selected" end
+  if not Stream.configured() then
+    Notify.show("warning", "Set the PC address first (START)")
+    return false, "stream host is not configured"
+  end
   launching = { g = g, t = 0, phase = "check" }
   os.remove(Stream.DIR .. "/h_launch.done")
-  Stream.spawn("health.sh", "http://" .. Stream.s.HOST .. ":47989/serverinfo", Stream.DIR .. "/h_launch.done")
+  local ok, result, err = pcall(Stream.spawn, "health.sh",
+      "http://" .. Stream.s.HOST .. ":47989/serverinfo", Stream.DIR .. "/h_launch.done")
+  if not ok or (result ~= true and result ~= 0) then
+    launching = nil
+    return false, tostring(err or ("could not start health preflight (status " .. tostring(result) .. ")"))
+  end
   SFX.play("menu_select")
+  return true
+end
+
+-- NEXUS actions expose the Stream browser's existing tab/view/filter and launch model.
+function S.register_actions(ui)
+  if not ui or type(ui.register_action) ~= "function" then
+    return false, "UI action registrar unavailable"
+  end
+  local function selected() return cur() end
+  local function refresh_list()
+    invalidate()
+    sync_list_widget()
+    flowPos = sel[tab]
+  end
+  local specs = {
+    { id = "stream_library.refresh", title = "Refresh Stream library", order = 10,
+      run = function()
+        local ok, err = pcall(Stream.reload)
+        if not ok then return false, tostring(err) end
+        for i = 1, 3 do sel[i] = 1; scroll[i] = 0 end
+        refresh_list(); covers, ncovers = {}, 0
+        return true
+      end },
+    { id = "stream_library.set_tab", title = "Set Stream library tab", order = 20,
+      run = function(tab_id)
+        local indexes = { library = 1, favourites = 2, recent = 3 }
+        if type(tab_id) ~= "string" or not indexes[tab_id] then
+          return false, "tab must be library, favourites or recent"
+        end
+        tab = indexes[tab_id]; refresh_list(); SFX.play("menu_pagescroll")
+        return true
+      end },
+    { id = "stream_library.set_view", title = "Set Stream library view", order = 30,
+      run = function(view_id)
+        local indexes = { flow = 1, grid = 2, list = 3 }
+        if type(view_id) ~= "string" or not indexes[view_id] then
+          return false, "view must be flow, grid or list"
+        end
+        view = indexes[view_id]
+        Settings.set("stream_view", view)
+        SFX.play("menu_select")
+        return true
+      end },
+    { id = "stream_library.set_filter", title = "Set Stream library system filter", order = 40,
+      run = function(filter_id)
+        local indexes = { all = 1, gamecube = 2, wii = 3 }
+        if type(filter_id) ~= "string" or not indexes[filter_id] then
+          return false, "filter must be all, gamecube or wii"
+        end
+        filter = indexes[filter_id]; refresh_list(); SFX.play("menu_pagescroll")
+        return true
+      end },
+    { id = "stream_library.set_sort", title = "Set Stream library sort order", order = 50,
+      run = function(sort_id)
+        local indexes = { az = 1, recent = 2, most_played = 3 }
+        if type(sort_id) ~= "string" or not indexes[sort_id] then
+          return false, "sort must be az, recent or most_played"
+        end
+        sort = indexes[sort_id]; refresh_list()
+        return true
+      end },
+    { id = "stream_library.select", title = "Select Stream game", order = 60,
+      run = function(index)
+        local items = cur_list()
+        if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #items then
+          return false, "Stream selection index out of range"
+        end
+        sel[tab] = index; S.list.sel = index; S.list:_aim(true); flowPos = index
+        return true
+      end },
+    { id = "stream_library.toggle_favourite", title = "Toggle selected Stream favourite", order = 70,
+      run = function()
+        local game = selected()
+        if not game then return false, "no Stream game selected" end
+        local ok, result = pcall(Stream.toggle_fav, game.app)
+        if not ok then return false, tostring(result) end
+        refresh_list(); SFX.play("menu_toggleoption")
+        return true, result
+      end },
+    { id = "stream_library.launch_selected", title = "Launch selected Stream game", order = 80,
+      run = function() return start_launch(selected()) end },
+    { id = "stream_library.cancel_launch", title = "Cancel Stream launch preflight", order = 90,
+      run = function()
+        if not launching then return false, "no Stream launch is active" end
+        launching = nil
+        return true
+      end },
+    { id = "stream_library.state", title = "Get Stream library state", order = 100,
+      run = function()
+        local game = selected()
+        local stats = game and Stream.stat(game.app) or nil
+        return { tab = TABS[tab]:lower(), view = VIEWS[view]:lower(),
+          filter = FILTERS[filter]:lower(), sort = SORTS[sort]:lower(),
+          selected_app = game and game.app, selected_title = game and game.title,
+          selected_kind = game and game.kind, favourite = stats and stats.fav or false,
+          launch_phase = launching and launching.phase or nil,
+          game_count = #cur_list() }
+      end },
+  }
+  for _, spec in ipairs(specs) do
+    local ok, err = ui.register_action(spec.id, spec.run, {
+      title = spec.title, group = "stream", order = spec.order, screen = "stream_library",
+    })
+    if not ok then return false, err or ("could not register " .. spec.id) end
+  end
+  return true
 end
 
 function S.pad(b)
