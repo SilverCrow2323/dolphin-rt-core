@@ -53,7 +53,7 @@ does not bypass Library logic or take ownership of navigation transitions.
 catalog returned by `ui.catalog()`. It checks that every registered screen has its
 generated `navigation.go.<screen-id>` action, that generated route metadata declares
 the `navigation` group and matching screen, and that action targets resolve to known
-screens. It also rejects malformed or duplicate catalog entries. It does not execute
+screens. It also rejects empty registries, malformed or duplicate catalog entries, and sparse/non-array catalog keys. It does not execute
 callbacks, mutate the registry, or probe hardware/runtime availability.
 
 Example from a developer console or diagnostic integration:
