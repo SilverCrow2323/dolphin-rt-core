@@ -16,7 +16,7 @@ local function region_of(id)
     return map[id:sub(4,4)] or "?"
 end
 
-local function build()
+local function build(keep_file)
     local rows = {}
     local list = GM.list_for(S.game_id) or {}
     for _, cfg in ipairs(list) do
@@ -26,6 +26,11 @@ local function build()
     S.rows = rows
     S.list:set(rows, false)
     S.list.sel = 1
+    if keep_file then
+        for i, row in ipairs(rows) do
+            if row.kind == "file" and row.file == keep_file then S.list.sel = i; break end
+        end
+    end
 end
 
 function S.enter(params)
@@ -47,36 +52,46 @@ local function open_config(filename)
 end
 
 local function delete_custom(filename)
+    if type(filename) ~= "string" or filename == "" then return false, "config filename is required" end
     Modal.show("Delete config?", "File: " .. filename,
         { accept_label = "Delete", cancel_label = "Cancel", color = K.C.bad,
           on_accept = function()
-              GM.delete(S.game_id, filename)
+              local ok, err = GM.delete(S.game_id, filename)
+              if ok == false then Notify.show("error", "Delete failed: " .. tostring(err)); return end
               SFX.play("menu_back")
               build()
           end })
+    return true
 end
 
 local function create_new()
     local name = "custom_" .. os.date("%m%d_%H%M") .. ".ini"
-    if GM.add(S.game_id, name) then
+    local ok, err = GM.add(S.game_id, name)
+    if ok then
         SFX.play("menu_select")
-        build()
+        build(name)
         open_config(name)
-    else
-        Notify.show("error", "Could not create file")
+        return true
     end
+    Notify.show("error", "Could not create file: " .. tostring(err))
+    return false, err or "could not create config"
 end
 
 local function toggle_active(row)
+    if not row or row.kind ~= "file" then return false, "no config selected" end
+    local ok, err
     if row.active then
-        GM.clear_active(S.game_id)
+        ok, err = GM.clear_active(S.game_id)
+        if ok == false then return false, err or "could not clear active config" end
         Notify.show("info", "Deactivated: " .. row.file)
     else
-        GM.set_active(S.game_id, row.file)
+        ok, err = GM.set_active(S.game_id, row.file)
+        if ok == false then return false, err or "could not activate config" end
         Notify.show("success", "Active: " .. row.file)
     end
     SFX.play("menu_toggleoption")
-    build()
+    build(row.file)
+    return true
 end
 
 function S.pad(b)
@@ -160,6 +175,56 @@ function S.draw()
         { key = "X", label = "Delete" },
         { key = "B", label = "Back" },
     })
+end
+
+-- NEXUS adapters reuse the existing per-game configuration operations.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected() return S.list and S.list:cur() or nil end
+    local specs = {
+        { id = "gameset_explorer.refresh", title = "Refresh game configs", order = 10,
+          run = function()
+              local row = selected()
+              local keep = row and row.kind == "file" and row.file or nil
+              local ok, err = pcall(build, keep)
+              if not ok then return false, tostring(err) end
+              return true
+          end },
+        { id = "gameset_explorer.open_selected", title = "Open selected game config", order = 20,
+          run = function()
+              local row = selected()
+              if not row then return false, "no config selected" end
+              if row.kind == "file" then open_config(row.file); return true end
+              if row.kind == "new" then return create_new() end
+              return false, "unsupported config entry"
+          end },
+        { id = "gameset_explorer.create", title = "Create game config", order = 30,
+          run = create_new },
+        { id = "gameset_explorer.set_active_selected", title = "Activate or deactivate selected config", order = 40,
+          run = function() return toggle_active(selected()) end },
+        { id = "gameset_explorer.request_delete_selected", title = "Request deletion of selected config", order = 50,
+          run = function()
+              local row = selected()
+              if not row or row.kind ~= "file" then return false, "no config selected" end
+              return delete_custom(row.file)
+          end },
+        { id = "gameset_explorer.state", title = "Get game config state", order = 60,
+          run = function()
+              local row = selected()
+              return { game_id = S.game_id, game_title = S.game_title,
+                  selected_kind = row and row.kind, config_file = row and row.file,
+                  active = row and row.active == true }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "gamesettings", order = spec.order, screen = "gameset_explorer",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S
