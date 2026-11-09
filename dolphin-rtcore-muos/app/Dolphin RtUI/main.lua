@@ -120,6 +120,11 @@ function love.load()
     end
   end
 
+  -- Batch screenshots select their first screen through core.devshot.lua.
+  -- Skip the normal startup toast so captured frames remain clean.
+  local shot_batch = os.getenv("DOLPHINUI_SHOT_BATCH")
+  if shot_batch and shot_batch ~= "" then return end
+
   local ret = os.getenv("DOLPHINUI_RETURN_TO")
   if ret and ret ~= "" then
     UI.go_instant(ret)
