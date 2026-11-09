@@ -33,6 +33,21 @@ Actions that require a selected game return a controlled failure when the select
 The filter action validates its argument before changing screen state. The action registry
 does not bypass Library logic or take ownership of navigation transitions.
 
+### Profile picker action contract
+
+The Rt:Profiles picker publishes these NEXUS action IDs:
+
+| Action | Arguments | Behavior |
+|---|---|---|
+| `profiles.refresh` | none | Rescans profile metadata and rebuilds the picker |
+| `profiles.create` | none | Creates a new custom profile from Default (or empty INI files) |
+| `profiles.open_selected` | none | Opens the currently selected profile in Rt:Editor |
+| `profiles.open` | exact profile name | Selects and opens the named profile; rejects unknown names |
+
+Picker actions are available only while the profile screen is in its browse phase.
+Creation and selection remain implemented by the profile screen; NEXUS only exposes
+stable entry points for menus, shortcuts and diagnostics.
+
 ### NEXUS contract
 - Screen modules are registered once by stable ID; unknown IDs are rejected before navigation.
 - Action IDs are explicit names (for example `library.rescan`) and callbacks are invoked through a protected call.
