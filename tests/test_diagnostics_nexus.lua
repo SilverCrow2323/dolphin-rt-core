@@ -12,7 +12,7 @@ io.popen=function(command)
   function h:close() self.closed=true end
   return h
 end
-os.execute=function() deleted=deleted+1; return 0 end
+os.execute=function(command) if command:match("^rm %-f") then deleted=deleted+1 end; return 0 end
 package.preload["ui.kit"]=function()
   local function list()
     local l={items={},sel=1}
@@ -50,6 +50,8 @@ Screen.enter()
 local state=actions["diagnostics.state"].run()
 assert(state.mode=="list" and state.category_count==4 and state.setting_count==4)
 assert(actions["diagnostics.select_category"].run(2))
+local empty_open,empty_err=actions["diagnostics.open_selected"].run()
+assert(empty_open==false and tostring(empty_err):match("no log files"))
 assert(actions["diagnostics.request_clear_selected"].run())
 assert(modal and modal.title=="Clear Dolphin Log?" and deleted==0,"cleanup must require confirmation")
 modal.opts.on_accept()
