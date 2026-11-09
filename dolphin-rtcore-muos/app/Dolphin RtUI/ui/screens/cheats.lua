@@ -83,14 +83,20 @@ local function apply_now(quiet)
     if ok then
         S.changed = false
         if not quiet then SFX.play("menu_select"); Notify.show("success", ("Written to Dolphin: %d code(s)"):format(n or 0)) end
-    else Notify.show("warning", "Not applied: " .. tostring(n or "unknown error")) end
+        return true, n or 0
+    end
+    Notify.show("warning", "Not applied: " .. tostring(n or "unknown error"))
+    return false, n or "unknown error"
 end
 
 local function toggle()
-    local r = S.list:cur(); if not r or not r.e then return end
+    local r = S.list:cur(); if not r or not r.e then return false, "no cheat entry selected" end
     if Cheats.set_enabled(S.game_id, r.e.slug, not r.e.enabled) then
         S.changed = true; SFX.play("menu_toggleoption"); reload(r.e.slug)
-    else Notify.show("error", "Could not write rtcheats_data.ini") end
+        return true
+    end
+    Notify.show("error", "Could not write rtcheats_data.ini")
+    return false, "could not write rtcheats_data.ini"
 end
 
 local function bulk()
@@ -104,15 +110,17 @@ local function bulk()
         if on then if e.pclass ~= "diag" then batch[#batch + 1] = { slug = e.slug, on = true } end
         elseif e.enabled then batch[#batch + 1] = { slug = e.slug, on = false } end
     end
-    if #batch == 0 then Notify.show("info", "Nothing to change on this tab"); return end
+    if #batch == 0 then Notify.show("info", "Nothing to change on this tab"); return false, "nothing to change" end
     if Cheats.set_many(S.game_id, batch) then
         S.changed = true; SFX.play("menu_toggleoption")
         local r = S.list:cur(); reload(r and r.e and r.e.slug)
         Notify.show("info", on and "Boost patches enabled" or "All switched off")
+        return true
     end
+    return false, "could not update cheat settings"
 end
 
-local function tab(d) S.tab = (S.tab - 1 + d) % #TABS + 1; SFX.play("menu_pagescroll"); rebuild() end
+local function tab(d) S.tab = (S.tab - 1 + d) % #TABS + 1; SFX.play("menu_pagescroll"); rebuild(); return true end
 
 function S.pad(b)
     if     b == "L1" or b == "LEFT"  then tab(-1)
@@ -180,6 +188,91 @@ function S.draw()
     end
     K.footer({ { key = "A", label = "Toggle" }, { key = "Y", label = "All" }, { key = "X", label = "Apply" },
                { key = "L1 R1", label = "Tab" }, { key = "B", label = "Back" } })
+end
+
+-- NEXUS actions expose per-game Boost/FPS/Cheat state through the existing model.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected()
+        local row = S.list and S.list:cur()
+        return row and row.e or nil
+    end
+    local function group_count(group)
+        local total, enabled = 0, 0
+        for _, entry in ipairs(S.all or {}) do
+            if entry.group == group then
+                total = total + 1
+                if entry.enabled then enabled = enabled + 1 end
+            end
+        end
+        return total, enabled
+    end
+    local specs = {
+        { id = "cheats.refresh", title = "Refresh game cheats", order = 10,
+          run = function()
+              if not S.game_id then return false, "no game is active" end
+              local keep = selected()
+              reload(keep and keep.slug)
+              start_download()
+              return true
+          end },
+        { id = "cheats.switch_tab", title = "Switch cheat tab", order = 20,
+          run = function(tab_id)
+              local indexes = { boost = 1, fps = 2, cheats = 3 }
+              if not indexes[tab_id] then return false, "tab must be boost, fps or cheats" end
+              S.tab = indexes[tab_id]
+              K.set_accent(TABS[S.tab].acc)
+              rebuild()
+              return true
+          end },
+        { id = "cheats.select", title = "Select cheat entry", order = 30,
+          run = function(index)
+              if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.list.items then
+                  return false, "cheat selection index out of range"
+              end
+              if S.list.items[index].skip then return false, "cannot select a category header" end
+              S.list.sel = index
+              return true
+          end },
+        { id = "cheats.toggle_selected", title = "Toggle selected cheat", order = 40,
+          run = function()
+              if not selected() then return false, "no cheat entry selected" end
+              return toggle()
+          end },
+        { id = "cheats.bulk_toggle", title = "Bulk-toggle current cheat tab", order = 50,
+          run = function() return bulk() end },
+        { id = "cheats.apply", title = "Apply game cheats to Dolphin", order = 60,
+          run = function()
+              if not S.game_id then return false, "no game is active" end
+              return apply_now(false)
+          end },
+        { id = "cheats.state", title = "Get per-game cheat state", order = 70,
+          run = function()
+              local entry = selected()
+              local p, pe = group_count("perf")
+              local f, fe = group_count("fps")
+              local c, ce = group_count("cheat")
+              return { game_id = S.game_id, title = S.title,
+                  tab = TABS[S.tab] and TABS[S.tab].id or nil,
+                  selected_slug = entry and entry.slug or nil,
+                  selected_name = entry and entry.name or nil,
+                  selected_enabled = entry and entry.enabled or false,
+                  changed = S.changed == true, downloading = S.dl == true,
+                  download_message = S.dl_msg,
+                  boost_count = p, boost_enabled = pe,
+                  fps_count = f, fps_enabled = fe,
+                  cheat_count = c, cheat_enabled = ce }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "cheats", order = spec.order, screen = "cheats",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S
