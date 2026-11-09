@@ -85,26 +85,36 @@ function M.catalog()
     return { screens = Nexus.list_screens(), actions = Nexus.list_actions() }
 end
 
+local SCREEN_MODULES = {
+    { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
+    { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
+    { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
+    { "hotkeys", "ui.screens.hotkeys" }, { "settings", "ui.screens.settings" },
+    { "rt_editor", "ui.screens.rt_editor" },
+    { "folders", "ui.screens.folders" }, { "about", "ui.screens.about" },
+    { "diagnostics", "ui.screens.diagnostics" },
+    { "controller_map", "ui.screens.controller_map" },
+    { "controller_profiles", "ui.screens.controller_profiles" },
+    { "triage", "ui.screens.triage" },
+    { "rt_profiles", "ui.screens.rt_profiles" },
+    { "gameset_browser", "ui.screens.gameset_browser" },
+    { "keymap", "ui.screens.keymap" },
+    { "gameset_explorer", "ui.screens.gameset_explorer" },
+    { "compat_list", "ui.screens.compat_list" },
+    { "stream_library", "ui.screens.stream_library" },
+    { "stream_settings", "ui.screens.stream_settings" },
+}
+
+function M.screen_manifest()
+    local out = {}
+    for i, entry in ipairs(SCREEN_MODULES) do
+        out[i] = { id = entry[1], module = entry[2] }
+    end
+    return out
+end
+
 function M.init()
-    for _, s in ipairs({
-        { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
-        { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
-        { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
-        { "hotkeys", "ui.screens.hotkeys" }, { "settings", "ui.screens.settings" },
-        { "rt_editor", "ui.screens.rt_editor" },
-        { "folders", "ui.screens.folders" }, { "about", "ui.screens.about" },
-        { "diagnostics", "ui.screens.diagnostics" },
-        { "controller_map", "ui.screens.controller_map" },
-        { "controller_profiles", "ui.screens.controller_profiles" },
-        { "triage", "ui.screens.triage" },
-        { "rt_profiles", "ui.screens.rt_profiles" },
-        { "gameset_browser", "ui.screens.gameset_browser" },
-        { "keymap", "ui.screens.keymap" },
-        { "gameset_explorer", "ui.screens.gameset_explorer" },
-        { "compat_list", "ui.screens.compat_list" },
-        { "stream_library", "ui.screens.stream_library" },
-        { "stream_settings", "ui.screens.stream_settings" },
-    }) do M.register(s[1], s[2]) end
+    for _, s in ipairs(SCREEN_MODULES) do M.register(s[1], s[2]) end
 
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
