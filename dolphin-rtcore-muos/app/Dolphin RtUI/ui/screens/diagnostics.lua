@@ -130,7 +130,8 @@ function S.register_actions(ui)
         local cat = selected_category()
         if not cat then return false, "no diagnostics category selected" end
         open_viewer(cat)
-        return S.viewer ~= nil, S.viewer and nil or "no log files available"
+        if not S.viewer then return false, "no log files available" end
+        return true
       end },
     { id = "diagnostics.scroll_viewer", title = "Scroll log viewer", order = 40,
       run = function(delta)
