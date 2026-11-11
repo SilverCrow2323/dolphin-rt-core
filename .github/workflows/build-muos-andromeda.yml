@@ -40,7 +40,7 @@ permissions:
 
 concurrency:
   group: muos-andromeda-h700-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
