@@ -12,6 +12,10 @@ ARCHIVE="$OUT/Dolphin_RtCore_v${VERSION//./_}_Andromeda.muxupd"
 # Keep binary and Sys from the same Dolphin build revision.
 DOLPHIN_BIN="${DOLPHIN_BIN:-}"
 DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}"
+DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}"
+if [ -z "$DOLPHIN_LIB_DIR" ] && [ -n "$DOLPHIN_BIN" ] && [ -d "$(dirname "$DOLPHIN_BIN")/lib" ]; then
+  DOLPHIN_LIB_DIR="$(dirname "$DOLPHIN_BIN")/lib"
+fi
 DEFAULT_SYS_SOURCE="$(cd "$ROOT/emu/dolphin/Sys" && pwd -P)"
 SYS_SOURCE="$DEFAULT_SYS_SOURCE"
 if [ -n "$DOLPHIN_SYS_DIR" ]; then
@@ -46,6 +50,14 @@ fi
 cp -a "$ROOT/app/Dolphin RtUI/." "$S/$APP/"
 cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, tasks, manifest tool, update hook)
 [ -n "$DOLPHIN_BIN" ] && install -m755 "$DOLPHIN_BIN" "$S/$EMU/dolphin"
+if [ -n "$DOLPHIN_LIB_DIR" ]; then
+  [ -d "$DOLPHIN_LIB_DIR" ] || { echo "ERROR: DOLPHIN_LIB_DIR is not a directory: $DOLPHIN_LIB_DIR" >&2; exit 1; }
+  mkdir -p "$S/$EMU/lib"
+  cp -a "$DOLPHIN_LIB_DIR/." "$S/$EMU/lib/"
+fi
+if [ -n "$DOLPHIN_BIN" ] && readelf -d "$DOLPHIN_BIN" 2>/dev/null | grep -q "libhidapi-hidraw.so.0"; then
+  [ -s "$S/$EMU/lib/libhidapi-hidraw.so.0" ] || { echo "ERROR: missing bundled HIDAPI runtime; set DOLPHIN_LIB_DIR" >&2; exit 1; }
+fi
 mkdir -p "$S/$APP/data/logs" "$S/$APP/data/stream/covers" "$S/$APP/data/stream/keys"
 
 find "$S" -name '*.sh' -exec chmod 755 {} +
