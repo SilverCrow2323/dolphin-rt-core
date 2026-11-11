@@ -28,6 +28,39 @@ say() { printf '  %s\n' "$*"; }
 die() { printf '  [ERR] %s\n' "$*" >&2; exit 1; }
 need_jq() { command -v jq >/dev/null 2>&1 || die "jq is required for manifest-based muOS builds"; }
 
+alias_file() {
+    kind="$1"
+    case "$kind" in gc|wii) ;; *) die "alias system must be gc or wii" ;; esac
+    printf '%s/rtcore-folder-aliases-%s.txt' "$USERM" "$kind"
+}
+
+add_custom_alias_lines() {
+    kind="$1"
+    file="$2"
+    aliases="$(alias_file "$kind")"
+    [ -r "$aliases" ] || return 0
+    while IFS= read -r alias; do
+        [ -n "$alias" ] || continue
+        grep -Fxq "$alias" "$file" || printf '%s\n' "$alias" >> "$file"
+    done < "$aliases"
+}
+
+verify_custom_aliases() {
+    need_jq
+    map="$USERM/assign.json"
+    [ -r "$map" ] || die "muOS assign map is missing: $map"
+    for kind in gc wii; do
+        aliases="$(alias_file "$kind")"
+        [ -r "$aliases" ] || continue
+        if [ "$kind" = gc ]; then system="Nintendo Gamecube"; else system="Nintendo Wii"; fi
+        while IFS= read -r alias; do
+            [ -n "$alias" ] || continue
+            jq -e --arg alias "$alias" --arg system "$system" '.[$alias] == $system' "$map" >/dev/null 2>&1 \
+                || die "muOS assign map does not contain custom alias '$alias' -> '$system'"
+        done < "$aliases"
+    done
+}
+
 cur_mode() {
     m="$(sed -n 's/^MODE=\([12]\)[[:space:]]*$/\1/p' "$STATE" 2>/dev/null | head -n 1)"
     echo "${m:-1}"
@@ -73,6 +106,13 @@ build_system() {
           sec=="global" && $1 ~ /^(name|default|catalogue|lookup|governor)$/ { print "G\t" $1 "\t" substr($0,index($0,"=")+1) }
           sec=="friendly" && NF>0 && $0!="" { print "F\t" $0 }
         ' "$dir/global.ini"
+        kind="$(basename "$(dirname "$dir")")"
+        aliases="$(alias_file "$kind")"
+        if [ -r "$aliases" ]; then
+            while IFS= read -r alias; do
+                [ -n "$alias" ] && printf 'F\\t%s\\n' "$alias"
+            done < "$aliases"
+        fi
         for f in "$dir"/*.ini; do
             [ -f "$f" ] || continue
             [ "$(basename "$f")" = "global.ini" ] && continue
@@ -154,6 +194,7 @@ refresh_assign() {
         ' "$USERM/assign.json" >/dev/null 2>&1 \
             || die "muOS assign.sh completed but assign.json does not map all Nintendo GameCube/Wii aliases; check MUOS/log/assign_gen.txt"
     fi
+    [ "$expected" = "absent" ] || verify_custom_aliases
 }
 legacy_replace_system() {
     source_dir="$1"
@@ -171,6 +212,8 @@ legacy_replace_system() {
         [ -f "$stale" ] && rm -f "$stale"
     done
     cp -f "$source_dir"/*.ini "$stage/" || { rm -rf "$stage"; return 1; }
+    kind="$(basename "$(dirname "$source_dir")")"
+    add_custom_alias_lines "$kind" "$stage/global.ini"
     [ -s "$stage/global.ini" ] || { rm -rf "$stage"; return 1; }
 
     if [ -e "$target" ]; then
@@ -210,7 +253,17 @@ legacy_apply() {
 legacy_system_current() {
     source_dir="$1"
     target="$2"
-    [ -s "$target/global.ini" ] && cmp -s "$source_dir/global.ini" "$target/global.ini" || return 1
+    kind="$(basename "$(dirname "$source_dir")")"
+    aliases="$(alias_file "$kind")"
+    if [ -s "$aliases" ]; then
+        grep -Fvx -f "$aliases" "$target/global.ini" | cmp -s - "$source_dir/global.ini" || return 1
+        while IFS= read -r alias; do
+            [ -n "$alias" ] || continue
+            grep -Fxq "$alias" "$target/global.ini" || return 1
+        done < "$aliases"
+    else
+        [ -s "$target/global.ini" ] && cmp -s "$source_dir/global.ini" "$target/global.ini" || return 1
+    fi
     for f in "$source_dir"/*.ini; do
         [ -f "$f" ] || continue
         cmp -s "$f" "$target/$(basename "$f")" || return 1
@@ -330,7 +383,16 @@ manifest_current() {
         and
           ([ "nintendowii", "nwii", "wii", "wiiz" ]
            | all(.[]; . as $key | $map[$key] == $wii))
-    ' "$USERM/assign.json" >/dev/null 2>&1
+    ' "$USERM/assign.json" >/dev/null 2>&1 || return 1
+    for kind in gc wii; do
+        aliases="$(alias_file "$kind")"
+        [ -r "$aliases" ] || continue
+        if [ "$kind" = gc ]; then system="Nintendo Gamecube"; else system="Nintendo Wii"; fi
+        while IFS= read -r alias; do
+            [ -n "$alias" ] || continue
+            jq -e --arg alias "$alias" --arg system "$system" '.[$alias] == $system' "$USERM/assign.json" >/dev/null 2>&1 || return 1
+        done < "$aliases"
+    done
 }
 
 do_remove() {
@@ -348,6 +410,7 @@ do_remove() {
     else
         WII_KEY="$OLD_WII_NAME"
     fi
+    rm -f "$(alias_file gc)" "$(alias_file wii)"
     case "$RT_MUOS_REGISTRATION_LAYOUT" in
         legacy-assign)
             legacy_remove
@@ -378,6 +441,32 @@ do_remove() {
         *) die "unsupported muOS registration layout: $RT_MUOS_REGISTRATION_LAYOUT" ;;
     esac
     sync
+}
+
+do_alias_add() {
+    kind="${2:-}"
+    alias="${3:-}"
+    case "$kind" in gc|wii) ;; *) die "usage: manifest_tool.sh alias-add <gc|wii> <lowercase-alias>" ;; esac
+    case "$alias" in ""|*[!a-z0-9]*) die "alias must contain lowercase letters and digits only" ;; esac
+    [ "${#alias}" -le 64 ] || die "alias is too long"
+
+    if [ "$kind" = gc ]; then system="Nintendo Gamecube"; else system="Nintendo Wii"; fi
+    file="$(alias_file "$kind")"
+    mkdir -p "$USERM" || die "cannot create alias storage: $USERM"
+
+    other=""
+    if [ -r "$USERM/assign.json" ] && command -v jq >/dev/null 2>&1; then
+        other="$(jq -r --arg alias "$alias" '.[$alias] // empty' "$USERM/assign.json" 2>/dev/null || true)"
+    fi
+    [ -z "$other" ] || [ "$other" = "$system" ] || die "alias '$alias' is already assigned to '$other'"
+
+    if [ -r "$file" ] && grep -Fxq "$alias" "$file"; then
+        say "alias already registered: $alias -> $system"
+    else
+        printf '%s\n' "$alias" >> "$file" || die "cannot save custom alias: $file"
+        say "registered custom alias: $alias -> $system"
+    fi
+    do_apply "$(cur_mode)"
 }
 
 do_status() {
@@ -415,6 +504,7 @@ case "${1:-status}" in
         fi
         ;;
     remove) do_remove ;;
+    alias-add) do_alias_add "$@" ;;
     status) do_status ;;
-    *) echo "usage: $0 apply [1|2] | ensure | remove | status"; exit 1 ;;
+    *) echo "usage: $0 apply [1|2] | ensure | remove | alias-add <gc|wii> <alias> | status"; exit 1 ;;
 esac
