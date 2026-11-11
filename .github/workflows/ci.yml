@@ -115,7 +115,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install manifest test dependency
-        run: sudo apt-get update && sudo apt-get install -y jq
+        run: sudo apt-get update && sudo apt-get install -y jq zip unzip
       - name: Check helper syntax
         run: |
           bash -n tools/capture-ui.sh tools/publish-wiki.sh tools/build-compat-site.sh
