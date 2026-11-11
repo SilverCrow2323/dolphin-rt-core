@@ -351,9 +351,11 @@ if [ "$SAFE_EXIT" = "1" ] && [ "${RT_NO_EXIT_WATCHER:-0}" != "1" ]; then
     done
 fi
 
-"$DOLPHIN" -e "$ROM" -u "$EMU" >> "$DOLPHIN_LOG" 2>&1 &
+# muOS is a direct framebuffer target: force FBDev + OpenGL ES-capable OGL.
+# This avoids accidental X11/headless selection and ignores stale per-user backend values.
+"$DOLPHIN" --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMU" >> "$DOLPHIN_LOG" 2>&1 &
 DOLPHIN_PID=$!
-log "dolphin pid=$DOLPHIN_PID  ( ./dolphin -e <rom> -u $EMU )"
+log "dolphin pid=$DOLPHIN_PID  ( --platform=fbdev --video_backend=OGL -e <rom> -u $EMU )"
 
 # gptokeyb2 attaches to the "dolphin" process
 if [ "${HOTKEYS:-}" != "Disabled" ]; then
