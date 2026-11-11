@@ -20,7 +20,6 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
-      - "docs/TROUBLESHOOTING.md"
       - ".github/workflows/build-dolphin.yml"
   workflow_dispatch:
 
