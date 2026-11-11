@@ -186,11 +186,11 @@ build_both() {
     validate_sources "$n"
     GC_KEY="$(sys_name "$SW/gc/mode $n")"
     WII_KEY="$(sys_name "$SW/wii/mode $n")"
-    GC_JSON="$(build_system "$SW/gc/mode $n")" || die "cannot build GameCube manifest entry"
-    WII_JSON="$(build_system "$SW/wii/mode $n")" || die "cannot build Wii manifest entry"
+    GC_JSON="$(build_system "$SW/gc/mode $n")" || return 1
+    WII_JSON="$(build_system "$SW/wii/mode $n")" || return 1
     for item in "$GC_JSON" "$WII_JSON"; do
         printf '%s' "$item" | jq -e '(.namespace=="Nintendo") and ((.external|length)>0) and (.default as $d | .external | has($d))' >/dev/null \
-            || { system_name="$(printf '%s' "$item" | jq -r '.name // "unknown"')"; die "invalid profile manifest entry for $system_name"; }
+            || { system_name="$(printf '%s' "$item" | jq -r '.name // "unknown"')"; printf '[ERR] invalid profile manifest entry for %s\n' "$system_name" >&2; return 1; }
     done
 }
 
@@ -306,7 +306,7 @@ legacy_remove() {
 manifest_apply() {
     n="$1"
     need_jq
-    build_both "$n"
+    build_both "$n" || die "cannot build GameCube/Wii profile manifests; check the profile INI files above"
 
     if [ "$RT_MUOS_REGISTRATION_LAYOUT" = "single" ]; then
         file="$USERM/core.json"

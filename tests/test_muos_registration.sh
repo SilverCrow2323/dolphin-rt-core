@@ -69,6 +69,20 @@ jq -e '.nintendogamecube=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii"' 
 ok "Andromeda single manifest registers the Nintendo systems and preserves other systems"
 [ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 1 ]
 ok "Andromeda automatic assignment refresh runs"
+
+# Status must report stale registration when a profile is malformed, rather
+# than exiting before it prints the registration verdict.
+BROKEN_PROFILE="$TMP/broken-profile"
+cp -a "$SOURCES" "$BROKEN_PROFILE"
+PROFILE_FILE="$BROKEN_PROFILE/gc/mode 1/dolphin - rtprime - upright.ini"
+sed '/^core=/d' "$PROFILE_FILE" > "$PROFILE_FILE.tmp"
+mv "$PROFILE_FILE.tmp" "$PROFILE_FILE"
+STATUS_OUT="$(RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$BROKEN_PROFILE" \
+RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
+sh "$TOOL" status 2>&1 || true)"
+printf '%s\\n' "$STATUS_OUT" | grep -Fq 'registration     : MISSING/STALE'
+ok "status reports a stale registration instead of exiting during profile validation"
 RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
 RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
