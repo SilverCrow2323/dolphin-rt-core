@@ -46,11 +46,23 @@ in the tracker, or download manually.
 3. Check `/dev/uinput` is writable.
 4. Look at `data/logs/livemenu.log`.
 
-## GameCube fonts missing (NFS Most Wanted)
+## GameCube fonts missing (Windows-1252 not loaded)
 
-Some games require `font_western.bin` and `font_japanese.bin` in
-`Sys/GC/`. Copy the official Dolphin 2412 font files into that
-directory.
+Dolphin loads the GameCube system fonts from its **Sys directory**, not
+from the operating-system font folders. Rt:Core's muOS binary must be
+built with `LINUX_LOCAL_DEV=ON`; this makes it look for `Sys/GC/` next
+to the executable at `/opt/muos/share/emulator/dolphin/Sys/GC/`.
+
+A binary built with `LINUX_LOCAL_DEV=OFF` instead looks under the
+compiled system data directory (normally
+`/usr/local/share/dolphin-emu/sys/GC/` on this build). Merely shipping
+fonts under the app's uppercase `Sys/` directory will not satisfy that
+lookup. Rebuild using the Rt:Core muOS target rather than copying fonts
+into `/usr/share/fonts` or renaming individual font files.
+
+The package builder verifies that `font_western.bin`,
+`font_japanese.bin`, `dsp_rom.bin`, and `dsp_coef.bin` are present in
+`Sys/GC/` before creating the update archive.
 
 ## Nexus loads but library is empty
 
