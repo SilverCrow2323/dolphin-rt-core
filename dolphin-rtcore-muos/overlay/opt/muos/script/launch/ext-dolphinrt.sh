@@ -55,25 +55,64 @@ export LD_LIBRARY_PATH="$EMUDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 cd "$EMUDIR" || exit 1
 
-# Optional extra exit watcher (the native muOS quit hotkey keeps working without it)
+# Optional extra exit watcher (the native muOS quit hotkey keeps working without it).
+# It reads raw js0 events; it is deliberately separate from SDL/gptokeyb2.
 JS_DEV=$(ls /dev/input/js* 2>/dev/null | head -n 1)
 [ -z "$JS_DEV" ] && JS_DEV="/dev/input/js0"
 WATCHER_PID=""
+GPTK_PID=""
+DOLPHIN_PID=""
+APP_DIR="${RT_UI_APP_DIR:-/run/muos/storage/application/Dolphin RtUI}"
+HOTKEY_PROFILE="${RT_DOLPHIN_HOTKEY_PROFILE:-Default}"
+
 if [ -x "$RTSYS/overlay_exit.sh" ]; then
     "$RTSYS/overlay_exit.sh" "$JS_DEV" >/dev/null 2>&1 &
     WATCHER_PID=$!
 fi
 
-cleanup() {
+stop_helpers() {
+    [ -n "$GPTK_PID" ] && kill -TERM "$GPTK_PID" 2>/dev/null
     [ -n "$WATCHER_PID" ] && kill -TERM "$WATCHER_PID" 2>/dev/null
-    exit 0
+    [ -n "$GPTK_PID" ] && wait "$GPTK_PID" 2>/dev/null
+    [ -n "$WATCHER_PID" ] && wait "$WATCHER_PID" 2>/dev/null
+    GPTK_PID=""
+    WATCHER_PID=""
 }
-trap cleanup TERM INT
+
+cleanup_signal() {
+    [ -n "$DOLPHIN_PID" ] && kill -TERM "$DOLPHIN_PID" 2>/dev/null
+    stop_helpers
+    exit 130
+}
+trap cleanup_signal INT TERM
 
 # muOS runs Dolphin directly on the framebuffer with the Mali OpenGL ES driver.
-./dolphin --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMUDIR" >> "$RTSYS/logs/dolphin_debug.log" 2>&1
-EXIT_CODE=$?
+# Run it in the background so gptokeyb2 can attach to the exact process, as it
+# already does when a game is launched from Rt:UI.
+./dolphin --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMUDIR" >> "$RTSYS/logs/dolphin_debug.log" 2>&1 &
+DOLPHIN_PID=$!
+echo "$(date '+%F %T') | dolphin_pid=$DOLPHIN_PID" >> "$LOG"
 
-[ -n "$WATCHER_PID" ] && kill -TERM "$WATCHER_PID" 2>/dev/null
+# The UI's game launcher already uses this same binary/config/target tuple.
+# Keep the external muOS core route consistent; overlay_exit.sh remains only
+# the independent emergency exit path.
+if [ "$HOTKEY_PROFILE" != "Disabled" ]; then
+    GPTK_BIN="$APP_DIR/lib/gptokeyb2"
+    GPTK_CFG="$APP_DIR/workshop/hotkeys/$HOTKEY_PROFILE/ext-dolphin.gptk"
+    [ -f "$GPTK_CFG" ] || GPTK_CFG="$APP_DIR/workshop/hotkeys/Default/ext-dolphin.gptk"
+    if [ -x "$GPTK_BIN" ] && [ -s "$GPTK_CFG" ]; then
+        pkill -f "$GPTK_BIN -c" 2>/dev/null || true
+        sleep 0.3
+        "$GPTK_BIN" -c "$GPTK_CFG" -1 dolphin >> "$RTSYS/logs/gptokeyb2.log" 2>&1 &
+        GPTK_PID=$!
+        echo "$(date '+%F %T') | gptokeyb2_pid=$GPTK_PID | cfg=$GPTK_CFG" >> "$LOG"
+    else
+        echo "$(date '+%F %T') | WARN | gptokeyb2 unavailable | bin=$GPTK_BIN | cfg=$GPTK_CFG" >> "$LOG"
+    fi
+fi
+
+wait "$DOLPHIN_PID"
+EXIT_CODE=$?
+stop_helpers
 echo "$(date '+%F %T') | exit=$EXIT_CODE" >> "$LOG"
-exit $EXIT_CODE
+exit "$EXIT_CODE"

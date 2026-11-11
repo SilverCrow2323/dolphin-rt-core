@@ -32,6 +32,15 @@ need "$WATCHER" 'START_BTN=7'
 need "$WATCHER" 'SELECT_BTN=6'
 ok "SELECT+START exit chord matches H700 raw input schema"
 
+# muOS Content Explorer launches through ext-dolphinrt.sh, not Rt:UI's
+# in-app scripts/launch.sh. That launcher must attach gptokeyb2 too.
+EXT_LAUNCHER="$ROOT/dolphin-rtcore-muos/overlay/opt/muos/script/launch/ext-dolphinrt.sh"
+need "$EXT_LAUNCHER" 'APP_DIR="${RT_UI_APP_DIR:-/run/muos/storage/application/Dolphin RtUI}"'
+need "$EXT_LAUNCHER" '"$GPTK_BIN" -c "$GPTK_CFG" -1 dolphin'
+need "$EXT_LAUNCHER" 'wait "$DOLPHIN_PID"'
+need "$EXT_LAUNCHER" 'HOTKEY_PROFILE="${RT_DOLPHIN_HOTKEY_PROFILE:-Default}"'
+ok "muOS external-core launcher starts the same gptokeyb2 mapping as Rt:UI"
+
 # GameCube Start and Wii Plus both use H700 Start button 7 in Dolphin SDL.
 for f in \
   "$EMU/Config/GCPadNew.ini" \
