@@ -2,12 +2,12 @@ name: Build Dolphin (aarch64)
 
 on:
   push:
-    branches: [dolphin_bin]
+    branches: [main]
     paths:
       - "dolphin-build/**"
       - ".github/workflows/build-dolphin.yml"
   pull_request:
-    branches: [dolphin_bin]
+    branches: [main]
     paths:
       - "dolphin-build/**"
       - ".github/workflows/build-dolphin.yml"
@@ -43,7 +43,7 @@ jobs:
             frontend: gui
 
     steps:
-      - name: Checkout dolphin_bin
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
