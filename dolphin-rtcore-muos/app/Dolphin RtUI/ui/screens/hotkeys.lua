@@ -90,6 +90,11 @@ S.list = K.List(K.MARGIN, 150, K.W - K.MARGIN * 2 - 14, K.BOT - 150, 38)
 S.plist = K.List(K.MARGIN, 90, K.W - K.MARGIN * 2 - 14, K.BOT - 90, 38)
 S.mode = "profiles"
 
+local function valid_profile_name(name)
+    return type(name) == "string" and #name > 0 and #name <= 64
+        and name ~= "Disabled" and name:match("^[%w_%-]+$") ~= nil
+end
+
 local function ini_path(p)  return HK_DIR .. p .. "/Hotkeys.ini" end
 local function gptk_path(p) return HK_DIR .. p .. "/ext-dolphin.gptk" end
 local function meta_path(p) return HK_DIR .. p .. "/rthotkeys_data.ini" end
@@ -467,20 +472,48 @@ local function clear()
     SFX.play("menu_back")
 end
 
+local function command_ok(command)
+    local a, _, code = os.execute(command)
+    return a == true or a == 0 or code == 0
+end
+
 local function duplicate()
-    local n, name = 2, S.profile .. "_copy"
-    while U.exists(HK_DIR .. name .. "/Hotkeys.ini") do name = S.profile .. "_copy" .. n; n = n + 1 end
-    local dst = HK_DIR .. name
-    os.execute("mkdir -p " .. sh.shq(dst))
-    for _, f in ipairs({ "Hotkeys.ini", "ext-dolphin.gptk", "rthotkeys_data.ini" }) do
-        os.execute("cp -f " .. sh.shq(HK_DIR .. S.profile .. "/" .. f) .. " " .. sh.shq(dst .. "/" .. f) .. " 2>/dev/null")
+    if not valid_profile_name(S.profile) then return false, "current hotkey profile name is invalid" end
+    local n, name = 1, S.profile .. "_copy"
+    while U.exists(ini_path(name)) do
+        n = n + 1
+        name = S.profile .. "_copy" .. n
+        if n > 100 then return false, "too many duplicate profiles" end
     end
-    local ml = read_lines(meta_path(name))
-    if #ml > 0 then set_kv(ml, "Hotkeys System", "Name", name); write_lines(meta_path(name), ml) end
+
+    local dst = HK_DIR .. name
+    if not command_ok("mkdir -p " .. sh.shq(dst)) then
+        return false, "could not create duplicate profile directory"
+    end
+    for _, filename in ipairs({ "Hotkeys.ini", "ext-dolphin.gptk", "rthotkeys_data.ini" }) do
+        local src = HK_DIR .. S.profile .. "/" .. filename
+        if U.exists(src) and not command_ok("cp -f " .. sh.shq(src) .. " " ..
+                sh.shq(dst .. "/" .. filename) .. " 2>/dev/null") then
+            os.execute("rm -rf " .. sh.shq(dst))
+            return false, "could not copy " .. filename
+        end
+    end
+    if not U.exists(ini_path(name)) then
+        os.execute("rm -rf " .. sh.shq(dst))
+        return false, "duplicate Hotkeys.ini was not created"
+    end
+
+    local previous_profile, previous_map = S.profile, S.gptk_map
     S.profile = name
     S.gptk_map = load_gptk(name)
-    save()
+    if not save() then
+        S.profile, S.gptk_map = previous_profile, previous_map
+        os.execute("rm -rf " .. sh.shq(dst))
+        return false, "could not save duplicate hotkey profile"
+    end
+
     Notify.show("success", "Copied to " .. name)
+    return true, name
 end
 
 local function reload()
@@ -503,7 +536,7 @@ function S.enter(params)
     S._t = 0
     K.set_accent("hot")
     profiles()
-    if params.profile and params.profile ~= "Disabled" and U.exists(HK_DIR .. params.profile .. "/Hotkeys.ini") then
+    if valid_profile_name(params.profile) and U.exists(ini_path(params.profile)) then
         open_designer(params.profile)
         S.direct = true
     else S.mode, S.direct = "profiles", false end
@@ -642,6 +675,239 @@ function S.draw()
         K.footer({ { key = "A", label = "Capture" }, { key = "X", label = "Clear" }, { key = "L1 R1", label = "Device" },
                    { key = "SELECT", label = "Copy" }, { key = "START", label = "Save" }, { key = "B", label = "Back" } })
     end
+end
+
+-- NEXUS adapters call the same profile, capture and persistence functions as the pad UI.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function in_designer()
+        return S.mode == "designer"
+    end
+    local function selected_row()
+        return S.list and S.list:cur() or nil
+    end
+    local function selected_profile()
+        return S.plist and S.plist:cur() or nil
+    end
+    local function captured_name(input)
+        if type(input) == "number" then return IM.from_raw(input) end
+        if type(input) ~= "string" then return nil end
+        local value = input:match("^%s*(.-)%s*$")
+        local upper = value:upper()
+        local logical = {
+            UP = true, DOWN = true, LEFT = true, RIGHT = true,
+            A = true, B = true, X = true, Y = true,
+            START = true, SELECT = true, MENU = true,
+            L1 = true, R1 = true, L2 = true, R2 = true, L3 = true, R3 = true,
+        }
+        if logical[upper] then return upper end
+        return PAD_NAMES[value:lower()]
+    end
+    local specs = {
+        {
+            id = "hotkeys.refresh_profiles", title = "Refresh hotkey profiles", order = 10,
+            run = function()
+                if S.mode ~= "profiles" then return false, "profile list is not active" end
+                if S.capturing then return false, "cancel capture before refreshing profiles" end
+                local selected = selected_profile()
+                profiles()
+                if selected then
+                    for i, row in ipairs(S.plist.items) do
+                        if row.name == selected.name then
+                            S.plist.sel = i
+                            if S.plist._aim then S.plist:_aim(true) end
+                            break
+                        end
+                    end
+                end
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.select_profile", title = "Select hotkey profile", order = 20,
+            run = function(index)
+                if S.mode ~= "profiles" then return false, "profile list is not active" end
+                if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.plist.items then
+                    return false, "hotkey profile index out of range"
+                end
+                S.plist.sel = index
+                if S.plist._aim then S.plist:_aim(true) end
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.open_profile", title = "Open hotkey profile", order = 30,
+            run = function(name)
+                if S.mode ~= "profiles" then return false, "profile list is not active" end
+                if not valid_profile_name(name) then return false, "invalid hotkey profile name" end
+                if not U.exists(ini_path(name)) then return false, "hotkey profile not found" end
+                open_designer(name)
+                S.direct = false
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.open_selected_profile", title = "Open selected hotkey profile", order = 40,
+            run = function()
+                if S.mode ~= "profiles" then return false, "profile list is not active" end
+                local row = selected_profile()
+                if not row then return false, "no hotkey profile selected" end
+                if not valid_profile_name(row.name) or not U.exists(ini_path(row.name)) then
+                    return false, "selected hotkey profile is invalid or missing"
+                end
+                open_designer(row.name)
+                S.direct = false
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.select_action", title = "Select hotkey action", order = 50,
+            run = function(index)
+                if not in_designer() or S.capturing then return false, "hotkey designer is not ready" end
+                if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.list.items then
+                    return false, "hotkey action index out of range"
+                end
+                S.list.sel = index
+                if S.list._aim then S.list:_aim(true) end
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.set_device", title = "Set hotkey input device", order = 60,
+            run = function(device)
+                if not in_designer() or S.capturing then return false, "hotkey designer is not ready" end
+                if device ~= "keyboard" and device ~= "pad" then
+                    return false, "device must be keyboard or pad"
+                end
+                switch_device(device)
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.change_key", title = "Change emitted keyboard key", order = 70,
+            run = function(direction)
+                if not in_designer() or S.capturing then return false, "hotkey designer is not ready" end
+                if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+                if S.device ~= "keyboard" then return false, "emitted keys only apply to keyboard mode" end
+                local model = cur_model()
+                if not model or not model.key then return false, "selected action has no emitted key" end
+                local previous = model.key
+                cycle_key(direction)
+                return model.key ~= previous
+            end,
+        },
+        {
+            id = "hotkeys.clear_selected", title = "Clear selected hotkey", order = 80,
+            run = function()
+                if not in_designer() or S.capturing then return false, "hotkey designer is not ready" end
+                if not selected_row() then return false, "no hotkey action selected" end
+                clear()
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.start_capture", title = "Start hotkey capture", order = 90,
+            run = function()
+                if not in_designer() then return false, "hotkey designer is not active" end
+                if S.capturing then return false, "hotkey capture is already active" end
+                if not selected_row() then return false, "no hotkey action selected" end
+                start_capture()
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.capture_input", title = "Capture raw hotkey input", order = 100,
+            run = function(input)
+                if not S.capturing then return false, "hotkey capture is not active" end
+                local name = captured_name(input)
+                if not name then return false, "input was not recognised" end
+                capture_add(name)
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.finish_capture", title = "Finish hotkey capture", order = 110,
+            run = function(commit)
+                if not S.capturing then return false, "hotkey capture is not active" end
+                if type(commit) ~= "boolean" then return false, "commit must be boolean" end
+                if commit and #S.cap == 0 then return false, "no input was captured" end
+                if commit and S.device == "pad" then
+                    local expressible = false
+                    for _, name in ipairs(S.cap) do if not DPAD[name] then expressible = true; break end end
+                    if not expressible then return false, "pad capture requires a non-D-pad button" end
+                end
+                end_capture(commit)
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.duplicate_profile", title = "Duplicate hotkey profile", order = 120,
+            run = function()
+                if not in_designer() or S.capturing then return false, "hotkey designer is not ready" end
+                local ok, result = duplicate()
+                if not ok then return false, result or "could not duplicate hotkey profile" end
+                return true, result
+            end,
+        },
+        {
+            id = "hotkeys.reload", title = "Reload hotkey profile", order = 130,
+            run = function()
+                if not in_designer() or S.capturing then return false, "hotkey designer is not ready" end
+                if not U.exists(ini_path(S.profile)) then return false, "hotkey profile file is missing" end
+                reload()
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.save", title = "Save hotkey profile", order = 140,
+            run = function()
+                if not in_designer() or S.capturing then return false, "hotkey designer is not ready" end
+                return save()
+            end,
+        },
+        {
+            id = "hotkeys.request_back", title = "Request exit from hotkey designer", order = 150,
+            run = function()
+                if not in_designer() then return false, "hotkey designer is not active" end
+                if S.capturing then return false, "finish or cancel capture before leaving" end
+                try_back()
+                return true
+            end,
+        },
+        {
+            id = "hotkeys.state", title = "Get hotkey designer state", order = 160,
+            run = function()
+                local row = selected_row()
+                local model = row and S.model[row.a.key] or nil
+                local conflicts = 0
+                for _ in pairs(S.conf or {}) do conflicts = conflicts + 1 end
+                return {
+                    mode = S.mode,
+                    profile = S.profile,
+                    device = S.device,
+                    dirty = S.dirty == true,
+                    capturing = S.capturing == true,
+                    selected_action = row and row.a.label or nil,
+                    selected_combo = model and combo_str(model.combo) or nil,
+                    emitted_key = model and model.key or nil,
+                    conflict_count = conflicts,
+                    profile_count = S.plist and #S.plist.items or 0,
+                    action_count = S.list and #S.list.items or 0,
+                }
+            end,
+        },
+    }
+
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "hotkeys", order = spec.order, screen = "hotkeys",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S
