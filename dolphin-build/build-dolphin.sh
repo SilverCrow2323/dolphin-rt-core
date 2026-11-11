@@ -80,6 +80,9 @@ fi
 # Ship the exact Sys data from the same upstream revision used for this build.
 if [ "$LOCAL_SYS" = ON ]; then
   [ -d "$SRC/Data/Sys" ] || { echo "missing upstream resource directory: $SRC/Data/Sys"; exit 1; }
+  # Recreate the resource tree so rerunning into an existing output directory
+  # cannot leave stale files from a different Dolphin revision.
+  rm -rf "$OUT/Sys"
   mkdir -p "$OUT/Sys"
   cp -a "$SRC/Data/Sys/." "$OUT/Sys/"
   for asset in GC/font_western.bin GC/font_japanese.bin GC/dsp_rom.bin GC/dsp_coef.bin Resources/OSD_Font.ttf; do
