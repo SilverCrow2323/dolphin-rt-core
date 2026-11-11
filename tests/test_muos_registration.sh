@@ -65,7 +65,7 @@ RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refr
 sh "$TOOL" apply 1
 jq -e '.["Nintendo Gamecube"].namespace=="Nintendo" and .["Nintendo Wii"].namespace=="Nintendo" and has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
 [ -s "$AS/info/manifest/core.json.rtcore.bak" ]
-jq -e '.nintendogamecube=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
+jq -e '.nintendogamecube=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii" and .gamecube=="Nintendo Gamecube"' "$AS/info/manifest/assign.json" >/dev/null
 ok "Andromeda single manifest registers the Nintendo systems and preserves other systems"
 [ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 1 ]
 ok "Andromeda automatic assignment refresh runs"
@@ -123,7 +123,7 @@ RT_MUOS_ROOT="$S" RT_MUOS_STORE_DIR="$SS" RT_MUOS_ASSIGN_DIR="$S/share/info/assi
 RT_MUOS_MANIFEST_DIR="$S/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 RT_MUOS_ASSIGN_REFRESH="$S/script/system/assign.sh" RT_TEST_REFRESH_LOG="$S/refresh.log" \
 sh "$TOOL" apply 1
-jq -e '(.catalogue=="Nintendo Gamecube") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Gamecube.json" >/dev/null
+jq -e '(.catalogue=="Nintendo Gamecube") and (.external|length>0) and (.friendly | index("gamecube") != null)' "$SS/info/manifest/core/Nintendo/Nintendo Gamecube.json" >/dev/null
 jq -e '(.catalogue=="Nintendo Wii") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Wii.json" >/dev/null
 [ -f "$S/share/info/manifest/core/Existing/Existing.json" ]
 ok "Split manifest stores both systems under the Nintendo namespace and preserves existing files"
