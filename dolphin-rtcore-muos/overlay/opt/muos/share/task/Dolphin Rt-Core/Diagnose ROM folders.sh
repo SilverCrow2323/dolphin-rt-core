@@ -33,6 +33,18 @@ TASK_STATUS "Inspect storage and ROM folders"
     echo "[Storage mounts]"
     awk '$2=="/mnt/mmc" || $2=="/mnt/sdcard" || $2=="/mnt/usb" || $2=="/mnt/roms" {print $2, $3}' /proc/mounts 2>/dev/null
     echo
+    echo "[Skip patterns — Explore Content directory/file filter]"
+    echo "Resolution order follows muOS frontend: USB, SD2, SD1, bundled defaults."
+    active_skip=""
+    for candidate in /mnt/usb/MUOS/info/skip.ini /mnt/mmc/MUOS/info/skip.ini /mnt/sdcard/MUOS/info/skip.ini /opt/muos/share/info/skip.ini; do
+        if [ -r "$candidate" ]; then
+            echo "PRESENT: $candidate"
+            if [ -z "$active_skip" ]; then active_skip="$candidate"; echo "ACTIVE: $candidate"; fi
+            sed -n '1,160p' "$candidate" | sed 's/^/  /'
+        fi
+    done
+    [ -n "$active_skip" ] || echo "No readable skip.ini found in standard locations."
+    echo
     inspect_tree() {
         tree="$1"
         [ -d "$tree" ] || return 0
