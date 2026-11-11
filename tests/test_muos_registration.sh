@@ -93,7 +93,7 @@ sh "$TOOL" remove
 jq -e 'has("Nintendo Gamecube")|not' "$AS/info/manifest/core.json" >/dev/null
 jq -e 'has("Nintendo Wii")|not' "$AS/info/manifest/core.json" >/dev/null
 jq -e 'has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
-jq -e '((has("nintendogamecube") | not) and (has("gamecube") | not) and (has("gamecubez") | not) and (has("nintendowii") | not) and (has("wii") | not) and (has("wiiz") | not))' "$AS/info/manifest/assign.json" >/dev/null
+jq -e '((has("nintendogamecube") | not) and (has("nintendogc") | not) and (has("gamecube") | not) and (has("gamecubez") | not) and (has("ngc") | not) and (has("gc") | not) and (has("nintendowii") | not) and (has("nwii") | not) and (has("wii") | not) and (has("wiiz") | not))' "$AS/info/manifest/assign.json" >/dev/null
 ok "Andromeda remove deletes only Rt:Core systems and refreshes the Content Explorer map"
 cat > "$A/share/info/manifest/core.json" <<'JSON'
 {"Nintendo DS":{"name":"Nintendo DS","namespace":"Nintendo","catalogue":"Nintendo DS","default":"nds","friendly":["nds"],"bios":[],"external":{}}}
@@ -144,8 +144,12 @@ sh "$TOOL" apply 1
 [ -s "$J/share/info/assign/Nintendo Wii/global.ini" ]
 [ -s "$J/share/info/assign/Nintendo Gamecube/dolphin - rtprime - upright.ini" ]
 [ -s "$J/share/info/assign/Nintendo Wii/dolphin - rtprime - upright.ini" ]
-grep -Fxq 'gamecubez' "$J/share/info/assign/Nintendo Gamecube/global.ini"
-grep -Fxq 'wiiz' "$J/share/info/assign/Nintendo Wii/global.ini"
+for alias in nintendogamecube nintendogc gamecube gamecubez ngc gc; do
+    grep -Fxq "$alias" "$J/share/info/assign/Nintendo Gamecube/global.ini"
+done
+for alias in nintendowii nwii wii wiiz; do
+    grep -Fxq "$alias" "$J/share/info/assign/Nintendo Wii/global.ini"
+done
 grep -q 'keep me' "$J/share/info/assign/Nintendo Gamecube/user-note.txt"
 ok "Jacaranda legacy assignment installs GameCube/Wii profiles without deleting unrelated files"
 RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
