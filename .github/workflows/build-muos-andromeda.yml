@@ -137,6 +137,7 @@ jobs:
           grep -Fxq 'opt/muos/share/info/assign/Nintendo Wii/global.ini' "$OUT/archive-files.txt"
           grep -Fxq 'opt/muos/share/info/assign/Nintendo Wii/dolphin - rtprime - upright.ini' "$OUT/archive-files.txt"
           grep -Fxq 'opt/muos/share/task/Dolphin Rt-Core/Diagnose ROM folders.sh' "$OUT/archive-files.txt"
+          ! grep -Fxq 'run/muos/storage/application/Dolphin RtUI/data/settings.json' "$OUT/archive-files.txt"
           grep -Fxq 'manifest.sha256' "$OUT/archive-files.txt"
           bash dolphin-rtcore-muos/tools/verify-muxupd.sh "$ARCHIVE"
           sha256sum "$ARCHIVE" "$OUT/BUILDINFO.txt" "$OUT"/source-*.tar.xz > "$OUT/SHA256SUMS"

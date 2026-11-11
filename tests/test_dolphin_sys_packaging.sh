@@ -70,6 +70,11 @@ done
 
 unzip -p "$ARCHIVE" "$EMU_PATH/dolphin" | cmp -s "$TMP/dolphin" -
 unzip -p "$ARCHIVE" "$EMU_PATH/lib/libhidapi-hidraw.so.0" | cmp -s "$LIBS/libhidapi-hidraw.so.0" -
+if unzip -Z1 "$ARCHIVE" | grep -Fxq "run/muos/storage/application/Dolphin RtUI/data/settings.json"; then
+  echo "[FAIL] MUXUPD would overwrite device-local Rt:UI settings.json" >&2
+  exit 1
+fi
+echo "[OK] MUXUPD preserves device-local Rt:UI settings and ROM paths"
 unzip -p "$ARCHIVE" "$EMU_PATH/Sys/$MARKER_REL" | cmp -s "$SYS/$MARKER_REL" -
 
 MARKER_SHA="$(sha256sum "$SYS/$MARKER_REL" | awk '{print $1}')"

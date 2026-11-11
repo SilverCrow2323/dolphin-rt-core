@@ -61,6 +61,11 @@ if [ "$SYS_SOURCE" != "$DEFAULT_SYS_SOURCE" ]; then
   cp -a "$SYS_SOURCE/." "$S/$EMU/Sys/"
 fi
 cp -a "$ROOT/app/Dolphin RtUI/." "$S/$APP/"
+# User preferences belong to the installed device, not to the source checkout.
+# Omitting this seed prevents an update from replacing ROM paths, theme and
+# last-game state with a developer/test copy. core/settings.lua supplies
+# first-run defaults when no local settings.json exists.
+rm -f "$S/$APP/data/settings.json"
 cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, tasks, manifest tool, update hook)
 # Jacaranda and older muOS releases read external core choices from the legacy
 # info/assign/<System>/*.ini tree. Seed standard profiles in the update too;

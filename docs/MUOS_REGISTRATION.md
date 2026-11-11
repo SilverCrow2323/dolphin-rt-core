@@ -45,6 +45,11 @@ actually contains the ROMs). The GameCube manifest now includes the
 After changing a folder alias, run `RtSys/manifest_tool.sh ensure` and
 reopen Explore Content so muOS can rebuild its visible content list.
 
+Device-local Rt:UI preferences in `data/settings.json` are deliberately not
+shipped in the MUXUPD. An update therefore cannot replace the user's ROM paths,
+theme or last-game state with the repository's development defaults. On a
+first install, Rt:UI initializes its settings from `core/settings.lua` defaults.
+
 Task Toolkit also includes **Dolphin Rt-Core → Diagnose ROM folders**. It
 writes a report under `MUOS/log` (or a temporary fallback) with SD1/SD2
 mounts, `ROMS` versus `roms` folder casing, GameCube/Wii image counts, legacy
