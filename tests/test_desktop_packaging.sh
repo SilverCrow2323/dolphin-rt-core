@@ -27,11 +27,12 @@ bash "$PACKAGER" --input "$INPUT" --out "$OUT" --build-id test-build
 ARCHIVE="$OUT/Dolphin-RtCore-Desktop-x86_64-test-build.tar.gz"
 [ -s "$ARCHIVE" ]
 [ -s "$ARCHIVE.sha256" ]
-tar -tzf "$ARCHIVE" | grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/dolphin'
-tar -tzf "$ARCHIVE" | grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/dolphin-gui'
-tar -tzf "$ARCHIVE" | grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/Sys/GC/font_western.bin'
-tar -tzf "$ARCHIVE" | grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/README-MX-XFCE.md'
-tar -tzf "$ARCHIVE" | grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/RUNTIME-LIBRARIES-dolphin-gui.txt'
+tar -tzf "$ARCHIVE" > "$TMP/archive-list.txt"
+grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/dolphin' "$TMP/archive-list.txt"
+grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/dolphin-gui' "$TMP/archive-list.txt"
+grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/Sys/GC/font_western.bin' "$TMP/archive-list.txt"
+grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/README-MX-XFCE.md' "$TMP/archive-list.txt"
+grep -Fxq 'Dolphin-RtCore-Desktop-x86_64/RUNTIME-LIBRARIES-dolphin-gui.txt' "$TMP/archive-list.txt"
 mkdir -p "$TMP/extracted"
 tar -xzf "$ARCHIVE" -C "$TMP/extracted"
 BUNDLE="$TMP/extracted/Dolphin-RtCore-Desktop-x86_64"
