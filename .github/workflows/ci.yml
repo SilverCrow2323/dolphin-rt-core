@@ -135,5 +135,7 @@ jobs:
         run: bash tests/test_dolphin_runtime_contract.sh
       - name: Test Dolphin Sys packaging and manifest
         run: bash tests/test_dolphin_sys_packaging.sh
+      - name: Test Knulli and ROCKNIX packaging with a matching Sys tree
+        run: bash tests/test_port_sys_packaging.sh
       - name: Test repository and website tooling
         run: python -m unittest tests/test_repo_tools.py tests/test_compat_site.py -v
