@@ -105,26 +105,31 @@ jobs:
           FRONTEND: ${{ matrix.frontend }}
         run: |
           OUT="$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
+          require_aarch64_elf() {
+            local binary="$1"
+            test -s "$binary"
+            readelf -h "$binary" | grep -q 'Class:.*ELF64'
+            readelf -h "$binary" | grep -q 'Machine:.*AArch64'
+          }
           if [ "$FRONTEND" = gui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin-gui"
             file "$OUT/dolphin-gui"
-            readelf -h "$OUT/dolphin-gui" | grep -E 'Class:|Machine:'
+            require_aarch64_elf "$OUT/dolphin-gui"
           fi
           if [ "$FRONTEND" = nogui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin"
             file "$OUT/dolphin"
-            readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
+            require_aarch64_elf "$OUT/dolphin"
           fi
           test -s "$OUT/BUILDINFO.txt"
           if [ "$TARGET" = muos ] || [ "$TARGET" = muos-qt ]; then
-            test -s "$OUT/lib/libhidapi-hidraw.so.0"
-            readelf -h "$OUT/lib/libhidapi-hidraw.so.0" | grep -q "Machine:.*AArch64"
+            require_aarch64_elf "$OUT/lib/libhidapi-hidraw.so.0"
           fi
           if [ "$TARGET" = muos-qt ]; then
             test -x "$OUT/dolphin"
             test -x "$OUT/dolphin-gui"
-            test -s "$OUT/qt6/lib/libQt6Core.so.6"
-            test -s "$OUT/qt6/plugins/platforms/libqeglfs.so"
+            require_aarch64_elf "$OUT/qt6/lib/libQt6Core.so.6"
+            require_aarch64_elf "$OUT/qt6/plugins/platforms/libqeglfs.so"
           fi
           case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix)
             test -s "$OUT/Sys/GC/font_western.bin"
