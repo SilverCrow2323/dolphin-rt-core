@@ -26,6 +26,7 @@ require "$BUILD" 'GC/font_western.bin GC/font_japanese.bin GC/dsp_rom.bin GC/dsp
 
 # Both muOS entry points must select the tested framebuffer/OpenGL path.
 require "$APP_LAUNCH" '--platform=fbdev --video_backend=OGL'
+require "$APP_LAUNCH" 'LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"'
 require "$EXT_LAUNCH" '--platform=fbdev --video_backend=OGL'
 
 # The updater must reject an incomplete resource payload before packaging.
