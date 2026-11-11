@@ -6,7 +6,7 @@ VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
 OUT="${1:-$ROOT/dist}"
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
-: "${DOLPHIN_QT_BIN:?set DOLPHIN_QT_BIN to the muos-qt build's dolphin-gui}"
+: "${DOLPHIN_QT_BIN:?set DOLPHIN_QT_BIN to the muos-qt Dolphin GUI binary}"
 : "${DOLPHIN_QT_LIB_DIR:?set DOLPHIN_QT_LIB_DIR to the staged Qt 6 lib directory}"
 : "${DOLPHIN_QT_PLUGIN_DIR:?set DOLPHIN_QT_PLUGIN_DIR to the staged Qt 6 plugins directory}"
 [ -x "$DOLPHIN_QT_BIN" ] || { echo "Qt 6 Dolphin binary is not executable" >&2; exit 1; }
