@@ -22,7 +22,7 @@ while [ $# -gt 0 ]; do case "$1" in
   *) echo "unknown option $1"; exit 2;; esac; done
 case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) ;; *) echo "usage: $0 --target muos|knulli|rocknix|desktop [options]"; exit 2;; esac
 case "$FRONTEND" in nogui|gui|both) ;; *) echo "usage: $0 --target TARGET --frontend nogui|gui|both"; exit 2;; esac
-if [ "$TARGET" = muos-qt ] && [ "$FRONTEND" != gui ]; then echo "muos-qt is a GUI-only experimental target"; exit 2; fi
+if [ "$TARGET" = muos-qt ] && [ "$FRONTEND" != gui ] && [ "$FRONTEND" != both ]; then echo "muos-qt requires the GUI frontend (gui or both)"; exit 2; fi
 if [ "$TARGET" != desktop ] && [ "$TARGET" != muos-qt ] && [ "$FRONTEND" != nogui ]; then echo "Qt GUI builds are supported only by desktop and experimental muos-qt"; exit 2; fi
 # Every packaged handheld target installs Sys/ beside its Dolphin executable:
 # muOS: /opt/muos/share/emulator/dolphin/Sys
