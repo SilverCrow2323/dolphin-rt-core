@@ -42,20 +42,37 @@ local function load_sheet(path)
     return { img = img, quads = quads, count = n, size = frame }
 end
 
-local function scan()
+local function valid_profile_name(name)
+    return type(name) == "string" and #name > 0 and #name <= 64
+        and name:match("^[%w_%-]+$") ~= nil
+end
+
+local function scan(keep_name)
     local base = "workshop/controller/" .. S.system
     local rows = {}
     local h = io.popen("ls -1d " .. base .. "/*/ 2>/dev/null")
     if h then
         for line in h:lines() do
             local name = line:match("([^/]+)/?$")
-            if name then rows[#rows+1] = { name = name, dir = base .. "/" .. name } end
+            if valid_profile_name(name) then
+                rows[#rows+1] = { name = name, dir = base .. "/" .. name }
+            end
         end
         h:close()
     end
     table.sort(rows, function(a,b) return a.name:lower() < b.name:lower() end)
     S.list:set(rows, false)
+    if keep_name then
+        for i, row in ipairs(rows) do
+            if row.name == keep_name then
+                S.list.sel = i
+                if S.list._aim then S.list:_aim(true) end
+                break
+            end
+        end
+    end
     S.sprite = load_sheet(SHEETS[S.system])
+    return #rows
 end
 
 function S.enter()
@@ -91,6 +108,98 @@ local function draw_row(row, x, y, w, h, focused)
         K.text("small", "(A) KEY MAP", x + w - K.width("small", "(A) KEY MAP") - 14,
                y + h/2 - 9, K.acc)
     end
+end
+
+-- NEXUS adapters expose safe profile browsing and system selection.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected()
+        return S.list and S.list:cur() or nil
+    end
+    local function valid_system(system)
+        return system == "GameCube" or system == "Wii"
+    end
+    local specs = {
+        {
+            id = "controller_profiles.refresh", title = "Refresh controller profiles", order = 10,
+            run = function()
+                if not valid_system(S.system) then return false, "controller system is invalid" end
+                local row = selected()
+                local ok, count = pcall(scan, row and row.name or nil)
+                if not ok then return false, tostring(count) end
+                return true, count
+            end,
+        },
+        {
+            id = "controller_profiles.switch_system", title = "Switch controller system", order = 20,
+            run = function(system)
+                if not valid_system(system) then return false, "system must be GameCube or Wii" end
+                if S.system ~= system then
+                    S.system = system
+                    local ok, err = pcall(scan)
+                    if not ok then return false, tostring(err) end
+                    K.set_accent(system == "Wii" and "wii" or "gc")
+                    SFX.play("menu_pagescroll")
+                end
+                return true
+            end,
+        },
+        {
+            id = "controller_profiles.select", title = "Select controller profile", order = 30,
+            run = function(index)
+                if not valid_system(S.system) then return false, "controller system is invalid" end
+                if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.list.items then
+                    return false, "controller profile index out of range"
+                end
+                local row = S.list.items[index]
+                if not row or not valid_profile_name(row.name) then
+                    return false, "controller profile name is invalid"
+                end
+                S.list.sel = index
+                if S.list._aim then S.list:_aim(true) end
+                return true
+            end,
+        },
+        {
+            id = "controller_profiles.open_selected", title = "Open selected controller profile", order = 40,
+            run = function()
+                if not valid_system(S.system) then return false, "controller system is invalid" end
+                local row = selected()
+                if not row then return false, "no controller profile selected" end
+                local expected_dir = "workshop/controller/" .. S.system .. "/" .. tostring(row.name)
+                if not valid_profile_name(row.name) or row.dir ~= expected_dir then
+                    return false, "selected controller profile is invalid"
+                end
+                local ok, result, detail = pcall(ui.go, "controller_map", {
+                    dir = expected_dir, name = row.name, system = S.system,
+                })
+                if not ok then return false, tostring(result) end
+                if result == false then return false, tostring(detail or "could not open controller profile") end
+                return true
+            end,
+        },
+        {
+            id = "controller_profiles.state", title = "Get controller profile browser state", order = 50,
+            run = function()
+                local row = selected()
+                return {
+                    system = S.system,
+                    selected_profile = row and row.name or nil,
+                    selected_index = S.list and S.list.sel or nil,
+                    profile_count = #(S.list and S.list.items or {}),
+                }
+            end,
+        },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "controller", order = spec.order, screen = "controller_profiles",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 function S.draw()
