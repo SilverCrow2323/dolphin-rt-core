@@ -107,6 +107,8 @@ function S.register_actions(ui)
         {
             id = "triage.start", title = "Start environment triage", order = 10,
             run = function()
+                S.job = nil
+                S.report_path = nil
                 local ok, err = pcall(start_scan)
                 if not ok then return false, tostring(err) end
                 S.mode = "cards"
@@ -207,7 +209,7 @@ function S.register_actions(ui)
                     progress = j and Triage.progress(j) or 0,
                     selected_flavour_index = fl and S.sel or nil,
                     selected_flavour = fl and fl.id or nil,
-                    selected_flavour_label = fl and fl.label or nil,
+                    selected_flavour_label = fl and fl.name or nil,
                     flavour_count = j and #(j.flavours or {}) or 0,
                     check_count = #checks,
                     selected_check_index = check and S.csel or nil,
