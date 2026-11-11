@@ -1,8 +1,8 @@
 -- ui/screens/hotkeys.lua — Hotkey designer.
 -- Profile list first, then the designer for the chosen profile.
---   KEYBOARD  Hotkeys.ini: Keys/Save State Slot 1 = `F1`; the combo → key
+--   KEYBOARD  Hotkeys.ini: Save State/Save State Slot 1 = F1; the combo → key
 --             pair goes to the profile's ext-dolphin.gptk (managed block).
---   PAD (SDL) Hotkeys.ini: Keys/... = (`Button 6` & `Button 4`)
+--   PAD (SDL) Hotkeys.ini: current Dolphin [Hotkeys] action = (`Button N` & ...)
 -- [A] capture combo  [< >] change emitted key  [X] clear  [L1/R1] device
 -- [Y] reload  [SELECT] copy profile  [START] save  [B] back
 -- Capture: press the buttons together, hold 1.5 s to commit; idle 4 s cancels.
