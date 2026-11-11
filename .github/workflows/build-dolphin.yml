@@ -5,11 +5,17 @@ on:
     branches: [main]
     paths:
       - "dolphin-build/**"
+      - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
+      - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "docs/TROUBLESHOOTING.md"
       - ".github/workflows/build-dolphin.yml"
   pull_request:
     branches: [main]
     paths:
       - "dolphin-build/**"
+      - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
+      - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "docs/TROUBLESHOOTING.md"
       - ".github/workflows/build-dolphin.yml"
   workflow_dispatch:
 
@@ -107,6 +113,13 @@ jobs:
             readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
           fi
           test -s "$OUT/BUILDINFO.txt"
+          if [ "$TARGET" = muos ] || [ "$TARGET" = muos-qt ]; then
+            test -s "$OUT/Sys/GC/font_western.bin"
+            test -s "$OUT/Sys/GC/font_japanese.bin"
+            test -s "$OUT/Sys/GC/dsp_rom.bin"
+            test -s "$OUT/Sys/GC/dsp_coef.bin"
+            test -s "$OUT/Sys/Resources/OSD_Font.ttf"
+          fi
           SOURCE_ARCHIVE="$(find "$OUT" -maxdepth 1 -type f -name 'source-*.tar.xz' -print -quit)"
           test -n "$SOURCE_ARCHIVE"
           sha256sum "$OUT"/dolphin* "$OUT/BUILDINFO.txt" "$SOURCE_ARCHIVE"
@@ -118,6 +131,7 @@ jobs:
           name: dolphin-${{ matrix.target }}-${{ matrix.frontend }}-aarch64-${{ github.sha }}
           path: |
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/dolphin*
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/Sys/**
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/BUILDINFO.txt
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/source-*.tar.xz
           if-no-files-found: error
