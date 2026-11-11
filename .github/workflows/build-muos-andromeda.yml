@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/build-muos-andromeda.yml"
+      - "dolphin-rtcore-muos/VERSION"
+      - "README.md"
       - "dolphin-build/**"
       - "!dolphin-build/*.md"
       - "!dolphin-build/**/*.md"
@@ -21,6 +23,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/build-muos-andromeda.yml"
+      - "dolphin-rtcore-muos/VERSION"
+      - "README.md"
       - "dolphin-build/**"
       - "!dolphin-build/*.md"
       - "!dolphin-build/**/*.md"
@@ -36,7 +40,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: muos-andromeda-h700-${{ github.ref }}
@@ -45,7 +49,7 @@ concurrency:
 jobs:
   build:
     name: muOS Andromeda / H700 / NoGUI + full update
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
@@ -59,28 +63,42 @@ jobs:
           nproc
           free -h
 
-      - name: Install native AArch64 dependencies
+      - name: Verify native ARM64 Docker runner
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            build-essential gcc-12 g++-12 cmake ninja-build git patch pkg-config python3 \
-            ca-certificates xz-utils binutils file \
-            libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
-            libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
-            liblzma-dev libpng-dev zlib1g-dev libbz2-dev libegl-dev \
-            libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev
+          test "$(uname -m)" = "aarch64"
+          docker --version
+          docker info --format '{{.Architecture}}'
 
-      - name: Build muOS Dolphin for H700
+      - name: Build muOS Dolphin in Ubuntu 22.04 ARM64 userland
+        id: build_dolphin
         run: |
           OUT="$RUNNER_TEMP/dolphin-muos"
           mkdir -p "$OUT"
-          CC=gcc-12 CXX=g++-12 bash dolphin-build/build-dolphin.sh \
-            --target muos \
-            --frontend nogui \
-            --out "$OUT" \
-            --jobs "$(nproc)" \
-            --no-deps \
-            --tune cortex-a53
+          docker run --rm --platform linux/arm64 \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -v "$OUT:/out" \
+            -w /workspace \
+            ubuntu:22.04 \
+            bash -euo pipefail -c '
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get update
+              apt-get install -y --no-install-recommends \
+                build-essential gcc-12 g++-12 cmake ninja-build git patch pkg-config python3 \
+                ca-certificates xz-utils binutils file \
+                libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
+                libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
+                liblzma-dev libpng-dev zlib1g-dev libbz2-dev libegl-dev \
+                libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev
+              CC=gcc-12 CXX=g++-12 bash dolphin-build/build-dolphin.sh \
+                --target muos \
+                --frontend nogui \
+                --out /out \
+                --jobs "$(nproc)" \
+                --no-deps \
+                --tune cortex-a53
+            '
+          chmod -R a+rX "$OUT"
+
 
       - name: Test muOS glibc ABI gate
         run: bash tests/test_muos_glibc_abi.sh
@@ -124,7 +142,10 @@ jobs:
           sha256sum "$ARCHIVE" "$OUT/BUILDINFO.txt" "$OUT"/source-*.tar.xz > "$OUT/SHA256SUMS"
           cat "$OUT/SHA256SUMS"
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload workflow artifact
+        id: upload_artifact
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: dolphin-muos-andromeda-h700-${{ github.sha }}
           path: |
@@ -134,3 +155,40 @@ jobs:
             ${{ runner.temp }}/dolphin-muos/SHA256SUMS
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish authenticated draft Release fallback
+        if: steps.upload_artifact.outcome != 'success' && github.repository == 'SilverCrow2323/dolphin-rt-core' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-muos"
+          ARCHIVE="$(find "$OUT/dist" -maxdepth 1 -type f -name '*.muxupd' -print -quit)"
+          test -n "$ARCHIVE"
+          VERSION="$(tr -d '[:space:]' < dolphin-rtcore-muos/VERSION)"
+          SHORT_SHA="${GITHUB_SHA:0:12}"
+          TAG="v${VERSION}-rc-${SHORT_SHA}"
+          printf '%s\\n' \
+            "# Dolphin Rt:Core v${VERSION} — H700 muOS build candidate" \
+            "" \
+            "Commit: ${GITHUB_SHA}" \
+            "" \
+            "This is an automatically generated draft candidate. The archive passed the AArch64 ELF, GLIBC, payload and MUXUPD integrity checks." \
+            "" \
+            "Physical-device boot/input/render/exit testing is still required. Jacaranda compatibility here covers the legacy info/assign payload and registration path; it is not a claim that the complete v12 runtime has been certified on Jacaranda." \
+            > "$OUT/RELEASE_NOTES.md"
+          if ! command -v gh >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y gh
+          fi
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ARCHIVE" "$OUT/BUILDINFO.txt" "$OUT/SHA256SUMS" \
+              --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --title "Dolphin Rt:Core v${VERSION} — H700 muOS candidate ${SHORT_SHA}" \
+              --notes-file "$OUT/RELEASE_NOTES.md"
+          else
+            gh release create "$TAG" "$ARCHIVE" "$OUT/BUILDINFO.txt" "$OUT/SHA256SUMS" \
+              --repo "$GITHUB_REPOSITORY" --draft --target "$GITHUB_SHA" \
+              --title "Dolphin Rt:Core v${VERSION} — H700 muOS candidate ${SHORT_SHA}" \
+              --notes-file "$OUT/RELEASE_NOTES.md"
+          fi

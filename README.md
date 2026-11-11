@@ -23,7 +23,7 @@
 
 > **FIELD NOTE // 2026-11-11**
 >
-> The active hardware reference for this development line is the **Anbernic RG35XX H with the Allwinner H700 SoC**.
+> The active hardware reference for this development line is the **Anbernic RG35XX H with the Allwinner H700 SoC**. The current maintenance candidate is **muOS payload v12.0.1**, including a Jacaranda-compatible legacy assignment payload and a Content Explorer ROM-path diagnostic.
 > Legacy hardware notes have been reconciled with this RG35XX H reference.
 >
 > A successful build is not a successful device boot. The current H700 binaries still need to pass the on-device launch, font, input, rendering and clean-exit checks described below.
@@ -42,8 +42,8 @@ This project does not promise that every GameCube or Wii title will run at full 
 
 | Platform | Integration | Current status |
 |---|---|---|
-| **muOS 2606.0 Andromeda** | Main v12.0.0 Kanzentai package, Rt:UI, RtSys and core registration | Primary handheld line. The reproducible H700 NoGUI build is in the native ARM64 workflow; fresh binaries still require an RG35XX H runtime test. |
-| **muOS 2601.1 Jacaranda** | Legacy v11.5.1 Triptych line | Historical/legacy release line. Do not install the Andromeda package on Jacaranda by assumption. |
+| **muOS 2606.0 Andromeda** | v12.0.1 maintenance candidate, Rt:UI, RtSys and core registration | Primary H700 line. ARM64 NoGUI build and ABI/payload checks run in CI; the exact package still requires physical RG35XX H launch, input, rendering and clean-exit validation. |
+| **muOS 2601.1 Jacaranda** | Legacy external-core assignment payload | The package now carries `opt/muos/share/info/assign/Nintendo GameCube` and `Nintendo Wii` with profile INIs. This covers legacy core registration/profile discovery; complete v12 runtime certification on Jacaranda remains pending. |
 | **Knulli / Batocera** | Separate Rt:Core K integration | Existing RG35XX H / Knulli Scarab device testing is documented in the K port. Verify each new binary/resource pair before releasing it. |
 | **ROCKNIX** | Separate Rt:Core R integration with a Wayland-enabled build target | Experimental. The old fbdev binary/display mismatch is the reason for the dedicated Wayland build. A successful CI build still needs a physical-device launch test. |
 | **ARM64 desktop** | Qt GUI and NoGUI build variants | Build and diagnostic target; not a handheld firmware package. |
