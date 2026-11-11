@@ -71,7 +71,8 @@ One repository, one folder per deliverable:
 
 Build everything from source: `dolphin-rtcore-muos/tools/build-muxupd.sh`, `portal/tools/build-packages.sh all`;
 test the Knulli/ROCKNIX ports with `tests/test_ports_dryrun.sh`;
-build ready-to-install port archives (shared `core/` + **your** aarch64 `dolphin`) with `tools/make-port-release.sh k|r --binary /path/to/dolphin`.
+build ready-to-install port archives (shared `core/` + **your** aarch64 `dolphin`) with `tools/make-port-release.sh k|r --binary /path/to/dolphin --sys-dir /path/to/Sys`.
+For relocatable Knulli/ROCKNIX binaries, pass the matching `Sys/` directory from the same `dolphin-build` output; the packager validates the GameCube fonts and DSP assets before creating either archive.
 
 ## 📚 Documentation & developer tools
 
