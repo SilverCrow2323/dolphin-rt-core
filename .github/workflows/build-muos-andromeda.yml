@@ -1,0 +1,121 @@
+name: Build Dolphin muOS Andromeda (H700)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-muos-andromeda.yml"
+      - "dolphin-build/**"
+      - "!dolphin-build/*.md"
+      - "!dolphin-build/**/*.md"
+      - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
+      - "dolphin-rtcore-muos/emu/dolphin/RtSys/switch_weapon/**"
+      - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/verify-muxupd.sh"
+      - "dolphin-rtcore-muos/app/Dolphin RtUI/**"
+      - "dolphin-rtcore-muos/overlay/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-muos-andromeda.yml"
+      - "dolphin-build/**"
+      - "!dolphin-build/*.md"
+      - "!dolphin-build/**/*.md"
+      - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
+      - "dolphin-rtcore-muos/emu/dolphin/RtSys/switch_weapon/**"
+      - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/verify-muxupd.sh"
+      - "dolphin-rtcore-muos/app/Dolphin RtUI/**"
+      - "dolphin-rtcore-muos/overlay/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: muos-andromeda-h700-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: muOS Andromeda / H700 / NoGUI + full update
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Show native build host
+        run: |
+          uname -a
+          uname -m
+          nproc
+          free -h
+
+      - name: Install native AArch64 dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build git patch pkg-config python3 \
+            ca-certificates xz-utils binutils file \
+            libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
+            libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
+            liblzma-dev libpng-dev zlib1g-dev libbz2-dev libegl-dev \
+            libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev
+
+      - name: Build muOS Dolphin for H700
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-muos"
+          mkdir -p "$OUT"
+          bash dolphin-build/build-dolphin.sh \
+            --target muos \
+            --frontend nogui \
+            --out "$OUT" \
+            --jobs "$(nproc)" \
+            --no-deps \
+            --tune cortex-a53
+
+      - name: Validate AArch64 executable and private runtime
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-muos"
+          bash dolphin-build/validate-aarch64-elf.sh "$OUT/dolphin"
+          bash dolphin-build/validate-aarch64-elf.sh "$OUT/lib/libhidapi-hidraw.so.0"
+          test -s "$OUT/Sys/GC/font_western.bin"
+          test -s "$OUT/Sys/GC/font_japanese.bin"
+          test -s "$OUT/Sys/GC/dsp_rom.bin"
+          test -s "$OUT/Sys/GC/dsp_coef.bin"
+          test -s "$OUT/Sys/Resources/OSD_Font.ttf"
+          readelf -d "$OUT/dolphin" | grep -F 'libhidapi-hidraw.so.0'
+          sha256sum "$OUT/dolphin" "$OUT/lib/libhidapi-hidraw.so.0"
+
+      - name: Build complete muOS Andromeda update
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-muos"
+          mkdir -p "$OUT/dist"
+          DOLPHIN_BIN="$OUT/dolphin" \
+          DOLPHIN_SYS_DIR="$OUT/Sys" \
+          DOLPHIN_LIB_DIR="$OUT/lib" \
+            bash dolphin-rtcore-muos/tools/build-muxupd.sh "$OUT/dist"
+          ARCHIVE="$(find "$OUT/dist" -maxdepth 1 -type f -name '*.muxupd' -print -quit)"
+          test -n "$ARCHIVE"
+          unzip -Z1 "$ARCHIVE" > "$OUT/archive-files.txt"
+          grep -Fxq 'opt/muos/share/emulator/dolphin/dolphin' "$OUT/archive-files.txt"
+          grep -Fxq 'opt/muos/share/emulator/dolphin/lib/libhidapi-hidraw.so.0' "$OUT/archive-files.txt"
+          grep -Fxq 'opt/muos/share/emulator/dolphin/Sys/GC/font_western.bin' "$OUT/archive-files.txt"
+          grep -Fxq 'opt/muos/share/emulator/dolphin/Sys/GC/dsp_rom.bin' "$OUT/archive-files.txt"
+          grep -Fxq 'manifest.sha256' "$OUT/archive-files.txt"
+          bash dolphin-rtcore-muos/tools/verify-muxupd.sh "$ARCHIVE"
+          sha256sum "$ARCHIVE" "$OUT/BUILDINFO.txt" "$OUT"/source-*.tar.xz > "$OUT/SHA256SUMS"
+          cat "$OUT/SHA256SUMS"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-muos-andromeda-h700-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/dolphin-muos/dist/*.muxupd
+            ${{ runner.temp }}/dolphin-muos/BUILDINFO.txt
+            ${{ runner.temp }}/dolphin-muos/source-*.tar.xz
+            ${{ runner.temp }}/dolphin-muos/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30

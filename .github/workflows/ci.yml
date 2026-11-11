@@ -54,11 +54,15 @@ jobs:
           luajit tests/test_cheats_screen_nexus.lua
           luajit tests/test_game_nexus.lua
           luajit tests/test_keymap_nexus.lua
-      - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
+      - name: Assemble explicitly UI-only archive for structural validation
+        env:
+          DOLPHIN_UI_ONLY: "1"
+        run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
-        run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
-      - uses: actions/upload-artifact@v4
-        with: { name: muxupd, path: dist/*.muxupd }
+        run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*_ui-only.muxupd
+      # This CI job has an x86_64 runner and therefore cannot publish a runnable
+      # H700 emulator package. The complete .muxupd is produced by the native
+      # ARM64 Build Dolphin muOS Andromeda workflow.
 
   ports-dryrun:
     runs-on: ubuntu-latest
