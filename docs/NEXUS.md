@@ -158,6 +158,21 @@ Controller profiles are restricted to safe directory names before constructing t
 
 Only profile names matching the controller editor's safe-name contract are exposed. The open action reconstructs and checks the expected path from the selected system and profile name rather than trusting a caller-supplied directory. The state snapshot returns profile metadata only and does not expose directory paths.
 
+## Compatibility Browser
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `compat.refresh` | — | Force-reload the compatibility database and refresh local-library ownership |
+| `compat.set_filter` | `all`, `playable`, `issues` or `not_playable` | Select compatibility rank filter |
+| `compat.set_mine_only` | boolean or omitted | Filter to games present in the local ROM library |
+| `compat.jump_letter` | `-1` or `1` | Jump to the previous or next title initial |
+| `compat.open_selected` | — | Open the selected game only when it exists in the local library |
+| `compat.state` | — | Read filter, selection, ownership and result counts |
+
+### Local-library boundary
+
+The compatibility database contains entries for games that may not be installed. Opening a game always resolves its ID against the current local `Library.games` index and passes the local library object to the Game screen. Entries that exist only in the database are rejected. The state snapshot does not expose ROM paths.
+
 ## Validation
 
 Run the contract checks from the repository root:
@@ -171,6 +186,7 @@ luajit tests/test_cheats_screen_nexus.lua
 luajit tests/test_game_nexus.lua
 luajit tests/test_keymap_nexus.lua
 luajit tests/test_controller_profiles_nexus.lua
+luajit tests/test_compat_nexus.lua
 ```
 
 The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.

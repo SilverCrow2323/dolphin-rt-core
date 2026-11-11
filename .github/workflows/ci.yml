@@ -55,6 +55,7 @@ jobs:
           luajit tests/test_game_nexus.lua
           luajit tests/test_keymap_nexus.lua
           luajit tests/test_controller_profiles_nexus.lua
+          luajit tests/test_compat_nexus.lua
       - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
         run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd

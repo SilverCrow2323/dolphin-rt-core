@@ -14,24 +14,32 @@ S.list = K.List(K.MARGIN, LY, 296, K.BOT - LY, 36)
 S.t, S.filter, S.mine_only = 0, 1, false
 
 local FILTERS = {
-    { label = "ALL",          test = function(g) return true end,                   color = "sys" },
-    { label = "PLAYABLE",     test = function(g) return g.playable_rank == 3 end,   color = "lime" },
-    { label = "ISSUES",       test = function(g) return g.playable_rank == 2 end,   color = "boost" },
-    { label = "NOT PLAYABLE", test = function(g) return g.playable_rank <= 1 end,   color = "hot" },
+    { id = "all",          label = "ALL",          test = function(g) return true end,                 color = "sys" },
+    { id = "playable",     label = "PLAYABLE",     test = function(g) return g.playable_rank == 3 end, color = "lime" },
+    { id = "issues",       label = "ISSUES",       test = function(g) return g.playable_rank == 2 end, color = "boost" },
+    { id = "not_playable", label = "NOT PLAYABLE", test = function(g) return g.playable_rank <= 1 end, color = "hot" },
 }
 
 local owned = {}          -- id -> gioco in libreria
 
 local function rebuild(keep)
     local items = {}
+    local keep_id = type(keep) == "table" and keep.id or nil
+    local keep_title = type(keep) == "table" and keep.title or nil
     local f = FILTERS[S.filter]
-    for _, g in ipairs(Compat.games) do
+    for _, g in ipairs(Compat.games or {}) do
         if f.test(g) and (not S.mine_only or owned[g.id]) then items[#items + 1] = g end
     end
     table.sort(items, function(a, b) return a.title:lower() < b.title:lower() end)
     S.list:set(items, false)
     if keep then
-        for i, g in ipairs(items) do if g == keep then S.list.sel = i; S.list:_aim(true); break end end
+        for i, g in ipairs(items) do
+            if g == keep or (keep_id and g.id == keep_id and g.title == keep_title) then
+                S.list.sel = i
+                S.list:_aim(true)
+                break
+            end
+        end
     end
     K.set_accent(f.color)
 end
@@ -60,6 +68,114 @@ local function jump_letter(d)
             S.list.sel = j; S.list:_aim(); SFX.play("menu_pagescroll"); return
         end
     end
+end
+
+-- NEXUS exposes compatibility filtering and navigation while preserving
+-- the local-library ownership check before opening a game's launch screen.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function selected() return S.list and S.list:cur() or nil end
+    local function refresh_owned()
+        owned = {}
+        for _, game in ipairs(Library.games or {}) do
+            if type(game.id) == "string" and game.id ~= "" and not owned[game.id] then
+                owned[game.id] = game
+            end
+        end
+    end
+    local specs = {
+        {
+            id = "compat.refresh", title = "Refresh compatibility database", order = 10,
+            run = function()
+                local keep = selected()
+                local ok, err = pcall(Compat.load, true)
+                if not ok then return false, tostring(err) end
+                if Compat.error then return false, tostring(Compat.error) end
+                refresh_owned()
+                rebuild(keep)
+                return true, #S.list.items
+            end,
+        },
+        {
+            id = "compat.set_filter", title = "Set compatibility filter", order = 20,
+            run = function(filter_id)
+                if type(filter_id) ~= "string" then return false, "filter ID is required" end
+                local keep = selected()
+                for i, filter in ipairs(FILTERS) do
+                    if filter.id == filter_id then
+                        S.filter = i
+                        rebuild(keep)
+                        SFX.play("menu_pagescroll")
+                        return true
+                    end
+                end
+                return false, "unknown compatibility filter: " .. filter_id
+            end,
+        },
+        {
+            id = "compat.set_mine_only", title = "Filter to owned games", order = 30,
+            run = function(enabled)
+                if enabled == nil then enabled = not S.mine_only end
+                if type(enabled) ~= "boolean" then return false, "enabled must be a boolean" end
+                local keep = selected()
+                S.mine_only = enabled
+                rebuild(keep)
+                SFX.play("menu_toggleoption")
+                return true
+            end,
+        },
+        {
+            id = "compat.jump_letter", title = "Jump to next or previous title initial", order = 40,
+            run = function(direction)
+                if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+                if #S.list.items == 0 then return false, "no games match the current filter" end
+                jump_letter(direction)
+                return true
+            end,
+        },
+        {
+            id = "compat.open_selected", title = "Open selected owned game", order = 50,
+            run = function()
+                local game = selected()
+                if not game then return false, "no game selected" end
+                if type(game.id) ~= "string" or game.id == "" then
+                    return false, "selected compatibility entry has no valid game ID"
+                end
+                local mine = owned[game.id]
+                if not mine then return false, "game is not in the local library" end
+                local ok, result, detail = pcall(ui.go, "game", { game = mine })
+                if not ok then return false, tostring(result) end
+                if result == false then return false, tostring(detail or "could not open game") end
+                return true
+            end,
+        },
+        {
+            id = "compat.state", title = "Get compatibility browser state", order = 60,
+            run = function()
+                local game = selected()
+                local summary = game and Compat.summary(game) or nil
+                return {
+                    filter = FILTERS[S.filter] and FILTERS[S.filter].id or nil,
+                    mine_only = S.mine_only,
+                    selected_id = game and game.id or nil,
+                    selected_title = game and game.title or nil,
+                    selected_owned = game and owned[game.id] ~= nil or false,
+                    result_count = #S.list.items,
+                    database_count = Compat.count or 0,
+                    playable_label = summary and summary.play_label or nil,
+                }
+            end,
+        },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "compatibility", order = spec.order, screen = "compat_list",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 function S.pad(b)
