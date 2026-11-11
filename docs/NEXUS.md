@@ -106,6 +106,26 @@ Toggling and bulk operations update the per-game `rtcheats_data.ini` layer only.
 
 Category headers are not selectable or toggleable. All mutation actions reject calls without a valid active game ID. The state snapshot contains entry metadata and counts; it does not expose cheat code contents.
 
+## Game / Launch Configuration
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `game.launch` | — | Launch the active game with its saved options |
+| `game.select_row` | 1-based row index | Select a non-section game option |
+| `game.change_selected` | `-1` or `1` | Change the selected choice or toggle |
+| `game.set_choice` | setting key, allowed value | Set a validated profile, tier, controller, hotkey or GameSettings choice |
+| `game.set_overlay` | overlay ID, boolean | Set FPS, VPS, speed or OSD HUD overlay |
+| `game.run_selected` | — | Run the selected action or launch the game |
+| `game.open_editor` | — | Open the selected profile, GameSettings or controller editor |
+| `game.request_reset` | — | Request reset through the existing confirmation modal |
+| `game.state` | — | Read game identity, selected row, launch choices and overlay state |
+
+### Launch configuration boundaries
+
+Choice values must exist in the current option list for that game. Section headers cannot be selected or changed. Overlay IDs are explicitly allow-listed. Launch and editor actions require a valid active game; controller profile names are checked before constructing editor paths. Reset continues to use the screen's confirmation modal and does not reset anything until accepted.
+
+The state snapshot exposes launch metadata and row labels only; it does not return the ROM path or internal filesystem paths.
+
 ## Validation
 
 Run the contract checks from the repository root:
@@ -116,6 +136,7 @@ luajit tests/test_stream_config_persistence.lua
 luajit tests/test_diagnostics_nexus.lua
 luajit tests/test_hotkeys_nexus.lua
 luajit tests/test_cheats_screen_nexus.lua
+luajit tests/test_game_nexus.lua
 ```
 
 The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.

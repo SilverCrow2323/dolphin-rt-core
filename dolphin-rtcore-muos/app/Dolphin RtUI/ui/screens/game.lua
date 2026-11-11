@@ -828,4 +828,240 @@ function S.draw()
     })
 end
 
+-- NEXUS exposes the active game's launch configuration while reusing
+-- the existing selectors, modals, editors and launcher.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function active_game()
+        local game = S.game
+        if type(game) ~= "table" or type(game.id) ~= "string"
+            or #game.id < 3 or #game.id > 16 or not game.id:match("^[%w_%-]+$") then
+            return nil
+        end
+        return game
+    end
+    local function selected()
+        return S.list and S.list:cur() or nil
+    end
+    local function launch_game()
+        local game = active_game()
+        if not game then return false, "no valid game is active" end
+        local ok, result, detail = pcall(U.launch, game)
+        if not ok then return false, tostring(result) end
+        if result ~= true then return false, tostring(detail or "launcher rejected the request") end
+        return true
+    end
+    local function find_row(key)
+        local game = active_game()
+        local labels = {
+            RtProfile = "Profile",
+            RtProfileVariant = "Tier",
+            GameSettings = "GameSettings",
+            Controller = U.is_wii(game) and "Wii Mote" or "GameCube Pad",
+            Hotkeys = "Hotkeys",
+        }
+        local label = labels[key] or key
+        for _, row in ipairs(S.rows or {}) do
+            if row.kind == "choice" and row.get and (row.key == key or row.label == label) then
+                return row
+            end
+        end
+    end
+    local function safe_profile_name(name)
+        return type(name) == "string" and #name > 0 and #name <= 64
+            and name:match("^[%w_%-]+$") ~= nil
+    end
+
+    local specs = {
+        {
+            id = "game.launch", title = "Launch selected game", order = 10,
+            run = launch_game,
+        },
+        {
+            id = "game.select_row", title = "Select game option", order = 20,
+            run = function(index)
+                if not active_game() then return false, "no valid game is active" end
+                if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.list.items then
+                    return false, "game option index out of range"
+                end
+                local row = S.list.items[index]
+                if not row or row.skip or row.kind == "section" then
+                    return false, "cannot select a section header"
+                end
+                S.list.sel = index
+                return true
+            end,
+        },
+        {
+            id = "game.change_selected", title = "Change selected game option", order = 30,
+            run = function(direction)
+                if not active_game() then return false, "no valid game is active" end
+                if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+                local row = selected()
+                if not row or row.skip or row.kind == "section" then
+                    return false, "no editable game option selected"
+                end
+                if row.kind == "choice" then
+                    local ok, err = pcall(cycle, row, direction)
+                    if not ok then return false, tostring(err) end
+                elseif row.kind == "toggle" then
+                    local ok, err = pcall(row.set, direction > 0)
+                    if not ok then return false, tostring(err) end
+                    SFX.play("menu_toggleoption")
+                else
+                    return false, "selected game option is not editable"
+                end
+                return true
+            end,
+        },
+        {
+            id = "game.set_choice", title = "Set game launch choice", order = 40,
+            run = function(key, value)
+                if not active_game() then return false, "no valid game is active" end
+                if type(key) ~= "string" or type(value) ~= "string" then
+                    return false, "key and value must be strings"
+                end
+                local row = find_row(key)
+                if not row then return false, "game choice not found" end
+                local ok, choices = pcall(function()
+                    return type(row.list) == "function" and row.list() or (row.list or {})
+                end)
+                if not ok or type(choices) ~= "table" then return false, "could not read game choices" end
+                local available = false
+                for _, choice in ipairs(choices) do
+                    if choice == value then available = true; break end
+                end
+                if not available then return false, "value is not available for this game choice" end
+                local saved, err = pcall(row.set, value)
+                if not saved then return false, tostring(err) end
+                return true
+            end,
+        },
+        {
+            id = "game.set_overlay", title = "Set game HUD overlay", order = 50,
+            run = function(overlay_id, enabled)
+                if not active_game() then return false, "no valid game is active" end
+                if type(enabled) ~= "boolean" then return false, "enabled must be boolean" end
+                local allowed = {
+                    OverlayFPS = true, OverlayVPS = true,
+                    OverlaySpeed = true, OverlayOSD = true,
+                }
+                if not allowed[overlay_id] then return false, "unknown game overlay" end
+                put(overlay_id, enabled and "yes" or "no")
+                return true
+            end,
+        },
+        {
+            id = "game.run_selected", title = "Run selected game action", order = 60,
+            run = function()
+                if not active_game() then return false, "no valid game is active" end
+                local row = selected()
+                if not row or row.skip or row.kind == "section" then
+                    return false, "no game action selected"
+                end
+                if row.play then return launch_game() end
+                if row.kind ~= "action" or type(row.run) ~= "function" then
+                    return false, "selected row is not an action"
+                end
+                local ok, result, detail = pcall(row.run)
+                if not ok then return false, tostring(result) end
+                if result == false then return false, tostring(detail or "game action rejected") end
+                return true
+            end,
+        },
+        {
+            id = "game.open_editor", title = "Open selected game editor", order = 70,
+            run = function()
+                if not active_game() then return false, "no valid game is active" end
+                local row = selected()
+                if not row or row.skip or row.kind == "section" then
+                    return false, "no game option selected"
+                end
+                if row.keymap_target then
+                    local system = U.is_wii(S.game) and "Wii" or "GameCube"
+                    local profile = launch_key("Controller")
+                    if not safe_profile_name(profile) then return false, "invalid controller profile name" end
+                    local dir = "workshop/controller/" .. system .. "/" .. profile
+                    local ok, err = pcall(require("ui").go, "controller_map", {
+                        dir = dir, name = profile, system = system,
+                    })
+                    if not ok then return false, tostring(err) end
+                    return true
+                end
+                if not row.editor_target then return false, "selected option has no editor" end
+                local params = {}
+                if row.editor_params then
+                    local ok, value = pcall(row.editor_params)
+                    if not ok then return false, tostring(value) end
+                    if type(value) == "table" then params = value end
+                end
+                local ok, err = pcall(require("ui").go, row.editor_target, params)
+                if not ok then return false, tostring(err) end
+                return true
+            end,
+        },
+        {
+            id = "game.request_reset", title = "Request reset of game options", order = 80,
+            run = function()
+                if not active_game() then return false, "no valid game is active" end
+                Modal.show("Reset options", "Restore the default launch options for this game?",
+                    { accept_label = "Reset", cancel_label = "Cancel", color = K.C.warn, on_accept = reset_all })
+                return true
+            end,
+        },
+        {
+            id = "game.state", title = "Get per-game launch state", order = 90,
+            run = function()
+                local game = active_game()
+                local row = selected()
+                local rows = {}
+                for i, item in ipairs(S.rows or {}) do
+                    rows[#rows + 1] = {
+                        index = i,
+                        label = item.label,
+                        kind = item.kind,
+                        skip = item.skip == true,
+                        key = item.key,
+                    }
+                end
+                local result = {
+                    game_id = game and game.id or nil,
+                    title = game and game.title or nil,
+                    selected_index = S.list and S.list.sel or nil,
+                    selected_label = row and row.label or nil,
+                    selected_kind = row and row.kind or nil,
+                    documentation_open = S.doc.open == true,
+                    rows = rows,
+                }
+                if game then
+                    result.profile = launch_key("RtProfile")
+                    result.profile_variant = launch_key("RtProfileVariant")
+                    result.controller = launch_key("Controller")
+                    result.hotkeys = launch_key("Hotkeys")
+                    result.game_settings = launch_key("GameSettings")
+                    result.safe_exit = U.yes(launch_key("SafeExit"))
+                    result.overlays = {
+                        fps = U.yes(launch_key("OverlayFPS")),
+                        vps = U.yes(launch_key("OverlayVPS")),
+                        speed = U.yes(launch_key("OverlaySpeed")),
+                        osd = U.yes(launch_key("OverlayOSD")),
+                    }
+                end
+                return result
+            end,
+        },
+    }
+
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "game", order = spec.order, screen = "game",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
+
 return S
