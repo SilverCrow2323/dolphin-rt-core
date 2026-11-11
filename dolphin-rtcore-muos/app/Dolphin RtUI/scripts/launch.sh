@@ -68,6 +68,8 @@ done
 # ── Paths ───────────────────────────────────────────────────
 EMU="${RT_EMUDIR:-/opt/muos/share/emulator/dolphin}"
 DOLPHIN="$EMU/dolphin"
+# Load package-private dependencies (notably HIDAPI) without changing muOS libraries.
+export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 RTSYS="$EMU/RtSys"
 CONFIG="$EMU/Config"
 WORKSHOP="$GAME_DIR/workshop"
