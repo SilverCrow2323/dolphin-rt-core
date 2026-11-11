@@ -8,6 +8,8 @@ on:
       - "!dolphin-build/*.md"
       - "!dolphin-build/**/*.md"
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
+      - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
   pull_request:
     branches: [main]
     paths:
@@ -15,6 +17,8 @@ on:
       - "!dolphin-build/*.md"
       - "!dolphin-build/**/*.md"
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
+      - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
   workflow_dispatch:
 
 permissions:
