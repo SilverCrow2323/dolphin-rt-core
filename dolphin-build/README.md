@@ -44,14 +44,14 @@ Options include `--ref SHA`, `--jobs N`, `--no-lto`, `--tune cortex-a53|none`, `
 
 ## CI artifacts
 
-The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt GUI, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. The `muos-qt` job proves compilation only. Its Qt EGLFS platform plugin, Qt libraries, EGL/GLES driver, input, display sizing, Dolphin rendering and shutdown behavior must all be validated on the actual muOS device. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
+The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt GUI, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. The `muos-qt` job stages an experimental Qt 6 EGLFS runtime bundle (Qt libraries plus the EGLFS QPA plugin). It is packaged as a separate, non-default test payload and never replaces the stable NoGUI executable. The Qt EGLFS platform plugin, Qt libraries, EGL/GLES driver, input, display sizing, Dolphin rendering and shutdown behavior must all be validated on the actual muOS device. The H616 muOS image may require a board-specific EGLFS integration; a successful build is not proof that the Qt frontend can initialize on this firmware. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
 
 ## Release engineering rules
 
 1. Keep the upstream commit pinned; do not silently float to upstream HEAD.
 2. Keep platform-specific patches isolated. ROCKNIX Wayland patches must not leak into muOS/Knulli fbdev builds.
 3. Preserve the muOS launcher contract: `/opt/muos/share/emulator/dolphin/dolphin --platform=fbdev --video_backend=OGL -e ROM -u EMUDIR`.
-4. Every handheld target (`muos`, `muos-qt`, `knulli`, `fbdev`, `rocknix`) is built with `LINUX_LOCAL_DEV=ON` and stages the matching upstream `Data/Sys` tree beside its executable. Keep the executable and `Sys/` from the same build output.
+4. Every handheld target (`muos`, `muos-qt`, `knulli`, `fbdev`, `rocknix`) is built with `LINUX_LOCAL_DEV=ON` and stages the matching upstream `Data/Sys` tree beside its executable. The muOS NoGUI and experimental Qt outputs also bundle the AArch64 `libhidapi-hidraw.so.0` runtime under `lib/`, which the muOS launcher loads privately without modifying firmware libraries. Keep the executable and `Sys/` from the same build output.
    - muOS update package:
      ```bash
      DOLPHIN_BIN="$PWD/out/muos/dolphin" \
