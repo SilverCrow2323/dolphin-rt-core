@@ -9,7 +9,7 @@
 #   options: --frontend nogui|gui|both --ref SHA --out DIR --jobs N --no-lto --tune cortex-a53|none --deps --no-deps
 #
 # Output (in --out, default ./out): dolphin, BUILDINFO.txt, source-<ref>.tar.xz;
-# muOS targets also include a relocatable Sys/ directory next to the binary.
+# Handheld targets also include a relocatable Sys/ directory next to the binary.
 #
 # STATUS: patch validation is provided by verify-patches.sh. The native ARM64 CI build is the authoritative
 # build/test path; output discovery expects upstream's Binaries/dolphin-emu-nogui executable.
