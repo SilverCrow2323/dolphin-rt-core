@@ -15,6 +15,14 @@ if [ -n "$DOLPHIN_BIN" ]; then
 fi
 S="$(mktemp -d)"; trap 'rm -rf "$S"' EXIT
 
+# GameCube IPL text rendering depends on these bundled Dolphin 2412 resources.
+for font in font_western.bin font_japanese.bin; do
+  [ -s "$ROOT/emu/dolphin/Sys/GC/$font" ] || { echo "ERROR: missing GameCube system font: $ROOT/emu/dolphin/Sys/GC/$font" >&2; exit 1; }
+done
+for resource in dsp_rom.bin dsp_coef.bin; do
+  [ -s "$ROOT/emu/dolphin/Sys/GC/$resource" ] || { echo "ERROR: missing GameCube DSP resource: $ROOT/emu/dolphin/Sys/GC/$resource" >&2; exit 1; }
+done
+
 APP="run/muos/storage/application/Dolphin RtUI"; EMU="opt/muos/share/emulator/dolphin"
 mkdir -p "$S/$APP" "$S/$EMU"
 cp -a "$ROOT/emu/dolphin/." "$S/$EMU/"
