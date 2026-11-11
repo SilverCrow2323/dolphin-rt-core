@@ -17,7 +17,7 @@ require() {
 }
 
 # The running executable and its resource tree live side by side on muOS.
-require "$BUILD" 'case "$TARGET" in muos|muos-qt) LOCAL_SYS=ON;; esac'
+require "$BUILD" 'case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix) LOCAL_SYS=ON;; esac'
 require "$BUILD" '"-DLINUX_LOCAL_DEV=$LOCAL_SYS"'
 require "$BUILD" 'rm -rf "$OUT/Sys"'
 require "$BUILD" 'cp -a "$SRC/Data/Sys/." "$OUT/Sys/"'
