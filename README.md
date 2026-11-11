@@ -156,25 +156,6 @@ Never mix an executable and **Sys/** tree from different Dolphin revisions.
 
 The Andromeda package includes the integrity manifest required by that release line. The registration helper detects the installed muOS registration layout and maintains the GameCube/Wii entries. For registration details and recovery commands, see [docs/MUOS_REGISTRATION.md](docs/MUOS_REGISTRATION.md).
 
-### Andromeda Content Explorer — field diagnostic note
-
-On the RG35XX H test setup running **muOS 2606.0 Andromeda**, the game microSD was mounted at **`/mnt/sdcard`** (`/dev/mmcblk1p1`); **`/mnt/mmc`** is a different partition and must not be assumed to contain the game library. The observed ROM directory was `/mnt/sdcard/roms` (some muOS content/history records displayed the same path with uppercase `ROMS`).
-
-A device diagnostic also found a generated content record for a GameCube ISO inside **`GameCubeZ`**. This confirms that muOS had indexed that title, but it does **not** yet explain why Content Explorer may behave differently with canonical folder names such as `GameCube` or `Wii`. Do not treat this observation as proof of an intentional firmware restriction or as a confirmed Content Explorer bug.
-
-When investigating a missing system folder, first identify the actual game-card mount and inspect the real ROM root. Do not search only `/mnt/mmc` or the temporary `/run/muos` tree:
-
-```sh
-cat /proc/mounts | grep -E 'mmcblk|/mnt/'
-ls -lah /mnt/sdcard
-find /mnt/sdcard -maxdepth 3 -type d \\
-  \( -iname 'roms' -o -iname 'gamecube' -o -iname 'gamecubez' -o -iname 'wii' -o -iname 'wiiz' \) \\
-  -print 2>/dev/null
-grep -Rni 'GameCubeZ' /opt/muos/share/info/content /mnt/mmc/MUOS/info 2>/dev/null | head
-```
-
-Keep the exact folder spelling, mount point, muOS version and generated content-record path in bug reports. Registration status and Content Explorer directory visibility are separate checks.
-
 > [!IMPORTANT]
 > Jacaranda is a separate legacy release line. Registration detection does not make the current Andromeda package a certified Jacaranda package.
 
