@@ -33,18 +33,21 @@ function M.configured() return M.s.HOST ~= nil and M.s.HOST ~= "" end
 
 function M.set_many(values)
   if type(values) ~= "table" then return false, "settings must be a table" end
-  local previous, updates = {}, {}
+  local previous, existed, updates = {}, {}, {}
   for key, value in pairs(values) do
     if type(key) ~= "string" or key == "" then return false, "invalid setting key" end
     value = tostring(value or "")
     if not value:match("^[%w%.:%-_ ]*$") then return false, "characters not allowed" end
     previous[key] = M.s[key]
+    existed[key] = M.s[key] ~= nil
     updates[key] = value
   end
   if next(updates) == nil then return true end
   for key, value in pairs(updates) do M.s[key] = value end
   if not write(DIR .. "/stream.conf", L.serialize_conf(M.s)) then
-    for key, value in pairs(previous) do M.s[key] = value end
+    for key in pairs(previous) do
+      M.s[key] = existed[key] and previous[key] or nil
+    end
     return false, "could not persist stream.conf"
   end
   return true
