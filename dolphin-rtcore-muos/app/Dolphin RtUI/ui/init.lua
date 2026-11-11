@@ -142,6 +142,14 @@ function M.init()
         end
     end
 
+    local cheatdb_screen = Nexus.get_screen("cheatdb")
+    if cheatdb_screen and cheatdb_screen.register_actions then
+        local ok, registered, detail = pcall(cheatdb_screen.register_actions, M)
+        if not ok or registered == false then
+            log("cheat database NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     local compat_screen = Nexus.get_screen("compat_list")
     if compat_screen and compat_screen.register_actions then
         local ok, registered, detail = pcall(compat_screen.register_actions, M)

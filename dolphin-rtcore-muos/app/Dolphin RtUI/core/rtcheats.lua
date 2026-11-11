@@ -140,6 +140,13 @@ function M.has_boost(gid)
     return v
 end
 
+-- Explicitly invalidate the database and derived Boost cache after a sync.
+function M.refresh_index()
+    INDEX = nil
+    BOOST_MEMO = {}
+    return M.index()
+end
+
 -- ── locating files ──────────────────────────────────────────
 local function file_for(id)
     for _, d in ipairs(M.DIRS) do

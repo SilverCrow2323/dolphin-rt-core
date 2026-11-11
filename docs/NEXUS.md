@@ -173,6 +173,22 @@ Only profile names matching the controller editor's safe-name contract are expos
 
 The compatibility database contains entries for games that may not be installed. Opening a game always resolves its ID against the current local `Library.games` index and passes the local library object to the Game screen. Entries that exist only in the database are rejected. The state snapshot does not expose ROM paths.
 
+## Cheat Database Browser
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `cheatdb.refresh` | — | Invalidate and reload the cheat index, rebuild ownership metadata and preserve selection |
+| `cheatdb.set_filter` | `all`, `boost` or `mine` | Filter the global database |
+| `cheatdb.jump_letter` | `-1` or `1` | Jump to the previous or next title initial |
+| `cheatdb.open_selected` | — | Open the selected entry in the per-game Cheats screen |
+| `cheatdb.state` | — | Read filter, selection, ownership, Boost and result counts |
+
+### Global index and per-game boundary
+
+The Cheat Database Browser reads the global index; it does not toggle per-game codes or apply anything to Dolphin. Opening an entry passes its validated game ID and title to the per-game Cheats screen, where game-specific data and mutations remain separate.
+
+`Cheats.refresh_index()` invalidates both the cached index and derived Boost memo before rebuilding the browser. The state snapshot contains database metadata only and does not expose ROM paths or cheat file paths.
+
 ## Validation
 
 Run the contract checks from the repository root:
@@ -187,6 +203,7 @@ luajit tests/test_game_nexus.lua
 luajit tests/test_keymap_nexus.lua
 luajit tests/test_controller_profiles_nexus.lua
 luajit tests/test_compat_nexus.lua
+luajit tests/test_cheatdb_nexus.lua
 ```
 
 The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.
