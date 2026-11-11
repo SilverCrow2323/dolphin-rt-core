@@ -113,6 +113,10 @@ jobs:
             readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
           fi
           test -s "$OUT/BUILDINFO.txt"
+          if [ "$TARGET" = muos ] || [ "$TARGET" = muos-qt ]; then
+            test -s "$OUT/lib/libhidapi-hidraw.so.0"
+            readelf -h "$OUT/lib/libhidapi-hidraw.so.0" | grep -q "Machine:.*AArch64"
+          fi
           case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix)
             test -s "$OUT/Sys/GC/font_western.bin"
             test -s "$OUT/Sys/GC/font_japanese.bin"
@@ -133,6 +137,7 @@ jobs:
           path: |
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/dolphin*
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/Sys/**
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/lib/**
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/BUILDINFO.txt
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/source-*.tar.xz
           if-no-files-found: error
