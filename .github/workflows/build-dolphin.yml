@@ -106,10 +106,11 @@ jobs:
         run: |
           OUT="$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
           require_aarch64_elf() {
-            local binary="$1"
-            test -s "$binary"
-            readelf -h "$binary" | grep -q 'Class:.*ELF64'
-            readelf -h "$binary" | grep -q 'Machine:.*AArch64'
+            local binary="$1" header
+            test -s "$binary" || return 1
+            header="$(readelf -h "$binary")" || return 1
+            grep -q 'Class:.*ELF64' <<<"$header" || return 1
+            grep -q 'Machine:.*AArch64' <<<"$header" || return 1
           }
           if [ "$FRONTEND" = gui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin-gui"
