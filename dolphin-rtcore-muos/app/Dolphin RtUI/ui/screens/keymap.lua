@@ -204,7 +204,8 @@ local function commit_remap()
     if not write_call or not write_ok then
         S.lines = previous_lines
         Notify.show("error", "Could not save controller mapping")
-        local detail = write_call and write_err or write_ok
+        local detail
+        if write_call then detail = write_err else detail = write_ok end
         return false, tostring(detail or "controller mapping write failed")
     end
     local label = r.row.label
