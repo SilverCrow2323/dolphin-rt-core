@@ -134,6 +134,14 @@ function M.init()
         end
     end
 
+    local diagnostics_screen = Nexus.get_screen("diagnostics")
+    if diagnostics_screen and diagnostics_screen.register_actions then
+        local ok, registered, detail = pcall(diagnostics_screen.register_actions, M)
+        if not ok or registered == false then
+            log("diagnostics NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
     for _, entry in ipairs(Nexus.list_screens()) do

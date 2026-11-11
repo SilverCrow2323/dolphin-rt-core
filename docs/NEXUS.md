@@ -41,6 +41,28 @@ The state snapshot may expose the screen mode, whether a host is configured, the
 
 Stream configuration writes use a temporary file and atomic rename. Single-setting and multi-setting updates roll back their in-memory values when persistence fails; failed batch updates also remove keys that were not previously present.
 
+## Diagnostics
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `diagnostics.refresh` | — | Refresh log categories and the session tail |
+| `diagnostics.select_category` | 1-based index | Select a log category |
+| `diagnostics.open_selected` | — | Open the newest log in the selected category |
+| `diagnostics.scroll_viewer` | integer delta | Scroll the open log viewer |
+| `diagnostics.close_viewer` | — | Close the log viewer |
+| `diagnostics.request_clear_selected` | — | Request cleanup of the selected category |
+| `diagnostics.request_clear_all` | — | Request cleanup of all supported log files |
+| `diagnostics.switch_mode` | `list` or `settings` | Switch between log categories and settings |
+| `diagnostics.select_setting` | 1-based index | Select a log setting |
+| `diagnostics.change_setting` | `-1` or `1` | Change the selected log setting |
+| `diagnostics.state` | — | Read mode, selection and viewer counts |
+
+### Cleanup safety
+
+Cleanup actions only open the existing confirmation modal. Files are deleted only by the modal's accepted callback; cancelling the modal does not remove anything. The all-log action is rejected while a log viewer is open.
+
+The state snapshot contains counts and selection metadata only. It does not expose log file paths or log contents.
+
 ## Validation
 
 Run the contract checks from the repository root:
@@ -48,6 +70,7 @@ Run the contract checks from the repository root:
 ```sh
 luajit tests/test_stream_settings_nexus.lua
 luajit tests/test_stream_config_persistence.lua
+luajit tests/test_diagnostics_nexus.lua
 ```
 
-The muOS CI job runs both checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.
+The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.
