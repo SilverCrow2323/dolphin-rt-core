@@ -171,7 +171,7 @@ assert(actions["hotkeys.state"].run().emitted_key == "F2")
 assert(actions["hotkeys.save"].run())
 state = actions["hotkeys.state"].run()
 assert(state.dirty == false and files["workshop/hotkeys/Default/Hotkeys.ini"]:match("\x60F2\x60"))
-assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("a%s+=%s+f2"))
+assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("a%s+=%s+F2"))
 
 assert(actions["hotkeys.set_device"].run("pad"))
 assert(actions["hotkeys.state"].run().device == "pad")
