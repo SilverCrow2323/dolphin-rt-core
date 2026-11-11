@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Reject muOS runtime binaries that need a newer glibc than the firmware baseline.
 set -euo pipefail
-LIMIT="\${MUOS_GLIBC_LIMIT:-2.35}"
+LIMIT="${MUOS_GLIBC_LIMIT:-2.35}"
 if [ "$#" -lt 1 ]; then
   echo "usage: $0 ELF_FILE [ELF_FILE ...]" >&2
   exit 2
 fi
-limit_major="\${LIMIT%%.*}"
-limit_minor="\${LIMIT#*.}"
+limit_major="${LIMIT%%.*}"
+limit_minor="${LIMIT#*.}"
 case "$limit_major:$limit_minor" in
   *[!0-9:]*|:*|*:) echo "invalid MUOS_GLIBC_LIMIT: $LIMIT" >&2; exit 2 ;;
 esac
@@ -19,9 +19,9 @@ for file in "$@"; do
     echo "ERROR: no versioned GLIBC symbols found in $file; cannot prove runtime compatibility" >&2
     exit 1
   fi
-  required="\${max_symbol#GLIBC_}"
-  required_major="\${required%%.*}"
-  required_minor="\${required#*.}"
+  required="${max_symbol#GLIBC_}"
+  required_major="${required%%.*}"
+  required_minor="${required#*.}"
   if [ "$required_major" -gt "$limit_major" ] || {
     [ "$required_major" -eq "$limit_major" ] && [ "$required_minor" -gt "$limit_minor" ];
   }; then
