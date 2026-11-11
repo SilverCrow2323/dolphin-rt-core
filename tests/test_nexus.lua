@@ -51,7 +51,7 @@ local actions = Nexus.list_actions()
 eq(#actions, 2, "action catalog size")
 eq(actions[1].id, "library.rescan", "action catalog sorted")
 
-// Explicit rejection must remain distinguishable from a successful action.
+-- Explicit rejection must remain distinguishable from a successful action.
 Nexus.register_action("test.rejected", function(value)
     eq(value, "invalid", "rejection argument")
     return false, "input rejected"
