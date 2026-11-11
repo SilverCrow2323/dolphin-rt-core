@@ -7,7 +7,7 @@ This directory builds the upstream Dolphin revision pinned in [`DOLPHIN_REF`](DO
 | Target | Runtime/display path | Frontend | Intended use |
 |---|---|---|---|
 | `muos` | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | muOS Andromeda on H700, launched by Rt:Core / Rt:UI |
-| `muos-qt` | Qt GUI, EGLFS intended; X11/Wayland disabled | Qt GUI | Experimental muOS/H700 Qt frontend; runtime compatibility unverified |
+| `muos-qt` | Qt GUI, EGLFS intended; X11/Wayland disabled | NoGUI + Qt GUI | Experimental muOS Qt frontend with a matching NoGUI base; runtime compatibility unverified |
 | `knulli` | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | Knulli H700 |
 | `rocknix` | Wayland + SDL/EGL/GLES | NoGUI | ROCKNIX H700; applies the platform patch series |
 | `desktop` | X11 + Wayland | Qt GUI and/or NoGUI | Generic ARM64 Linux desktop and diagnostics |
@@ -34,7 +34,7 @@ Run on a native AArch64 Debian/Ubuntu host, or use GitHub Actions:
 ./build-dolphin.sh --target rocknix --frontend nogui --out ./out/rocknix
 
 # Experimental Qt frontend for muOS (compile test; device/runtime validation required)
-./build-dolphin.sh --target muos-qt --frontend gui --out ./out/muos-qt
+./build-dolphin.sh --target muos-qt --frontend both --out ./out/muos-qt
 
 # ARM64 Linux desktop: both frontends
 ./build-dolphin.sh --target desktop --frontend both --out ./out/desktop
@@ -44,7 +44,7 @@ Options include `--ref SHA`, `--jobs N`, `--no-lto`, `--tune cortex-a53|none`, `
 
 ## CI artifacts
 
-The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt GUI, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. The `muos-qt` job stages an experimental Qt 6 EGLFS runtime bundle (Qt libraries plus the EGLFS QPA plugin). It is packaged as a separate, non-default test payload and never replaces the stable NoGUI executable. The Qt EGLFS platform plugin, Qt libraries, EGL/GLES driver, input, display sizing, Dolphin rendering and shutdown behavior must all be validated on the actual muOS device. The H616 muOS image may require a board-specific EGLFS integration; a successful build is not proof that the Qt frontend can initialize on this firmware. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
+The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt plus its matching NoGUI base, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. The `muos-qt` job stages an experimental Qt 6 EGLFS runtime bundle (Qt libraries plus the EGLFS QPA plugin). It is packaged as a separate, non-default test payload and never replaces the stable NoGUI executable. The Qt EGLFS platform plugin, Qt libraries, EGL/GLES driver, input, display sizing, Dolphin rendering and shutdown behavior must all be validated on the actual muOS device. The H616 muOS image may require a board-specific EGLFS integration; a successful build is not proof that the Qt frontend can initialize on this firmware. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
 
 ## Release engineering rules
 
@@ -60,6 +60,7 @@ The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt GUI, Knulli an
      ```
    - Separate experimental Qt 6 muOS package (installs `dolphin-qt6` beside, not over, the NoGUI binary):
      ```bash
+     DOLPHIN_NO_GUI_BIN="$PWD/out/muos-qt/dolphin" \
      DOLPHIN_QT_BIN="$PWD/out/muos-qt/dolphin-gui" \
      DOLPHIN_QT_LIB_DIR="$PWD/out/muos-qt/qt6/lib" \
      DOLPHIN_QT_PLUGIN_DIR="$PWD/out/muos-qt/qt6/plugins" \

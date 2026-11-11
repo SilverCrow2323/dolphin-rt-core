@@ -6,9 +6,11 @@ VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
 OUT="${1:-$ROOT/dist}"
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
+: "${DOLPHIN_NO_GUI_BIN:?set DOLPHIN_NO_GUI_BIN to the NoGUI binary from the same muos-qt build}"
 : "${DOLPHIN_QT_BIN:?set DOLPHIN_QT_BIN to the muos-qt Dolphin GUI binary}"
 : "${DOLPHIN_QT_LIB_DIR:?set DOLPHIN_QT_LIB_DIR to the staged Qt 6 lib directory}"
 : "${DOLPHIN_QT_PLUGIN_DIR:?set DOLPHIN_QT_PLUGIN_DIR to the staged Qt 6 plugins directory}"
+[ -x "$DOLPHIN_NO_GUI_BIN" ] || { echo "muOS NoGUI Dolphin binary is not executable" >&2; exit 1; }
 [ -x "$DOLPHIN_QT_BIN" ] || { echo "Qt 6 Dolphin binary is not executable" >&2; exit 1; }
 hdr="$(head -c 20 "$DOLPHIN_QT_BIN" | od -An -tx1 | tr -d ' \n')"
 case "$hdr" in 7f454c46020101*b700) ;; *) echo "Qt 6 binary is not AArch64 ELF" >&2; exit 1;; esac
@@ -19,9 +21,9 @@ trap 'rm -rf "$TMP"' EXIT
 BASE="$TMP/base"
 STAGE="$TMP/stage"
 mkdir -p "$BASE" "$STAGE"
-DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}" DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}" \
+DOLPHIN_BIN="$DOLPHIN_NO_GUI_BIN" DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}" DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}" \
   bash "$ROOT/tools/build-muxupd.sh" "$BASE"
-BASE_ARCHIVE="$BASE/Dolphin_RtCore_v${VERSION//./_}_Andromeda.muxupd"
+BASE_ARCHIVE="$BASE/Dolphin_RtCore_v${VERSION//./_}_Andromeda_with-dolphin.muxupd"
 [ -s "$BASE_ARCHIVE" ] || { echo "base muOS archive was not created" >&2; exit 1; }
 unzip -q "$BASE_ARCHIVE" -d "$STAGE"
 EMU="$STAGE/opt/muos/share/emulator/dolphin"

@@ -40,7 +40,7 @@ jobs:
           - target: muos
             frontend: nogui
           - target: muos-qt
-            frontend: gui
+            frontend: both
           - target: knulli
             frontend: nogui
           - target: rocknix
@@ -105,11 +105,12 @@ jobs:
           FRONTEND: ${{ matrix.frontend }}
         run: |
           OUT="$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
-          if [ "$FRONTEND" = gui ]; then
+          if [ "$FRONTEND" = gui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin-gui"
             file "$OUT/dolphin-gui"
             readelf -h "$OUT/dolphin-gui" | grep -E 'Class:|Machine:'
-          else
+          fi
+          if [ "$FRONTEND" = nogui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin"
             file "$OUT/dolphin"
             readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
@@ -120,6 +121,8 @@ jobs:
             readelf -h "$OUT/lib/libhidapi-hidraw.so.0" | grep -q "Machine:.*AArch64"
           fi
           if [ "$TARGET" = muos-qt ]; then
+            test -x "$OUT/dolphin"
+            test -x "$OUT/dolphin-gui"
             test -s "$OUT/qt6/lib/libQt6Core.so.6"
             test -s "$OUT/qt6/plugins/platforms/libqeglfs.so"
           fi
