@@ -105,32 +105,25 @@ jobs:
           FRONTEND: ${{ matrix.frontend }}
         run: |
           OUT="$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
-          require_aarch64_elf() {
-            local binary="$1" header
-            test -s "$binary" || return 1
-            header="$(readelf -h "$binary")" || return 1
-            grep -q 'Class:.*ELF64' <<<"$header" || return 1
-            grep -q 'Machine:.*AArch64' <<<"$header" || return 1
-          }
           if [ "$FRONTEND" = gui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin-gui"
             file "$OUT/dolphin-gui"
-            require_aarch64_elf "$OUT/dolphin-gui"
+            bash dolphin-build/validate-aarch64-elf.sh "$OUT/dolphin-gui"
           fi
           if [ "$FRONTEND" = nogui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin"
             file "$OUT/dolphin"
-            require_aarch64_elf "$OUT/dolphin"
+            bash dolphin-build/validate-aarch64-elf.sh "$OUT/dolphin"
           fi
           test -s "$OUT/BUILDINFO.txt"
           if [ "$TARGET" = muos ] || [ "$TARGET" = muos-qt ]; then
-            require_aarch64_elf "$OUT/lib/libhidapi-hidraw.so.0"
+            bash dolphin-build/validate-aarch64-elf.sh "$OUT/lib/libhidapi-hidraw.so.0"
           fi
           if [ "$TARGET" = muos-qt ]; then
             test -x "$OUT/dolphin"
             test -x "$OUT/dolphin-gui"
-            require_aarch64_elf "$OUT/qt6/lib/libQt6Core.so.6"
-            require_aarch64_elf "$OUT/qt6/plugins/platforms/libqeglfs.so"
+            bash dolphin-build/validate-aarch64-elf.sh "$OUT/qt6/lib/libQt6Core.so.6"
+            bash dolphin-build/validate-aarch64-elf.sh "$OUT/qt6/plugins/platforms/libqeglfs.so"
           fi
           case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix)
             test -s "$OUT/Sys/GC/font_western.bin"
