@@ -134,18 +134,27 @@ refresh_assign() {
     [ -x "$tool" ] || die "manifest is updated, but muOS automatic assignment tool is missing: $tool"
     "$tool" -p -v || die "muOS assign.sh failed; check MUOS/log/assign_gen.txt"
     sync
-    # Content Explorer consumes this generated alias map as well as the core manifest.
+    # Content Explorer consumes the generated alias map as well as the core manifest.
     if [ "$expected" = "absent" ]; then
-        jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' \
-            "$USERM/assign.json" >/dev/null 2>&1 \
+        jq -e '
+            keys as $keys
+            | ([ "nintendogamecube", "nintendogc", "gamecube", "gamecubez", "ngc", "gc",
+                 "nintendowii", "nwii", "wii", "wiiz" ]
+               | all(.[]; . as $key | $keys | index($key) == null))
+        ' "$USERM/assign.json" >/dev/null 2>&1 \
             || die "muOS assign.sh completed but stale Nintendo GameCube/Wii aliases remain in assign.json"
     else
-        jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" \
-            '.["nintendogamecube"]==$gc and .["nintendowii"]==$wii' "$USERM/assign.json" >/dev/null 2>&1 \
-            || die "muOS assign.sh completed but assign.json does not map Nintendo GameCube/Wii; check MUOS/log/assign_gen.txt"
+        jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" '
+            . as $map
+            | ([ "nintendogamecube", "nintendogc", "gamecube", "gamecubez", "ngc", "gc" ]
+               | all(.[]; . as $key | $map[$key] == $gc))
+            and
+              ([ "nintendowii", "nwii", "wii", "wiiz" ]
+               | all(.[]; . as $key | $map[$key] == $wii))
+        ' "$USERM/assign.json" >/dev/null 2>&1 \
+            || die "muOS assign.sh completed but assign.json does not map all Nintendo GameCube/Wii aliases; check MUOS/log/assign_gen.txt"
     fi
 }
-
 legacy_replace_system() {
     source_dir="$1"
     target="$2"
@@ -314,8 +323,14 @@ manifest_current() {
         [ "$OLD_GC_NAME" = "$GC_KEY" ] || [ ! -e "$USERM/core/$NS/$OLD_GC_NAME.json" ] || return 1
         [ "$OLD_WII_NAME" = "$WII_KEY" ] || [ ! -e "$USERM/core/$NS/$OLD_WII_NAME.json" ] || return 1
     fi
-    jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" \
-        '.["nintendogamecube"]==$gc and .["nintendowii"]==$wii' "$USERM/assign.json" >/dev/null 2>&1
+    jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" '
+        . as $map
+        | ([ "nintendogamecube", "nintendogc", "gamecube", "gamecubez", "ngc", "gc" ]
+           | all(.[]; . as $key | $map[$key] == $gc))
+        and
+          ([ "nintendowii", "nwii", "wii", "wiiz" ]
+           | all(.[]; . as $key | $map[$key] == $wii))
+    ' "$USERM/assign.json" >/dev/null 2>&1
 }
 
 do_remove() {
