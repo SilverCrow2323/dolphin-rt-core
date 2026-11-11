@@ -67,7 +67,8 @@ cleanup() {
 }
 trap cleanup TERM INT
 
-./dolphin -e "$ROM" -u "$EMUDIR" >> "$RTSYS/logs/dolphin_debug.log" 2>&1
+# muOS runs Dolphin directly on the framebuffer with the Mali OpenGL ES driver.
+./dolphin --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMUDIR" >> "$RTSYS/logs/dolphin_debug.log" 2>&1
 EXIT_CODE=$?
 
 [ -n "$WATCHER_PID" ] && kill -TERM "$WATCHER_PID" 2>/dev/null
