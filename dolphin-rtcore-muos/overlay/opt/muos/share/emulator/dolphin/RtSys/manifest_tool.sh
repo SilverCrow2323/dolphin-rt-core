@@ -23,6 +23,8 @@ NS="Nintendo"
 STATE="$SW/mode.conf"
 OLD_GC_NAME="Nintendo Gamecube"
 OLD_WII_NAME="Nintendo Wii"
+# Jacaranda legacy assign folder uses this exact historical directory casing.
+LEGACY_GC_DIR_NAME="Nintendo GameCube"
 
 say() { printf '  %s\n' "$*"; }
 die() { printf '  [ERR] %s\n' "$*" >&2; exit 1; }
@@ -255,12 +257,12 @@ legacy_apply() {
     gc_source="$SW/gc/mode $n"
     wii_source="$SW/wii/mode $n"
     mkdir -p "$RT_MUOS_ASSIGN_DIR" || die "cannot create legacy assign directory: $RT_MUOS_ASSIGN_DIR"
-    legacy_replace_system "$gc_source" "$RT_MUOS_ASSIGN_DIR/$GC_KEY" || die "cannot stage GameCube legacy core assignments"
+    legacy_replace_system "$gc_source" "$RT_MUOS_ASSIGN_DIR/$LEGACY_GC_DIR_NAME" || die "cannot stage GameCube legacy core assignments"
     legacy_replace_system "$wii_source" "$RT_MUOS_ASSIGN_DIR/$WII_KEY" || die "cannot stage Wii legacy core assignments"
 
     # Remove the spelling used by older Rt:Core builds without touching unrelated systems.
     for old in "$RT_MUOS_ASSIGN_DIR/$OLD_GC_NAME" "$RT_MUOS_ASSIGN_DIR/$OLD_WII_NAME"; do
-        [ "$old" = "$RT_MUOS_ASSIGN_DIR/$GC_KEY" ] && continue
+        [ "$old" = "$RT_MUOS_ASSIGN_DIR/$LEGACY_GC_DIR_NAME" ] && continue
         [ "$old" = "$RT_MUOS_ASSIGN_DIR/$WII_KEY" ] && continue
         if [ -d "$old" ]; then
             for stale in "$old"/dolphin\ -\ *.ini; do [ -f "$stale" ] && rm -f "$stale"; done
@@ -289,12 +291,12 @@ legacy_system_current() {
 
 legacy_current() {
     n="$1"
-    legacy_system_current "$SW/gc/mode $n" "$RT_MUOS_ASSIGN_DIR/$GC_KEY" &&
+    legacy_system_current "$SW/gc/mode $n" "$RT_MUOS_ASSIGN_DIR/$LEGACY_GC_DIR_NAME" &&
     legacy_system_current "$SW/wii/mode $n" "$RT_MUOS_ASSIGN_DIR/$WII_KEY"
 }
 
 legacy_remove() {
-    for key in "$GC_KEY" "$WII_KEY" "$OLD_GC_NAME" "$OLD_WII_NAME"; do
+    for key in "$LEGACY_GC_DIR_NAME" "$GC_KEY" "$WII_KEY" "$OLD_GC_NAME" "$OLD_WII_NAME"; do
         dir="$RT_MUOS_ASSIGN_DIR/$key"
         [ -d "$dir" ] || continue
         rm -f "$dir/global.ini"

@@ -15,6 +15,15 @@
 | `info/manifest/core/<Namespace>/<System>.json` | Write one JSON file per system under the Nintendo namespace. |
 | Legacy `info/assign/<System>/*.ini` | Stage and replace only the two Rt:Core system folders, retaining unrelated user files. |
 
+The MUXUPD builder also seeds the Jacaranda-compatible paths
+`opt/muos/share/info/assign/Nintendo GameCube` and
+`opt/muos/share/info/assign/Nintendo Wii` from the standard profile INIs.
+The GameCube directory spelling is intentionally `GameCube` (capital C),
+matching the legacy layout shipped by earlier Rt:Core builds. The display name
+inside `global.ini` remains `Nintendo Gamecube`, matching the existing muOS
+system identifier. On a legacy install, `manifest_tool.sh` then replaces the
+seeded files with the active mode (standard or all tiers).
+
 On manifest-based versions, the tool calls the installed muOS `script/system/assign.sh -p -v` and verifies `assign.json` contains the the canonical `nintendogamecube` and `nintendowii` aliases. This reflects the actual Content Explorer pipeline: definitions alone are not sufficient if the alias index is stale.
 
 ## Content Explorer visibility is separate from core registration
@@ -49,4 +58,4 @@ Run `bash tests/test_muos_registration.sh`. CI checks `sh -n`, `bash -n`, and ex
 
 ## Support boundary
 
-The current v12 release remains documented for Andromeda 2606.0. Jacaranda's v11.5.1 line remains separate in the root support matrix. The detection layer makes the registration method adaptable; it does not claim the v12 package is a certified Jacaranda release.
+The native H700 build remains targeted at Andromeda 2606.0. The package now also carries the legacy assignment payload and a Jacaranda-specific registration path for 2601.1-era systems. This adds compatibility to the external-core menu and profile assignment format; it is not a claim that every v12 runtime component has been physically certified on Jacaranda hardware.

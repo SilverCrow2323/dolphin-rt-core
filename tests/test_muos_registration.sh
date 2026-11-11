@@ -137,6 +137,20 @@ sh "$TOOL" remove
 jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' "$SS/info/manifest/assign.json" >/dev/null
 ok "Split manifest remove cleans only GameCube/Wii and refreshes the Content Explorer map"
 
+# Every MUXUPD ships a Jacaranda-compatible legacy assignment tree.
+LEGACY_STAGE="$TMP/legacy-payload"
+bash "$ROOT/dolphin-rtcore-muos/tools/stage-legacy-assign.sh" "$LEGACY_STAGE" 1
+GC_ASSIGN="$LEGACY_STAGE/opt/muos/share/info/assign/Nintendo GameCube"
+WII_ASSIGN="$LEGACY_STAGE/opt/muos/share/info/assign/Nintendo Wii"
+[ -s "$GC_ASSIGN/global.ini" ] && [ -s "$WII_ASSIGN/global.ini" ]
+[ -s "$GC_ASSIGN/dolphin - rtprime - upright.ini" ]
+[ -s "$WII_ASSIGN/dolphin - rtprime - upright.ini" ]
+GC_COUNT="$(find "$GC_ASSIGN" -maxdepth 1 -type f -name '*.ini' ! -name global.ini | wc -l)"
+WII_COUNT="$(find "$WII_ASSIGN" -maxdepth 1 -type f -name '*.ini' ! -name global.ini | wc -l)"
+[ "$GC_COUNT" -eq 11 ] && [ "$WII_COUNT" -eq 22 ]
+grep -Fxq gamecube "$GC_ASSIGN/global.ini"
+grep -Fxq nintendowii "$WII_ASSIGN/global.ini"
+ok "MUXUPD seeds Jacaranda GameCube/Wii assignment folders (11 + 22 standard profiles)"
 # Jacaranda: legacy info/assign/*.ini format, with user files in the same folder preserved.
 J="$TMP/jacaranda"
 JS="$TMP/jacaranda-store"
@@ -146,9 +160,9 @@ printf 'keep me\n' > "$J/share/info/assign/Nintendo Gamecube/user-note.txt"
 RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
 RT_MUOS_MANIFEST_DIR="$J/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 sh "$TOOL" apply 1
-[ -s "$J/share/info/assign/Nintendo Gamecube/global.ini" ]
+[ -s "$J/share/info/assign/Nintendo GameCube/global.ini" ]
 [ -s "$J/share/info/assign/Nintendo Wii/global.ini" ]
-[ -s "$J/share/info/assign/Nintendo Gamecube/dolphin - rtprime - upright.ini" ]
+[ -s "$J/share/info/assign/Nintendo GameCube/dolphin - rtprime - upright.ini" ]
 grep -q 'keep me' "$J/share/info/assign/Nintendo Gamecube/user-note.txt"
 ok "Jacaranda legacy assignment installs GameCube/Wii profiles without deleting unrelated files"
 RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
@@ -158,7 +172,8 @@ ok "Jacaranda ensure accepts an already-current legacy installation"
 RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
 RT_MUOS_MANIFEST_DIR="$J/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
 sh "$TOOL" remove
-[ ! -e "$J/share/info/assign/Nintendo Gamecube/dolphin - rtprime - upright.ini" ]
+[ ! -e "$J/share/info/assign/Nintendo GameCube/global.ini" ]
+[ ! -e "$J/share/info/assign/Nintendo GameCube/dolphin - rtprime - upright.ini" ]
 [ -f "$J/share/info/assign/Nintendo Gamecube/user-note.txt" ]
 ok "Jacaranda remove cleans only Rt:Core profile files"
 

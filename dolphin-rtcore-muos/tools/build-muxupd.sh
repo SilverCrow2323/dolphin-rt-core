@@ -62,6 +62,11 @@ if [ "$SYS_SOURCE" != "$DEFAULT_SYS_SOURCE" ]; then
 fi
 cp -a "$ROOT/app/Dolphin RtUI/." "$S/$APP/"
 cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, tasks, manifest tool, update hook)
+# Jacaranda and older muOS releases read external core choices from the legacy
+# info/assign/<System>/*.ini tree. Seed standard profiles in the update too;
+# opt/update.sh + manifest_tool.sh then replace them with the selected profile
+# mode on legacy systems. Manifest-based releases safely ignore this tree.
+bash "$ROOT/tools/stage-legacy-assign.sh" "$S" 1
 [ -n "$DOLPHIN_BIN" ] && install -m755 "$DOLPHIN_BIN" "$S/$EMU/dolphin"
 if [ -n "$DOLPHIN_LIB_DIR" ]; then
   [ -d "$DOLPHIN_LIB_DIR" ] || { echo "ERROR: DOLPHIN_LIB_DIR is not a directory: $DOLPHIN_LIB_DIR" >&2; exit 1; }
