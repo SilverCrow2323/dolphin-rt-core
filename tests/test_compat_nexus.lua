@@ -12,7 +12,7 @@ local library = {
     { id = "GAME03", title = "Delta Arena", path = "/roms/delta.rvz" },
 }
 local load_count, opened, sounds = 0, {}, 0
-local fail_load = false
+local fail_load, replace_on_force = false, false
 love = { graphics = {} }
 
 local Compat
@@ -24,6 +24,18 @@ Compat = {
         load_count = load_count + 1
         assert(force == true or force == nil)
         if fail_load then error("database unavailable") end
+        if force and replace_on_force then
+            local fresh = {}
+            for i, game in ipairs(Compat.games) do
+                fresh[i] = {
+                    id = game.id, title = game.title, playable_rank = game.playable_rank,
+                    system = game.system, entries = {},
+                }
+            end
+            Compat.games = fresh
+            Compat.count = #fresh
+            replace_on_force = false
+        end
         return Compat
     end,
     summary = function(game)
@@ -135,9 +147,12 @@ assert(opened[1].params.game == library[1])
 assert(opened[1].params.game.path == "/roms/alpha.iso")
 
 local selected_before = actions["compat.state"].run().selected_id
+local previous_object = Screen.list:cur()
+replace_on_force = true
 assert(actions["compat.refresh"].run())
 state = actions["compat.state"].run()
 assert(state.selected_id == selected_before, "refresh should preserve current game selection")
+assert(Screen.list:cur() ~= previous_object, "test must replace database objects during refresh")
 assert(load_count == 2, "refresh must force a database reload")
 
 fail_load = true
