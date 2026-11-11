@@ -64,47 +64,121 @@ count_profiles() {
     echo "$count"
 }
 
+ini_value() {
+    file="$1"
+    wanted_section="$2"
+    wanted_key="$3"
+    awk -v wanted_section="$wanted_section" -v wanted_key="$wanted_key" '
+        {
+            line=$0
+            sub(/\r$/, "", line)
+        }
+        line ~ /^[[:space:]]*\[/ {
+            section=line
+            sub(/^[[:space:]]*\[/, "", section)
+            sub(/\][[:space:]]*$/, "", section)
+            active=(section==wanted_section)
+            next
+        }
+        !active { next }
+        {
+            eq=index(line, "=")
+            if (!eq) next
+            key=substr(line, 1, eq-1)
+            gsub(/^[ \t]+|[ \t]+$/, "", key)
+            if (key==wanted_key) {
+                value=substr(line, eq+1)
+                sub(/^[ \t]+/, "", value)
+                sub(/[ \t]+$/, "", value)
+                print value
+                exit
+            }
+        }
+    ' "$file"
+}
+
 build_system() {
     dir="$1"
-    {
-        awk -F= '
-          /^\[/ { sec=$0; gsub(/[\[\]\r]/,"",sec); next }
-          { sub(/\r$/,"") }
-          sec=="global" && $1 ~ /^(name|default|catalogue|lookup|governor)$/ { print "G\t" $1 "\t" substr($0,index($0,"=")+1) }
-          sec=="friendly" && NF>0 && $0!="" { print "F\t" $0 }
-        ' "$dir/global.ini"
-        for f in "$dir"/*.ini; do
-            [ -f "$f" ] || continue
-            [ "$(basename "$f")" = "global.ini" ] && continue
-            awk -F= '
-              /^\[/ { sec=$0; gsub(/[\[\]\r]/,"",sec); next }
-              { sub(/\r$/,"") }
-              $1=="name" && !n { n=substr($0,6) }
-              $1=="core" && !c { c=substr($0,6) }
-              $1=="exec" && !e { e=substr($0,6) }
-              END {
-                if (n!="" && c!="" && e!="") {
-                  k=FILENAME; sub(/.*\//,"",k); sub(/\.ini$/,"",k)
-                  sub(/.*\//,"",e); sub(/^ext-/,"",e)
-                  print "E\t" k "\t" n "\t" c "\t" e
-                }
-              }
-            ' "$f"
-        done
-    } | jq -Rn --arg ns "$NS" '
-        [inputs | split("\t")] as $r
-        | ($r | map(select(.[0]=="G")) | map({(.[1]): .[2]}) | add) as $g
-        | {
-            name: $g.name, namespace: $ns,
-            catalogue: ($g.catalogue // $g.name),
-            lookup: (($g.lookup // "0") | tonumber),
-            default: $g.default,
-            runtime: "external",
-            friendly: ($r | map(select(.[0]=="F") | .[1])),
-            bios: [],
-            external: ($r | map(select(.[0]=="E") | {(.[1]): {name: .[2], core: .[3], launcher: .[4]}}) | add)
-          }
-        + (if ($g.governor // "") != "" then {governor: $g.governor} else {} end)'
+    global="$dir/global.ini"
+
+    name="$(ini_value "$global" global name)"
+    catalogue="$(ini_value "$global" global catalogue)"
+    lookup="$(ini_value "$global" global lookup)"
+    default="$(ini_value "$global" global default)"
+    governor="$(ini_value "$global" global governor)"
+
+    [ -n "$name" ] || die "missing [global] name in $global"
+    [ -n "$default" ] || die "missing [global] default in $global"
+    [ -n "$catalogue" ] || catalogue="$name"
+    case "$lookup" in "" ) lookup=0 ;; *[!0-9]* ) die "invalid [global] lookup '$lookup' in $global" ;; esac
+
+    friendly_lines="$(awk '
+        {
+            line=$0
+            sub(/\r$/, "", line)
+        }
+        line ~ /^[[:space:]]*\[/ {
+            section=line
+            sub(/^[[:space:]]*\[/, "", section)
+            sub(/\][[:space:]]*$/, "", section)
+            active=(section=="friendly")
+            next
+        }
+        active {
+            value=line
+            sub(/^[ \t]+/, "", value)
+            sub(/[ \t]+$/, "", value)
+            if (value!="") print value
+        }
+    ' "$global")"
+    friendly_json="$(printf '%s\n' "$friendly_lines" | jq -Rn '[inputs | select(length>0)]')"
+
+    external_json='{}'
+    profile_count=0
+    for f in "$dir"/*.ini; do
+        [ -f "$f" ] || continue
+        [ "$(basename "$f")" = "global.ini" ] && continue
+
+        profile="$(basename "$f" .ini)"
+        profile_name="$(ini_value "$f" "$profile" name)"
+        core="$(ini_value "$f" "$profile" core)"
+        exec_path="$(ini_value "$f" launch exec)"
+
+        [ -n "$profile_name" ] || die "profile '$f' has no name in [$profile]"
+        [ -n "$core" ] || die "profile '$f' has no core in [$profile]"
+        [ -n "$exec_path" ] || die "profile '$f' has no exec in [launch]"
+
+        launcher="$(basename "$exec_path")"
+        case "$launcher" in ext-*) launcher="${launcher#ext-}" ;; esac
+
+        external_json="$(jq -cn --argjson current "$external_json" \
+            --arg key "$profile" --arg name "$profile_name" \
+            --arg core "$core" --arg launcher "$launcher" \
+            '$current + {($key): {name:$name, core:$core, launcher:$launcher}}')" \
+            || die "cannot encode profile '$profile' from $f"
+        profile_count=$((profile_count + 1))
+    done
+
+    [ "$profile_count" -gt 0 ] || die "no external profiles found in $dir"
+    printf '%s' "$external_json" | jq -e --arg default "$default" 'type=="object" and has($default)' >/dev/null \
+        || die "default profile '$default' is not present in the external profile list for $name"
+
+    jq -cn \
+        --arg name "$name" --arg ns "$NS" --arg catalogue "$catalogue" \
+        --argjson lookup "$lookup" --arg default "$default" \
+        --argjson friendly "$friendly_json" --argjson external "$external_json" \
+        --arg governor "$governor" \
+        '{
+            name:$name,
+            namespace:$ns,
+            catalogue:$catalogue,
+            lookup:$lookup,
+            default:$default,
+            runtime:"external",
+            friendly:$friendly,
+            bios:[],
+            external:$external
+        } + (if $governor!="" then {governor:$governor} else {} end)'
 }
 
 build_both() {

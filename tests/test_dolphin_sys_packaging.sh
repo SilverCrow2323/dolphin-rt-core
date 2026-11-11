@@ -24,6 +24,25 @@ Path(sys.argv[1]).write_bytes(header + b"RtCore packaging test fixture\n")
 PY
 chmod 755 "$TMP/dolphin"
 
+# A normal update must never be assembled without the actual Dolphin binary.
+if bash "$PACKAGER" "$TMP/no-binary" >"$TMP/no-binary.log" 2>&1; then
+  echo "[FAIL] packager accepted a full update without DOLPHIN_BIN" >&2
+  exit 1
+fi
+grep -Fq "refusing to build an installable muOS update without Dolphin" "$TMP/no-binary.log"
+echo "[OK] missing Dolphin executable is rejected by default"
+
+# An explicitly labelled UI-only archive is allowed for source-level CI validation.
+UI_OUT="$TMP/ui-only"
+DOLPHIN_UI_ONLY=1 bash "$PACKAGER" "$UI_OUT"
+UI_ARCHIVE="$UI_OUT/Dolphin_RtCore_v$(tr -d '[:space:]' < "$ROOT/dolphin-rtcore-muos/VERSION" | tr '.' '_')_Andromeda_ui-only.muxupd"
+[ -s "$UI_ARCHIVE" ]
+if unzip -Z1 "$UI_ARCHIVE" | grep -Fxq "opt/muos/share/emulator/dolphin/dolphin"; then
+  echo "[FAIL] UI-only archive unexpectedly contains a Dolphin executable" >&2
+  exit 1
+fi
+echo "[OK] UI-only archive is explicitly labelled and cannot be mistaken for a complete build"
+
 LIBS="$TMP/lib"
 mkdir -p "$LIBS"
 printf "HIDAPI runtime fixture\n" > "$LIBS/libhidapi-hidraw.so.0"
@@ -33,7 +52,7 @@ DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" DOLPHIN_LIB_DIR="$LIBS" \
   bash "$PACKAGER" "$OUT"
 
 VERSION="$(tr -d '[:space:]' < "$ROOT/dolphin-rtcore-muos/VERSION")"
-ARCHIVE="$OUT/Dolphin_RtCore_v${VERSION//./_}_Andromeda_with-dolphin.muxupd"
+ARCHIVE="$OUT/Dolphin_RtCore_v${VERSION//./_}_Andromeda.muxupd"
 [ -s "$ARCHIVE" ]
 
 EMU_PATH="opt/muos/share/emulator/dolphin"
