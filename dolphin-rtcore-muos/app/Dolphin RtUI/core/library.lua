@@ -184,6 +184,10 @@ function M.scan_begin()
   M.games = {}
   _queue, _qi, _seen = {}, 1, {}
   local paths = Settings.get("rom_paths") or {}
+  if #paths == 0 and Settings.auto_discover_rom_paths then
+    pcall(Settings.auto_discover_rom_paths)
+    paths = Settings.get("rom_paths") or {}
+  end
   local depth = Settings.get("scan_depth") or 4
   for _, entry in ipairs(paths) do
     if entry.path and FS.is_dir(entry.path) then
