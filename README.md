@@ -24,7 +24,7 @@
 > **FIELD NOTE // 2026-11-11**
 >
 > The active hardware reference for this development line is the **Anbernic RG35XX H with the Allwinner H700 SoC**.
-> Older H616 references in the build notes were incorrect and have been removed.
+> Legacy hardware notes have been reconciled with this RG35XX H reference.
 >
 > A successful build is not a successful device boot. The current H700 binaries still need to pass the on-device launch, font, input, rendering and clean-exit checks described below.
 
