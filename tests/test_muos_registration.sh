@@ -65,8 +65,11 @@ RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refr
 sh "$TOOL" apply 1
 jq -e '.["Nintendo Gamecube"].namespace=="Nintendo" and .["Nintendo Wii"].namespace=="Nintendo" and has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
 [ -s "$AS/info/manifest/core.json.rtcore.bak" ]
-jq -e '.nintendogamecube=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
-ok "Andromeda single manifest registers the Nintendo systems and preserves other systems"
+jq -e '.nintendogamecube=="Nintendo Gamecube" and .gamecube=="Nintendo Gamecube" and .gamecubez=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii" and .wii=="Nintendo Wii" and .wiiz=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
+grep -Fxq 'gamecube' "$SOURCES/gc/mode 2/global.ini"
+grep -Fxq 'gamecubez' "$SOURCES/gc/mode 2/global.ini"
+grep -Fxq 'wiiz' "$SOURCES/wii/mode 2/global.ini"
+ok "Andromeda registers canonical and legacy GameCube/Wii folder aliases in both profile modes"
 [ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 1 ]
 ok "Andromeda automatic assignment refresh runs"
 RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
@@ -85,7 +88,7 @@ sh "$TOOL" remove
 jq -e 'has("Nintendo Gamecube")|not' "$AS/info/manifest/core.json" >/dev/null
 jq -e 'has("Nintendo Wii")|not' "$AS/info/manifest/core.json" >/dev/null
 jq -e 'has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
-jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' "$AS/info/manifest/assign.json" >/dev/null
+jq -e '((has("nintendogamecube") | not) and (has("gamecube") | not) and (has("gamecubez") | not) and (has("nintendowii") | not) and (has("wii") | not) and (has("wiiz") | not))' "$AS/info/manifest/assign.json" >/dev/null
 ok "Andromeda remove deletes only Rt:Core systems and refreshes the Content Explorer map"
 cat > "$A/share/info/manifest/core.json" <<'JSON'
 {"Nintendo DS":{"name":"Nintendo DS","namespace":"Nintendo","catalogue":"Nintendo DS","default":"nds","friendly":["nds"],"bios":[],"external":{}}}
@@ -135,6 +138,9 @@ sh "$TOOL" apply 1
 [ -s "$J/share/info/assign/Nintendo Gamecube/global.ini" ]
 [ -s "$J/share/info/assign/Nintendo Wii/global.ini" ]
 [ -s "$J/share/info/assign/Nintendo Gamecube/dolphin - rtprime - upright.ini" ]
+[ -s "$J/share/info/assign/Nintendo Wii/dolphin - rtprime - upright.ini" ]
+grep -Fxq 'gamecubez' "$J/share/info/assign/Nintendo Gamecube/global.ini"
+grep -Fxq 'wiiz' "$J/share/info/assign/Nintendo Wii/global.ini"
 grep -q 'keep me' "$J/share/info/assign/Nintendo Gamecube/user-note.txt"
 ok "Jacaranda legacy assignment installs GameCube/Wii profiles without deleting unrelated files"
 RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
