@@ -24,11 +24,13 @@ case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) ;; *) echo "usage: 
 case "$FRONTEND" in nogui|gui|both) ;; *) echo "usage: $0 --target TARGET --frontend nogui|gui|both"; exit 2;; esac
 if [ "$TARGET" = muos-qt ] && [ "$FRONTEND" != gui ]; then echo "muos-qt is a GUI-only experimental target"; exit 2; fi
 if [ "$TARGET" != desktop ] && [ "$TARGET" != muos-qt ] && [ "$FRONTEND" != nogui ]; then echo "Qt GUI builds are supported only by desktop and experimental muos-qt"; exit 2; fi
-# muOS ships Sys/ beside the executable under /opt/muos/share/emulator/dolphin.
-# Build those binaries in relocatable mode so Dolphin resolves ./Sys, not
-# the host's /usr/local/share/dolphin-emu/sys (which is absent on the handheld).
+# Every packaged handheld target installs Sys/ beside its Dolphin executable:
+# muOS: /opt/muos/share/emulator/dolphin/Sys
+# Knulli/ROCKNIX: <release>/core/Sys
+# Make all firmware binaries resolve the colocated resources rather than the
+# host's compiled /usr/local/share/dolphin-emu/sys path.
 LOCAL_SYS=OFF
-case "$TARGET" in muos|muos-qt) LOCAL_SYS=ON;; esac
+case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix) LOCAL_SYS=ON;; esac
 [ "$(uname -m)" = aarch64 ] || echo "WARNING: this is $(uname -m), the result will not run on the handheld"
 
 if [ "$DEPS" = yes ] || { [ "$DEPS" = auto ] && [ "$(id -u)" = 0 ] && command -v apt-get >/dev/null; }; then
@@ -76,7 +78,7 @@ if [ "$FRONTEND" = gui ] || [ "$FRONTEND" = both ]; then
   cp "$BIN" "$OUT/dolphin-gui"; strip --strip-unneeded "$OUT/dolphin-gui" 2>/dev/null || true; chmod 755 "$OUT/dolphin-gui"
 fi
 
-# A relocatable muOS binary resolves its system resources from <exe-dir>/Sys.
+# A relocatable firmware binary resolves its system resources from <exe-dir>/Sys.
 # Ship the exact Sys data from the same upstream revision used for this build.
 if [ "$LOCAL_SYS" = ON ]; then
   [ -d "$SRC/Data/Sys" ] || { echo "missing upstream resource directory: $SRC/Data/Sys"; exit 1; }
