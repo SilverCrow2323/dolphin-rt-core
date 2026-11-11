@@ -89,6 +89,147 @@ function S.pad(b)
     end
 end
 
+-- NEXUS exposes the incremental triage flow without exposing local paths
+-- or the report body through state snapshots.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function job()
+        return S.job
+    end
+    local function selected_flavour()
+        local j = job()
+        return j and j.flavours and j.flavours[S.sel] or nil
+    end
+    local specs = {
+        {
+            id = "triage.start", title = "Start environment triage", order = 10,
+            run = function()
+                local ok, err = pcall(start_scan)
+                if not ok then return false, tostring(err) end
+                S.mode = "cards"
+                S.sel, S.csel = 1, 1
+                return true
+            end,
+        },
+        {
+            id = "triage.step", title = "Advance environment triage", order = 20,
+            run = function()
+                local j = job()
+                if not j then return false, "triage scan has not started" end
+                if j.done then return false, "triage scan is already complete" end
+                local ok, err = pcall(Triage.step, j)
+                if not ok then return false, tostring(err) end
+                return true
+            end,
+        },
+        {
+            id = "triage.select_flavour", title = "Select triage area", order = 30,
+            run = function(index)
+                local j = job()
+                if not j or not j.flavours then return false, "triage scan has not started" end
+                if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #j.flavours then
+                    return false, "triage area index out of range"
+                end
+                S.sel, S.csel = index, 1
+                return true
+            end,
+        },
+        {
+            id = "triage.switch_mode", title = "Switch triage view", order = 40,
+            run = function(mode)
+                local j = job()
+                if mode ~= "cards" and mode ~= "checks" then
+                    return false, "mode must be cards or checks"
+                end
+                if mode == "checks" and (not j or not j.done) then
+                    return false, "complete the triage scan before opening checks"
+                end
+                if mode == "checks" then
+                    local fl = selected_flavour()
+                    if not fl or #(fl.checks or {}) == 0 then return false, "selected area has no checks" end
+                end
+                S.mode, S.csel = mode, 1
+                return true
+            end,
+        },
+        {
+            id = "triage.select_check", title = "Select triage check", order = 50,
+            run = function(index)
+                local j, fl = job(), selected_flavour()
+                if S.mode ~= "checks" or not j or not j.done then
+                    return false, "triage checks are not active"
+                end
+                if not fl or type(fl.checks) ~= "table" then return false, "no triage checks available" end
+                if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #fl.checks then
+                    return false, "triage check index out of range"
+                end
+                S.csel = index
+                return true
+            end,
+        },
+        {
+            id = "triage.save_report", title = "Save triage report", order = 60,
+            run = function()
+                local j = job()
+                if not j or not j.done then return false, "complete the triage scan before saving a report" end
+                local ok, path = pcall(Triage.save_report, j)
+                if not ok then return false, tostring(path) end
+                if not path then return false, "could not write the triage report" end
+                S.report_path = path
+                return true
+            end,
+        },
+        {
+            id = "triage.state", title = "Get redacted triage state", order = 70,
+            run = function()
+                local j, fl = job(), selected_flavour()
+                local checks = fl and fl.checks or {}
+                local check = checks[S.csel]
+                local passed, total, failed = 0, 0, 0
+                if j and j.flavours then
+                    for _, flavour_item in ipairs(j.flavours) do
+                        for _, item in ipairs(flavour_item.checks or {}) do
+                            total = total + 1
+                            if item.ok == true then passed = passed + 1
+                            elseif item.ok == false then failed = failed + 1 end
+                        end
+                    end
+                end
+                return {
+                    mode = S.mode,
+                    scanning = j ~= nil and j.done ~= true,
+                    done = j and j.done == true or false,
+                    verdict = j and j.verdict or nil,
+                    score = j and j.score or nil,
+                    progress = j and Triage.progress(j) or 0,
+                    selected_flavour_index = fl and S.sel or nil,
+                    selected_flavour = fl and fl.id or nil,
+                    selected_flavour_label = fl and fl.label or nil,
+                    flavour_count = j and #(j.flavours or {}) or 0,
+                    check_count = #checks,
+                    selected_check_index = check and S.csel or nil,
+                    selected_check_label = check and check.label or nil,
+                    checks_total = total,
+                    checks_passed = passed,
+                    checks_failed = failed,
+                    report_saved = S.report_path ~= nil,
+                }
+            end,
+        },
+    }
+
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "triage", order = spec.order, screen = "triage",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
+
 -- ── small vector glyphs (the font has no check/cross) ──────────────
 local function g_check(x, y, c, a)
     K.color(c, a or 1); love.graphics.setLineWidth(2.4)
