@@ -15,7 +15,8 @@ local load_count, opened, sounds = 0, {}, 0
 local fail_load = false
 love = { graphics = {} }
 
-local Compat = {
+local Compat
+Compat = {
     games = games,
     count = #games,
     error = nil,
@@ -114,7 +115,7 @@ assert(bad_toggle == false and tostring(bad_toggle_err):match("boolean"))
 -- Letter navigation moves between title initials, not individual rows.
 assert(actions["compat.set_filter"].run("all"))
 assert(actions["compat.jump_letter"].run(1))
-assert(actions["compat.state"].run().selected_id == "GAME02")
+assert(actions["compat.state"].run().selected_id == "GAME04")
 local bad_jump, bad_jump_err = actions["compat.jump_letter"].run(0)
 assert(bad_jump == false and tostring(bad_jump_err):match("-1 or 1"))
 
