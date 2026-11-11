@@ -80,6 +80,23 @@ fi
 
 # A relocatable firmware binary resolves its system resources from <exe-dir>/Sys.
 # Ship the exact Sys data from the same upstream revision used for this build.
+# muOS does not ship HIDAPI on every firmware image. Dolphin links the hidraw
+# backend when ENABLE_EVDEV is enabled, so bundle the matching runtime SONAME.
+if [ "$TARGET" = muos ] || [ "$TARGET" = muos-qt ]; then
+  HIDAPI_SOURCE="$(ldconfig -p 2>/dev/null | awk '/libhidapi-hidraw\.so\.0 / {print $NF; exit}')"
+  if [ -z "$HIDAPI_SOURCE" ]; then
+    HIDAPI_SOURCE="$(find /usr/lib /lib -type f -name 'libhidapi-hidraw.so.0*' -print -quit 2>/dev/null || true)"
+  fi
+  [ -n "$HIDAPI_SOURCE" ] && [ -f "$HIDAPI_SOURCE" ] || {
+    echo "missing build dependency: libhidapi-hidraw.so.0 (install libhidapi-dev)" >&2; exit 1;
+  }
+  readelf -h "$HIDAPI_SOURCE" | grep -q 'Machine:.*AArch64' || {
+    echo "HIDAPI runtime library is not AArch64: $HIDAPI_SOURCE" >&2; exit 1;
+  }
+  mkdir -p "$OUT/lib"
+  install -m755 "$(readlink -f "$HIDAPI_SOURCE")" "$OUT/lib/libhidapi-hidraw.so.0"
+fi
+
 if [ "$LOCAL_SYS" = ON ]; then
   [ -d "$SRC/Data/Sys" ] || { echo "missing upstream resource directory: $SRC/Data/Sys"; exit 1; }
   # Recreate the resource tree so rerunning into an existing output directory
