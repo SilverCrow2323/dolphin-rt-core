@@ -89,7 +89,7 @@ local SCREEN_MODULES = {
     { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
     { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
     { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
-    { "hotkeys", "ui.screens.hotkeys" }, { "settings", "ui.screens.settings" },
+    { "hotkeys", "ui.screens.hotkeys" }, { "safe_exit", "ui.screens.safe_exit" }, { "settings", "ui.screens.settings" },
     { "rt_editor", "ui.screens.rt_editor" },
     { "folders", "ui.screens.folders" }, { "about", "ui.screens.about" },
     { "diagnostics", "ui.screens.diagnostics" },
