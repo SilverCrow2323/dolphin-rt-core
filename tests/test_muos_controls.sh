@@ -24,7 +24,8 @@ ok "default hotkeys use Dolphin 2606 schema"
 # binding and the Dolphin hotkey profile; the raw overlay watcher remains
 # a separate safety path using the same H700 physical button numbers.
 GPTK="$APP/workshop/hotkeys/Default/ext-dolphin.gptk"
-need "$GPTK" 'select+start'
+need "$GPTK" 'select+start    = escape'
+! grep -Eq '^select\+m[[:space:]]*=[[:space:]]*escape' "$GPTK" || fail "Exit is incorrectly bound to MENU instead of physical START"
 need "$HK" 'General/Exit = Escape'
 WATCHER="$APP/scripts/overlay_exit.sh"
 need "$WATCHER" 'START_BTN=7'
