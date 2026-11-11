@@ -66,9 +66,14 @@ sh "$TOOL" apply 1
 jq -e '.["Nintendo Gamecube"].namespace=="Nintendo" and .["Nintendo Wii"].namespace=="Nintendo" and has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
 [ -s "$AS/info/manifest/core.json.rtcore.bak" ]
 jq -e '.nintendogamecube=="Nintendo Gamecube" and .gamecube=="Nintendo Gamecube" and .gamecubez=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii" and .wii=="Nintendo Wii" and .wiiz=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
-grep -Fxq 'gamecube' "$SOURCES/gc/mode 2/global.ini"
-grep -Fxq 'gamecubez' "$SOURCES/gc/mode 2/global.ini"
-grep -Fxq 'wiiz' "$SOURCES/wii/mode 2/global.ini"
+for mode in 1 2; do
+    for alias in nintendogamecube nintendogc gamecube gamecubez ngc gc; do
+        grep -Fxq "$alias" "$SOURCES/gc/mode $mode/global.ini"
+    done
+    for alias in nintendowii nwii wii wiiz; do
+        grep -Fxq "$alias" "$SOURCES/wii/mode $mode/global.ini"
+    done
+done
 ok "Andromeda registers canonical and legacy GameCube/Wii folder aliases in both profile modes"
 [ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 1 ]
 ok "Andromeda automatic assignment refresh runs"
