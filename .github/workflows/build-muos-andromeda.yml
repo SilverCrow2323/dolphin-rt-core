@@ -167,7 +167,7 @@ jobs:
           VERSION="$(tr -d '[:space:]' < dolphin-rtcore-muos/VERSION)"
           SHORT_SHA="${GITHUB_SHA:0:12}"
           TAG="v${VERSION}-rc-${SHORT_SHA}"
-          printf '%s\\n' \
+          printf '%s\n' \
             "# Dolphin Rt:Core v${VERSION} — H700 muOS build candidate" \
             "" \
             "Commit: ${GITHUB_SHA}" \

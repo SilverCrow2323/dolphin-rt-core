@@ -148,6 +148,8 @@ jobs:
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
           bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh
+          bash -n dolphin-rtcore-muos/tools/stage-legacy-assign.sh
+          sh -n "dolphin-rtcore-muos/overlay/opt/muos/share/task/Dolphin Rt-Core/Diagnose ROM folders.sh"
           bash -n tests/test_muos_registration.sh tests/test_dolphin_runtime_contract.sh tests/test_dolphin_sys_packaging.sh tests/test_port_sys_packaging.sh tests/test_muos_glibc_abi.sh dolphin-rtcore-muos/tools/verify-muos-runtime-abi.sh
           python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
       - name: Test AArch64 ELF validation contract
