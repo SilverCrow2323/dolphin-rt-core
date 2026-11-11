@@ -24,14 +24,22 @@ local owned = {}          -- id -> gioco in libreria
 
 local function rebuild(keep)
     local items = {}
+    local keep_id = type(keep) == "table" and keep.id or nil
+    local keep_title = type(keep) == "table" and keep.title or nil
     local f = FILTERS[S.filter]
-    for _, g in ipairs(Compat.games) do
+    for _, g in ipairs(Compat.games or {}) do
         if f.test(g) and (not S.mine_only or owned[g.id]) then items[#items + 1] = g end
     end
     table.sort(items, function(a, b) return a.title:lower() < b.title:lower() end)
     S.list:set(items, false)
     if keep then
-        for i, g in ipairs(items) do if g == keep then S.list.sel = i; S.list:_aim(true); break end end
+        for i, g in ipairs(items) do
+            if g == keep or (keep_id and g.id == keep_id and g.title == keep_title) then
+                S.list.sel = i
+                S.list:_aim(true)
+                break
+            end
+        end
     end
     K.set_accent(f.color)
 end
