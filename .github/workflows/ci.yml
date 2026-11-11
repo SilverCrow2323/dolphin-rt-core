@@ -57,11 +57,14 @@ jobs:
           luajit tests/test_controller_profiles_nexus.lua
           luajit tests/test_compat_nexus.lua
           luajit tests/test_cheatdb_nexus.lua
-      - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
+      - name: Assemble explicitly UI-only archive for structural validation
+        env:
+          DOLPHIN_UI_ONLY: "1"
+        run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
-        run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
-      - uses: actions/upload-artifact@v4
-        with: { name: muxupd, path: dist/*.muxupd }
+        run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*_ui-only.muxupd
+      # The x86_64 CI job does not publish a runnable-looking emulator update.
+      # The complete H700 .muxupd is built by the native ARM64 workflow.
 
   ports-dryrun:
     runs-on: ubuntu-latest
@@ -145,10 +148,12 @@ jobs:
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
           bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh
-          bash -n tests/test_muos_registration.sh tests/test_dolphin_runtime_contract.sh tests/test_dolphin_sys_packaging.sh tests/test_port_sys_packaging.sh
+          bash -n tests/test_muos_registration.sh tests/test_dolphin_runtime_contract.sh tests/test_dolphin_sys_packaging.sh tests/test_port_sys_packaging.sh tests/test_muos_glibc_abi.sh dolphin-rtcore-muos/tools/verify-muos-runtime-abi.sh
           python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
       - name: Test AArch64 ELF validation contract
         run: bash tests/test_aarch64_elf_validator.sh
+      - name: Test muOS glibc ABI compatibility gate
+        run: bash tests/test_muos_glibc_abi.sh
       - name: Test muOS generation detection and core registration
         run: bash tests/test_muos_registration.sh
       - name: Test Dolphin muOS runtime contract
