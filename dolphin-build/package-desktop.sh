@@ -64,7 +64,7 @@ cat > "$STAGE/run-gui.sh" <<'RUNGUI'
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 [ -x "$HERE/dolphin-gui" ] || { echo "Dolphin Qt GUI binary is missing" >&2; exit 1; }
-if [ -z "$QT_QPA_PLATFORM" ]; then export QT_QPA_PLATFORM=xcb; fi
+if [ -z "${QT_QPA_PLATFORM-}" ]; then export QT_QPA_PLATFORM=xcb; fi
 exec "$HERE/dolphin-gui" "$@"
 RUNGUI
 cat > "$STAGE/run-nogui.sh" <<'RUNNOGUI'

@@ -24,7 +24,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: dolphin-desktop-x86_64-\${{ github.ref }}
+  group: dolphin-desktop-x86_64-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   build:
@@ -102,11 +102,11 @@ jobs:
           test -s "$(find "$OUT/dist" -maxdepth 1 -name '*.tar.gz.sha256' -print -quit)"
       - uses: actions/upload-artifact@v4
         with:
-          name: dolphin-rtcore-desktop-x86_64-\${{ github.sha }}
+          name: dolphin-rtcore-desktop-x86_64-${{ github.sha }}
           path: |
-            \${{ runner.temp }}/dolphin-desktop-x86_64/dist/*.tar.gz
-            \${{ runner.temp }}/dolphin-desktop-x86_64/dist/*.sha256
-            \${{ runner.temp }}/dolphin-desktop-x86_64/BUILDINFO.txt
-            \${{ runner.temp }}/dolphin-desktop-x86_64/source-*.tar.xz
+            ${{ runner.temp }}/dolphin-desktop-x86_64/dist/*.tar.gz
+            ${{ runner.temp }}/dolphin-desktop-x86_64/dist/*.sha256
+            ${{ runner.temp }}/dolphin-desktop-x86_64/BUILDINFO.txt
+            ${{ runner.temp }}/dolphin-desktop-x86_64/source-*.tar.xz
           if-no-files-found: error
           retention-days: 30
