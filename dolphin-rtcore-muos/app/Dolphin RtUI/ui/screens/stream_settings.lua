@@ -38,14 +38,14 @@ local function items()
   local s = Stream.s
   local function text(label, key, hint) return { kind = "text", label = label, key = key, hint = hint } end
   local function choice(label, vals, get, set, fmt) return { kind = "choice", label = label, vals = vals, get = get, set = set, fmt = fmt } end
-  local function key_choice(label, key, vals) return choice(label, vals, function() return s[key] end, function(v) Stream.set(key, v) end) end
+  local function key_choice(label, key, vals) return choice(label, vals, function() return s[key] end, function(v) return Stream.set(key, v) end) end
   return {
     text("PC address", "HOST", "IP or name of the PC running Sunshine"),
     text("Library port", "SYNC_PORT", "portal port, default 8765"),
     text("PC MAC", "MAC", "only for Wake-on-LAN, 12 hex digits"),
     choice("Resolution", RES,
       function() return res_label(s) end,
-      function(v) Stream.set("WIDTH", v[1]); Stream.set("HEIGHT", v[2]) end,
+      function(v) return Stream.set_many({ WIDTH = v[1], HEIGHT = v[2] }) end,
       function(v) return type(v) == "table" and (v[1] .. "x" .. v[2]) or tostring(v) end),
     key_choice("Frame rate", "FPS", { "30", "45", "60" }),
     key_choice("Bitrate (kbps)", "BITRATE", { "5000", "8000", "10000", "15000", "20000", "30000" }),
@@ -157,7 +157,141 @@ local function change(it, d)
     for i, v in ipairs(it.vals) do if it.fmt(v) == cur then idx = i end end
     nv = it.vals[(idx - 1 + d) % #it.vals + 1]
   else nv = cycle(it.vals, cur, d) end
-  it.set(nv); SFX.play("menu_move")
+  local ok, err = it.set(nv)
+  if ok == false then return false, err or "could not persist Stream setting" end
+  SFX.play("menu_move")
+  return true
+end
+
+-- NEXUS adapter: expose the existing Stream Settings behavior without
+-- returning connection identifiers or secret material to external callers.
+function S.register_actions(ui)
+  if not ui or type(ui.register_action) ~= "function" then
+    return false, "UI action registrar unavailable"
+  end
+
+  local function selected()
+    return S.list and S.list:cur() or nil
+  end
+  local function refresh_list(keep)
+    local index = keep or (S.list and S.list.sel) or 1
+    S.list:set(items(), true)
+    S.list.sel = math.max(1, math.min(index, math.max(1, #S.list.items)))
+    if S.list._aim then S.list:_aim(true) end
+  end
+
+  local specs = {
+    {
+      id = "stream_settings.select", title = "Select Stream setting", order = 10,
+      run = function(index)
+        if S.mode ~= "list" then return false, "settings list is not active" end
+        if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.list.items then
+          return false, "Stream setting index out of range"
+        end
+        S.list.sel = index
+        S.list:_aim(true)
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.change_selected", title = "Change selected Stream choice", order = 20,
+      run = function(direction)
+        if S.mode ~= "list" then return false, "settings list is not active" end
+        if direction ~= -1 and direction ~= 1 then return false, "direction must be -1 or 1" end
+        local row = selected()
+        if not row or row.kind ~= "choice" then return false, "selected row is not a choice" end
+        local ok, changed, detail = pcall(change, row, direction)
+        if not ok then return false, tostring(changed) end
+        if changed == false then return false, tostring(detail or "could not change Stream setting") end
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.set_text", title = "Set Stream connection field", order = 30,
+      run = function(key, value)
+        if S.mode ~= "list" then return false, "settings list is not active" end
+        if key ~= "HOST" and key ~= "SYNC_PORT" and key ~= "MAC" then
+          return false, "only HOST, SYNC_PORT and MAC are writable text fields"
+        end
+        if type(value) ~= "string" then return false, "value must be a string" end
+        value = value:match("^%s*(.-)%s*$")
+        if #value > 253 then return false, "value is too long" end
+        if key == "HOST" then
+          if value == "" or not value:match("^[%w%.%-:]+$") then return false, "invalid PC address" end
+        elseif key == "SYNC_PORT" then
+          local port = tonumber(value)
+          if not port or port % 1 ~= 0 or port < 1 or port > 65535 then
+            return false, "port must be an integer from 1 to 65535"
+          end
+        elseif key == "MAC" and value ~= "" then
+          local compact = value:gsub("[:-]", "")
+          if #compact ~= 12 or not compact:match("^%x+$") then
+            return false, "MAC must contain 12 hexadecimal digits"
+          end
+        end
+        local ok, err = Stream.set(key, value)
+        if not ok then return false, tostring(err or "could not save Stream setting") end
+        refresh_list()
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.open_text_editor", title = "Open Stream text editor", order = 40,
+      run = function()
+        if S.mode ~= "list" then return false, "settings list is not active" end
+        local row = selected()
+        if not row or row.kind ~= "text" then return false, "selected row is not a text field" end
+        open_osk(row.label, row.key)
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.run_selected", title = "Run selected Stream tool", order = 50,
+      run = function()
+        if S.mode ~= "list" then return false, "settings list is not active" end
+        local row = selected()
+        if not row or row.kind ~= "action" or type(row.run) ~= "function" then
+          return false, "selected row is not a Stream tool"
+        end
+        local ok, err = pcall(row.run)
+        if not ok then return false, tostring(err) end
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.cancel_mode", title = "Return to Stream settings list", order = 60,
+      run = function()
+        if S.mode == "list" then return false, "settings list is already active" end
+        if S.mode == "viewer" and viewer and viewer.pair then Stream.kill_pair() end
+        S.mode = "list"
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.state", title = "Get redacted Stream settings state", order = 70,
+      run = function()
+        local row = selected()
+        return {
+          mode = S.mode,
+          configured = Stream.configured(),
+          host_is_set = Stream.s.HOST ~= nil and Stream.s.HOST ~= "",
+          selected_label = row and row.label or nil,
+          selected_kind = row and row.kind or nil,
+          viewer_title = viewer and viewer.title or nil,
+          viewer_done = viewer and viewer.done == true or false,
+          osk_label = osk and osk.label or nil,
+        }
+      end,
+    },
+  }
+
+  for _, spec in ipairs(specs) do
+    local ok, err = ui.register_action(spec.id, spec.run, {
+      title = spec.title, group = "stream", order = spec.order, screen = "stream_settings",
+    })
+    if not ok then return false, err or ("could not register " .. spec.id) end
+  end
+  return true
 end
 
 function S.pad(b)
