@@ -34,6 +34,8 @@ for port in k r; do
   version="$(tr -d '[:space:]' < "$ROOT/$name/VERSION")"
   archive="$out/Dolphin-RtCore-${tag}_v${version}_emulators.tar.gz"
   [ -s "$archive" ]
+  listing="$TMP/$port-archive-files.txt"
+  tar -tzf "$archive" > "$listing"
   for asset in \
     "$name/core/dolphin" \
     "$name/core/Sys/GC/font_western.bin" \
@@ -41,7 +43,7 @@ for port in k r; do
     "$name/core/Sys/GC/dsp_rom.bin" \
     "$name/core/Sys/GC/dsp_coef.bin" \
     "$name/core/Sys/$MARKER_REL"; do
-    tar -tzf "$archive" | grep -Fxq "$asset"
+    grep -Fxq "$asset" "$listing"
   done
   tar -xOzf "$archive" "$name/core/dolphin" | cmp -s "$TMP/dolphin" -
   tar -xOzf "$archive" "$name/core/Sys/$MARKER_REL" | cmp -s "$SYS/$MARKER_REL" -
