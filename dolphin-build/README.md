@@ -1,4 +1,4 @@
-# dolphin-build // Reproducible ARM64 builds
+# dolphin-build // Reproducible multi-target builds
 
 > **Reference board: Anbernic RG35XX H / Allwinner H700 / AArch64.**
 >
@@ -12,7 +12,7 @@
 | **muos-qt** | Qt GUI, EGLFS intended; X11/Wayland disabled | NoGUI + Qt GUI | Experimental muOS Qt frontend; runtime compatibility unverified |
 | **knulli** | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | Knulli on RG35XX H / H700 |
 | **rocknix** | Wayland + SDL/EGL/GLES | NoGUI | ROCKNIX H700; applies the platform patch series |
-| **desktop** | X11 + Wayland | Qt GUI and/or NoGUI | Generic ARM64 Linux desktop and diagnostics |
+| **desktop** | X11 + Wayland | Qt GUI + NoGUI | Linux x86_64 PC (MX Linux XFCE) and ARM64 desktops |
 
 The embedded targets intentionally use Dolphin's **NoGUI frontend**. This does not mean games render without graphics; it means Dolphin does not create its own desktop management window. The game is rendered through the selected backend. muOS supplies its own user-facing integration through the Rt:Core LÖVE application and launcher.
 
@@ -20,7 +20,7 @@ The separate **muos-qt** experiment tests whether Dolphin Qt can run through Qt 
 
 ## Local usage
 
-Run on a native AArch64 Debian/Ubuntu host, or use GitHub Actions:
+Run handheld targets on a native AArch64 Debian/Ubuntu host. Run the x86_64 desktop target on an x86_64 Debian/Ubuntu host, or use the dedicated GitHub Actions workflows:
 
 ~~~bash
 # muOS Andromeda / RG35XX H (H700)
@@ -36,11 +36,11 @@ Run on a native AArch64 Debian/Ubuntu host, or use GitHub Actions:
 # Experimental Qt frontend for muOS (compile test; device/runtime validation required)
 ./build-dolphin.sh --target muos-qt --frontend both --out ./out/muos-qt
 
-# ARM64 Linux desktop: both frontends
-./build-dolphin.sh --target desktop --frontend both --out ./out/desktop
+# Linux desktop (x86_64 or ARM64): both frontends; desktop never inherits Cortex-A53 tuning
+./build-dolphin.sh --target desktop --frontend both --tune none --out ./out/desktop
 ~~~
 
-Options include **--ref SHA**, **--jobs N**, **--no-lto**, **--tune cortex-a53|none**, **--deps** and **--no-deps**. H700 tuning uses **-mtune=cortex-a53** only: it does not require additional CPU instructions and preserves AArch64 compatibility.
+Options include **--ref SHA**, **--jobs N**, **--no-lto**, **--tune cortex-a53|none**, **--deps** and **--no-deps**. Handheld H700 builds default to **-mtune=cortex-a53** only: this does not require additional CPU instructions and preserves AArch64 compatibility. Desktop builds default to **--tune none** and reject Cortex-A53 tuning.
 
 ## Frontends and runtime models
 
@@ -59,6 +59,7 @@ Each successful build writes an output directory containing the applicable files
 - **Sys/** — exact upstream Dolphin system resources from the same checkout for handheld targets.
 - **lib/** — private HIDAPI runtime dependency for muOS targets.
 - **qt6/** — experimental Qt runtime and EGLFS plugin for **muos-qt**.
+- **Desktop archive** — x86_64 bundle with both frontends, matching **Sys/** data, launcher scripts, runtime-library report and GPL source.
 - **BUILDINFO.txt** — upstream revision, compiler, flags, patch hashes and dependency information.
 - **source-<ref>.tar.xz** — corresponding source archive.
 
@@ -100,9 +101,15 @@ The Qt launcher defaults to **QT_QPA_PLATFORM=eglfs**. Treat this package as a t
 ./tools/make-port-release.sh r --binary "$PWD/out/rocknix/dolphin" --sys-dir "$PWD/out/rocknix/Sys"
 ~~~
 
+## Desktop package for MX Linux XFCE
+
+The x86_64 desktop workflow builds both NoGUI and Qt GUI on Ubuntu 22.04 (glibc 2.35 baseline), verifies the ELF architecture and dynamic dependencies, and creates a tar.gz bundle with the exact matching **Sys/** tree and source archive. The GUI launcher defaults to Qt X11 **xcb**, matching a standard MX XFCE session.
+
+Download the artifact named **dolphin-rtcore-desktop-x86_64-...** from the successful [Build Desktop x86_64](../.github/workflows/build-desktop-x86_64.yml) workflow. Extract it, install the runtime dependencies listed in README-MX-XFCE.md, then run ./run-gui.sh. The NoGUI binary is included for command-line and integration use. This is a native PC build, not an H700 binary.
+
 ## CI artifacts
 
-The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt plus its matching NoGUI base, Knulli and ROCKNIX NoGUI variants, and ARM64 desktop NoGUI/Qt GUI variants. Each successful job uploads the binary, **BUILDINFO.txt**, hashes and corresponding GPL source archive. Artifacts are only available after successful completion; queued or in-progress runs are not releases.
+The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt plus its matching NoGUI base, Knulli and ROCKNIX NoGUI variants, and ARM64 desktop NoGUI/Qt GUI variants. The separate x86_64 workflow builds the MX XFCE desktop bundle. Each successful job uploads the binary, **BUILDINFO.txt**, hashes and corresponding GPL source archive. Artifacts are only available after successful completion; queued or in-progress runs are not releases.
 
 A CI build is not a hardware certification. For the RG35XX H, record the firmware version, build SHA and test the launcher, private libraries, system fonts, DSP resources, controller input, video, audio and clean exit on the physical device.
 

@@ -46,6 +46,7 @@ This project does not promise that every GameCube or Wii title will run at full 
 | **muOS 2601.1 Jacaranda** | Legacy v11.5.1 Triptych line | Historical/legacy release line. Do not install the Andromeda package on Jacaranda by assumption. |
 | **Knulli / Batocera** | Separate Rt:Core K integration | Existing RG35XX H / Knulli Scarab device testing is documented in the K port. Verify each new binary/resource pair before releasing it. |
 | **ROCKNIX** | Separate Rt:Core R integration with a Wayland-enabled build target | Experimental. The old fbdev binary/display mismatch is the reason for the dedicated Wayland build. A successful CI build still needs a physical-device launch test. |
+| **Linux desktop x86_64** | Qt GUI + NoGUI bundle with X11/Wayland and local Sys resources | Dedicated PC build intended for MX Linux XFCE and comparable Debian/Ubuntu desktops; separate from handheld binaries. |
 | **ARM64 desktop** | Qt GUI and NoGUI build variants | Build and diagnostic target; not a handheld firmware package. |
 
 > [!WARNING]
@@ -88,11 +89,11 @@ The reproducible build scripts live in [dolphin-build/](dolphin-build/README.md)
 | **muos-qt** | NoGUI + Qt GUI | Experimental Qt/EGLFS test bundle; not the default launcher. |
 | **knulli** | NoGUI | FBDev + SDL/EGL/GLES; Knulli-specific packaging. |
 | **rocknix** | NoGUI | Wayland + SDL/EGL/GLES with the ROCKNIX patch series. |
-| **desktop** | NoGUI and/or Qt GUI | Generic ARM64 Linux build. |
+| **desktop** | NoGUI + Qt GUI | Linux x86_64 PC (MX XFCE) and ARM64 Linux desktop. |
 
 The embedded targets use Dolphin's **NoGUI frontend**. NoGUI does not mean that games render headlessly: it means Dolphin does not create its own desktop management window. The game is rendered through the selected platform/backend and launched by the firmware integration.
 
-### Build on a native AArch64 Debian/Ubuntu host
+### Build on Linux desktop or native AArch64 host
 
 ~~~bash
 # muOS / RG35XX H
@@ -108,11 +109,11 @@ The embedded targets use Dolphin's **NoGUI frontend**. NoGUI does not mean that 
 # Experimental muOS Qt bundle — compile test only
 ./dolphin-build/build-dolphin.sh --target muos-qt --frontend both --out ./out/muos-qt
 
-# Generic ARM64 desktop — both frontends
-./dolphin-build/build-dolphin.sh --target desktop --frontend both --out ./out/desktop
+# Linux desktop (x86_64 MX XFCE or ARM64) — both frontends
+./dolphin-build/build-dolphin.sh --target desktop --frontend both --tune none --out ./out/desktop
 ~~~
 
-The build script supports **--ref SHA**, **--jobs N**, **--no-lto**, **--tune cortex-a53|none**, **--deps** and **--no-deps**. The H700 tuning option uses **-mtune=cortex-a53**; it does not enable additional CPU instructions.
+The build script supports **--ref SHA**, **--jobs N**, **--no-lto**, **--tune cortex-a53|none**, **--deps** and **--no-deps**. Handheld H700 builds use **-mtune=cortex-a53** without enabling extra CPU instructions; desktop builds default to neutral tuning and reject the Cortex-A53 option.
 
 ### Build validation
 
@@ -144,7 +145,13 @@ The separate Qt 6 experiment is packaged by **build-muxupd-qt6-experimental.sh**
 
 Never mix an executable and **Sys/** tree from different Dolphin revisions.
 
-## 06 — Install on muOS Andromeda
+## 06 — Linux desktop / MX XFCE
+
+The dedicated x86_64 artifact includes dolphin-gui, dolphin (NoGUI), the matching Sys resource tree, launch helpers, build information and the corresponding GPL source archive. It is built against the Ubuntu 22.04 / glibc 2.35 baseline and expects Qt 6 plus the runtime libraries listed in README-MX-XFCE.md.
+
+Extract the Dolphin-RtCore-Desktop-x86_64-*.tar.gz bundle, install the listed MX packages, and run ./run-gui.sh. To add the launcher to the XFCE application menu, run ./install-desktop-entry.sh. The bundle is x86_64-only and must not be copied to the H700 handheld.
+
+## 07 — Install on muOS Andromeda
 
 1. Back up the SD card, saves and existing Dolphin configuration.
 2. Download the matching Andromeda **.muxupd** from [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases).
@@ -159,7 +166,7 @@ The Andromeda package includes the integrity manifest required by that release l
 > [!IMPORTANT]
 > Jacaranda is a separate legacy release line. Registration detection does not make the current Andromeda package a certified Jacaranda package.
 
-## 07 — RG35XX H validation checklist
+## 08 — RG35XX H validation checklist
 
 A build is not marked **H700 device-tested** until the following checks have been performed on the actual RG35XX H and the exact target firmware:
 
@@ -176,7 +183,7 @@ A build is not marked **H700 device-tested** until the following checks have bee
 
 Do not upload private logs, pairing tokens, ROMs or BIOS files to issue reports. Redact serials, MAC addresses and other device identifiers.
 
-## 08 — Repository map
+## 09 — Repository map
 
 | Path | Purpose |
 |---|---|
@@ -191,7 +198,7 @@ Do not upload private logs, pairing tokens, ROMs or BIOS files to issue reports.
 | [wiki/](wiki/) | Tracked Markdown source for the GitHub Wiki. |
 | [Core_History/](Core_History/) | Historical implementations and provenance archive. |
 
-## 09 — CI, releases and contribution
+## 10 — CI, releases and contribution
 
 GitHub Actions runs repository contracts, packaging dry-runs, frontend smoke tests and native ARM64 build variants. Successful build jobs upload the binary, build information, checksums and corresponding source archive. An artifact is only available after its job completes successfully.
 
@@ -200,12 +207,13 @@ Development should happen on short-lived branches and be merged through pull req
 **Current engineering priorities**
 
 1. Produce a repeatable muOS NoGUI ARM64 artifact for the H700.
+2. Deliver a reproducible x86_64 desktop bundle for MX XFCE and verify it on a real PC.
 2. Validate the artifact on the RG35XX H: fonts, HIDAPI, input, rendering and safe exit.
 3. Keep the Qt 6 EGLFS path experimental until it boots and renders on device.
 4. Finish the ROCKNIX Wayland build and hardware validation.
 5. Keep compatibility reports, wiki pages and release notes aligned with actual test evidence.
 
-## 10 — Documentation and links
+## 11 — Documentation and links
 
 - [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases)
 - [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues)
