@@ -97,7 +97,7 @@ jobs:
                 --no-deps \
                 --tune cortex-a53
             '
-          chmod -R a+rX "$OUT"
+          sudo chown -R "$(id -u):$(id -g)" "$OUT"
 
 
       - name: Test muOS glibc ABI gate
