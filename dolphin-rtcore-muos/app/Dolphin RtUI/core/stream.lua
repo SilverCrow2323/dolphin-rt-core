@@ -45,7 +45,7 @@ function M.set_many(values)
   if next(updates) == nil then return true end
   for key, value in pairs(updates) do M.s[key] = value end
   if not write(DIR .. "/stream.conf", L.serialize_conf(M.s)) then
-    for key in pairs(previous) do
+    for key in pairs(updates) do
       if existed[key] then M.s[key] = previous[key] else M.s[key] = nil end
     end
     return false, "could not persist stream.conf"
