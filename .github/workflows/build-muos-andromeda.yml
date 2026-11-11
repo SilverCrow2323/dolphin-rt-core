@@ -12,6 +12,8 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/RtSys/switch_weapon/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/verify-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/verify-muos-runtime-abi.sh"
+      - "tests/test_muos_glibc_abi.sh"
       - "dolphin-rtcore-muos/app/Dolphin RtUI/**"
       - "dolphin-rtcore-muos/overlay/**"
   pull_request:
@@ -25,6 +27,8 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/RtSys/switch_weapon/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/verify-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/verify-muos-runtime-abi.sh"
+      - "tests/test_muos_glibc_abi.sh"
       - "dolphin-rtcore-muos/app/Dolphin RtUI/**"
       - "dolphin-rtcore-muos/overlay/**"
   workflow_dispatch:
@@ -76,11 +80,15 @@ jobs:
             --no-deps \
             --tune cortex-a53
 
+      - name: Test muOS glibc ABI gate
+        run: bash tests/test_muos_glibc_abi.sh
+
       - name: Validate AArch64 executable and private runtime
         run: |
           OUT="$RUNNER_TEMP/dolphin-muos"
           bash dolphin-build/validate-aarch64-elf.sh "$OUT/dolphin"
           bash dolphin-build/validate-aarch64-elf.sh "$OUT/lib/libhidapi-hidraw.so.0"
+          bash dolphin-rtcore-muos/tools/verify-muos-runtime-abi.sh "$OUT/dolphin" "$OUT/lib/libhidapi-hidraw.so.0"
           test -s "$OUT/Sys/GC/font_western.bin"
           test -s "$OUT/Sys/GC/font_japanese.bin"
           test -s "$OUT/Sys/GC/dsp_rom.bin"
