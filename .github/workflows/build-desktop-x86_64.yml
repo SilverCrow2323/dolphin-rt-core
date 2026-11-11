@@ -97,9 +97,9 @@ jobs:
             --input "$OUT" \
             --out "$OUT/dist" \
             --build-id "$GITHUB_SHA"
-          test -s "$OUT/dist/Dolphin-RtCore-Desktop-x86_64-$GITHUB_SHA.tar.gz" || \
-            test -n "$(find "$OUT/dist" -maxdepth 1 -name 'Dolphin-RtCore-Desktop-x86_64-*.tar.gz' -print -quit)"
-          test -s "$(find "$OUT/dist" -maxdepth 1 -name '*.tar.gz.sha256' -print -quit)"
+          ARCHIVE="$(find "$OUT/dist" -maxdepth 1 -type f -name 'Dolphin-RtCore-Desktop-x86_64-*.tar.gz' -print -quit)"
+          test -n "$ARCHIVE"
+          test -s "$ARCHIVE.sha256"
       - uses: actions/upload-artifact@v4
         with:
           name: dolphin-rtcore-desktop-x86_64-${{ github.sha }}

@@ -207,11 +207,11 @@ Development should happen on short-lived branches and be merged through pull req
 **Current engineering priorities**
 
 1. Produce a repeatable muOS NoGUI ARM64 artifact for the H700.
-2. Deliver a reproducible x86_64 desktop bundle for MX XFCE and verify it on a real PC.
 2. Validate the artifact on the RG35XX H: fonts, HIDAPI, input, rendering and safe exit.
-3. Keep the Qt 6 EGLFS path experimental until it boots and renders on device.
-4. Finish the ROCKNIX Wayland build and hardware validation.
-5. Keep compatibility reports, wiki pages and release notes aligned with actual test evidence.
+3. Deliver a reproducible x86_64 desktop bundle for MX XFCE and verify it on a real PC.
+4. Keep the Qt 6 EGLFS path experimental until it boots and renders on device.
+5. Finish the ROCKNIX Wayland build and hardware validation.
+6. Keep compatibility reports, wiki pages and release notes aligned with actual test evidence.
 
 ## 11 — Documentation and links
 
