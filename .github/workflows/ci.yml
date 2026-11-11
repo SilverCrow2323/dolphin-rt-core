@@ -156,6 +156,8 @@ jobs:
         run: bash tests/test_muos_glibc_abi.sh
       - name: Test muOS generation detection and core registration
         run: bash tests/test_muos_registration.sh
+      - name: Test muOS hotkeys, GameCube aliases and Start mappings
+        run: bash tests/test_muos_controls.sh
       - name: Test Dolphin muOS runtime contract
         run: bash tests/test_dolphin_runtime_contract.sh
       - name: Test Dolphin Sys packaging and manifest
