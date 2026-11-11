@@ -110,7 +110,7 @@ build_system() {
         aliases="$(alias_file "$kind")"
         if [ -r "$aliases" ]; then
             while IFS= read -r alias; do
-                [ -n "$alias" ] && printf 'F\\t%s\\n' "$alias"
+                [ -n "$alias" ] && printf 'F\t%s\n' "$alias"
             done < "$aliases"
         fi
         for f in "$dir"/*.ini; do
