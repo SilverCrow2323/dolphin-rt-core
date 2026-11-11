@@ -10,7 +10,6 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
-      - ".github/workflows/build-dolphin.yml"
   pull_request:
     branches: [main]
     paths:
@@ -20,7 +19,6 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
-      - ".github/workflows/build-dolphin.yml"
   workflow_dispatch:
 
 permissions:
@@ -37,6 +35,8 @@ jobs:
     timeout-minutes: 360
     strategy:
       fail-fast: false
+      # Leave hosted-runner capacity for the fast CI/contract jobs.
+      max-parallel: 2
       matrix:
         include:
           - target: muos
