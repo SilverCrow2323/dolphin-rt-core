@@ -76,4 +76,10 @@ if env PATH="$TMP/bin:$PATH" MOCK_READELF_MODE=aarch64 bash "$VALIDATOR" >/dev/n
   exit 1
 fi
 
+mkdir -p "$TMP/no-readelf"
+if env PATH="$TMP/no-readelf" /bin/bash "$VALIDATOR" "$TMP/candidate" >/dev/null 2>&1; then
+  printf 'Expected validator failure when readelf is unavailable\n' >&2
+  exit 1
+fi
+
 printf 'AArch64 ELF validator contract: all cases passed.\n'
