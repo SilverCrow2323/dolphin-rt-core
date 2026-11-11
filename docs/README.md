@@ -9,6 +9,7 @@ Dolphin Rt:Core.
 |---|---|
 | [STYLEGUIDE.md](STYLEGUIDE.md) | Dual-Face Cel-Tech visual grammar: palette, typography, geometry, motion, components. |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Module layout, state ownership, screen registry, dispatch flow. |
+| [NEXUS.md](NEXUS.md) | Stable action IDs, Stream Settings API, redaction and persistence contracts. |
 | [SCREENS.md](SCREENS.md) | Catalog of every screen, entry points, accepted params, keys. |
 | [PATHS.md](PATHS.md) | Filesystem layout, live config vs workshop, runtime data. |
 | [DATA_FILES.md](DATA_FILES.md) | JSON and text data files, download pipeline, validation. |
