@@ -97,6 +97,23 @@ if [ "$TARGET" = muos ] || [ "$TARGET" = muos-qt ]; then
   install -m755 "$(readlink -f "$HIDAPI_SOURCE")" "$OUT/lib/libhidapi-hidraw.so.0"
 fi
 
+# Experimental Qt 6 payload: stage the EGLFS QPA plugin and its Qt shared libraries.
+if [ "$TARGET" = muos-qt ]; then
+  QT_PLUGIN_ROOT="$(qtpaths6 --query QT_INSTALL_PLUGINS 2>/dev/null || qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null || true)"
+  [ -n "$QT_PLUGIN_ROOT" ] || { echo "cannot locate Qt 6 plugin directory" >&2; exit 1; }
+  EGLFS_PLUGIN="$QT_PLUGIN_ROOT/platforms/libqeglfs.so"
+  [ -s "$EGLFS_PLUGIN" ] || { echo "missing Qt 6 EGLFS plugin: $EGLFS_PLUGIN" >&2; exit 1; }
+  mkdir -p "$OUT/qt6/lib" "$OUT/qt6/plugins/platforms"
+  install -m755 "$EGLFS_PLUGIN" "$OUT/qt6/plugins/platforms/libqeglfs.so"
+  for probe in "$OUT/dolphin-gui" "$EGLFS_PLUGIN"; do
+    while read -r soname arrow dependency rest; do
+      [ "$arrow" = "=>" ] || continue
+      case "$soname" in libQt6*.so*) install -m755 "$(readlink -f "$dependency")" "$OUT/qt6/lib/$soname" ;; esac
+    done < <(ldd "$probe" 2>/dev/null)
+  done
+  [ -s "$OUT/qt6/lib/libQt6Core.so.6" ] || { echo "Qt 6 runtime staging failed" >&2; exit 1; }
+fi
+
 if [ "$LOCAL_SYS" = ON ]; then
   [ -d "$SRC/Data/Sys" ] || { echo "missing upstream resource directory: $SRC/Data/Sys"; exit 1; }
   # Recreate the resource tree so rerunning into an existing output directory
