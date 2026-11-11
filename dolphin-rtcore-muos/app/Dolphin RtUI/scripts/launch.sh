@@ -342,6 +342,8 @@ fi
 
 # ── 9. Run ──────────────────────────────────────────────────
 cd "$EMU" || fatal 1 "cd $EMU failed"
+# SETUP_SDL_ENVIRONMENT may alter the path; restore the private runtime path before exec.
+export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 [ -x "$DOLPHIN" ] || fatal 1 "dolphin binary not found or not executable: $DOLPHIN (supply your aarch64 build)"
 
 JS_DEV=$(ls /dev/input/js* 2>/dev/null | head -1)
