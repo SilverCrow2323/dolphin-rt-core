@@ -88,6 +88,24 @@ The state snapshot contains counts and selection metadata only. It does not expo
 
 Profile names must be safe exact directory names and refer to an existing `Hotkeys.ini`. Capture accepts recognized logical inputs or mapped raw button indices only. D-pad-only captures are rejected in pad mode because Dolphin cannot express them as pad-button combinations. Saving, reloading, device changes and leaving the designer are rejected while capture is active. Exit uses the existing unsaved-changes modal.
 
+## Cheats & Boost
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `cheats.refresh` | — | Reload the active game's entries and restart missing database synchronization |
+| `cheats.switch_tab` | `boost`, `fps` or `cheats` | Switch the active tab |
+| `cheats.select` | 1-based row index | Select a cheat entry; category headers are rejected |
+| `cheats.toggle_selected` | — | Change the selected entry in the per-game user data |
+| `cheats.bulk_toggle` | — | Run the existing bulk operation for the active tab |
+| `cheats.apply` | — | Write enabled codes to Dolphin's GameSettings file |
+| `cheats.state` | — | Read the game, tab, selected entry, sync state and per-group counts |
+
+### Persistence and apply boundary
+
+Toggling and bulk operations update the per-game `rtcheats_data.ini` layer only. They do not write codes into Dolphin's GameSettings file. The separate `cheats.apply` action performs that write and reports an explicit failure if Dolphin's file cannot be updated.
+
+Category headers are not selectable or toggleable. All mutation actions reject calls without a valid active game ID. The state snapshot contains entry metadata and counts; it does not expose cheat code contents.
+
 ## Validation
 
 Run the contract checks from the repository root:
@@ -97,6 +115,7 @@ luajit tests/test_stream_settings_nexus.lua
 luajit tests/test_stream_config_persistence.lua
 luajit tests/test_diagnostics_nexus.lua
 luajit tests/test_hotkeys_nexus.lua
+luajit tests/test_cheats_screen_nexus.lua
 ```
 
 The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.
