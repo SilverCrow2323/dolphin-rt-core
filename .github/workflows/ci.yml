@@ -120,6 +120,8 @@ jobs:
         run: |
           bash -n tools/capture-ui.sh tools/publish-wiki.sh tools/build-compat-site.sh
           bash -n dolphin-build/build-dolphin.sh dolphin-build/verify-patches.sh
+          bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/launch.sh"
+          bash -n dolphin-rtcore-muos/overlay/opt/muos/script/launch/ext-dolphinrt.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
           bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh
