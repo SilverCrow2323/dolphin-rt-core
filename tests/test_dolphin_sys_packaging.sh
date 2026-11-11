@@ -39,6 +39,7 @@ for asset in \
   "$EMU_PATH/Sys/GC/font_japanese.bin" \
   "$EMU_PATH/Sys/GC/dsp_rom.bin" \
   "$EMU_PATH/Sys/GC/dsp_coef.bin" \
+  "$EMU_PATH/Sys/Resources/OSD_Font.ttf" \
   "$EMU_PATH/Sys/$MARKER_REL"; do
   unzip -Z1 "$ARCHIVE" | grep -Fxq "$asset"
 done
