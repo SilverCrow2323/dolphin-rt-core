@@ -36,13 +36,6 @@ Run on a native AArch64 Debian/Ubuntu host, or use GitHub Actions:
 # Experimental Qt frontend for muOS (compile test; device/runtime validation required)
 ./build-dolphin.sh --target muos-qt --frontend gui --out ./out/muos-qt
 
-# Knulli / H700
-./build-dolphin.sh --target knulli --frontend nogui --out ./out/knulli
-
-# ROCKNIX / H700
-./verify-patches.sh
-./build-dolphin.sh --target rocknix --frontend nogui --out ./out/rocknix
-
 # ARM64 Linux desktop: both frontends
 ./build-dolphin.sh --target desktop --frontend both --out ./out/desktop
 ```
