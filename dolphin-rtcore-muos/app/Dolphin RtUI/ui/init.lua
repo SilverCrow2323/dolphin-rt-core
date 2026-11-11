@@ -142,6 +142,14 @@ function M.init()
         end
     end
 
+    local controller_profiles_screen = Nexus.get_screen("controller_profiles")
+    if controller_profiles_screen and controller_profiles_screen.register_actions then
+        local ok, registered, detail = pcall(controller_profiles_screen.register_actions, M)
+        if not ok or registered == false then
+            log("controller profiles NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     local keymap_screen = Nexus.get_screen("keymap")
     if keymap_screen and keymap_screen.register_actions then
         local ok, registered, detail = pcall(keymap_screen.register_actions, M)
