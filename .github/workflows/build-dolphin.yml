@@ -7,6 +7,7 @@ on:
       - "dolphin-build/**"
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
       - "docs/TROUBLESHOOTING.md"
       - ".github/workflows/build-dolphin.yml"
   pull_request:
@@ -117,6 +118,10 @@ jobs:
             test -s "$OUT/lib/libhidapi-hidraw.so.0"
             readelf -h "$OUT/lib/libhidapi-hidraw.so.0" | grep -q "Machine:.*AArch64"
           fi
+          if [ "$TARGET" = muos-qt ]; then
+            test -s "$OUT/qt6/lib/libQt6Core.so.6"
+            test -s "$OUT/qt6/plugins/platforms/libqeglfs.so"
+          fi
           case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix)
             test -s "$OUT/Sys/GC/font_western.bin"
             test -s "$OUT/Sys/GC/font_japanese.bin"
@@ -138,6 +143,7 @@ jobs:
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/dolphin*
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/Sys/**
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/lib/**
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/qt6/**
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/BUILDINFO.txt
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/source-*.tar.xz
           if-no-files-found: error
