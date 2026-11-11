@@ -33,6 +33,7 @@ done
 for resource in dsp_rom.bin dsp_coef.bin; do
   [ -s "$SYS_SOURCE/GC/$resource" ] || { echo "ERROR: missing GameCube DSP resource: $SYS_SOURCE/GC/$resource" >&2; exit 1; }
 done
+[ -s "$SYS_SOURCE/Resources/OSD_Font.ttf" ] || { echo "ERROR: missing Dolphin OSD font: $SYS_SOURCE/Resources/OSD_Font.ttf" >&2; exit 1; }
 
 APP="run/muos/storage/application/Dolphin RtUI"; EMU="opt/muos/share/emulator/dolphin"
 mkdir -p "$S/$APP" "$S/$EMU"
