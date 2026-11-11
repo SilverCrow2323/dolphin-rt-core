@@ -39,7 +39,7 @@ concurrency:
 jobs:
   build:
     name: muOS Andromeda / H700 / NoGUI + full update
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04-arm
     timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
@@ -57,7 +57,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build git patch pkg-config python3 \
+            build-essential gcc-12 g++-12 cmake ninja-build git patch pkg-config python3 \
             ca-certificates xz-utils binutils file \
             libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
             libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
@@ -68,7 +68,7 @@ jobs:
         run: |
           OUT="$RUNNER_TEMP/dolphin-muos"
           mkdir -p "$OUT"
-          bash dolphin-build/build-dolphin.sh \
+          CC=gcc-12 CXX=g++-12 bash dolphin-build/build-dolphin.sh \
             --target muos \
             --frontend nogui \
             --out "$OUT" \
@@ -87,6 +87,15 @@ jobs:
           test -s "$OUT/Sys/GC/dsp_coef.bin"
           test -s "$OUT/Sys/Resources/OSD_Font.ttf"
           readelf -d "$OUT/dolphin" | grep -F 'libhidapi-hidraw.so.0'
+          for candidate in "$OUT/dolphin" "$OUT/lib/libhidapi-hidraw.so.0"; do
+            max_glibc="$(strings -n 6 "$candidate" | grep -o 'GLIBC_2\\.[0-9]*' | sort -Vu | tail -n 1)"
+            minor="${max_glibc#GLIBC_2.}"
+            [ -n "$minor" ] && [ "$minor" -le 35 ] || {
+              echo "ERROR: $candidate requires ${max_glibc:-unknown}, exceeding the muOS glibc 2.35 compatibility ceiling" >&2
+              exit 1
+            }
+            echo "$candidate maximum GLIBC requirement: $max_glibc"
+          done
           sha256sum "$OUT/dolphin" "$OUT/lib/libhidapi-hidraw.so.0"
 
       - name: Build complete muOS Andromeda update
