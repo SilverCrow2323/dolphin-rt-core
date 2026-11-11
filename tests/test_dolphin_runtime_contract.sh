@@ -31,5 +31,8 @@ require "$PKG" 'font_western.bin'
 require "$PKG" 'font_japanese.bin'
 require "$PKG" 'dsp_rom.bin'
 require "$PKG" 'dsp_coef.bin'
+require "$PKG" 'DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}"'
+require "$PKG" 'SYS_SOURCE="$(cd "$DOLPHIN_SYS_DIR" && pwd -P)"'
+require "$PKG" 'cp -a "$SYS_SOURCE/." "$S/$EMU/Sys/"'
 
 echo "Dolphin muOS runtime contract: OK"
