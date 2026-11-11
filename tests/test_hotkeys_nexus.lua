@@ -195,6 +195,7 @@ assert(state.profile == "Default_copy" and state.dirty == false)
 assert(files["workshop/hotkeys/Default_copy/Hotkeys.ini"])
 
 -- A partial duplicate whose gptk write fails must be rejected and cleaned up.
+assert(actions["hotkeys.set_device"].run("keyboard"))
 fail_write_path = "workshop/hotkeys/Default_copy2/ext-dolphin.gptk"
 local duplicate_failed, duplicate_err = actions["hotkeys.duplicate_profile"].run()
 assert(duplicate_failed == false and tostring(duplicate_err):match("save duplicate"))
