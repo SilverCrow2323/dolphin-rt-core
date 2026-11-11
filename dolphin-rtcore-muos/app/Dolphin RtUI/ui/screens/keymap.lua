@@ -200,11 +200,12 @@ local function commit_remap()
         S.lines = previous_lines
         return false, tostring(set_err)
     end
-    local write_ok, write_err = Ini.write_lines(S.path, S.lines)
-    if not write_ok then
+    local write_call, write_ok, write_err = pcall(Ini.write_lines, S.path, S.lines)
+    if not write_call or not write_ok then
         S.lines = previous_lines
         Notify.show("error", "Could not save controller mapping")
-        return false, tostring(write_err or "controller mapping write failed")
+        local detail = write_call and write_err or write_ok
+        return false, tostring(detail or "controller mapping write failed")
     end
     local label = r.row.label
     local captured = r.captured
