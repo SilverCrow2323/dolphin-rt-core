@@ -83,36 +83,65 @@ local function apply_now(quiet)
     if ok then
         S.changed = false
         if not quiet then SFX.play("menu_select"); Notify.show("success", ("Written to Dolphin: %d code(s)"):format(n or 0)) end
-    else Notify.show("warning", "Not applied: " .. tostring(n or "unknown error")) end
+        return true, n or 0
+    end
+    Notify.show("warning", "Not applied: " .. tostring(n or "unknown error"))
+    return false, tostring(n or "unknown error")
 end
 
 local function toggle()
-    local r = S.list:cur(); if not r or not r.e then return end
+    local r = S.list:cur()
+    if not r or r.skip or not r.e then return false, "no cheat entry selected" end
     if Cheats.set_enabled(S.game_id, r.e.slug, not r.e.enabled) then
-        S.changed = true; SFX.play("menu_toggleoption"); reload(r.e.slug)
-    else Notify.show("error", "Could not write rtcheats_data.ini") end
+        S.changed = true
+        SFX.play("menu_toggleoption")
+        reload(r.e.slug)
+        return true
+    end
+    Notify.show("error", "Could not write rtcheats_data.ini")
+    return false, "could not write rtcheats_data.ini"
 end
 
 local function bulk()
     local tid, list = TABS[S.tab].id, entries(TABS[S.tab].id)
-    if #list == 0 then return end
+    if #list == 0 then
+        Notify.show("info", "Nothing to change on this tab")
+        return false, "nothing to change"
+    end
     local any_off = false
     for _, e in ipairs(list) do if not e.enabled then any_off = true end end
     local on = any_off and tid == "perf"       -- bulk enable only for Boost
     local batch = {}
     for _, e in ipairs(list) do
-        if on then if e.pclass ~= "diag" then batch[#batch + 1] = { slug = e.slug, on = true } end
-        elseif e.enabled then batch[#batch + 1] = { slug = e.slug, on = false } end
+        if on then
+            if e.pclass ~= "diag" then batch[#batch + 1] = { slug = e.slug, on = true } end
+        elseif e.enabled then
+            batch[#batch + 1] = { slug = e.slug, on = false }
+        end
     end
-    if #batch == 0 then Notify.show("info", "Nothing to change on this tab"); return end
-    if Cheats.set_many(S.game_id, batch) then
-        S.changed = true; SFX.play("menu_toggleoption")
-        local r = S.list:cur(); reload(r and r.e and r.e.slug)
-        Notify.show("info", on and "Boost patches enabled" or "All switched off")
+    if #batch == 0 then
+        Notify.show("info", "Nothing to change on this tab")
+        return false, "nothing to change"
     end
+    if not Cheats.set_many(S.game_id, batch) then
+        return false, "could not update cheat settings"
+    end
+    S.changed = true
+    SFX.play("menu_toggleoption")
+    local r = S.list:cur()
+    reload(r and r.e and r.e.slug)
+    Notify.show("info", on and "Boost patches enabled" or "All switched off")
+    return true
 end
 
-local function tab(d) S.tab = (S.tab - 1 + d) % #TABS + 1; SFX.play("menu_pagescroll"); rebuild() end
+local function tab(d)
+    if d ~= -1 and d ~= 1 then return false, "tab direction must be -1 or 1" end
+    S.tab = (S.tab - 1 + d) % #TABS + 1
+    K.set_accent(TABS[S.tab].acc)
+    SFX.play("menu_pagescroll")
+    rebuild()
+    return true
+end
 
 function S.pad(b)
     if     b == "L1" or b == "LEFT"  then tab(-1)
@@ -180,6 +209,138 @@ function S.draw()
     end
     K.footer({ { key = "A", label = "Toggle" }, { key = "Y", label = "All" }, { key = "X", label = "Apply" },
                { key = "L1 R1", label = "Tab" }, { key = "B", label = "Back" } })
+end
+
+-- NEXUS exposes per-game cheat state while keeping per-game toggles
+-- separate from writing enabled codes into Dolphin's GameSettings.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function active_game_id()
+        local id = S.game_id
+        if type(id) ~= "string" or #id < 3 or #id > 16
+            or not id:match("^[%w_%-]+$") then
+            return nil
+        end
+        return id
+    end
+    local function selected_entry()
+        local row = S.list and S.list:cur()
+        if not row or row.skip then return nil end
+        return row.e
+    end
+    local function group_count(group)
+        local total, enabled = 0, 0
+        for _, entry in ipairs(S.all or {}) do
+            if entry.group == group then
+                total = total + 1
+                if entry.enabled then enabled = enabled + 1 end
+            end
+        end
+        return total, enabled
+    end
+
+    local specs = {
+        {
+            id = "cheats.refresh", title = "Refresh game cheats", order = 10,
+            run = function()
+                if not active_game_id() then return false, "no valid game is active" end
+                local entry = selected_entry()
+                reload(entry and entry.slug)
+                start_download()
+                return true
+            end,
+        },
+        {
+            id = "cheats.switch_tab", title = "Switch cheat tab", order = 20,
+            run = function(tab_id)
+                if not active_game_id() then return false, "no valid game is active" end
+                local indexes = { boost = 1, fps = 2, cheats = 3 }
+                if type(tab_id) ~= "string" or not indexes[tab_id] then
+                    return false, "tab must be boost, fps or cheats"
+                end
+                S.tab = indexes[tab_id]
+                K.set_accent(TABS[S.tab].acc)
+                rebuild()
+                return true
+            end,
+        },
+        {
+            id = "cheats.select", title = "Select cheat entry", order = 30,
+            run = function(index)
+                if not active_game_id() then return false, "no valid game is active" end
+                if type(index) ~= "number" or index % 1 ~= 0
+                    or index < 1 or index > #S.list.items then
+                    return false, "cheat selection index out of range"
+                end
+                local row = S.list.items[index]
+                if not row or row.skip or not row.e then
+                    return false, "cannot select a category header"
+                end
+                S.list.sel = index
+                return true
+            end,
+        },
+        {
+            id = "cheats.toggle_selected", title = "Toggle selected cheat", order = 40,
+            run = function()
+                if not active_game_id() then return false, "no valid game is active" end
+                if not selected_entry() then return false, "no cheat entry selected" end
+                return toggle()
+            end,
+        },
+        {
+            id = "cheats.bulk_toggle", title = "Bulk-toggle current cheat tab", order = 50,
+            run = function()
+                if not active_game_id() then return false, "no valid game is active" end
+                return bulk()
+            end,
+        },
+        {
+            id = "cheats.apply", title = "Apply enabled game cheats to Dolphin", order = 60,
+            run = function()
+                if not active_game_id() then return false, "no valid game is active" end
+                return apply_now(false)
+            end,
+        },
+        {
+            id = "cheats.state", title = "Get per-game cheat state", order = 70,
+            run = function()
+                local entry = selected_entry()
+                local boost_count, boost_enabled = group_count("perf")
+                local fps_count, fps_enabled = group_count("fps")
+                local cheat_count, cheat_enabled = group_count("cheat")
+                local sync = Cheats.sync_status()
+                return {
+                    game_id = active_game_id(),
+                    title = active_game_id() and S.title or nil,
+                    tab = TABS[S.tab] and TABS[S.tab].id or nil,
+                    selected_slug = entry and entry.slug or nil,
+                    selected_name = entry and entry.name or nil,
+                    selected_enabled = entry and entry.enabled or false,
+                    changed = S.changed == true,
+                    downloading = S.dl == true,
+                    download_state = sync and sync.state or "unknown",
+                    boost_count = boost_count,
+                    boost_enabled = boost_enabled,
+                    fps_count = fps_count,
+                    fps_enabled = fps_enabled,
+                    cheat_count = cheat_count,
+                    cheat_enabled = cheat_enabled,
+                }
+            end,
+        },
+    }
+
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "cheats", order = spec.order, screen = "cheats",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S
