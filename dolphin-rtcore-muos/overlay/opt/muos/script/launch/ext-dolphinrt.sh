@@ -50,6 +50,9 @@ SET_VAR "system" "foreground_process" "dolphin"      # muOS quit hotkeys / proc_
 # ── Launch ─────────────────────────────────────────────────
 echo "$(date '+%F %T') | $PROFILE | $ORIENT | $(basename "$ROM")" >> "$LOG"
 
+# Prefer package-private runtime dependencies without changing muOS system libraries.
+export LD_LIBRARY_PATH="$EMUDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
 cd "$EMUDIR" || exit 1
 
 # Optional extra exit watcher (the native muOS quit hotkey keeps working without it)
