@@ -24,8 +24,12 @@ Path(sys.argv[1]).write_bytes(header + b"RtCore packaging test fixture\n")
 PY
 chmod 755 "$TMP/dolphin"
 
+LIBS="$TMP/lib"
+mkdir -p "$LIBS"
+printf "HIDAPI runtime fixture\n" > "$LIBS/libhidapi-hidraw.so.0"
+
 OUT="$TMP/dist"
-DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" \
+DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" DOLPHIN_LIB_DIR="$LIBS" \
   bash "$PACKAGER" "$OUT"
 
 VERSION="$(tr -d '[:space:]' < "$ROOT/dolphin-rtcore-muos/VERSION")"
@@ -35,6 +39,7 @@ ARCHIVE="$OUT/Dolphin_RtCore_v${VERSION//./_}_Andromeda_with-dolphin.muxupd"
 EMU_PATH="opt/muos/share/emulator/dolphin"
 for asset in \
   "$EMU_PATH/dolphin" \
+  "$EMU_PATH/lib/libhidapi-hidraw.so.0" \
   "$EMU_PATH/Sys/GC/font_western.bin" \
   "$EMU_PATH/Sys/GC/font_japanese.bin" \
   "$EMU_PATH/Sys/GC/dsp_rom.bin" \
@@ -45,12 +50,13 @@ for asset in \
 done
 
 unzip -p "$ARCHIVE" "$EMU_PATH/dolphin" | cmp -s "$TMP/dolphin" -
+unzip -p "$ARCHIVE" "$EMU_PATH/lib/libhidapi-hidraw.so.0" | cmp -s "$LIBS/libhidapi-hidraw.so.0" -
 unzip -p "$ARCHIVE" "$EMU_PATH/Sys/$MARKER_REL" | cmp -s "$SYS/$MARKER_REL" -
 
 MARKER_SHA="$(sha256sum "$SYS/$MARKER_REL" | awk '{print $1}')"
 unzip -p "$ARCHIVE" manifest.sha256 | grep -Fqx "$MARKER_SHA  $EMU_PATH/Sys/$MARKER_REL"
 
-echo "[OK] binary and supplied Sys tree are included at the muOS runtime paths"
+echo "[OK] binary, private HIDAPI runtime and supplied Sys tree are included at the muOS runtime paths"
 echo "[OK] GameCube fonts, DSP assets, and the Sys-tree marker are present"
 echo "[OK] manifest.sha256 covers the supplied Sys-tree marker"
 
