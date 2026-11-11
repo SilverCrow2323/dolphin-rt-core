@@ -63,6 +63,31 @@ Cleanup actions only open the existing confirmation modal. Files are deleted onl
 
 The state snapshot contains counts and selection metadata only. It does not expose log file paths or log contents.
 
+## Hotkey Designer
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `hotkeys.refresh_profiles` | — | Refresh existing profiles and preserve selection |
+| `hotkeys.select_profile` | 1-based index | Select an existing profile |
+| `hotkeys.open_profile` | exact safe profile name | Open a validated profile |
+| `hotkeys.open_selected_profile` | — | Open the selected profile |
+| `hotkeys.select_action` | 1-based index | Select a hotkey binding |
+| `hotkeys.set_device` | `keyboard` or `pad` | Switch binding target |
+| `hotkeys.change_key` | `-1` or `1` | Change emitted keyboard key |
+| `hotkeys.clear_selected` | — | Clear selected binding |
+| `hotkeys.start_capture` | — | Start input capture for the selected binding |
+| `hotkeys.capture_input` | logical name or raw SDL button index | Add a recognized input to capture |
+| `hotkeys.finish_capture` | boolean | Commit or cancel the capture |
+| `hotkeys.duplicate_profile` | — | Duplicate and save the current profile |
+| `hotkeys.reload` | — | Discard unsaved edits and reload from disk |
+| `hotkeys.save` | — | Persist the current profile |
+| `hotkeys.request_back` | — | Leave through the existing unsaved-changes confirmation |
+| `hotkeys.state` | — | Read profile, binding, dirty/capture and conflict state |
+
+### Capture and profile safety
+
+Profile names must be safe exact directory names and refer to an existing `Hotkeys.ini`. Capture accepts recognized logical inputs or mapped raw button indices only. D-pad-only captures are rejected in pad mode because Dolphin cannot express them as pad-button combinations. Saving, reloading, device changes and leaving the designer are rejected while capture is active. Exit uses the existing unsaved-changes modal.
+
 ## Validation
 
 Run the contract checks from the repository root:
@@ -71,6 +96,7 @@ Run the contract checks from the repository root:
 luajit tests/test_stream_settings_nexus.lua
 luajit tests/test_stream_config_persistence.lua
 luajit tests/test_diagnostics_nexus.lua
+luajit tests/test_hotkeys_nexus.lua
 ```
 
 The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.
