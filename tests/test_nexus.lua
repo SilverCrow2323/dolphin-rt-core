@@ -50,4 +50,55 @@ assert(tostring(missing_reason):match("unknown action"), "unknown action is expl
 local actions = Nexus.list_actions()
 eq(#actions, 2, "action catalog size")
 eq(actions[1].id, "library.rescan", "action catalog sorted")
+
+// Explicit rejection must remain distinguishable from a successful action.
+Nexus.register_action("test.rejected", function(value)
+    eq(value, "invalid", "rejection argument")
+    return false, "input rejected"
+end, { title = "Reject invalid input", order = 5 })
+local rejected, rejection_reason = Nexus.run_action("test.rejected", "invalid")
+eq(rejected, false, "explicit action rejection")
+eq(rejection_reason, "input rejected", "explicit rejection reason")
+
+-- Catalog metadata is scalar-only and each returned snapshot is isolated.
+Nexus.register_screen("test.metadata", {}, {
+    title = "Metadata screen",
+    order = 7,
+    enabled = true,
+    nested = { private = "must not escape" },
+    callback = function() end,
+})
+local info = Nexus.screen_info("test.metadata")
+eq(info.title, "Metadata screen", "screen metadata title")
+eq(info.order, 7, "screen metadata order")
+eq(info.enabled, true, "screen metadata boolean")
+eq(info.nested, nil, "screen metadata rejects nested tables")
+eq(info.callback, nil, "screen metadata rejects functions")
+info.title = "tampered"
+eq(Nexus.screen_info("test.metadata").title, "Metadata screen", "screen metadata snapshot isolation")
+
+Nexus.register_action("test.metadata", function() return true end, {
+    title = "Metadata action",
+    order = 8,
+    enabled = false,
+    nested = { private = "must not escape" },
+    callback = function() end,
+})
+local catalog
+for _, entry in ipairs(Nexus.list_actions()) do
+    if entry.id == "test.metadata" then catalog = entry.metadata; break end
+end
+assert(catalog, "metadata action is present in the catalog")
+eq(catalog.title, "Metadata action", "action metadata title")
+eq(catalog.order, 8, "action metadata order")
+eq(catalog.enabled, false, "action metadata boolean")
+eq(catalog.nested, nil, "action metadata rejects nested tables")
+eq(catalog.callback, nil, "action metadata rejects functions")
+catalog.title = "tampered"
+local fresh_catalog
+for _, entry in ipairs(Nexus.list_actions()) do
+    if entry.id == "test.metadata" then fresh_catalog = entry.metadata; break end
+end
+eq(fresh_catalog.title, "Metadata action", "action metadata snapshot isolation")
+
 print("NEXUS registry: all tests passed")
