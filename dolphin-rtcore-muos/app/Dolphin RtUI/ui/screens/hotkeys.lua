@@ -37,7 +37,7 @@ local ACTIONS = {
     { key = "Keys/Increase Frame Limit", label = "Frame Limit +",  icon = "zap" },
     { key = "Keys/Take Screenshot",      label = "Screenshot",     icon = "star" },
     { key = "Keys/Reset",                label = "Reset",          icon = "wrench" },
-    { key = "Keys/Exit",                 label = "Exit",           icon = "off" },
+    { key = "Keys/Exit",                 label = "Safe Exit",      icon = "off" },
     { key = "Keys/Set State Slot to 1",  label = "State Slot 1",   icon = "save" },
     { key = "Keys/Set State Slot to 2",  label = "State Slot 2",   icon = "save" },
     { key = "Keys/Set State Slot to 3",  label = "State Slot 3",   icon = "save" },
