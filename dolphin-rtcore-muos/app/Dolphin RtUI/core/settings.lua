@@ -139,7 +139,7 @@ function M.auto_discover_rom_paths()
   if M.data.rom_discovery_done == true then return 0 end
 
   local found, seen = 0, {}
-  local extensions = [[\\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \\)]]
+  local extensions = [[\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \)]]
   for _, path in ipairs(M.rom_root_candidates()) do
     if FS.is_dir(path) then
       local real = Shell.first("readlink -f " .. Shell.shq(path), 4)
