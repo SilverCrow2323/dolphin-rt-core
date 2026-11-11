@@ -35,6 +35,11 @@ local SYSTEM_CFG = {
     },
 }
 
+local function valid_profile_name(name)
+    return type(name) == "string" and #name > 0 and #name <= 64
+        and name:match("^[%w_%-]+$") ~= nil
+end
+
 local NATIVE = {
     GameCube = {
         ["Buttons/A"]="A", ["Buttons/B"]="B", ["Buttons/X"]="X", ["Buttons/Y"]="Y",
@@ -127,8 +132,8 @@ end
 
 function S.enter(params)
     params = params or {}
-    S.system  = params.system or "GameCube"
-    S.profile = params.profile or "Default"
+    S.system  = SYSTEM_CFG[params.system] and params.system or "GameCube"
+    S.profile = valid_profile_name(params.profile) and params.profile or "Default"
     S.spin_t  = 0
     S.remap   = nil
     S.list = K.List(K.MARGIN + 216, 96,
@@ -181,21 +186,42 @@ end
 
 local function commit_remap()
     local r = S.remap
-    if not r or r.phase ~= "confirm" then return end
-    local section = SYSTEM_CFG[S.system].section
-    Ini.set(S.lines, section, r.row.key, r.new_value)
-    Ini.write_lines(S.path, S.lines)
+    if not r or r.phase ~= "confirm" then
+        return false, "no captured mapping to confirm"
+    end
+    local cfg = SYSTEM_CFG[S.system]
+    if not cfg or not r.row or not r.row.key then
+        return false, "controller mapping context is invalid"
+    end
+    local previous_lines = {}
+    for i, line in ipairs(S.lines) do previous_lines[i] = line end
+    local set_ok, set_err = pcall(Ini.set, S.lines, cfg.section, r.row.key, r.new_value)
+    if not set_ok then
+        S.lines = previous_lines
+        return false, tostring(set_err)
+    end
+    local write_call, write_ok, write_err = pcall(Ini.write_lines, S.path, S.lines)
+    if not write_call or not write_ok then
+        S.lines = previous_lines
+        Notify.show("error", "Could not save controller mapping")
+        local detail
+        if write_call then detail = write_err else detail = write_ok end
+        return false, tostring(detail or "controller mapping write failed")
+    end
     local label = r.row.label
     local captured = r.captured
     S.remap = nil
     load_entries()
     SFX.play("newupdate")
     Notify.show("success", label .. " → Button " .. captured)
+    return true
 end
 
 local function cancel_remap()
+    if not S.remap then return false, "no controller remap is active" end
     S.remap = nil
     SFX.play("menu_back")
+    return true
 end
 
 function S.pad(b)
@@ -301,6 +327,106 @@ function S.draw()
         { key = "B",     label = "Back" },
     })
     draw_remap_overlay()
+end
+
+-- NEXUS actions for the controller mapping editor. Writes are committed
+-- only after confirmation, and failed writes leave the previous mapping intact.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function valid_context()
+        return SYSTEM_CFG[S.system] ~= nil and valid_profile_name(S.profile)
+    end
+    local function selected()
+        return S.list and S.list:cur() or nil
+    end
+    local specs = {
+        {
+            id = "keymap.switch_system", title = "Switch controller system", order = 10,
+            run = function()
+                if not valid_context() then return false, "controller mapping context is invalid" end
+                if S.remap then return false, "cancel remap before switching system" end
+                switch_system()
+                return true
+            end,
+        },
+        {
+            id = "keymap.select", title = "Select controller mapping", order = 20,
+            run = function(index)
+                if not valid_context() then return false, "controller mapping context is invalid" end
+                if S.remap then return false, "finish or cancel remap before selecting" end
+                if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.list.items then
+                    return false, "controller mapping index out of range"
+                end
+                S.list.sel = index
+                if S.list._aim then S.list:_aim(true) end
+                return true
+            end,
+        },
+        {
+            id = "keymap.start_remap", title = "Start controller remap", order = 30,
+            run = function()
+                if not valid_context() then return false, "controller mapping context is invalid" end
+                if S.remap then return false, "controller remap is already active" end
+                if not selected() then return false, "no controller mapping selected" end
+                open_remap()
+                if not S.remap then return false, "could not start controller remap" end
+                return true
+            end,
+        },
+        {
+            id = "keymap.capture_input", title = "Capture controller input", order = 40,
+            run = function(raw)
+                if not S.remap or S.remap.phase ~= "wait" then
+                    return false, "controller remap is not waiting for input"
+                end
+                if type(raw) ~= "number" or raw % 1 ~= 0 or raw < 0 or raw > 255 then
+                    return false, "raw input must be an integer from 0 to 255"
+                end
+                if S.raw_pad(raw) then return true end
+                return false, "raw input was not accepted"
+            end,
+        },
+        {
+            id = "keymap.confirm_remap", title = "Confirm controller remap", order = 50,
+            run = function()
+                if not S.remap or S.remap.phase ~= "confirm" then
+                    return false, "no captured mapping to confirm"
+                end
+                return commit_remap()
+            end,
+        },
+        {
+            id = "keymap.cancel_remap", title = "Cancel controller remap", order = 60,
+            run = function()
+                return cancel_remap()
+            end,
+        },
+        {
+            id = "keymap.state", title = "Get controller mapping state", order = 70,
+            run = function()
+                local row = selected()
+                return {
+                    system = S.system,
+                    profile = S.profile,
+                    selected_key = row and row.key or nil,
+                    selected_label = row and row.label or nil,
+                    mapping_count = S.list and #S.list.items or 0,
+                    remap_phase = S.remap and S.remap.phase or nil,
+                    captured_button = S.remap and S.remap.captured or nil,
+                    proposed_value = S.remap and S.remap.new_value or nil,
+                }
+            end,
+        },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "controller", order = spec.order, screen = "keymap",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S

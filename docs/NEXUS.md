@@ -126,6 +126,24 @@ Choice values must exist in the current option list for that game. Section heade
 
 The state snapshot exposes launch metadata and row labels only; it does not return the ROM path or internal filesystem paths.
 
+## Controller Keymap
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `keymap.switch_system` | — | Switch between GameCube and Wii mappings |
+| `keymap.select` | 1-based index | Select a controller mapping |
+| `keymap.start_remap` | — | Begin a capture for the selected mapping |
+| `keymap.capture_input` | raw SDL button index | Capture a validated controller button |
+| `keymap.confirm_remap` | — | Persist the proposed controller mapping |
+| `keymap.cancel_remap` | — | Discard the current capture |
+| `keymap.state` | — | Read system, profile, selection and pending remap metadata |
+
+### Remap safety and persistence
+
+Selection and system changes are blocked while capture is active. Raw button indices must be integers from 0 to 255. A captured mapping is not written until explicitly confirmed. Failed or throwing INI writes restore the in-memory lines and keep the pending confirmation available for retry or cancellation.
+
+Controller profiles are restricted to safe directory names before constructing the INI path. The state snapshot never returns the INI path or file contents.
+
 ## Validation
 
 Run the contract checks from the repository root:
@@ -137,6 +155,7 @@ luajit tests/test_diagnostics_nexus.lua
 luajit tests/test_hotkeys_nexus.lua
 luajit tests/test_cheats_screen_nexus.lua
 luajit tests/test_game_nexus.lua
+luajit tests/test_keymap_nexus.lua
 ```
 
 The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.
