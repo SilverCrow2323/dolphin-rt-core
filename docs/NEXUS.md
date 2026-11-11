@@ -144,6 +144,20 @@ Selection and system changes are blocked while capture is active. Raw button ind
 
 Controller profiles are restricted to safe directory names before constructing the INI path. The state snapshot never returns the INI path or file contents.
 
+## Controller Profiles
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `controller_profiles.refresh` | — | Rescan safe controller profile directories and preserve the current selection |
+| `controller_profiles.switch_system` | `GameCube` or `Wii` | Switch the profile catalog |
+| `controller_profiles.select` | 1-based index | Select a profile |
+| `controller_profiles.open_selected` | — | Open the selected profile in Controller Keymap |
+| `controller_profiles.state` | — | Read system, selection and profile count |
+
+### Profile path safety
+
+Only profile names matching the controller editor's safe-name contract are exposed. The open action reconstructs and checks the expected path from the selected system and profile name rather than trusting a caller-supplied directory. The state snapshot returns profile metadata only and does not expose directory paths.
+
 ## Validation
 
 Run the contract checks from the repository root:
@@ -156,6 +170,7 @@ luajit tests/test_hotkeys_nexus.lua
 luajit tests/test_cheats_screen_nexus.lua
 luajit tests/test_game_nexus.lua
 luajit tests/test_keymap_nexus.lua
+luajit tests/test_controller_profiles_nexus.lua
 ```
 
 The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.
