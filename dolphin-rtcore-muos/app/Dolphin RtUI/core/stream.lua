@@ -31,11 +31,28 @@ function M.reload() M.games = L.parse_library(read(DIR .. "/library.tsv")) end
 
 function M.configured() return M.s.HOST ~= nil and M.s.HOST ~= "" end
 
+function M.set_many(values)
+  if type(values) ~= "table" then return false, "settings must be a table" end
+  local previous, updates = {}, {}
+  for key, value in pairs(values) do
+    if type(key) ~= "string" or key == "" then return false, "invalid setting key" end
+    value = tostring(value or "")
+    if not value:match("^[%w%.:%-_ ]*$") then return false, "characters not allowed" end
+    previous[key] = M.s[key]
+    updates[key] = value
+  end
+  if next(updates) == nil then return true end
+  for key, value in pairs(updates) do M.s[key] = value end
+  if not write(DIR .. "/stream.conf", L.serialize_conf(M.s)) then
+    for key, value in pairs(previous) do M.s[key] = value end
+    return false, "could not persist stream.conf"
+  end
+  return true
+end
+
 function M.set(key, value)
-  value = tostring(value or "")
-  if not value:match("^[%w%.:%-_ ]*$") then return false, "characters not allowed" end
-  M.s[key] = value
-  return write(DIR .. "/stream.conf", L.serialize_conf(M.s))
+  if type(key) ~= "string" or key == "" then return false, "invalid setting key" end
+  return M.set_many({ [key] = value })
 end
 
 function M.stat(app)
