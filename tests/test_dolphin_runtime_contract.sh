@@ -19,6 +19,7 @@ require() {
 # The running executable and its resource tree live side by side on muOS.
 require "$BUILD" 'case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix) LOCAL_SYS=ON;; esac'
 require "$BUILD" '"-DLINUX_LOCAL_DEV=$LOCAL_SYS"'
+require "$BUILD" "libhidapi-hidraw.so.0"
 require "$BUILD" 'rm -rf "$OUT/Sys"'
 require "$BUILD" 'cp -a "$SRC/Data/Sys/." "$OUT/Sys/"'
 require "$BUILD" 'GC/font_western.bin GC/font_japanese.bin GC/dsp_rom.bin GC/dsp_coef.bin'
@@ -33,6 +34,9 @@ require "$PKG" 'font_japanese.bin'
 require "$PKG" 'dsp_rom.bin'
 require "$PKG" 'dsp_coef.bin'
 require "$PKG" 'DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}"'
+require "$PKG" 'DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}"'
+require "$PKG" "libhidapi-hidraw.so.0"
+require "$EXT_LAUNCH" 'LD_LIBRARY_PATH="$EMUDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"'
 require "$PKG" 'SYS_SOURCE="$(cd "$DOLPHIN_SYS_DIR" && pwd -P)"'
 require "$PKG" 'cp -a "$SYS_SOURCE/." "$S/$EMU/Sys/"'
 
