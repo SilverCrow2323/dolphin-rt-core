@@ -183,7 +183,7 @@ assert(invalid_device == false and tostring(invalid_device_err):match("keyboard 
 assert(actions["hotkeys.start_capture"].run())
 assert(actions["hotkeys.capture_input"].run("UP"))
 local dpad_only, dpad_err = actions["hotkeys.finish_capture"].run(true)
-assert(dpad_only == false and tostring(dpad_err):match("non%-D%-Pad"))
+assert(dpad_only == false and tostring(dpad_err):match("non%-D%-pad"))
 assert(actions["hotkeys.state"].run().capturing == true)
 assert(actions["hotkeys.capture_input"].run("A"))
 assert(actions["hotkeys.finish_capture"].run(true))
