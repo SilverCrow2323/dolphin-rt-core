@@ -50,6 +50,15 @@ The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt GUI, Knulli an
 
 1. Keep the upstream commit pinned; do not silently float to upstream HEAD.
 2. Keep platform-specific patches isolated. ROCKNIX Wayland patches must not leak into muOS/Knulli fbdev builds.
-3. Preserve the muOS launcher contract: `/opt/muos/share/emulator/dolphin/dolphin -e ROM -u EMUDIR`.
-4. Never label a build hardware-tested until it has been launched on the actual device.
-5. Distribute the exact corresponding source archive with every binary, as required by the GPL.
+3. Preserve the muOS launcher contract: `/opt/muos/share/emulator/dolphin/dolphin --platform=fbdev --video_backend=OGL -e ROM -u EMUDIR`.
+4. When packaging a freshly built muOS binary, pass both `DOLPHIN_BIN` and `DOLPHIN_SYS_DIR` from the same build output. Example:
+
+   ```bash
+   DOLPHIN_BIN="$PWD/out/muos/dolphin" \
+   DOLPHIN_SYS_DIR="$PWD/out/muos/Sys" \
+     bash dolphin-rtcore-muos/tools/build-muxupd.sh ./dist
+   ```
+
+   This ensures the installed executable and its adjacent `Sys/` resources come from the same pinned upstream revision. Omitting both keeps the repository's bundled runtime; do not mix a binary from one build with a resource tree from another.
+5. Never label a build hardware-tested until it has been launched on the actual device.
+6. Distribute the exact corresponding source archive with every binary, as required by the GPL.
