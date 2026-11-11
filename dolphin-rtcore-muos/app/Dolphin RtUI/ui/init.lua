@@ -150,6 +150,14 @@ function M.init()
         end
     end
 
+    local compat_screen = Nexus.get_screen("compat_list")
+    if compat_screen and compat_screen.register_actions then
+        local ok, registered, detail = pcall(compat_screen.register_actions, M)
+        if not ok or registered == false then
+            log("compatibility NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     local controller_profiles_screen = Nexus.get_screen("controller_profiles")
     if controller_profiles_screen and controller_profiles_screen.register_actions then
         local ok, registered, detail = pcall(controller_profiles_screen.register_actions, M)
