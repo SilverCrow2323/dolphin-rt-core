@@ -14,14 +14,12 @@ DOLPHIN_BIN="${DOLPHIN_BIN:-}"
 DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}"
 DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}"
 
-# A release must contain the complete GameCube/Wii assignment source tree.
-# Andromeda consumes these definitions through core.json -> generated assign.json.
-# Legacy Jacaranda installs the equivalent INI tree under share/info/assign.
+# Require complete GameCube/Wii assignment definitions in every release.
+# Andromeda consumes them through core.json -> generated assign.json;
+# Jacaranda installs the legacy INI tree under share/info/assign.
 validate_assignment_sources() {
   local switch_root="$ROOT/emu/dolphin/RtSys/switch_weapon"
-  local system mode dir expected_name default profile profile_count alias
-  local -a aliases
-
+  local system mode dir expected_name default profile profile_count alias required_aliases
   for mode in 1 2; do
     for system in gc wii; do
       dir="$switch_root/$system/mode $mode"
@@ -29,32 +27,28 @@ validate_assignment_sources() {
         echo "ERROR: missing assignment source: $dir/global.ini" >&2
         return 1
       }
-
-      default="$(sed -n 's/^default=//p' "$dir/global.ini" | head -n 1 | tr -d '\r')"
+      default="$(sed -n 's/^default=//p' "$dir/global.ini" | head -n 1)"
       [ -n "$default" ] && [ -s "$dir/$default.ini" ] || {
         echo "ERROR: missing default $system profile '$default' in mode $mode" >&2
         return 1
       }
-
       if [ "$system" = gc ]; then
         expected_name="Nintendo Gamecube"
-        aliases=(nintendogamecube nintendogc gamecube gamecubez ngc gc)
+        required_aliases="nintendogamecube nintendogc gamecube gamecubez ngc gc"
       else
         expected_name="Nintendo Wii"
-        aliases=(nintendowii nwii wii wiiz)
+        required_aliases="nintendowii nwii wii wiiz"
       fi
-
       grep -Fxq "name=$expected_name" "$dir/global.ini" || {
         echo "ERROR: unexpected platform name in $dir/global.ini" >&2
         return 1
       }
-      for alias in "${aliases[@]}"; do
+      for alias in $required_aliases; do
         grep -Fxq "$alias" "$dir/global.ini" || {
           echo "ERROR: missing $system folder alias '$alias' in mode $mode" >&2
           return 1
         }
       done
-
       profile_count=0
       for profile in "$dir"/*.ini; do
         [ -f "$profile" ] || continue
@@ -201,7 +195,6 @@ echo "built $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1), $(wc -l < <(unzip -Z1 "$ARC
     done
   done
 }
-
 validate_assignment_sources
 if [ -z "$DOLPHIN_LIB_DIR" ] && [ -n "$DOLPHIN_BIN" ] && [ -d "$(dirname "$DOLPHIN_BIN")/lib" ]; then
   DOLPHIN_LIB_DIR="$(dirname "$DOLPHIN_BIN")/lib"
