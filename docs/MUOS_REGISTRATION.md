@@ -24,7 +24,7 @@ inside `global.ini` remains `Nintendo Gamecube`, matching the existing muOS
 system identifier. On a legacy install, `manifest_tool.sh` then replaces the
 seeded files with the active mode (standard or all tiers).
 
-On manifest-based versions, the tool calls the installed muOS `script/system/assign.sh -p -v` and verifies `assign.json` contains the the canonical `nintendogamecube` and `nintendowii` aliases. This reflects the actual Content Explorer pipeline: definitions alone are not sufficient if the alias index is stale.
+On manifest-based versions, the tool calls the installed muOS `script/system/assign.sh -p -v` and verifies `assign.json` contains the canonical `nintendogamecube` and `nintendowii` aliases. This reflects the actual Content Explorer pipeline: definitions alone are not sufficient if the alias index is stale.
 
 ## Content Explorer visibility is separate from core registration
 
@@ -44,6 +44,12 @@ actually contains the ROMs). The GameCube manifest now includes the
 `gamecube` friendly alias as well as `gc`, `ngc` and Nintendo aliases.
 After changing a folder alias, run `RtSys/manifest_tool.sh ensure` and
 reopen Explore Content so muOS can rebuild its visible content list.
+
+Task Toolkit also includes **Dolphin Rt-Core → Diagnose ROM folders**. It
+writes a report under `MUOS/log` (or a temporary fallback) with SD1/SD2
+mounts, `ROMS` versus `roms` folder casing, GameCube/Wii image counts, legacy
+assignment INI status and input-device presence. It deliberately does not
+list game filenames or modify storage.
 
 ## Runtime integration
 
