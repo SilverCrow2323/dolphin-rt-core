@@ -3,8 +3,8 @@
 #   core/ = the shared emulator tree (dolphin-rtcore-muos/emu/dolphin: Config, GameSettings, Load, Sys, GC, Wii)
 #           + YOUR aarch64 dolphin binary.  RtSys/ is muOS tooling and is left out.
 #
-#   tools/make-port-release.sh k --binary /path/to/dolphin [--out DIR]
-#   tools/make-port-release.sh r --binary /path/to/dolphin [--out DIR]
+#   tools/make-port-release.sh k --binary /path/to/dolphin [--sys-dir /path/to/Sys] [--out DIR]
+#   tools/make-port-release.sh r --binary /path/to/dolphin [--sys-dir /path/to/Sys] [--out DIR]
 #
 # The binary is NOT stored in git. If you distribute the archive you must also offer the corresponding source of
 # your modified Dolphin (GPLv2+); see NOTICE.md.
@@ -12,9 +12,24 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 PORT="${1:-}"; shift || true
 case "$PORT" in k) NAME=dolphin-rtcore-k; TAG=K;; r) NAME=dolphin-rtcore-r; TAG=R;; *) echo "usage: $0 k|r --binary FILE [--out DIR]"; exit 2;; esac
-BIN=""; OUT="$REPO/dist"
-while [ $# -gt 0 ]; do case "$1" in --binary) BIN="$2"; shift 2;; --out) OUT="$2"; shift 2;; *) echo "unknown option $1"; exit 2;; esac; done
+BIN=""; SYS_DIR="${DOLPHIN_SYS_DIR:-}"; OUT="$REPO/dist"
+while [ $# -gt 0 ]; do case "$1" in --binary) BIN="$2"; shift 2;; --sys-dir) SYS_DIR="$2"; shift 2;; --out) OUT="$2"; shift 2;; *) echo "unknown option $1"; exit 2;; esac; done
 [ -f "$BIN" ] || { echo "--binary FILE is required"; exit 2; }
+if [ -n "$SYS_DIR" ]; then
+  [ -d "$SYS_DIR" ] || { echo "ERROR: --sys-dir is not a directory: $SYS_DIR" >&2; exit 1; }
+  SYS_SOURCE="$(cd "$SYS_DIR" && pwd -P)"
+else
+  SYS_SOURCE="$(cd "$REPO/dolphin-rtcore-muos/emu/dolphin/Sys" && pwd -P)"
+fi
+
+# A relocatable firmware build reads these assets from the Sys/ directory
+# next to core/dolphin. Reject incomplete payloads before producing archives.
+for font in font_western.bin font_japanese.bin; do
+  [ -s "$SYS_SOURCE/GC/$font" ] || { echo "ERROR: missing GameCube system font: $SYS_SOURCE/GC/$font" >&2; exit 1; }
+done
+for resource in dsp_rom.bin dsp_coef.bin; do
+  [ -s "$SYS_SOURCE/GC/$resource" ] || { echo "ERROR: missing GameCube DSP resource: $SYS_SOURCE/GC/$resource" >&2; exit 1; }
+done
 
 # ELF64, little-endian, machine = AArch64 (0xB7)
 hdr="$(head -c 20 "$BIN" | od -An -tx1 | tr -d ' \n')"
@@ -27,6 +42,11 @@ cp -a "$REPO/$NAME/." "$D/"
 rm -rf "$D/.git" "$D/logs" "$D/.installed" "$D/.theme_installed" "$D/legacy-muos" "$D/docs/screens"
 C="$D/core"; mkdir -p "$C/bios"
 for d in Config GameSettings Load Sys GC Wii; do cp -a "$REPO/dolphin-rtcore-muos/emu/dolphin/$d" "$C/"; done
+if [ "$SYS_SOURCE" != "$(cd "$REPO/dolphin-rtcore-muos/emu/dolphin/Sys" && pwd -P)" ]; then
+  rm -rf "$C/Sys"
+  mkdir -p "$C/Sys"
+  cp -a "$SYS_SOURCE/." "$C/Sys/"
+fi
 install -m755 "$BIN" "$C/dolphin"
 find "$D" -name '*.sh' -exec chmod 755 {} +
 # archive layout from the README: extracted into <userdata>/emulators, "dolphin-rtcore-<k|r>.sh" registers everything
@@ -44,3 +64,4 @@ BASE="Dolphin-RtCore-${TAG}_v${VER}"
 echo "built: $OUT/${BASE}_emulators.tar.gz  ($(du -h "$OUT/${BASE}_emulators.tar.gz" | cut -f1))"
 echo "built: $OUT/${BASE}.zip"
 echo "binary: $(strings -n 8 "$BIN" | grep -m1 -E '^Dolphin [0-9]') sha256=$(sha256sum "$BIN" | cut -c1-16)…"
+echo "Sys: $SYS_SOURCE"

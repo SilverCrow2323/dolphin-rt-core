@@ -7,7 +7,7 @@ This directory builds the upstream Dolphin revision pinned in [`DOLPHIN_REF`](DO
 | Target | Runtime/display path | Frontend | Intended use |
 |---|---|---|---|
 | `muos` | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | muOS Andromeda on H700, launched by Rt:Core / Rt:UI |
-| `muos-qt` | Qt GUI, EGLFS intended; X11/Wayland disabled | Qt GUI | Experimental muOS/H700 Qt frontend; runtime compatibility unverified |
+| `muos-qt` | Qt GUI, EGLFS intended; X11/Wayland disabled | NoGUI + Qt GUI | Experimental muOS Qt frontend with a matching NoGUI base; runtime compatibility unverified |
 | `knulli` | FBDev + SDL/EGL/GLES; Wayland/X11 disabled | NoGUI | Knulli H700 |
 | `rocknix` | Wayland + SDL/EGL/GLES | NoGUI | ROCKNIX H700; applies the platform patch series |
 | `desktop` | X11 + Wayland | Qt GUI and/or NoGUI | Generic ARM64 Linux desktop and diagnostics |
@@ -26,15 +26,15 @@ Run on a native AArch64 Debian/Ubuntu host, or use GitHub Actions:
 # muOS Andromeda / H700
 ./build-dolphin.sh --target muos --frontend nogui --out ./out/muos
 
-# Experimental Qt frontend for muOS (compile test; device/runtime validation required)
-./build-dolphin.sh --target muos-qt --frontend gui --out ./out/muos-qt
-
 # Knulli / H700
 ./build-dolphin.sh --target knulli --frontend nogui --out ./out/knulli
 
 # ROCKNIX / H700
 ./verify-patches.sh
 ./build-dolphin.sh --target rocknix --frontend nogui --out ./out/rocknix
+
+# Experimental Qt frontend for muOS (compile test; device/runtime validation required)
+./build-dolphin.sh --target muos-qt --frontend both --out ./out/muos-qt
 
 # ARM64 Linux desktop: both frontends
 ./build-dolphin.sh --target desktop --frontend both --out ./out/desktop
@@ -44,12 +44,38 @@ Options include `--ref SHA`, `--jobs N`, `--no-lto`, `--tune cortex-a53|none`, `
 
 ## CI artifacts
 
-The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt GUI, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. The `muos-qt` job proves compilation only. Its Qt EGLFS platform plugin, Qt libraries, EGL/GLES driver, input, display sizing, Dolphin rendering and shutdown behavior must all be validated on the actual muOS device. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
+The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt plus its matching NoGUI base, Knulli and ROCKNIX NoGUI variants, plus ARM64 desktop NoGUI and Qt GUI variants. Each successful job uploads its binary, `BUILDINFO.txt`, hashes and GPL corresponding-source archive. The `muos-qt` job stages an experimental Qt 6 EGLFS runtime bundle (Qt libraries plus the EGLFS QPA plugin). It is packaged as a separate, non-default test payload and never replaces the stable NoGUI executable. The Qt EGLFS platform plugin, Qt libraries, EGL/GLES driver, input, display sizing, Dolphin rendering and shutdown behavior must all be validated on the actual muOS device. The H616 muOS image may require a board-specific EGLFS integration; a successful build is not proof that the Qt frontend can initialize on this firmware. A CI build is not a hardware certification; each firmware/device combination still needs a real-device smoke test.
 
 ## Release engineering rules
 
 1. Keep the upstream commit pinned; do not silently float to upstream HEAD.
 2. Keep platform-specific patches isolated. ROCKNIX Wayland patches must not leak into muOS/Knulli fbdev builds.
-3. Preserve the muOS launcher contract: `/opt/muos/share/emulator/dolphin/dolphin -e ROM -u EMUDIR`.
-4. Never label a build hardware-tested until it has been launched on the actual device.
-5. Distribute the exact corresponding source archive with every binary, as required by the GPL.
+3. Preserve the muOS launcher contract: `/opt/muos/share/emulator/dolphin/dolphin --platform=fbdev --video_backend=OGL -e ROM -u EMUDIR`.
+4. Every handheld target (`muos`, `muos-qt`, `knulli`, `fbdev`, `rocknix`) is built with `LINUX_LOCAL_DEV=ON` and stages the matching upstream `Data/Sys` tree beside its executable. The muOS NoGUI and experimental Qt outputs also bundle the AArch64 `libhidapi-hidraw.so.0` runtime under `lib/`, which the muOS launcher loads privately without modifying firmware libraries. Keep the executable and `Sys/` from the same build output.
+   - muOS update package:
+     ```bash
+     DOLPHIN_BIN="$PWD/out/muos/dolphin" \
+     DOLPHIN_SYS_DIR="$PWD/out/muos/Sys" \
+       bash dolphin-rtcore-muos/tools/build-muxupd.sh ./dist
+     ```
+   - Separate experimental Qt 6 muOS package (installs `dolphin-qt6` beside, not over, the NoGUI binary):
+     ```bash
+     DOLPHIN_NO_GUI_BIN="$PWD/out/muos-qt/dolphin" \
+     DOLPHIN_QT_BIN="$PWD/out/muos-qt/dolphin-gui" \
+     DOLPHIN_QT_LIB_DIR="$PWD/out/muos-qt/qt6/lib" \
+     DOLPHIN_QT_PLUGIN_DIR="$PWD/out/muos-qt/qt6/plugins" \
+     DOLPHIN_LIB_DIR="$PWD/out/muos-qt/lib" \
+     DOLPHIN_SYS_DIR="$PWD/out/muos-qt/Sys" \
+       bash dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh ./dist
+     ```
+     The test launcher is installed as `launch-qt6-experimental.sh` and defaults to `QT_QPA_PLATFORM=eglfs`. Treat it as experimental until tested on the actual H616/muOS hardware.
+
+   - Knulli or ROCKNIX port archive:
+     ```bash
+     tools/make-port-release.sh k --binary "$PWD/out/knulli/dolphin" --sys-dir "$PWD/out/knulli/Sys"
+     tools/make-port-release.sh r --binary "$PWD/out/rocknix/dolphin" --sys-dir "$PWD/out/rocknix/Sys"
+     ```
+
+   The packagers validate GameCube fonts and DSP assets before creating the archive. Omitting the optional resource argument preserves the repository's bundled Sys tree; do not mix a binary from one build with a resource tree from another.
+5. Never label a build hardware-tested until it has been launched on the actual device.
+6. Distribute the exact corresponding source archive with every binary, as required by the GPL.

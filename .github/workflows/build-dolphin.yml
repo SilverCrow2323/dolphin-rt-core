@@ -2,14 +2,22 @@ name: Build Dolphin (aarch64)
 
 on:
   push:
-    branches: [dolphin_bin]
+    branches: [main]
     paths:
       - "dolphin-build/**"
+      - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
+      - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
+      - "docs/TROUBLESHOOTING.md"
       - ".github/workflows/build-dolphin.yml"
   pull_request:
-    branches: [dolphin_bin]
+    branches: [main]
     paths:
       - "dolphin-build/**"
+      - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
+      - "dolphin-rtcore-muos/tools/build-muxupd.sh"
+      - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
+      - "docs/TROUBLESHOOTING.md"
       - ".github/workflows/build-dolphin.yml"
   workflow_dispatch:
 
@@ -32,7 +40,7 @@ jobs:
           - target: muos
             frontend: nogui
           - target: muos-qt
-            frontend: gui
+            frontend: both
           - target: knulli
             frontend: nogui
           - target: rocknix
@@ -43,7 +51,7 @@ jobs:
             frontend: gui
 
     steps:
-      - name: Checkout dolphin_bin
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
@@ -97,16 +105,35 @@ jobs:
           FRONTEND: ${{ matrix.frontend }}
         run: |
           OUT="$RUNNER_TEMP/dolphin-$TARGET-$FRONTEND"
-          if [ "$FRONTEND" = gui ]; then
+          if [ "$FRONTEND" = gui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin-gui"
             file "$OUT/dolphin-gui"
             readelf -h "$OUT/dolphin-gui" | grep -E 'Class:|Machine:'
-          else
+          fi
+          if [ "$FRONTEND" = nogui ] || [ "$FRONTEND" = both ]; then
             test -x "$OUT/dolphin"
             file "$OUT/dolphin"
             readelf -h "$OUT/dolphin" | grep -E 'Class:|Machine:'
           fi
           test -s "$OUT/BUILDINFO.txt"
+          if [ "$TARGET" = muos ] || [ "$TARGET" = muos-qt ]; then
+            test -s "$OUT/lib/libhidapi-hidraw.so.0"
+            readelf -h "$OUT/lib/libhidapi-hidraw.so.0" | grep -q "Machine:.*AArch64"
+          fi
+          if [ "$TARGET" = muos-qt ]; then
+            test -x "$OUT/dolphin"
+            test -x "$OUT/dolphin-gui"
+            test -s "$OUT/qt6/lib/libQt6Core.so.6"
+            test -s "$OUT/qt6/plugins/platforms/libqeglfs.so"
+          fi
+          case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix)
+            test -s "$OUT/Sys/GC/font_western.bin"
+            test -s "$OUT/Sys/GC/font_japanese.bin"
+            test -s "$OUT/Sys/GC/dsp_rom.bin"
+            test -s "$OUT/Sys/GC/dsp_coef.bin"
+            test -s "$OUT/Sys/Resources/OSD_Font.ttf"
+            ;;
+          esac
           SOURCE_ARCHIVE="$(find "$OUT" -maxdepth 1 -type f -name 'source-*.tar.xz' -print -quit)"
           test -n "$SOURCE_ARCHIVE"
           sha256sum "$OUT"/dolphin* "$OUT/BUILDINFO.txt" "$SOURCE_ARCHIVE"
@@ -118,6 +145,9 @@ jobs:
           name: dolphin-${{ matrix.target }}-${{ matrix.frontend }}-aarch64-${{ github.sha }}
           path: |
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/dolphin*
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/Sys/**
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/lib/**
+            ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/qt6/**
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/BUILDINFO.txt
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/source-*.tar.xz
           if-no-files-found: error

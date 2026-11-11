@@ -108,3 +108,15 @@ backup `es_features.cfg.rtcore.bak`, validates the XML before writing, and `./un
 ./uninstall.sh             # removes both; this folder, ROMs and saves are untouched
 ```
 You must supply an aarch64 `core/dolphin` (see the root `tools/make-port-release.sh`).
+
+### Building a matching ROCKNIX binary and resource bundle
+
+The ROCKNIX package expects `core/Sys/` beside `core/dolphin`. Build the Wayland-enabled binary and its resource tree from the same pinned Dolphin revision:
+
+```bash
+./dolphin-build/verify-patches.sh
+./dolphin-build/build-dolphin.sh --target rocknix --frontend nogui --out ./out/rocknix
+./tools/make-port-release.sh r --binary ./out/rocknix/dolphin --sys-dir ./out/rocknix/Sys
+```
+
+The port builder validates both GameCube fonts and the DSP ROM/coefficient files before creating the release. Do not pair a binary with a `Sys/` tree from another build.

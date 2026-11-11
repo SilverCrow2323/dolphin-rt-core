@@ -68,6 +68,8 @@ done
 # ── Paths ───────────────────────────────────────────────────
 EMU="${RT_EMUDIR:-/opt/muos/share/emulator/dolphin}"
 DOLPHIN="$EMU/dolphin"
+# Load package-private dependencies (notably HIDAPI) without changing muOS libraries.
+export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 RTSYS="$EMU/RtSys"
 CONFIG="$EMU/Config"
 WORKSHOP="$GAME_DIR/workshop"
@@ -340,6 +342,8 @@ fi
 
 # ── 9. Run ──────────────────────────────────────────────────
 cd "$EMU" || fatal 1 "cd $EMU failed"
+# SETUP_SDL_ENVIRONMENT may alter the path; restore the private runtime path before exec.
+export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 [ -x "$DOLPHIN" ] || fatal 1 "dolphin binary not found or not executable: $DOLPHIN (supply your aarch64 build)"
 
 JS_DEV=$(ls /dev/input/js* 2>/dev/null | head -1)
@@ -351,9 +355,11 @@ if [ "$SAFE_EXIT" = "1" ] && [ "${RT_NO_EXIT_WATCHER:-0}" != "1" ]; then
     done
 fi
 
-"$DOLPHIN" -e "$ROM" -u "$EMU" >> "$DOLPHIN_LOG" 2>&1 &
+# muOS is a direct framebuffer target: force FBDev + OpenGL ES-capable OGL.
+# This avoids accidental X11/headless selection and ignores stale per-user backend values.
+"$DOLPHIN" --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMU" >> "$DOLPHIN_LOG" 2>&1 &
 DOLPHIN_PID=$!
-log "dolphin pid=$DOLPHIN_PID  ( ./dolphin -e <rom> -u $EMU )"
+log "dolphin pid=$DOLPHIN_PID  ( --platform=fbdev --video_backend=OGL -e <rom> -u $EMU )"
 
 # gptokeyb2 attaches to the "dolphin" process
 if [ "${HOTKEYS:-}" != "Disabled" ]; then

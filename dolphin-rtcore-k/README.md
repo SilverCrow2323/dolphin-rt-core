@@ -34,6 +34,17 @@ The default repo/branch/folder live in `config/repo.conf`.
 git clone https://github.com/SilverCrow2323/dolphin-rt-core && cd dolphin-rt-core/dolphin-rtcore-k && ./install.sh
 ```
 
+### Building a matching Knulli binary and resource bundle
+
+The Knulli package expects `core/Sys/` beside `core/dolphin`. Build both from the same pinned Dolphin revision, then pass the resource directory to the port packager:
+
+```bash
+./dolphin-build/build-dolphin.sh --target knulli --frontend nogui --out ./out/knulli
+./tools/make-port-release.sh k --binary ./out/knulli/dolphin --sys-dir ./out/knulli/Sys
+```
+
+The port builder checks both GameCube fonts and the DSP ROM/coefficient files before creating the release archive. Do not pair a binary with a `Sys/` tree from another build.
+
 ### After installing
 1. Put your ROMs in `roms/wii` and `roms/gamecube`.
 2. EmulationStation: *Game Settings -> Update Game Lists*.

@@ -50,6 +50,9 @@ SET_VAR "system" "foreground_process" "dolphin"      # muOS quit hotkeys / proc_
 # ── Launch ─────────────────────────────────────────────────
 echo "$(date '+%F %T') | $PROFILE | $ORIENT | $(basename "$ROM")" >> "$LOG"
 
+# Prefer package-private runtime dependencies without changing muOS system libraries.
+export LD_LIBRARY_PATH="$EMUDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
 cd "$EMUDIR" || exit 1
 
 # Optional extra exit watcher (the native muOS quit hotkey keeps working without it)
@@ -67,7 +70,8 @@ cleanup() {
 }
 trap cleanup TERM INT
 
-./dolphin -e "$ROM" -u "$EMUDIR" >> "$RTSYS/logs/dolphin_debug.log" 2>&1
+# muOS runs Dolphin directly on the framebuffer with the Mali OpenGL ES driver.
+./dolphin --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMUDIR" >> "$RTSYS/logs/dolphin_debug.log" 2>&1
 EXIT_CODE=$?
 
 [ -n "$WATCHER_PID" ] && kill -TERM "$WATCHER_PID" 2>/dev/null
