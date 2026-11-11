@@ -69,3 +69,21 @@ if find "$FAIL_OUT" -maxdepth 1 -type f -name '*.muxupd' -print -quit 2>/dev/nul
   exit 1
 fi
 echo "[OK] missing GameCube font is rejected before archive creation"
+
+# Missing DSP data is also fatal before an update archive is written.
+DSP_SYS="$TMP/Sys-missing-dsp"
+mkdir -p "$DSP_SYS/GC"
+cp "$SYS/GC/font_western.bin" "$DSP_SYS/GC/"
+cp "$SYS/GC/font_japanese.bin" "$DSP_SYS/GC/"
+cp "$SYS/GC/dsp_rom.bin" "$DSP_SYS/GC/"
+if DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$DSP_SYS" \
+  bash "$PACKAGER" "$TMP/fail-dsp-dist" >"$TMP/missing-dsp.log" 2>&1; then
+  echo "[FAIL] packager accepted a Sys tree without dsp_coef.bin" >&2
+  exit 1
+fi
+grep -Fq "missing GameCube DSP resource" "$TMP/missing-dsp.log"
+if find "$TMP/fail-dsp-dist" -maxdepth 1 -type f -name '*.muxupd' -print -quit 2>/dev/null | grep -q .; then
+  echo "[FAIL] DSP validation failure left a .muxupd archive" >&2
+  exit 1
+fi
+echo "[OK] missing GameCube DSP data is rejected before archive creation"
