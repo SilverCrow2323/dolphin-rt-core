@@ -34,6 +34,8 @@ require "$PKG" 'font_japanese.bin'
 require "$PKG" 'dsp_rom.bin'
 require "$PKG" 'dsp_coef.bin'
 require "$PKG" 'DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}"'
+require "$ROOT/dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh" 'dolphin-qt6'
+require "$ROOT/dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh" 'QT_QPA_PLATFORM'
 require "$PKG" 'DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}"'
 require "$PKG" "libhidapi-hidraw.so.0"
 require "$EXT_LAUNCH" 'LD_LIBRARY_PATH="$EMUDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"'
