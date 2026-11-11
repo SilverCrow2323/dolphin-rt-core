@@ -8,7 +8,8 @@
 #   ./build-dolphin.sh --target desktop --frontend both  # ARM64 Linux Qt GUI + NoGUI
 #   options: --frontend nogui|gui|both --ref SHA --out DIR --jobs N --no-lto --tune cortex-a53|none --deps --no-deps
 #
-# Output (in --out, default ./out): dolphin, BUILDINFO.txt, source-<ref>.tar.xz  (the GPL "corresponding source")
+# Output (in --out, default ./out): dolphin, BUILDINFO.txt, source-<ref>.tar.xz;
+# muOS targets also include a relocatable Sys/ directory next to the binary.
 #
 # STATUS: patch validation is provided by verify-patches.sh. The native ARM64 CI build is the authoritative
 # build/test path; output discovery expects upstream's Binaries/dolphin-emu-nogui executable.
@@ -23,6 +24,11 @@ case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) ;; *) echo "usage: 
 case "$FRONTEND" in nogui|gui|both) ;; *) echo "usage: $0 --target TARGET --frontend nogui|gui|both"; exit 2;; esac
 if [ "$TARGET" = muos-qt ] && [ "$FRONTEND" != gui ]; then echo "muos-qt is a GUI-only experimental target"; exit 2; fi
 if [ "$TARGET" != desktop ] && [ "$TARGET" != muos-qt ] && [ "$FRONTEND" != nogui ]; then echo "Qt GUI builds are supported only by desktop and experimental muos-qt"; exit 2; fi
+# muOS ships Sys/ beside the executable under /opt/muos/share/emulator/dolphin.
+# Build those binaries in relocatable mode so Dolphin resolves ./Sys, not
+# the host's /usr/local/share/dolphin-emu/sys (which is absent on the handheld).
+LOCAL_SYS=OFF
+case "$TARGET" in muos|muos-qt) LOCAL_SYS=ON;; esac
 [ "$(uname -m)" = aarch64 ] || echo "WARNING: this is $(uname -m), the result will not run on the handheld"
 
 if [ "$DEPS" = yes ] || { [ "$DEPS" = auto ] && [ "$(id -u)" = 0 ] && command -v apt-get >/dev/null; }; then
@@ -52,7 +58,7 @@ FLAGS=(-DCMAKE_BUILD_TYPE=Release -DENABLE_NOGUI=ON "-DENABLE_QT=$ENABLE_QT" -DE
   -DENABLE_ANALYTICS=OFF -DENABLE_AUTOUPDATE=OFF -DENABLE_CLI_TOOL=OFF -DENCODE_FRAMEDUMPS=OFF -DUSE_DISCORD_PRESENCE=OFF
   -DUSE_MGBA=OFF -DUSE_RETRO_ACHIEVEMENTS=OFF -DENABLE_LLVM=OFF -DENABLE_VULKAN=OFF "-DENABLE_LTO=$LTO"
   -DENABLE_EVDEV=ON -DENABLE_SDL=ON -DENABLE_ALSA=ON -DENABLE_PULSEAUDIO=ON -DENABLE_EGL=ON "-DENABLE_X11=$ENABLE_X11"
-  -DLINUX_LOCAL_DEV=OFF -DBUILD_SHARED_LIBS=OFF -DMBEDTLS_FATAL_WARNINGS=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DDISTRIBUTOR=Rt:Core)
+  "-DLINUX_LOCAL_DEV=$LOCAL_SYS" -DBUILD_SHARED_LIBS=OFF -DMBEDTLS_FATAL_WARNINGS=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DDISTRIBUTOR=Rt:Core)
 FLAGS+=("-DENABLE_WAYLAND=$ENABLE_WAYLAND")
 if [ "$TUNE" != none ]; then   # tune only (no new instructions), so the binary still runs on every aarch64 core
   FLAGS+=("-DCMAKE_C_FLAGS=-mtune=$TUNE" "-DCMAKE_CXX_FLAGS=-mtune=$TUNE"); fi
@@ -70,10 +76,21 @@ if [ "$FRONTEND" = gui ] || [ "$FRONTEND" = both ]; then
   cp "$BIN" "$OUT/dolphin-gui"; strip --strip-unneeded "$OUT/dolphin-gui" 2>/dev/null || true; chmod 755 "$OUT/dolphin-gui"
 fi
 
+# A relocatable muOS binary resolves its system resources from <exe-dir>/Sys.
+# Ship the exact Sys data from the same upstream revision used for this build.
+if [ "$LOCAL_SYS" = ON ]; then
+  [ -d "$SRC/Data/Sys" ] || { echo "missing upstream resource directory: $SRC/Data/Sys"; exit 1; }
+  mkdir -p "$OUT/Sys"
+  cp -a "$SRC/Data/Sys/." "$OUT/Sys/"
+  for asset in GC/font_western.bin GC/font_japanese.bin GC/dsp_rom.bin GC/dsp_coef.bin Resources/OSD_Font.ttf; do
+    [ -s "$OUT/Sys/$asset" ] || { echo "missing required Sys resource: $OUT/Sys/$asset"; exit 1; }
+  done
+fi
+
 {
   echo "Dolphin Rt:Core build"; echo "date:      $(date -u '+%F %T') UTC"; echo "target:    $TARGET"; echo "frontend:  $FRONTEND"
   echo "upstream:  $(git -C "$SRC" log -1 --format='%H %ad' --date=short)"
-  echo "compiler:  $(c++ --version | head -n 1)"; echo "tune/lto:  $TUNE / $LTO"; echo "host:      $(uname -srm)"
+  echo "compiler:  $(c++ --version | head -n 1)"; echo "tune/lto:  $TUNE / $LTO"; echo "host:      $(uname -srm)"; echo "relocatable Sys: $LOCAL_SYS"
   echo; echo "patches (sha256):"; for p in "${PATCHES[@]}"; do echo "  $(sha256sum "$p" | cut -c1-16)  $(basename "$p")"; done
   echo; echo "cmake flags:"; printf '  %s\n' "${FLAGS[@]}"
   for b in "$OUT/dolphin" "$OUT/dolphin-gui"; do [ -x "$b" ] || continue; echo; echo "binary: $(basename "$b") $(du -h "$b" | cut -f1) sha256 $(sha256sum "$b" | cut -d' ' -f1)"; echo "needed libraries:"; readelf -d "$b" | sed -n 's/.*(NEEDED).*\[\(.*\)\]/  \1/p'; echo "needs glibc >= $(strings -n 6 "$b" | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -n 1)"; done
@@ -84,4 +101,4 @@ fi
 
 # GPL: the exact source this binary was built from (sources + our patches + this script), not the build tree
 tar --exclude=.git --exclude=build -C "$W" -cJf "$OUT/source-${REF:0:12}.tar.xz" dolphin -C "$HERE/.." dolphin-build
-cat "$OUT/BUILDINFO.txt"; echo; echo "done: $OUT/dolphin*  $OUT/BUILDINFO.txt  $OUT/source-${REF:0:12}.tar.xz"
+cat "$OUT/BUILDINFO.txt"; echo; echo "done: $OUT/dolphin*  $OUT/Sys  $OUT/BUILDINFO.txt  $OUT/source-${REF:0:12}.tar.xz"
