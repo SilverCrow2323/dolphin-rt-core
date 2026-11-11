@@ -17,6 +17,25 @@
 
 On manifest-based versions, the tool calls the installed muOS `script/system/assign.sh -p -v` and verifies `assign.json` contains the the canonical `nintendogamecube` and `nintendowii` aliases. This reflects the actual Content Explorer pipeline: definitions alone are not sufficient if the alias index is stale.
 
+## Content Explorer visibility is separate from core registration
+
+The Nintendo manifest controls which system/core choices muOS can assign. It
+does **not** mount arbitrary directories or add Rt:UI's private ROM paths to
+muOS Explore Content.
+
+Rt:UI's library scans the paths stored in its own `data/settings.json`.
+muOS Explore Content scans the mounted storage library under a directory
+named `ROMS`. Consequently, a game can appear in Rt:UI while its parent
+folder remains absent from native muOS Explore Content when that path is
+outside the mounted `ROMS` tree.
+
+For example, place the GameCube library beneath
+`/mnt/mmc/ROMS/GameCube` or `/mnt/sdcard/ROMS/GameCube` (use the mount that
+actually contains the ROMs). The GameCube manifest now includes the
+`gamecube` friendly alias as well as `gc`, `ngc` and Nintendo aliases.
+After changing a folder alias, run `RtSys/manifest_tool.sh ensure` and
+reopen Explore Content so muOS can rebuild its visible content list.
+
 ## Runtime integration
 
 - `opt/update.sh` registers the core entries after package installation.
