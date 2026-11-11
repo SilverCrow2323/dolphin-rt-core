@@ -77,6 +77,10 @@ local UI = {
         actions[id] = { run = run, metadata = metadata }
         return true
     end,
+    go = function(screen, params)
+        opened[#opened + 1] = { screen = screen, params = params }
+        return true
+    end,
 }
 local registered, register_err = Screen.register_actions(UI)
 assert(registered, register_err)
