@@ -1,71 +1,85 @@
 #!/bin/bash
-# ============================================================
-#  Overlay Exit Watcher — START+SELECT only
-#  SPDW Factory Lab / sirpips aka SilverCrow2323
-# ============================================================
+# Configurable Safe Exit watcher. Reads raw joydev button indices from RTUI.
+# Default: MENU / M (button 8). Multi-button combinations are supported.
+set -u
 JS_DEV="${1:-/dev/input/js0}"
+DOLPHIN_PID="${2:-}"
 RTSYS="/opt/muos/share/emulator/dolphin/RtSys"
 LOG="$RTSYS/logs/watcher.log"
-
+CONFIG="${RT_SAFE_EXIT_CONFIG:-/run/muos/storage/application/Dolphin RtUI/data/safe_exit.conf}"
 mkdir -p "$(dirname "$LOG")"
 log() { echo "[$(date '+%H:%M:%S')] $*" >> "$LOG"; }
 
-log "Watcher started on $JS_DEV"
-
+COMBO=()
+if [ -r "$CONFIG" ]; then
+    IFS=',' read -r -a CANDIDATE < "$CONFIG"
+    for token in "${CANDIDATE[@]}"; do
+        token="${token//[[:space:]]/}"
+        case "$token" in ''|*[!0-9]*) continue ;; esac
+        [ "$token" -le 255 ] || continue
+        duplicate=0
+        for existing in "${COMBO[@]}"; do [ "$existing" = "$token" ] && duplicate=1; done
+        [ "$duplicate" -eq 1 ] || COMBO+=("$token")
+    done
+fi
+[ "${#COMBO[@]}" -gt 0 ] || COMBO=(8)
+log "Safe Exit watcher on $JS_DEV; combo=$(IFS=,; echo "${COMBO[*]}"); config=$CONFIG"
 [ -e "$JS_DEV" ] || { log "ERROR: $JS_DEV not found"; exit 1; }
-
-# Button numbers (muOS Schema B / RG35XX H)
-START_BTN=7
-SELECT_BTN=6
-
-start_down=0
-select_down=0
-
 exec 3< "$JS_DEV"
-
+declare -a DOWN=()
 seen=0
 while true; do
-    # Stop when Dolphin is gone (only once it has been seen: we start before it does)
-    if pgrep -x dolphin >/dev/null 2>&1; then seen=1; elif [ "$seen" = "1" ]; then log "Dolphin exited"; break; fi
+    if [ -n "$DOLPHIN_PID" ]; then
+        kill -0 "$DOLPHIN_PID" 2>/dev/null && seen=1
+        if [ "$seen" = 1 ] && ! kill -0 "$DOLPHIN_PID" 2>/dev/null; then
+            log "Dolphin PID exited"; break
+        fi
+    else
+        if pgrep -x dolphin >/dev/null 2>&1; then seen=1
+        elif [ "$seen" = 1 ]; then log "Dolphin exited"; break; fi
+    fi
 
-    # Read one 8-byte js_event; the timeout keeps the loop (and the TERM signal) responsive
     EVENT=$(timeout 2 dd bs=8 count=1 <&3 2>/dev/null | od -An -tu1 2>/dev/null)
     [ -z "$EVENT" ] && continue
-
+    # shellcheck disable=SC2086
     set -- $EVENT
-    VALUE=$5      # 1 = pressed, 0 = released
+    [ "$#" -ge 8 ] || continue
+    VALUE=$5
     TYPE=$7
     NUMBER=$8
-
-    # Mask init flag (0x80)
     TYPE=$((TYPE & 0x7F))
+    [ "$TYPE" = "1" ] || continue
+    case "$VALUE" in 0|1) ;; *) continue ;; esac
+    DOWN[$NUMBER]=$VALUE
 
-    # Only button events
-    [ "$TYPE" != "1" ] && continue
-
-    [ "$NUMBER" = "$START_BTN" ]  && start_down=$VALUE
-    [ "$NUMBER" = "$SELECT_BTN" ] && select_down=$VALUE
-
-    # Combo detected → exit
-    if [ "$start_down" = "1" ] && [ "$select_down" = "1" ]; then
-        log "START+SELECT detected — terminating Dolphin"
-
-        # Show a quick overlay if muOS provides one
+    matched=1
+    for button in "${COMBO[@]}"; do
+        [ "${DOWN[$button]:-0}" = "1" ] || { matched=0; break; }
+    done
+    if [ "$matched" = 1 ]; then
+        log "Safe Exit combo detected; terminating Dolphin"
         if [ -x /opt/muos/script/mux/overlay.sh ]; then
             /opt/muos/script/mux/overlay.sh "Exiting..." >> "$LOG" 2>&1 &
         fi
-
-        sleep 1
-
-        killall -TERM dolphin 2>/dev/null
-        sleep 0.5
-        killall -KILL dolphin 2>/dev/null
-
-        log "Dolphin terminated"
+        if [ -n "$DOLPHIN_PID" ]; then
+            kill -TERM "$DOLPHIN_PID" 2>/dev/null || true
+            for _ in 1 2 3 4 5 6; do
+                kill -0 "$DOLPHIN_PID" 2>/dev/null || break
+                sleep 0.25
+            done
+            kill -KILL "$DOLPHIN_PID" 2>/dev/null || true
+        else
+            killall -TERM dolphin 2>/dev/null || true
+            for _ in 1 2 3 4 5 6; do
+                pgrep -x dolphin >/dev/null 2>&1 || break
+                sleep 0.25
+            done
+            killall -KILL dolphin 2>/dev/null || true
+        fi
+        log "Dolphin termination requested"
         break
     fi
 done
-
 exec 3<&-
-log "Watcher stopped"
+log "Safe Exit watcher stopped"
 exit 0
