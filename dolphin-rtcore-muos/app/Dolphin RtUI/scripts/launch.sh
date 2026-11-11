@@ -71,6 +71,7 @@ DOLPHIN="$EMU/dolphin"
 # Load package-private dependencies (notably HIDAPI) without changing muOS libraries.
 export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 RTSYS="$EMU/RtSys"
+export RT_SAFE_EXIT_CONFIG="$GAME_DIR/data/safe_exit.conf"
 CONFIG="$EMU/Config"
 WORKSHOP="$GAME_DIR/workshop"
 RT_PROFILES="$WORKSHOP/rtcoreprofile"
@@ -361,25 +362,31 @@ fi
 DOLPHIN_PID=$!
 log "dolphin pid=$DOLPHIN_PID  ( --platform=fbdev --video_backend=OGL -e <rom> -u $EMU )"
 
-# gptokeyb2 attaches to the "dolphin" process
+# gptokeyb2 injects keyboard events only for keyboard hotkey profiles.
+# SDL/pad profiles must not create virtual keystrokes or steal SELECT/START.
 if [ "${HOTKEYS:-}" != "Disabled" ]; then
-    GPTK_BIN=""
-    for b in "$GAME_DIR/lib/gptokeyb2" "$GAME_DIR/../lib/gptokeyb2" "/lib/gptokeyb2"; do
-        [ -x "$b" ] && { GPTK_BIN="$b"; break; }
-    done
-    [ "$(uname -m 2>/dev/null)" = "armv7l" ] && [ -x "${GPTK_BIN}.armhf" ] && GPTK_BIN="${GPTK_BIN}.armhf"
-    GPTK_CFG=""
-    for c in "$WORKSHOP/hotkeys/${HOTKEYS:-Default}/ext-dolphin.gptk" "$WORKSHOP/hotkeys/Default/ext-dolphin.gptk" "$BASE_DIR/ext-dolphin.gptk"; do
-        [ -f "$c" ] && { GPTK_CFG="$c"; break; }
-    done
-    if [ -n "$GPTK_BIN" ] && [ -n "$GPTK_CFG" ]; then
-        pkill -f "$GPTK_BIN -c" 2>/dev/null || true      # stale copy of OUR binary only
-        sleep 0.3
-        "$GPTK_BIN" -c "$GPTK_CFG" -1 dolphin > "$LOG_DIR/gptokeyb2_$TS.log" 2>&1 &
-        GPTK_PID=$!
-        log "gptokeyb2 pid=$GPTK_PID cfg=$GPTK_CFG"
+    HOTKEY_DEVICE="$(awk -F= 'tolower($1) ~ /^[[:space:]]*device[[:space:]]*$/ { gsub(/[[:space:]]/, "", $2); print $2; exit }' "$CONFIG/Hotkeys.ini" 2>/dev/null)"
+    if [ "$HOTKEY_DEVICE" = "Keyboard" ]; then
+        GPTK_BIN=""
+        for b in "$GAME_DIR/lib/gptokeyb2" "$GAME_DIR/../lib/gptokeyb2" "/lib/gptokeyb2"; do
+            [ -x "$b" ] && { GPTK_BIN="$b"; break; }
+        done
+        [ "$(uname -m 2>/dev/null)" = "armv7l" ] && [ -x "${GPTK_BIN}.armhf" ] && GPTK_BIN="${GPTK_BIN}.armhf"
+        GPTK_CFG=""
+        for cfg in "$WORKSHOP/hotkeys/${HOTKEYS:-Default}/ext-dolphin.gptk" "$WORKSHOP/hotkeys/Default/ext-dolphin.gptk" "$BASE_DIR/ext-dolphin.gptk"; do
+            [ -f "$cfg" ] && { GPTK_CFG="$cfg"; break; }
+        done
+        if [ -n "$GPTK_BIN" ] && [ -n "$GPTK_CFG" ]; then
+            pkill -f "$GPTK_BIN -c" 2>/dev/null || true
+            sleep 0.3
+            "$GPTK_BIN" -c "$GPTK_CFG" -1 dolphin > "$LOG_DIR/gptokeyb2_$TS.log" 2>&1 &
+            GPTK_PID=$!
+            log "gptokeyb2 pid=$GPTK_PID cfg=$GPTK_CFG device=$HOTKEY_DEVICE"
+        else
+            log "WARN: keyboard hotkeys requested but gptokeyb2 unavailable (bin='$GPTK_BIN' cfg='$GPTK_CFG')"
+        fi
     else
-        log "WARN: gptokeyb2 not started (bin='$GPTK_BIN' cfg='$GPTK_CFG')"
+        log "gptokeyb2 not started; Hotkeys.ini Device='${HOTKEY_DEVICE:-missing}'"
     fi
 fi
 
