@@ -58,6 +58,17 @@ The native ARM64 workflow builds muOS NoGUI, experimental muOS Qt GUI, Knulli an
      DOLPHIN_SYS_DIR="$PWD/out/muos/Sys" \
        bash dolphin-rtcore-muos/tools/build-muxupd.sh ./dist
      ```
+   - Separate experimental Qt 6 muOS package (installs `dolphin-qt6` beside, not over, the NoGUI binary):
+     ```bash
+     DOLPHIN_QT_BIN="$PWD/out/muos-qt/dolphin-gui" \
+     DOLPHIN_QT_LIB_DIR="$PWD/out/muos-qt/qt6/lib" \
+     DOLPHIN_QT_PLUGIN_DIR="$PWD/out/muos-qt/qt6/plugins" \
+     DOLPHIN_LIB_DIR="$PWD/out/muos-qt/lib" \
+     DOLPHIN_SYS_DIR="$PWD/out/muos-qt/Sys" \
+       bash dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh ./dist
+     ```
+     The test launcher is installed as `launch-qt6-experimental.sh` and defaults to `QT_QPA_PLATFORM=eglfs`. Treat it as experimental until tested on the actual H616/muOS hardware.
+
    - Knulli or ROCKNIX port archive:
      ```bash
      tools/make-port-release.sh k --binary "$PWD/out/knulli/dolphin" --sys-dir "$PWD/out/knulli/Sys"
