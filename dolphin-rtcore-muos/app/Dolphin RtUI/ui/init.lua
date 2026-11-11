@@ -142,6 +142,14 @@ function M.init()
         end
     end
 
+    local game_screen = Nexus.get_screen("game")
+    if game_screen and game_screen.register_actions then
+        local ok, registered, detail = pcall(game_screen.register_actions, M)
+        if not ok or registered == false then
+            log("game NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     local cheats_screen = Nexus.get_screen("cheats")
     if cheats_screen and cheats_screen.register_actions then
         local ok, registered, detail = pcall(cheats_screen.register_actions, M)
