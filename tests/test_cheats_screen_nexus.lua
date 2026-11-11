@@ -164,7 +164,7 @@ assert(bad_index == false and tostring(bad_index_err):match("index out of range"
 assert(actions["cheats.switch_tab"].run("boost"))
 assert(actions["cheats.bulk_toggle"].run())
 state = actions["cheats.state"].run()
-assert(state.boost_enabled == 1 and state.fps_enabled == 1 and state.cheat_enabled == 1)
+assert(state.boost_enabled == 0 and state.fps_enabled == 1 and state.cheat_enabled == 1, "bulk toggle must affect only the active Boost tab")
 bulk_failure = true
 local bulk_failed, bulk_err = actions["cheats.bulk_toggle"].run()
 assert(bulk_failed == false and tostring(bulk_err):match("update cheat settings"))
