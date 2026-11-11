@@ -135,6 +135,8 @@ jobs:
         run: bash tests/test_dolphin_runtime_contract.sh
       - name: Test Dolphin Sys packaging and manifest
         run: bash tests/test_dolphin_sys_packaging.sh
+      - name: Test isolated experimental Qt 6 update package
+        run: bash tests/test_dolphin_qt6_packaging.sh
       - name: Test Knulli and ROCKNIX packaging with a matching Sys tree
         run: bash tests/test_port_sys_packaging.sh
       - name: Test repository and website tooling
