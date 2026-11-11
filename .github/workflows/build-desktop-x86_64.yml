@@ -46,7 +46,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build git patch pkg-config python3 \
+            build-essential gcc-12 g++-12 cmake ninja-build git patch pkg-config python3 \
             ca-certificates xz-utils binutils file \
             libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
             libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
@@ -64,7 +64,7 @@ jobs:
         run: |
           OUT="$RUNNER_TEMP/dolphin-desktop-x86_64"
           mkdir -p "$OUT"
-          bash dolphin-build/build-dolphin.sh \
+          CC=gcc-12 CXX=g++-12 bash dolphin-build/build-dolphin.sh \
             --target desktop \
             --frontend both \
             --tune none \

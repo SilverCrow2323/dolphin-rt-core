@@ -147,7 +147,7 @@ Never mix an executable and **Sys/** tree from different Dolphin revisions.
 
 ## 06 — Linux desktop / MX XFCE
 
-The dedicated x86_64 artifact includes dolphin-gui, dolphin (NoGUI), the matching Sys resource tree, launch helpers, build information and the corresponding GPL source archive. It is built against the Ubuntu 22.04 / glibc 2.35 baseline and expects Qt 6 plus the runtime libraries listed in README-MX-XFCE.md.
+The dedicated x86_64 artifact includes dolphin-gui, dolphin (NoGUI), the matching Sys resource tree, launch helpers, build information and the corresponding GPL source archive. It is built against the Ubuntu 22.04 / glibc 2.35 baseline with GCC 12 and expects Qt 6 plus the runtime libraries listed in README-MX-XFCE.md.
 
 Extract the Dolphin-RtCore-Desktop-x86_64-*.tar.gz bundle, install the listed MX packages, and run ./run-gui.sh. To add the launcher to the XFCE application menu, run ./install-desktop-entry.sh. The bundle is x86_64-only and must not be copied to the H700 handheld.
 

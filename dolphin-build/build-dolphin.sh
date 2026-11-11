@@ -50,7 +50,22 @@ if [ "$DEPS" = yes ] || { [ "$DEPS" = auto ] && [ "$(id -u)" = 0 ] && command -v
     libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev liblzma-dev \
     libpng-dev zlib1g-dev libbz2-dev libegl-dev libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev libxi-dev \
     libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev
+  if [ "$TARGET" = desktop ]; then apt-get install -y -qq --no-install-recommends gcc-12 g++-12; fi
   if [ "$TARGET" = desktop ] || [ "$TARGET" = muos-qt ]; then apt-get install -y -qq --no-install-recommends qt6-base-dev qt6-base-private-dev libqt6svg6-dev qt6-qpa-plugins; fi
+fi
+
+# Dolphin requires GCC 12+. Prefer the distro GCC 12 toolchain on desktop
+# hosts where the default compiler is older, while allowing explicit overrides.
+if [ "$TARGET" = desktop ]; then
+  if [ -z "${CC:-}" ] && command -v gcc-12 >/dev/null 2>&1; then export CC=gcc-12; fi
+  if [ -z "${CXX:-}" ] && command -v g++-12 >/dev/null 2>&1; then export CXX=g++-12; fi
+  DESKTOP_CXX="${CXX:-c++}"
+  DESKTOP_CXX_VERSION="$("$DESKTOP_CXX" -dumpversion 2>/dev/null || echo 0)"
+  DESKTOP_CXX_MAJOR="${DESKTOP_CXX_VERSION%%.*}"
+  [ "${DESKTOP_CXX_MAJOR:-0}" -ge 12 ] || {
+    echo "desktop builds require GCC 12+; found $DESKTOP_CXX ($DESKTOP_CXX_VERSION). Install gcc-12/g++-12 or set CC/CXX." >&2
+    exit 2
+  }
 fi
 
 W="$OUT/work"; SRC="$W/dolphin"; rm -rf "$W"; mkdir -p "$SRC" "$OUT"; cd "$SRC"
@@ -139,7 +154,7 @@ fi
 {
   echo "Dolphin Rt:Core build"; echo "date:      $(date -u '+%F %T') UTC"; echo "target:    $TARGET"; echo "frontend:  $FRONTEND"
   echo "upstream:  $(git -C "$SRC" log -1 --format='%H %ad' --date=short)"
-  echo "compiler:  $(c++ --version | head -n 1)"; echo "tune/lto:  $TUNE / $LTO"; echo "host:      $(uname -srm)"; echo "relocatable Sys: $LOCAL_SYS"
+  echo "compiler:  $("${CXX:-c++}" --version | head -n 1)"; echo "tune/lto:  $TUNE / $LTO"; echo "host:      $(uname -srm)"; echo "relocatable Sys: $LOCAL_SYS"
   echo; echo "patches (sha256):"; for p in "${PATCHES[@]}"; do echo "  $(sha256sum "$p" | cut -c1-16)  $(basename "$p")"; done
   echo; echo "cmake flags:"; printf '  %s\n' "${FLAGS[@]}"
   for b in "$OUT/dolphin" "$OUT/dolphin-gui"; do [ -x "$b" ] || continue; echo; echo "binary: $(basename "$b") $(du -h "$b" | cut -f1) sha256 $(sha256sum "$b" | cut -d' ' -f1)"; echo "needed libraries:"; readelf -d "$b" | sed -n 's/.*(NEEDED).*\[\(.*\)\]/  \1/p'; echo "needs glibc >= $(strings -n 6 "$b" | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -n 1)"; done
