@@ -320,7 +320,8 @@ function U.launch(g)
     if opts.gamesettings and opts.gamesettings ~= "" then
         pcall(function()
             local GM = require("core.gameset_manager")
-            GM.set_active(g.id, opts.gamesettings)
+            if opts.gamesettings == "Disabled" then GM.clear_active(g.id)
+            else GM.set_active(g.id, opts.gamesettings) end
         end)
     end
     -- write enabled Boost/cheat codes into Dolphin only when there are any
