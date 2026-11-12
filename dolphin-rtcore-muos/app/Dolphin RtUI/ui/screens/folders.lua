@@ -268,7 +268,7 @@ local function draw_folder_waker_preview()
     K.text("small", "DIAGNOSTIC", K.MARGIN + 18, 307, K.C.dim)
     K.text("small", K.clip("small", status, K.W - K.MARGIN * 2 - 36), K.MARGIN + 18, 329,
         item.status == "skip-match" and K.C.warn or K.C.dim)
-    K.text("small", "Only the folder name changes. ROM files are not modified. Alias registration follows the rename; failure rolls the rename back.",
+    K.text("small", "No symlink: muOS skips symbolic-link folders. Only the directory name changes.",
         K.MARGIN + 18, 355, K.C.dim, 1, K.W - K.MARGIN * 2 - 36)
     K.text("small", item.has_roms and "DISC CHECK: supported ROM image found" or "DISC CHECK: no supported ROM image — rename disabled",
         K.MARGIN + 18, 382, item.has_roms and K.C.ok or K.C.warn, 1, K.W - K.MARGIN * 2 - 36)
