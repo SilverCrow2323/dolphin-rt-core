@@ -28,9 +28,15 @@ local function proceed()
     if S.going then return end
     S.going = true
     local target = "library"
-    if ok_bi and BI.needs_rom_setup and BI.needs_rom_setup() then
-        target = "folders"
+    local needs_setup = ok_bi and BI.needs_rom_setup and BI.needs_rom_setup()
+    if not needs_setup then
+        pcall(function()
+            local Settings = require("core.settings")
+            needs_setup = Settings.get("rom_discovery_done") ~= true
+                       and #(Settings.get("rom_paths") or {}) == 0
+        end)
     end
+    if needs_setup then target = "folders" end
     require("ui").go(target, nil, { no_push = true })
 end
 
