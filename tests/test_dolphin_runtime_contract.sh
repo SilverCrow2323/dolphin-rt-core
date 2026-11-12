@@ -28,6 +28,9 @@ require "$BUILD" 'GC/font_western.bin GC/font_japanese.bin GC/dsp_rom.bin GC/dsp
 require "$APP_LAUNCH" '--platform=fbdev --video_backend=OGL'
 require "$APP_LAUNCH" 'LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"'
 require "$EXT_LAUNCH" '--platform=fbdev --video_backend=OGL'
+require "$EXT_LAUNCH" 'for candidate in /dev/input/js1 /dev/input/js0 /dev/input/js*; do'
+require "$EXT_LAUNCH" '[ -c "$candidate" ] || continue'
+require "$EXT_LAUNCH" 'if [ -n "$JS_DEV" ] && [ -x "$RTSYS/overlay_exit.sh" ]; then'
 
 # gptokeyb2 uses its native FSM syntax. Never enable its built-in
 # START+SELECT kill binding; Rt:Core Safe Exit owns the M / combo watcher.
