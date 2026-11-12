@@ -88,16 +88,17 @@ The bundled Dolphin profiles use an SDL device named `SDL/0/muOS-Keys` and zero-
 | B | Button 0 | Button 0 |
 | X | Button 2 | — |
 | Y | Button 3 | — |
-| Z | Button 11 | — |
+| Z (L3 hardware button) | Button 11 | — |
 | START / + | Button 7 | Button 7 |
 | L / Nunchuk C | Button 4 | Button 4 |
 | L-Analog / Nunchuk Z | Button 9 | Button 5 |
 | R | Button 5 | — |
+| Volume + | Button 10 (system key) | — |
 | R-Analog | Button 12 | — |
 | 1 / 2 | — | Button 2 / Button 3 |
 | − / HOME | — | Button 6 / Button 8 |
 
-These assignments are sourced from the checked-in `GCPadNew.ini`, `WiimoteNew.ini`, and controller-map editor. They are Dolphin's SDL-profile tokens; they must not be overwritten with values copied from the EV_KEY or joydev tables.
+RtUI raw-button defaults use the same SDL numeric IDs, including L3 = Button 11; standardized SDL gamepad events use named buttons. These assignments are sourced from the checked-in `GCPadNew.ini`, `WiimoteNew.ini`, `docs/CONTROLLER.md`, and controller-map editor. They are Dolphin's SDL-profile tokens; they must not be overwritten with values copied from the EV_KEY or joydev tables.
 
 ## 4. muOS firmware selector
 
