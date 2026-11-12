@@ -126,6 +126,7 @@ end
 
 function S.enter()
     S.t = 0
+    S.first_run = Settings.get("rom_discovery_done") ~= true
     K.set_accent("sys")
     show_set()
 end
@@ -159,7 +160,15 @@ function S.pad(b)
             SFX.play("menu_back")
             show_set()
         elseif b == "B" then
-            require("ui").back()
+            if S.first_run then
+                -- Explicitly dismiss the first-run prompt; later scans remain
+                -- available from ROM folders → Auto-detect.
+                Settings.set("rom_discovery_done", true)
+                Notify.show("info", "ROM setup skipped. You can configure folders later in ROM folders.")
+                require("ui").go("library", nil, { no_push = true })
+            else
+                require("ui").back()
+            end
         end
         return
     end
