@@ -115,13 +115,17 @@ function M.for_game(cat, game, titles, root)
   local list = {}
   local ts = titles_set(titles)
   for _, e in ipairs(M.entries(cat, root)) do
-    if cat.legacy then
-      e.kind = "gfx"; list[#list + 1] = e
-    elseif game then
-      local k = M.match_kind(game.id, ts, e)
-      if k then e.kind = k; list[#list + 1] = e end
-    else
-      e.kind = "all"; list[#list + 1] = e
+    -- A globally parked mod stays disabled for every game. Game-specific
+    -- launch plans must not silently pull it back out of <Category>.off.
+    if not (game and e.parked) then
+      if cat.legacy then
+        e.kind = "gfx"; list[#list + 1] = e
+      elseif game then
+        local k = M.match_kind(game.id, ts, e)
+        if k then e.kind = k; list[#list + 1] = e end
+      else
+        e.kind = "all"; list[#list + 1] = e
+      end
     end
   end
   table.sort(list, function(a, b)
