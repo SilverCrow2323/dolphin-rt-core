@@ -111,6 +111,8 @@ The current muOS line combines the formerly separate flavours into one installat
 | III | **Rt:UI / FrontendONE** | LÖVE-based library, configuration, compatibility, tools and user interface. |
 | IV | **Rt:Stream** | PC-side streaming workflow and handheld Moonlight companion; streaming is not local H700 emulation. |
 
+**FolderWaker** is the ROM-folder diagnostic tool in Rt:UI. It identifies folders that muOS may hide or that lack a GameCube/Wii assignment alias, then offers a previewed, explicitly confirmed `Rt` rename and alias registration. Scanning alone is read-only.
+
 The active muOS frontend lives in **dolphin-rtcore-muos/app/Dolphin RtUI/**. Historical material in **Core_History/** is an archive and is not automatically the current implementation.
 
 ## 06 — Build system
