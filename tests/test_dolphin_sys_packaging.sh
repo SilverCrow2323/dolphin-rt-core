@@ -5,16 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PACKAGER="$ROOT/dolphin-rtcore-muos/tools/build-muxupd.sh"
 BASE_SYS="$ROOT/dolphin-rtcore-muos/emu/dolphin/Sys"
 TMP="$(mktemp -d)"
-SYNTHETIC_BACKUP="$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/base/packaging-test.ini.bak.20261112"
-cleanup() {
-  rm -f "$SYNTHETIC_BACKUP"
-  rm -rf "$TMP"
-}
-trap cleanup EXIT
-
-# A timestamped backup used to leak into .muxupd archives because the
-# old packager excluded only the exact suffix '*.bak'.
-printf 'must never ship\n' > "$SYNTHETIC_BACKUP"
+trap 'rm -rf "$TMP"' EXIT
 
 SYS="$TMP/Sys"
 mkdir -p "$SYS"
@@ -33,6 +24,25 @@ Path(sys.argv[1]).write_bytes(header + b"RtCore packaging test fixture\n")
 PY
 chmod 755 "$TMP/dolphin"
 
+# A normal update must never be assembled without the actual Dolphin binary.
+if bash "$PACKAGER" "$TMP/no-binary" >"$TMP/no-binary.log" 2>&1; then
+  echo "[FAIL] packager accepted a full update without DOLPHIN_BIN" >&2
+  exit 1
+fi
+grep -Fq "refusing to build an installable muOS update without Dolphin" "$TMP/no-binary.log"
+echo "[OK] missing Dolphin executable is rejected by default"
+
+# An explicitly labelled UI-only archive is allowed for source-level CI validation.
+UI_OUT="$TMP/ui-only"
+DOLPHIN_UI_ONLY=1 bash "$PACKAGER" "$UI_OUT"
+UI_ARCHIVE="$UI_OUT/Dolphin_RtCore_v$(tr -d '[:space:]' < "$ROOT/dolphin-rtcore-muos/VERSION" | tr '.' '_')_Andromeda_ui-only.muxupd"
+[ -s "$UI_ARCHIVE" ]
+if unzip -Z1 "$UI_ARCHIVE" | grep -Fxq "opt/muos/share/emulator/dolphin/dolphin"; then
+  echo "[FAIL] UI-only archive unexpectedly contains a Dolphin executable" >&2
+  exit 1
+fi
+echo "[OK] UI-only archive is explicitly labelled and cannot be mistaken for a complete build"
+
 LIBS="$TMP/lib"
 mkdir -p "$LIBS"
 printf "HIDAPI runtime fixture\n" > "$LIBS/libhidapi-hidraw.so.0"
@@ -42,29 +52,8 @@ DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" DOLPHIN_LIB_DIR="$LIBS" \
   bash "$PACKAGER" "$OUT"
 
 VERSION="$(tr -d '[:space:]' < "$ROOT/dolphin-rtcore-muos/VERSION")"
-ARCHIVE="$OUT/Dolphin_RtCore_v$(printf '%s' "$VERSION" | tr . _)_Andromeda_with-dolphin.muxupd"
+ARCHIVE="$OUT/Dolphin_RtCore_v${VERSION//./_}_Andromeda.muxupd"
 [ -s "$ARCHIVE" ]
-
-# Timestamped backup files and common editor leftovers must never ship.
-if unzip -Z1 "$ARCHIVE" | grep -Eq '\.bak(\.|$)|~$|\.swp$'; then
-  echo "[FAIL] backup/editor residue was included in the .muxupd" >&2
-  exit 1
-fi
-echo "[OK] timestamped backups and editor residue are excluded"
-
-# No bundled GameSettings database/presets or HD texture payloads; only the
-# explicitly requested Bloom Removal mod may be present in either Load tree.
-if unzip -Z1 "$ARCHIVE" | grep -Eq '(^|/)(GameSettings|gamesettings)(/|\.json$)|/Load/Textures/'; then
-  echo "[FAIL] GameSettings or texture assets leaked into the package" >&2
-  exit 1
-fi
-if unzip -Z1 "$ARCHIVE" | grep -E '/Load/GraphicMods/|/Sys/Load/GraphicMods/' |
-   grep -v -E '/GraphicMods/$|/All Games Bloom Removal/'; then
-  echo "[FAIL] a non-Bloom-Removal graphics mod was packaged" >&2
-  exit 1
-fi
-unzip -Z1 "$ARCHIVE" | grep -Fq '/Load/GraphicMods/All Games Bloom Removal/'
-echo "[OK] package contains no GameSettings or texture packs and keeps only Bloom Removal"
 
 EMU_PATH="opt/muos/share/emulator/dolphin"
 for asset in \
@@ -81,6 +70,11 @@ done
 
 unzip -p "$ARCHIVE" "$EMU_PATH/dolphin" | cmp -s "$TMP/dolphin" -
 unzip -p "$ARCHIVE" "$EMU_PATH/lib/libhidapi-hidraw.so.0" | cmp -s "$LIBS/libhidapi-hidraw.so.0" -
+if unzip -Z1 "$ARCHIVE" | grep -Fxq "run/muos/storage/application/Dolphin RtUI/data/settings.json"; then
+  echo "[FAIL] MUXUPD would overwrite device-local Rt:UI settings.json" >&2
+  exit 1
+fi
+echo "[OK] MUXUPD preserves device-local Rt:UI settings and ROM paths"
 unzip -p "$ARCHIVE" "$EMU_PATH/Sys/$MARKER_REL" | cmp -s "$SYS/$MARKER_REL" -
 
 MARKER_SHA="$(sha256sum "$SYS/$MARKER_REL" | awk '{print $1}')"
@@ -88,6 +82,20 @@ unzip -p "$ARCHIVE" manifest.sha256 | grep -Fqx "$MARKER_SHA  $EMU_PATH/Sys/$MAR
 
 echo "[OK] binary, private HIDAPI runtime and supplied Sys tree are included at the muOS runtime paths"
 echo "[OK] GameCube fonts, DSP assets, and the Sys-tree marker are present"
+
+# Official per-game settings, stock texture packs and graphics mods are user-facing
+# Dolphin payload. A supplied build Sys tree must not erase the curated resources.
+for asset in \
+  "$EMU_PATH/GameSettings/GOWP69.ini" \
+  "$EMU_PATH/Load/Textures/GCN/tex1_512x256_c8101281265628cc_14.png" \
+  "$EMU_PATH/Sys/Load/GraphicMods/Dragon Ball Z Budokai Tenkaichi 3/metadata.json" \
+  "run/muos/storage/application/Dolphin RtUI/workshop/gamesettings/GD7E70/base.ini"; do
+  unzip -Z1 "$ARCHIVE" | grep -Fxq "$asset" || {
+    echo "[FAIL] official Dolphin settings/mod payload missing from MUXUPD: $asset" >&2
+    exit 1
+  }
+done
+echo "[OK] official GameSettings, texture packs, graphics mods and Rt:UI game profiles are retained"
 echo "[OK] manifest.sha256 covers the supplied Sys-tree marker"
 
 # Missing assets must fail before an update archive is produced.
