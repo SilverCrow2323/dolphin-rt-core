@@ -238,7 +238,7 @@ rt_project_active_gameset() {
         # per-game Gecko/ActionReplay blocks from Rt:UI's cheat manager.
         if [ -n "$projector" ] && [ -f "$projector" ] \
            && command -v python3 >/dev/null 2>&1 && [ -f "$target" ]; then
-            temporary="$target.rt-tmp.$"
+            temporary="$target.rt-tmp-$BASHPID"
             if ! python3 "$projector" "-" "$target" "$temporary"; then
                 rm -f "$temporary"
                 return 1
@@ -269,7 +269,7 @@ rt_project_active_gameset() {
     rt_write_active_gameset "$game_id" "$root" "$chosen" || return 1
 
     mkdir -p "$config_dir"
-    temporary="$target.rt-tmp.$"
+    temporary="$target.rt-tmp-$BASHPID"
     if [ -n "$projector" ] && [ -f "$projector" ] && command -v python3 >/dev/null 2>&1; then
         if ! python3 "$projector" "$source" "$target" "$temporary"; then
             rm -f "$temporary"
