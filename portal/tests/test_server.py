@@ -4,6 +4,8 @@ import subprocess
 import sys
 import time
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 import urllib.request
 
 from helpers import PORTAL, fresh_home
@@ -47,6 +49,17 @@ class ServerTest(unittest.TestCase):
                 return r.status, r.read().decode()
         except urllib.error.HTTPError as e:
             return e.code, ""
+
+    def test_network_addresses_includes_lan_and_tailscale(self):
+        calls = [
+            SimpleNamespace(stdout="2: wlan0 inet 192.168.1.44/24 brd 192.168.1.255 scope global wlan0"),
+            SimpleNamespace(stdout="100.101.102.103\n"),
+        ]
+        with patch.object(self.core.subprocess, "run", side_effect=calls), \
+             patch.object(self.core.shutil, "which", return_value="/usr/bin/tailscale"):
+            addresses = self.core.network_addresses()
+        self.assertEqual(addresses["lan"], ["192.168.1.44"])
+        self.assertEqual(addresses["tailscale"], "100.101.102.103")
 
     def test_profiles_tsv_is_public(self):
         code, body = self.get("/profiles.tsv")
