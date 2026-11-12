@@ -57,8 +57,8 @@ local function run_case(selected_mode, has_mascot, expected_limit)
         selected_mode .. ": intro ended unexpectedly early")
 end
 
-run_case("full", true, 5.5)
-run_case("quick", true, 2.8)
+run_case("full", true, 119 / 24)
+run_case("quick", true, 119 / 48)
 run_case("off", true, 0.35)
 run_case("full", false, 0.35)
 print("Boot animation autonomous exit tests: OK")
