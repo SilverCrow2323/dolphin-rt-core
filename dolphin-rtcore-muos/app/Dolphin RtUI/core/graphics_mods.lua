@@ -333,7 +333,10 @@ function M.migrate_legacy_selection(game, legacy_selected)
     local rows = M.list_for(game)
     local selected, migrated = {}, 0
     for _, item in ipairs(rows) do
-        if item.source == "user" and legacy_selected[item.name] then
+        local legacy_folder = item.name:match("^([^/]+)")
+        local was_selected = legacy_selected[item.name] or
+            (legacy_folder and legacy_selected[legacy_folder])
+        if item.source == "user" and was_selected then
             selected[item.source .. "|" .. item.path] = true
             migrated = migrated + 1
         end
