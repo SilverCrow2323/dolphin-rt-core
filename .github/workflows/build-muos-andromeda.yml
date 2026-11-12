@@ -157,8 +157,8 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish authenticated draft Release fallback
-        if: steps.upload_artifact.outcome != 'success' && github.repository == 'SilverCrow2323/dolphin-rt-core' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+      - name: Publish authenticated draft Release candidate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'SilverCrow2323/dolphin-rt-core'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
