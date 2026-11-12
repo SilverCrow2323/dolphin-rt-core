@@ -151,8 +151,6 @@ function M.update(dt)
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
-      local ok_dep, DEP = (function() local ok,m = pcall(require, "core.gamesettings_deployer"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.gamesettings_deployer") end; return ok and m end)()
-      if ok_dep and DEP then pcall(DEP.start) end
       STATE.step = "scan_roms"; STATE.t = 0
     end
 
@@ -176,6 +174,8 @@ function M.update(dt)
         if g.id and g.id ~= "" then STATE.ids[#STATE.ids+1] = g.id end
       end
     end
+    local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
+    if ok_dep and DEP then pcall(DEP.start, Library and Library.games or {}) end
     STATE.step = "wait_gamesets"; STATE.t = 0
 
   elseif step == "wait_gamesets" then
