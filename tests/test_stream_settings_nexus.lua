@@ -123,7 +123,7 @@ state = actions["stream_settings.state"].run()
 assert(state.mode == "osk" and state.osk_label == "PC address")
 assert(actions["stream_settings.cancel_mode"].run())
 
-assert(actions["stream_settings.select"].run(12))
+assert(actions["stream_settings.select"].run(13))
 assert(actions["stream_settings.run_selected"].run())
 state = actions["stream_settings.state"].run()
 assert(state.mode == "viewer" and state.viewer_title == "Connection test" and jobs[1] == "test.sh")
