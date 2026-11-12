@@ -43,3 +43,11 @@ Use the release-matched uninstall procedure. The registration helper removes onl
 ## External emulator binary
 
 The Dolphin executable is a separately supplied dependency. Follow the repository's GPL source and redistribution notices for any binary you use.
+
+## Rt:UI status and Dolphin resources
+
+Press **M** to expand Rt:UI's header into the scrollable Rt:System Status Center. It reports device network/battery telemetry, Rt:Stream server checks, local database update state, GameSettings deployment, library indexing, operations and notification history.
+
+Keep official Dolphin resources under Sys/GameSettings and Sys/Load/GraphicMods. The Mod Vault's **Graphics Mods** tab merges the built-in catalog with user mods from Load/GraphicMods; enablement is per Game ID and is stored in the matching JSON profile under Config/GraphicMods. A mod marked All Games is compatible across titles but is not enabled globally. The launcher sets GFX.ini → [Settings] EnableMods only when the selected game's profile has an enabled mod.
+
+See the tracked Wiki pages [Rt:System Status Center](../../../wiki/Rt-System-Status-Center.md) and [Graphics Mods](../../../wiki/Graphics-Mods.md).
