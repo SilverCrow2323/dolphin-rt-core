@@ -16,10 +16,12 @@ S.z_items, S.z_item, S.z_system, S.z_plan = {}, nil, nil, nil
 
 local function show_set()
     S.mode = "set"
+    S.z_browse = false
     local rows = {
         { add = true, label = "+  Browse for a ROM folder" },
         { autodetect = true, label = "Auto-detect ROM roots" },
-        { registrator = true, label = "Registratore Z — diagnose folder names" },
+        { registrator = true, label = "Registratore Z — scan detected folders" },
+        { registrator_browse = true, label = "Registratore Z — choose a folder manually" },
     }
     for i, e in ipairs(Settings.get("rom_paths") or {}) do
         rows[#rows + 1] = { idx = i, path = e.path, system = e.system }
@@ -40,7 +42,8 @@ local function show_dir(path)
     S.list:set(rows, false)
 end
 
-local function start_browse()
+local function start_browse(for_z)
+    S.z_browse = (for_z == true)
     for _, p in ipairs(Settings.rom_root_candidates()) do
         if FS.is_dir(p) then show_dir(p); return end
     end
@@ -138,7 +141,8 @@ function S.pad(b)
         if b == "UP" then if S.list:move(-1) then SFX.play("menu_move") end
         elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
         elseif b == "A" and row then
-            if row.add then start_browse()
+            if row.add then start_browse(false)
+            elseif row.registrator_browse then start_browse(true)
             elseif row.autodetect then
                 local n = Settings.auto_discover_rom_paths()
                 show_set()
@@ -165,8 +169,15 @@ function S.pad(b)
         elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
         elseif b == "A" and row and row.dir then
             show_dir(row.dir)
-        elseif b == "X" then add("Wii")
-        elseif b == "Y" then add("GC")
+        elseif b == "X" or b == "Y" then
+            local system = b == "Y" and "GC" or "Wii"
+            if S.z_browse and row and row.dir then
+                local item, err = FolderTools.inspect(row.dir)
+                if not item then Notify.show("error", tostring(err))
+                else preview(item, system) end
+            else
+                add(system)
+            end
         elseif b == "B" then
             if S.cwd == "/" then show_set()
             else show_dir(S.cwd:match("^(.*)/[^/]*$") ~= "" and S.cwd:match("^(.*)/[^/]*$") or "/") end
