@@ -153,9 +153,6 @@ local function sections()
                       Notify.show("download", #need .. " cheat file(s) downloading in the background")
                   end
               end },
-            { kind = "action", label = "Download GameSettings", icon = "file",
-              badge = missing_badge(missing_gamesettings),
-              run = sync_all_gamesettings },
         },
         EDITORS = {
             { kind = "action", label = "Profile Editor", icon = "profile", editor_label = "Editor",
@@ -164,11 +161,6 @@ local function sections()
               run = function() require("ui").go("controller_profiles") end },
             { kind = "action", label = "GameSettings Editor", icon = "file", editor_label = "Editor",
               run = function() require("ui").go("gameset_browser") end },
-            { kind = "action", label = "Hotkeys", icon = "hotkeys", sub = "design combos",
-              run = function() require("ui").go("hotkeys", {}) end },
-            { kind = "action", label = "Safe Exit", icon = "hotkeys",
-              sub = function() return require("core.safe_exit").describe() end,
-              run = function() require("ui").go("safe_exit", {}) end },
             { kind = "action", label = "Rt:Stream", icon = "play", sub = "play from your PC",
               run = function() require("ui").go("stream_library") end },
             { kind = "action", label = "Mod Vault", icon = "mods", sub = vault_sub,
