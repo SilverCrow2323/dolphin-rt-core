@@ -11,6 +11,7 @@ local PATH = "data/settings.json"
 local defaults = {
   rom_paths         = {},
   rom_discovery_done = false,
+  core_profile_mode = 1,
   theme             = "gc",
   scan_depth        = 4,
   show_fps          = false,
