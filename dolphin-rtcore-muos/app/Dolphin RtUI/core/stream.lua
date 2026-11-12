@@ -8,6 +8,7 @@ local DIR = "data/stream"
 M.DIR = DIR
 M.s, M.stats, M.games = {}, {}, {}
 M.health = { library = "unknown", sunshine = "unknown", pending = false }
+M.discovery = { running = false, host = nil }
 
 local function shq(s) return "'" .. tostring(s):gsub("'", "'\\''") .. "'" end
 local function read(p) local f = io.open(p, "rb"); if not f then return nil end local d = f:read("*a"); f:close(); return d end
