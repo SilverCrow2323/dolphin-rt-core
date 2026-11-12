@@ -170,8 +170,9 @@ end
 
 function M.clear_active(game_id)
     if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return false end
-    local dir = BASE .. "/" .. game_id
-    if not dir_exists(dir) then return true end
+    -- Even a game with no prior GameSettings folder needs an explicit empty
+    -- ActiveConfig record, otherwise a stale RTID value can be re-imported.
+    local dir = M.ensure_dir(game_id)
     local meta = read_meta(dir .. "/rtgameset_data.ini")
     meta.GameSettings = meta.GameSettings or {}
     meta.GameSettings.ActiveConfig = ""
