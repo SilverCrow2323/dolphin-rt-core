@@ -17,7 +17,7 @@
 - A globally parked mod cannot be silently re-enabled by a per-game launch plan. Native GraphicMods remain globally toggleable from a per-game Mod Vault view.
 
 ### Visual refresh
-- Home is rebuilt as a controller-first two-column hub with an adventure banner, last-played game and compact tiles tuned to the 640×480 handheld canvas.
+- Home is the actual post-boot landing screen (first-run ROM setup still takes priority), rebuilt as a controller-first two-column hub with an adventure banner, last-played game, Library, Compatibility and compact tiles tuned to the 640×480 handheld canvas.
 - Compatibility uses compact filter chips, game covers (with a fallback tile), large FPS/status, community score, test count and field notes.
 - Select opens Rt:Stream from Home only.
 - Shared header chrome now reserves separate title, subtitle and status lanes; Settings section tabs no longer collide with section labels or navigation hints.
