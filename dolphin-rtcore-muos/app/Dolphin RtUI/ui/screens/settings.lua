@@ -209,7 +209,7 @@ local function sections()
               sub = function() local l = Updater.latest(); return l and l.tag or "check" end,
               run = function()
                   Updater.check_async(function(d) Notify.show("info", "Latest: " .. d.tag) end)
-                  Notify.show("info", "Checking\\226\\128\\166")
+                  Notify.show("info", "Checking\226\128\166")
               end },
         },
         ABOUT = {
