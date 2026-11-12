@@ -204,8 +204,8 @@ PY
 }
 
 
-# Project one selected workshop preset into Dolphin's native per-game file.
-# Config/GameSettings is a runtime output only; Workshop remains authoritative.
+# Project one selected Workshop preset into Dolphin's native per-game file.
+# The user-root GameSettings/ directory is runtime output; Workshop stays canonical.
 rt_project_active_gameset() {
     local game_id="$1" root="$2" config_dir="$3" requested="$4"
     local chosen="" source target temporary
