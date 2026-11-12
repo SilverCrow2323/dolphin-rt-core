@@ -88,7 +88,11 @@ end
 function M.snapshot()
     return {
         checked = M._polled,
-        wifi = { up = M._wifi.up == true, quality = tonumber(M._wifi.quality) or 0 },
+        wifi = {
+            up = M._wifi.up == true,
+            quality = tonumber(M._wifi.quality) or 0,
+            ssid = M._wifi.ssid,
+        },
         battery = {
             present = M._bat.present == true,
             level = M._bat.level,
