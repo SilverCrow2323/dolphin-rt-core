@@ -37,6 +37,15 @@ expect(GM.active_for(id) == nil, "ActiveConfig must reject paths outside the Gam
 
 write(dir .. "/rtgameset_data.ini", "[GameSettings]\nActiveConfig = Missing.ini\n")
 expect(GM.active_for(id) == nil, "missing active config must not be reported as selected")
+expect(GM.has_active_record(id), "invalid but present selector is still canonical metadata")
+
+local fresh_id = "ZZTEST2"
+local fresh_dir = "workshop/gamesettings/" .. fresh_id
+os.execute("rm -rf " .. string.format("%q", fresh_dir))
+expect(GM.clear_active(fresh_id), "disabling a game with no prior folder must persist")
+expect(GM.has_active_record(fresh_id), "new game Disabled must create canonical metadata")
+expect(GM.active_for(fresh_id) == nil, "new game Disabled must not select a preset")
 
 os.execute("rm -rf " .. string.format("%q", dir))
+os.execute("rm -rf " .. string.format("%q", fresh_dir))
 print("GameSettings ActiveConfig tests: OK")
