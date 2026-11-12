@@ -242,7 +242,7 @@ fi
 # Dolphin applies this once as a per-game override; it is never merged into
 # the global Dolphin.ini/GFX.ini profile layer.
 if declare -F rt_project_active_gameset >/dev/null 2>&1; then
-    if rt_project_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" "$CONFIG/GameSettings" "$GAMESETTINGS"; then
+    if rt_project_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" "$EMU/GameSettings" "$GAMESETTINGS"; then
         log "GameSettings projection: ${RT_ACTIVE_GAMESET:-disabled}"
     else
         log "WARN: GameSettings projection failed for game_id=$GAME_ID"
