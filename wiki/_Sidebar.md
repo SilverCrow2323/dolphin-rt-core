@@ -7,7 +7,7 @@
 - [[FAQ]]
 
 **muOS and handheld**
-- [[muOS-Registration]]
+- [[muOS-Registration]]\n- [[Rt-System-Status-Center]]\n- [[Graphics-Mods]]
 - [[Troubleshooting]]
 
 **Compatibility Database**
