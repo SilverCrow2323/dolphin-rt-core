@@ -87,7 +87,7 @@ function M.catalog()
 end
 
 local SCREEN_MODULES = {
-    { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
+    { "boot", "ui.screens.boot" }, { "home", "ui.screens.home" }, { "library", "ui.screens.library" },
     { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
     { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
     { "hotkeys", "ui.screens.hotkeys" }, { "safe_exit", "ui.screens.safe_exit" }, { "settings", "ui.screens.settings" },
