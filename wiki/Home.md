@@ -14,12 +14,16 @@
 
 > [!IMPORTANT]
 > Compatibility results are community reports, not universal guarantees. Always match the exact console, game region, handheld, firmware, Rt:Core build and profile before applying settings.
+>
+> **Input reminder:** EV_KEY, joydev `js1`, and Dolphin SDL `Button n` are separate numbering systems. Jacaranda uses the initial EV_KEY map; Andromeda uses the alternative map.
 
 ## Choose your path
 
 | I want to… | Start here |
 |---|---|
 | Install or upgrade on muOS | [[Quick-Start]] · [[muOS-Registration]] |
+| Understand controller numbering and Safe Exit | [[Controller-Input]] |
+| Select Jacaranda / Andromeda behaviour | [[muOS-Firmware-Profiles]] |
 | Find a GameCube/Wii result | [[Compatibility-Database]] |
 | Understand ratings and FPS | [[Rating-Guide]] |
 | Submit a reproducible test | [[Reporting-a-Test]] |
