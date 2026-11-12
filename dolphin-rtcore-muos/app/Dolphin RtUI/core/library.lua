@@ -182,21 +182,33 @@ function M.scan_begin()
   local paths = Settings.get("rom_paths") or {}
   local depth = math.max(8, tonumber(Settings.get("scan_depth")) or 8)
   local roots, root_seen = {}, {}
-  local function path_key(path)
+  -- Resolve configured roots once, not every ROM file. Running readlink for
+  -- every disc image spawned hundreds of child processes on large SD cards.
+  local function root_key(path)
     local clean = tostring(path or ""):gsub("/+$", "")
     local real = Shell.first("readlink -f " .. Shell.shq(clean), 3)
     if type(real) == "string" and real ~= "" then clean = real end
     return clean:lower()
   end
+  local function file_key(path)
+    return tostring(path or ""):gsub("/+", "/"):gsub("/+$", ""):lower()
+  end
   for _, entry in ipairs(paths) do
     if entry.path and FS.is_dir(entry.path) then
-      local key = path_key(entry.path)
-      if not root_seen[key] then root_seen[key] = true; roots[#roots + 1] = entry end
+      local key = root_key(entry.path)
+      if not root_seen[key] then
+        root_seen[key] = #roots + 1
+        roots[#roots + 1] = { path = entry.path, system = entry.system or "GC" }
+      else
+        -- A path shared by the GC and Wii selectors is still one scan root.
+        local kept = roots[root_seen[key]]
+        if kept.system ~= entry.system then kept.system = "Both" end
+      end
     end
   end
   for _, entry in ipairs(roots) do
     for _, path in ipairs(find_files(entry.path, depth)) do
-      local key = path_key(path)
+      local key = file_key(path)
       if not _seen[key] then
         _seen[key] = true
         _queue[#_queue + 1] = { path = path, entry = entry }
