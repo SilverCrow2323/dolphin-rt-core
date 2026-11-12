@@ -51,6 +51,14 @@ local ICONS = {
         love.graphics.rectangle("line", cx-s*0.55, cy-s*0.45, s*0.42, s*0.20, 2, 2)
         love.graphics.setLineWidth(1)
     end,
+    chart = function(cx, cy, s, c)
+        K.color(c, 0.95); love.graphics.setLineWidth(1.8)
+        love.graphics.line(cx - s * 0.65, cy + s * 0.55, cx + s * 0.65, cy + s * 0.55)
+        love.graphics.rectangle("line", cx - s * 0.52, cy + s * 0.03, s * 0.24, s * 0.50, 2, 2)
+        love.graphics.rectangle("line", cx - s * 0.12, cy - s * 0.30, s * 0.24, s * 0.83, 2, 2)
+        love.graphics.rectangle("line", cx + s * 0.28, cy - s * 0.58, s * 0.24, s * 1.11, 2, 2)
+        love.graphics.setLineWidth(1)
+    end,
     dolphin = function(cx, cy, s, c)
         if Mascot.loaded() then
             Mascot.draw(Mascot.frame_at(S.t, 0.7), cx, cy - s * 0.55, s / Mascot.FH * 1.6, 1)
@@ -88,9 +96,9 @@ local function build()
         { id = "library",  label = "Library",        icon = "library", acc = "gc",    sub = sub_library, go = "library" },
         { id = "last",     label = "Last played",    icon = "play",    acc = "wii",   sub = sub_last,
           fn = function() local g = last_game(); if g then U.launch(g) else require("ui").go("library") end end },
+        { id = "compat",   label = "Compatibility",  icon = "chart",   acc = "wii",   sub = function() return "community game reports" end, go = "compat_list" },
         { id = "cheatdb",  label = "Cheat database", icon = "star",    acc = "boost", sub = sub_cheatdb, go = "cheatdb" },
         { id = "mods",     label = "Graphic mods",   icon = "cube",    acc = "mods",  sub = sub_mods,    go = "mods", params = {} },
-        { id = "hotkeys",  label = "Hotkeys",        icon = "keys",    acc = "hot",   sub = sub_nil,     go = "hotkeys", params = {} },
         { id = "settings", label = "Settings",       icon = "gear",    acc = "sys",   sub = sub_nil,     go = "settings" },
         { id = "folders",  label = "ROM folders",    icon = "folder",  acc = "blue",  sub = sub_nil,     go = "folders" },
         { id = "about",    label = "About",          icon = "dolphin", acc = "lime",  sub = sub_nil,     go = "about" },
