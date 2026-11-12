@@ -88,6 +88,36 @@ function M.apply(kind, name)
         return false
     end
 
+    if kind == "gamesettings" then
+        -- GameSettings are never merged into global Dolphin.ini/GFX.ini.
+        -- Config/GameSettings/<ID>.ini is the one selected runtime projection.
+        local GM = require("core.gameset_manager")
+        local active = GM.active_for(name)
+        local destination = target.dir .. "/" .. name .. ".ini"
+        os.execute("mkdir -p " .. shq(target.dir))
+        local ok = true
+        if active then
+            local source = "workshop/gamesettings/" .. name .. "/" .. active
+            local temporary = destination .. ".rt-tmp"
+            local rc = os.execute("cp " .. shq(source) .. " " .. shq(temporary))
+            if rc == true or rc == 0 then
+                local mv = os.execute("mv -f " .. shq(temporary) .. " " .. shq(destination))
+                ok = (mv == true or mv == 0)
+            else
+                os.remove(temporary)
+                ok = false
+            end
+        else
+            ok = os.remove(destination) or not io.open(destination, "r")
+        end
+        if ok then
+            Notify.show("success", active and ("Projected: " .. active) or "GameSettings disabled")
+        else
+            Notify.show("error", "Could not project GameSettings for " .. tostring(name))
+        end
+        return ok
+    end
+
     local valid = PV.validate(kind, name)
     if not valid.ok then
         Notify.show("error", "Validation failed: " .. (valid.errors[1] or "?"))
@@ -98,24 +128,8 @@ function M.apply(kind, name)
         BM.backup(file)
     end
 
-    local ok = true
-    if kind == "gamesettings" then
-        local id = name
-        local src_ini = "workshop/gamesettings/" .. id .. "/" .. id .. ".ini"
-        local f = io.open(src_ini, "r")
-        if f then
-            f:close()
-            os.execute("mkdir -p " .. shq(target.dir))
-            local rc = os.execute("cp " .. shq(src_ini) .. " " ..
-                       shq(target.dir .. "/" .. id .. ".ini"))
-            ok = (rc == true or rc == 0)
-        else
-            ok = false
-        end
-    else
-        ok = PMerger.apply_profile(kind, name, target.dir,
-                                   target.files, "workshop")
-    end
+    local ok = PMerger.apply_profile(kind, name, target.dir,
+                                     target.files, "workshop");
 
     if ok then
         Notify.show("success", "Applied: " .. name)
