@@ -1,4 +1,14 @@
-# Release checklist
+# Release checklist — Rt:Core 12.1.0 Arcade
+
+## Current release candidate
+
+- **Rt:Core:** 12.1.0
+- **Rt:UI:** 3.7.0 “Arcade”
+- **Source:** [PR #81](https://github.com/SilverCrow2323/dolphin-rt-core/pull/81)
+- **Release state:** candidate only; no GitHub Release or tag has been published.
+- **Hardware gate:** RG35XX H install, boot animation, controller input, game launch, frame pacing and Safe Exit must be checked on the exact target firmware before publication.
+
+The current CI workflow invokes the packager without DOLPHIN_BIN. Its .muxupd is therefore an **Rt:UI / RtSys overlay**, not a standalone Dolphin engine bundle. A compatible Dolphin executable must already be installed.
 
 ## Package modes
 
@@ -7,7 +17,7 @@
 - **Overlay update:** omit `DOLPHIN_BIN`. It packages Rt:UI, RtSys, muOS integration and Dolphin system resources. It does not install the emulator executable.
 - **Full engine bundle:** provide `DOLPHIN_BIN`, `DOLPHIN_SYS_DIR` and `DOLPHIN_LIB_DIR` from the same AArch64 Dolphin build. The output filename receives the `_with-dolphin` suffix.
 
-The HEAVY DEBUG CI artifact is overlay-only. It expects a compatible existing executable at `/opt/muos/share/emulator/dolphin/dolphin`.
+The Arcade 12.1.0 candidate CI artifact is overlay-only. It expects a compatible existing executable at `/opt/muos/share/emulator/dolphin/dolphin`.
 
 ## Before packaging
 
