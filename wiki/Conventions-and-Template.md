@@ -39,7 +39,7 @@ The GitHub Wiki is the practical handbook. Keep implementation details in `docs/
 | Visible issue | Safe first check |
 
 ## Related pages
-- [[Another-Guide]]
+- Link to one or two existing pages that help the reader with the next step.
 ```
 
 Remove the **MUST KNOW!!** or **Optional** block when it does not apply. Do not add labels just to fill the template.
