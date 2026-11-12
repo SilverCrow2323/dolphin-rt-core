@@ -108,7 +108,7 @@ local function build_grouped(tab_id)
                         local n = (ok2 and type(list) == "table") and #list or 0
                         table.insert(grp.regions, {
                             id = gid, region = region_of(gid),
-                            n_cfg = n, in_lib = lib[gid] ~= nil,
+                            n_cfg = n, db_cfg = #(entry.configs or {}), in_lib = lib[gid] ~= nil,
                         })
                     end
                 end
@@ -134,7 +134,7 @@ local function build_grouped(tab_id)
                     kind = "region",
                     title = grp.title,
                     id = r.id, region = r.region,
-                    n_cfg = r.n_cfg, in_lib = r.in_lib,
+                    n_cfg = r.n_cfg, db_cfg = r.db_cfg, in_lib = r.in_lib,
                 }
             end
         end
@@ -260,11 +260,8 @@ local function draw_row(row, x, y, w, h, focused)
     elseif row.kind == "region" then
         K.region_flag(row.region, x + 30, y + h/2 - 10, 40, 20)
         K.id_plate(row.id, x + 78, y + h/2 - 10, 90, 20)
-        if row.n_cfg and row.n_cfg > 0 then
-            K.text("small", row.n_cfg .. " cfg", x + w - 64, y + h/2 - 8, K.C.ok)
-        elseif row.in_lib then
-            K.text("small", "in library", x + w - 90, y + h/2 - 8, K.C.dim)
-        end
+        local detail = (row.db_cfg and row.db_cfg > 0) and (row.db_cfg .. " DB · " .. (row.n_cfg or 0) .. " local") or ((row.n_cfg or 0) .. " local")
+        K.text("small", detail, x + w - K.width("small", detail) - 12, y + h/2 - 8, (row.n_cfg or 0) > 0 and K.C.ok or K.C.dim)
     end
 end
 
