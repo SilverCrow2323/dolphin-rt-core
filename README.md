@@ -158,6 +158,20 @@ Use the binary and **Sys/** directory from the **same build output**:
 DOLPHIN_BIN="$PWD/out/muos/dolphin" DOLPHIN_SYS_DIR="$PWD/out/muos/Sys" DOLPHIN_LIB_DIR="$PWD/out/muos/lib" bash dolphin-rtcore-muos/tools/build-muxupd.sh ./dist
 ~~~
 
+<details>
+<summary><strong>Which .muxupd am I building?</strong></summary>
+
+The packager has two explicit modes:
+
+| Mode | Inputs | Contents |
+|---|---|---|
+| **Rt:UI / RtSys update** | Run the packager without `DOLPHIN_BIN` | Frontend, muOS launch/registration scripts, configuration and matching Dolphin `Sys/` resources. It expects a compatible Dolphin executable to already exist at `/opt/muos/share/emulator/dolphin/dolphin`. |
+| **Full engine bundle** | Set `DOLPHIN_BIN`, `DOLPHIN_SYS_DIR`, and `DOLPHIN_LIB_DIR` from the same build output | Adds the AArch64 Dolphin executable and its private runtime libraries. The filename ends in `_with-dolphin.muxupd`. |
+
+**The HEAVY DEBUG artifact produced by the current CI job is the first type:** the workflow invokes `build-muxupd.sh` without `DOLPHIN_BIN`. It is an update for an existing Dolphin installation, not a standalone emulator install. Do not remove or replace the existing Dolphin binary when applying that overlay update.
+
+</details>
+
 The separate Qt 6 experiment is packaged by **build-muxupd-qt6-experimental.sh**; it installs alongside the stable NoGUI executable and must never silently replace it.
 
 ### Knulli and ROCKNIX package assembly
@@ -179,7 +193,7 @@ Never mix an executable and **Sys/** tree from different Dolphin revisions.
 6. Launch **Dolphin Rt:Core** from Applications.
 7. In Content Explorer, select a GameCube or Wii ROM folder, open **Core Assignment**, and choose a profile.
 
-The Andromeda package includes the integrity manifest required by that release line. The registration helper detects the installed muOS registration layout and maintains the GameCube/Wii entries. For registration details and recovery commands, see [docs/MUOS_REGISTRATION.md](docs/MUOS_REGISTRATION.md).
+The HEAVY DEBUG CI artifact is an **Rt:UI / RtSys update**, not a standalone engine bundle: it does not contain the Dolphin executable. Install it only over a compatible existing Dolphin engine, or build a full `_with-dolphin.muxupd` using the same-build AArch64 executable, `Sys/` tree and private libraries. The package integrity manifest covers the included files. The registration helper detects the installed muOS registration layout and maintains the GameCube/Wii entries. For registration details and recovery commands, see [docs/MUOS_REGISTRATION.md](docs/MUOS_REGISTRATION.md).
 
 > [!IMPORTANT]
 > Jacaranda is a separate legacy release line. Registration detection does not make the current Andromeda package a certified Jacaranda package.
