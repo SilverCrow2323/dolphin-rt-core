@@ -33,6 +33,8 @@ M.ACTIONS = {
     { id = "SELECT", label = "Select",        default = 8  },
     { id = "START",  label = "Start",         default = 9  },
     { id = "MENU",   label = "Menu",          default = 10 },
+    { id = "L3",     label = "Left Stick Click", default = 11 },
+    { id = "R3",     label = "Right Stick Click", default = 12 },
     { id = "UP",     label = "D-Pad Up",      default = nil },
     { id = "DOWN",   label = "D-Pad Down",    default = nil },
     { id = "LEFT",   label = "D-Pad Left",    default = nil },
@@ -54,8 +56,14 @@ function M.init()
         local ok, d = pcall(JSON.decode, raw)
         if ok and type(d) == "table" then
             if type(d.pad) == "table" then
-                for k, v in pairs(d.pad) do
-                    M.data.pad[k] = v
+                local legacy = { A = 1, B = 0, X = 2, Y = 3, L1 = 4,
+                    R1 = 5, L2 = 9, R2 = 12, SELECT = 6, START = 7, MENU = 8 }
+                local is_legacy = true
+                for k, v in pairs(legacy) do
+                    if d.pad[k] ~= v then is_legacy = false; break end
+                end
+                if not is_legacy then
+                    for k, v in pairs(d.pad) do M.data.pad[k] = v end
                 end
             end
             if d.active_device ~= nil then
@@ -98,6 +106,7 @@ end
 -- User remap: if a value in data.pad is a string, it overrides the default.
 M.GAMEPAD_TO_LOGICAL = {
     a = "A", b = "B", x = "X", y = "Y",
+    leftstick = "L3", rightstick = "R3",
     start = "START", back = "SELECT", guide = "MENU",
     leftshoulder = "L1", rightshoulder = "R1",
     lefttrigger = "L2", righttrigger = "R2",
