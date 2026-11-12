@@ -148,8 +148,9 @@ function M.update(dt)
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
+      local ok_l, Library = pcall(require, "core.library")
       local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
-      if ok_dep and DEP then pcall(DEP.start, Library and Library.games or {}) end
+      if ok_dep and DEP then pcall(DEP.start, ok_l and Library and Library.games or {}) end
       STATE.step = "wait_gamesets"; STATE.t = 0
     end
 
