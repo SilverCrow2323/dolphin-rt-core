@@ -307,7 +307,52 @@ function S.register_actions(ui)
       end,
     },
     {
-      id = "stream_settings.state", title = "Get redacted Stream settings state", order = 70,
+      id = "stream_settings.discover_hosts", title = "Scan LAN and Tailscale for Sunshine", order = 65,
+      run = function()
+        if S.mode ~= "list" then return false, "Stream settings list is not active" end
+        open_viewer("Find Sunshine PC", "discover.sh", "discover.txt")
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.pair", title = "Pair with configured Sunshine PC", order = 66,
+      run = function()
+        if S.mode ~= "list" then return false, "Stream settings list is not active" end
+        if not Stream.configured() then return false, "configure or discover a PC first" end
+        open_viewer("Pair with PC", "pair.sh", "pair.log", { pair = true })
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.select_discovered_host", title = "Select discovered Sunshine host", order = 67,
+      run = function(index)
+        if S.mode ~= "hosts" then return false, "Sunshine host picker is not active" end
+        if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #(S.hosts or {}) then
+          return false, "host index out of range"
+        end
+        S.host_list.sel = index
+        local row = S.host_list:cur()
+        if not row or not row.host then return false, "selected host is invalid" end
+        local ok, err = Stream.set("HOST", row.host)
+        if not ok then return false, tostring(err or "could not save host") end
+        open_viewer("Pair with PC", "pair.sh", "pair.log", { pair = true })
+        return true
+      end,
+    },
+    {
+      id = "stream_settings.connection_status", title = "Get redacted connection status", order = 68,
+      run = function()
+        return {
+          configured = Stream.configured(),
+          library = Stream.health.library or "unknown",
+          sunshine = Stream.health.sunshine or "unknown",
+          discovery_mode = S.mode,
+          discovered_hosts = #(S.hosts or {}),
+        }
+      end,
+    },
+    {
+      id = "stream_settings.state", title = "Get redacted Stream settings state", order = 80,
       run = function()
         local row = selected()
         return {
