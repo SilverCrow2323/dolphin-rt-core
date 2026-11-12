@@ -267,7 +267,7 @@ local function database_snapshot(key, path)
   local present, size = local_file_info(path)
   local result = STATE.results.downloads or {}
   local state
-  if is_done(key) then
+  if result[key] == true or (STATE.step == "download_data" and is_done(key)) then
     state = "updated"
   elseif result[key] == false then
     state = present and "retained" or "failed"
