@@ -60,7 +60,7 @@ end
 local Library = require("core.library")
 Library.scan_begin()
 assert(find_calls == 0, "scan_begin must not execute or wait for find")
-assert(readlink_calls == 2, "realpath should be resolved for roots only")
+assert(readlink_calls == 0, "ROM scan root de-duplication must not spawn readlink")
 assert(Library.scanning, "scan remains active until incremental steps run")
 assert(Library.progress.total == 0, "no ROM entries are enumerated synchronously")
 local done = Library.scan_step(1)
