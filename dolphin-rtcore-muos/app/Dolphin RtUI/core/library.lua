@@ -269,6 +269,9 @@ function M.scan_step(budget)
         close_scan_pipe()
         _root_index = _root_index + 1
       else
+        -- Clear stdio's EOF flag on this regular file; the detached find
+        -- worker may append more rows after this frame has yielded.
+        pcall(_scan_pipe.seek, _scan_pipe, "cur", 0)
         break
       end
     elseif path ~= "" then
