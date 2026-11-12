@@ -83,6 +83,29 @@ local function item_key(source, path)
     return tostring(source) .. "|" .. tostring(path)
 end
 
+-- One-time recovery of folders parked by the previous Rt:Core --mods switch.
+-- Only user data is restored; the official Sys tree is never touched.
+function M.restore_legacy_user_mods()
+    local active = join(emu_root(), "Load/GraphicMods")
+    local parked = active .. ".off"
+    if not FS.is_dir(parked) then return 0 end
+    FS.mkdir_p(active)
+    local restored = 0
+    for _, name in ipairs(list_directories(parked)) do
+        local source = join(parked, name)
+        local destination = join(active, name)
+        if FS.is_dir(source) and not FS.exists(destination) and not FS.is_dir(destination) then
+            local command = "mv " .. shq(source) .. " " .. shq(active) .. " 2>/dev/null"
+            local ok = os.execute(command)
+            if ok == true or ok == 0 then
+                if FS.is_dir(destination) then restored = restored + 1 end
+            end
+        end
+    end
+    os.execute("rmdir " .. shq(parked) .. " 2>/dev/null")
+    return restored
+end
+
 local function profile_path(game_id)
     return join(emu_root(), "Config/GraphicMods/" .. game_id .. ".json")
 end
@@ -248,6 +271,40 @@ function M.set_selection(game, items, selected)
     end
     if #changes == 0 then return true end
     return save_changes(game, changes)
+end
+
+function M.profile_exists(game_id)
+    if type(game_id) ~= "string" or not game_id:upper():match("^[A-Z0-9]+$") then
+        return false
+    end
+    return FS.exists(profile_path(game_id:upper()))
+end
+
+-- Migrate selections from the old per-game RTID [MODS] Selected field.
+-- Only matching user mods are considered; new built-in Sys mods stay disabled.
+function M.migrate_legacy_selection(game, legacy_selected)
+    if not game or type(game.id) ~= "string" or
+       not game.id:upper():match("^[A-Z0-9]+$") then
+        return false, "a valid Game ID is required"
+    end
+    M.restore_legacy_user_mods()
+    if M.profile_exists(game.id) then return true, 0 end
+    if type(legacy_selected) ~= "table" or next(legacy_selected) == nil then
+        return true, 0
+    end
+
+    local rows = M.list_for(game)
+    local selected, migrated = {}, 0
+    for _, item in ipairs(rows) do
+        if item.source == "user" and legacy_selected[item.name] then
+            selected[item.source .. "|" .. item.path] = true
+            migrated = migrated + 1
+        end
+    end
+    if migrated == 0 then return true, 0 end
+    local ok, err = M.set_selection(game, rows, selected)
+    if not ok then return false, err end
+    return true, migrated
 end
 
 function M.config_path(game_id)
