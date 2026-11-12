@@ -113,7 +113,7 @@ The current muOS line combines the formerly separate flavours into one installat
 
 The active muOS frontend lives in **dolphin-rtcore-muos/app/Dolphin RtUI/**. Historical material in **Core_History/** is an archive and is not automatically the current implementation.
 
-## 05 — Build system
+## 06 — Build system
 
 The reproducible build scripts live in [dolphin-build/](dolphin-build/README.md). The upstream Dolphin revision is pinned in [DOLPHIN_REF](dolphin-build/DOLPHIN_REF); builds do not silently float to upstream HEAD.
 
@@ -193,7 +193,7 @@ The separate Qt 6 experiment is packaged by **build-muxupd-qt6-experimental.sh**
 
 Never mix an executable and **Sys/** tree from different Dolphin revisions.
 
-## 06 — Install on muOS Andromeda
+## 07 — Install on muOS Andromeda
 
 1. Back up the SD card, saves and existing Dolphin configuration.
 2. Download the matching Andromeda **.muxupd** from [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases).
@@ -208,7 +208,7 @@ The HEAVY DEBUG CI artifact is an **Rt:UI / RtSys update**, not a standalone eng
 > [!IMPORTANT]
 > Jacaranda is a separate legacy release line. Registration detection does not make the current Andromeda package a certified Jacaranda package.
 
-## 07 — RG35XX H validation checklist
+## 08 — RG35XX H validation checklist
 
 A build is not marked **H700 device-tested** until the following checks have been performed on the actual RG35XX H and the exact target firmware:
 
@@ -225,7 +225,7 @@ A build is not marked **H700 device-tested** until the following checks have bee
 
 Do not upload private logs, pairing tokens, ROMs or BIOS files to issue reports. Redact serials, MAC addresses and other device identifiers.
 
-## 08 — Repository map
+## 09 — Repository map
 
 | Path | Purpose |
 |---|---|
@@ -240,7 +240,7 @@ Do not upload private logs, pairing tokens, ROMs or BIOS files to issue reports.
 | [wiki/](wiki/) | Tracked Markdown source for the GitHub Wiki. |
 | [Core_History/](Core_History/) | Historical implementations and provenance archive. |
 
-## 09 — CI, releases and contribution
+## 10 — CI, releases and contribution
 
 GitHub Actions runs repository contracts, packaging dry-runs, frontend smoke tests and native ARM64 build variants. Successful build jobs upload the binary, build information, checksums and corresponding source archive. An artifact is only available after its job completes successfully.
 
@@ -254,7 +254,7 @@ Development should happen on short-lived branches and be merged through pull req
 4. Finish the ROCKNIX Wayland build and hardware validation.
 5. Keep compatibility reports, wiki pages and release notes aligned with actual test evidence.
 
-## 10 — Documentation and links
+## 11 — Documentation and links
 
 - [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases)
 - [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues)
