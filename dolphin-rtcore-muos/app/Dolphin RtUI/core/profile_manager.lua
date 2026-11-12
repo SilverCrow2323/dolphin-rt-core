@@ -91,6 +91,10 @@ function M.apply(kind, name)
     if kind == "gamesettings" then
         -- GameSettings are never merged into global Dolphin.ini/GFX.ini.
         -- Config/GameSettings/<ID>.ini is the one selected runtime projection.
+        if type(name) ~= "string" or not name:match("^[%w_%-]+$") then
+            Notify.show("error", "Invalid GameID")
+            return false
+        end
         local GM = require("core.gameset_manager")
         local active = GM.active_for(name)
         local destination = target.dir .. "/" .. name .. ".ini"
@@ -98,17 +102,34 @@ function M.apply(kind, name)
         local ok = true
         if active then
             local source = "workshop/gamesettings/" .. name .. "/" .. active
-            local temporary = destination .. ".rt-tmp"
-            local rc = os.execute("cp " .. shq(source) .. " " .. shq(temporary))
-            if rc == true or rc == 0 then
-                local mv = os.execute("mv -f " .. shq(temporary) .. " " .. shq(destination))
-                ok = (mv == true or mv == 0)
-            else
-                os.remove(temporary)
+            local input = io.open(source, "rb")
+            if not input then
                 ok = false
+            else
+                local bytes = input:read("*a")
+                input:close()
+                local temporary = destination .. ".rt-tmp"
+                local output = io.open(temporary, "wb")
+                if not output then
+                    ok = false
+                else
+                    local wrote = output:write(bytes or "")
+                    output:close()
+                    if wrote then
+                        ok = os.rename(temporary, destination)
+                        if not ok then os.remove(temporary) end
+                    else
+                        os.remove(temporary)
+                        ok = false
+                    end
+                end
             end
         else
-            ok = os.remove(destination) or not io.open(destination, "r")
+            local removed = os.remove(destination)
+            if not removed then
+                local existing = io.open(destination, "r")
+                if existing then existing:close(); ok = false end
+            end
         end
         if ok then
             Notify.show("success", active and ("Projected: " .. active) or "GameSettings disabled")
