@@ -41,7 +41,7 @@ if command -v ip >/dev/null 2>&1 && command -v curl >/dev/null 2>&1; then
             host="$prefix.$n"
             (
                 if curl -k -fsS --connect-timeout 1 -m 1 "https://$host:47989/serverinfo" -o /dev/null 2>/dev/null; then
-                    printf 'LAN\\t%s\\n' "$host" >> "$tmp"
+                    printf 'LAN\t%s\n' "$host" >> "$tmp"
                 fi
             ) &
             n=$((n + 1))
