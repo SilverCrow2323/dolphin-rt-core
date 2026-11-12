@@ -9,6 +9,7 @@ local M = {}
 local PATH = "data/settings.json"
 
 local defaults = {
+  muos_profile      = "auto", -- auto | andromeda | not_andromeda
   rom_paths         = {},
   rom_discovery_done = false,
   theme             = "gc",
