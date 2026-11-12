@@ -98,7 +98,7 @@ function M.scan()
     local rules, assign, out, seen = load_skip(), load_assign(), {}, {}
     for _, root in ipairs(roots) do
         if FS.is_dir(root) then
-            local cmd = "find " .. Shell.shq(root) .. " -mindepth 1 -maxdepth 1 -type d -print 2>/dev/null"
+            local cmd = "find " .. Shell.shq(root) .. " -mindepth 1 -maxdepth 3 -type d -print 2>/dev/null"
             local listing = Shell.popen(cmd, 8) or ""
             for path in listing:gmatch("[^\r\n]+") do
                 local name = path:match("([^/]+)$") or path
