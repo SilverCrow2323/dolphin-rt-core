@@ -180,7 +180,10 @@ function U.vault_off(game, cat_id)
         local set = {}
         if not game or not game.id then return set end
         for _, item in ipairs(require("core.graphics_mods").list_for(game)) do
-            if not item.enabled then set[item.name] = true end
+            if not item.enabled then
+                set[item.name] = true
+                set[item.source .. "|" .. item.path] = true
+            end
         end
         return set
     end
@@ -192,12 +195,14 @@ end
 function U.vault_set_off(game, cat_id, set)
     if cat_id == "GraphicMods" then
         if not game or not game.id then return false, "a game is required" end
+        local Graphics = require("core.graphics_mods")
+        local rows = Graphics.list_for(game)
         local selected = {}
-        for _, item in ipairs(require("core.graphics_mods").list_for(game)) do
-            selected[item.name] = not (set and set[item.name])
+        for _, item in ipairs(rows) do
+            selected[item.source .. "|" .. item.path] =
+                not (set and (set[item.source .. "|" .. item.path] or set[item.name]))
         end
-        return require("core.graphics_mods").set_selection(
-            game, require("core.graphics_mods").list_for(game), selected)
+        return Graphics.set_selection(game, rows, selected)
     end
     local names = {}
     for name in pairs(set) do names[#names + 1] = name end
