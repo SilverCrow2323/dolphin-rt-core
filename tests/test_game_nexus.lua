@@ -70,8 +70,20 @@ end
 package.preload["core.rtcheats"] = function()
     return { load_for = function() return {} end }
 end
+local active_gamesettings = {}
 package.preload["core.gameset_manager"] = function()
-    return { list_for = function() return { { file = "CustomConfig" } } end }
+    return {
+        list_for = function() return { { file = "CustomConfig" } } end,
+        active_for = function(game_id) return active_gamesettings[game_id] end,
+        set_active = function(game_id, filename)
+            active_gamesettings[game_id] = filename
+            return true
+        end,
+        clear_active = function(game_id)
+            active_gamesettings[game_id] = nil
+            return true
+        end,
+    }
 end
 package.preload["core.gameset_loader"] = function()
     return { for_game = function() return { configs = { { filename = "BundledConfig" } } } end }
