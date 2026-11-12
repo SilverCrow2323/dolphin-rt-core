@@ -151,8 +151,6 @@ function M.update(dt)
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
-      local ok_dep, DEP = (function() local ok,m = pcall(require, "core.gamesettings_deployer"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.gamesettings_deployer") end; return ok and m end)()
-      if ok_dep and DEP then pcall(DEP.start) end
       STATE.step = "scan_roms"; STATE.t = 0
     end
 
@@ -175,6 +173,13 @@ function M.update(dt)
       for _, g in ipairs(Library.games or {}) do
         if g.id and g.id ~= "" then STATE.ids[#STATE.ids+1] = g.id end
       end
+    end
+    -- Deploy database presets only after the ROM scan has produced the exact
+    -- GameIDs present on this device. Existing user configs are never replaced.
+    local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
+    if ok_dep and DEP then
+      local ok_start, detail = pcall(DEP.start, Library.games or {})
+      if not ok_start then Hub.push("warning", "GameSettings", tostring(detail), { silent = true, ttl = 5 }) end
     end
     STATE.step = "wait_gamesets"; STATE.t = 0
 
