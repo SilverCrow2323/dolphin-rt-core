@@ -1,4 +1,4 @@
--- Folder diagnostics and the explicit "Registratore Z" workflow.
+-- Folder diagnostics and the explicit "FolderWaker" workflow.
 -- The scanner never mutates a ROM folder. Renaming is a separate, confirmed action.
 local FS = require("core.fs")
 local JSON = require("core.json")
