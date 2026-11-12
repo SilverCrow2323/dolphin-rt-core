@@ -29,6 +29,17 @@ require "$APP_LAUNCH" '--platform=fbdev --video_backend=OGL'
 require "$APP_LAUNCH" 'LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"'
 require "$EXT_LAUNCH" '--platform=fbdev --video_backend=OGL'
 
+# gptokeyb2 uses its native FSM syntax. Never enable its built-in
+# START+SELECT kill binding; Rt:Core Safe Exit owns the M / combo watcher.
+require "$APP_LAUNCH" '"$GPTK_BIN" dolphin -c "$GPTK_CFG" -D states,keyboard'
+require "$EXT_LAUNCH" '"$GPTK_BIN" dolphin -c "$GPTK_CFG" -D states,keyboard'
+if grep -Fq -- '-1 dolphin' "$APP_LAUNCH" "$EXT_LAUNCH"; then
+    echo "FAIL: gptokeyb2 START+SELECT kill mode must remain disabled" >&2
+    exit 1
+fi
+require "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/ext-dolphin.gptk" '[controls:rt_hotkeys]'
+require "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/ext-dolphin.gptk" 'l2 = hold_state rt_hotkeys'
+
 # The updater must reject an incomplete resource payload before packaging.
 require "$PKG" 'font_western.bin'
 require "$PKG" 'font_japanese.bin'
