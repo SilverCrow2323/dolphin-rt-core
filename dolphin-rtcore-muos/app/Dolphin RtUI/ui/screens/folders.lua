@@ -156,7 +156,7 @@ function S.pad(b)
             if row.add then start_browse(false, row.system)
             elseif row.folder_waker_browse then start_browse(true)
             elseif row.folder_waker then start_folder_waker_scan(true) end
-        elseif b == "X" and row and row.idx then
+        elseif b == "R2" and row and row.idx then
             Settings.remove_rom_path(row.idx)
             SFX.play("menu_back")
             show_set()
@@ -335,9 +335,9 @@ function S.draw()
     elseif S.mode == "folder_waker_scan" then
         K.footer({ { key = "A", label = "Review" }, { key = "Y", label = "Review as GC" }, { key = "X", label = "Review as Wii" }, { key = "B", label = "Back" } })
     elseif S.mode == "set" then
-        K.footer({ { key = "A", label = "Open" }, { key = "Y", label = "Add GC" }, { key = "X", label = "Add Wii" }, { key = "B", label = "Done" } })
+        K.footer({ { key = "A", label = "Open" }, { key = "Y", label = "Add GC" }, { key = "X", label = "Add Wii" }, { key = "R2", label = "Remove path" }, { key = "B", label = "Done" } })
     else
-        K.footer({ { key = "A", label = "Open" }, { key = "Y", label = "Add GC" }, { key = "X", label = "Add Wii" }, { key = "B", label = "Done" } })
+        K.footer({ { key = "A", label = "Open" }, { key = "Y", label = "Add GC" }, { key = "X", label = "Add Wii" }, { key = "R2", label = "Remove path" }, { key = "B", label = "Done" } })
     end
 end
 
