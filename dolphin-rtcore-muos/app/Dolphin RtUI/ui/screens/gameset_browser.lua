@@ -235,7 +235,7 @@ function S.pad(b)
         elseif row.kind == "config" then
             SFX.play("menu_select")
             local lines = {}
-            for line in tostring(row.raw_content or ""):gmatch("[^\\n]+") do
+            for line in tostring(row.raw_content or ""):gmatch("[^\n]+") do
                 lines[#lines + 1] = line
             end
             S.preview = { row = row, lines = lines, scroll = 0 }
