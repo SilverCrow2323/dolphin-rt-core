@@ -6,6 +6,7 @@
 # ============================================================
 
 # Multi-button hotkeys use L2 as a modifier.
+# >>> HOTKEY DESIGNER (managed block, edit with the Hotkey Designer)
 l2+a       = F1     # Save State 1
 l2+b       = F2     # Load State 1
 l2+x       = F3     # Save State 2
@@ -18,4 +19,5 @@ l2+left    = F9     # Frame Limit -
 l2+right   = F10    # Frame Limit +
 l2+r2      = F11    # Screenshot
 l2+start   = F12    # Reset
+# <<< HOTKEY DESIGNER
 
