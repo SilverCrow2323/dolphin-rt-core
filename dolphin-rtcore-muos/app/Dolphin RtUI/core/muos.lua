@@ -28,7 +28,7 @@ local function read_mode()
     if not f then return nil end
     local data = f:read("*a") or ""
     f:close()
-    local mode = tonumber(data:match("^%s*MODE%s*=%s*([12])[%s\r\n]*$"))
+    local mode = tonumber(data:match("MODE%s*=%s*([12])%s"))
     if mode == 1 or mode == 2 then return mode end
     return nil
 end
