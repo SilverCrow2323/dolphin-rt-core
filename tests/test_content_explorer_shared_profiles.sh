@@ -92,7 +92,7 @@ echo "Content Explorer shared-profile runtime tests: OK"
  "$GSROOT/GM8E01/rtgameset_data.ini"
 
 # Dolphin receives exactly one native per-game INI, copied from Workshop.
-CONFIG="$TMP/emu/Config/GameSettings"
+CONFIG="$TMP/emu/GameSettings"
 rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" ""
 [[ "$RT_ACTIVE_GAMESET" == "Arcade.ini" ]]
 cmp -s "$GSROOT/GM8E01/Arcade.ini" "$CONFIG/GM8E01.ini"
