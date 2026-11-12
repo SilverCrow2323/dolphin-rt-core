@@ -23,7 +23,7 @@ function M.apply(mode)
     os.execute("mkdir -p data/logs 2>/dev/null")
     local command = "sh " .. sh.shq(TOOL) .. " apply"
     if mode then command = command .. " " .. tostring(mode) end
-    command = command .. " > " .. sh.shq(LOG) .. " 2>&1; sync"
+    command = command .. " > " .. sh.shq(LOG) .. " 2>&1; rc=$?; sync; exit $rc"
     local a, b, c = os.execute(command)
     local ok = a == true or a == 0 or c == 0
     local output = read(LOG)
