@@ -39,6 +39,27 @@ if command -v nmap >/dev/null 2>&1; then
         nmap -n -p 47989 --open -T3 --host-timeout 3s "$route" 2>/dev/null |
             awk '/Nmap scan report for/ {print $NF}' | tr -d '()' | while read -r ip; do add_candidate "$ip"; done
     fi
+else
+    # No nmap dependency: probe the active /24 in parallel using the built-in
+    # curl/wget client. This finds a PC even when ARP has not learned it yet.
+    local_ip="$(ip -4 route get 1.1.1.1 2>/dev/null | sed -n 's/.* src \\([^ ]*\\).*/\\1/p' | head -1)"
+    prefix="${local_ip%.*}"
+    if [ -n "$prefix" ] && command -v xargs >/dev/null 2>&1; then
+        echo "Scanning local subnet $prefix.0/24 for Sunshine..." >> "$OUT"
+        FOUND="$DATA/discover.found"
+        : > "$FOUND"
+        awk -v p="$prefix" -v own="$local_ip" 'BEGIN { for (i=1; i<255; i++) { ip=p "." i; if (ip != own) print ip } }' |
+            xargs -P 24 -I{} sh -c '
+                ip="$1"; out="$2"
+                if command -v curl >/dev/null 2>&1; then
+                    curl -fsS -m 1 -o /dev/null "http://$ip:47989/serverinfo" 2>/dev/null && echo "$ip" >> "$out"
+                elif command -v wget >/dev/null 2>&1; then
+                    wget -q -T 1 -O /dev/null "http://$ip:47989/serverinfo" 2>/dev/null && echo "$ip" >> "$out"
+                fi
+            ' _ {} "$FOUND"
+        while IFS= read -r ip; do [ -n "$ip" ] && add_candidate "$ip"; done < "$FOUND"
+        rm -f "$FOUND"
+    fi
 fi
 
 if [ ! -s "$CAND" ]; then
