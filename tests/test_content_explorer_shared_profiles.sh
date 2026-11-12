@@ -48,6 +48,21 @@ rt_safe_profile_name "Black Screen Fix"
 rt_safe_leaf_name "Performance.ini"
 ! rt_safe_leaf_name "../outside.ini"
 
+# ActiveConfig is the shared, canonical GameSettings selector.
+GSROOT="$TMP/workshop/gamesettings"
+mkdir -p "$GSROOT/GM8E01"
+touch "$GSROOT/GM8E01/Performance.ini"
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = Performance.ini
+INI
+[[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+
 printf 'GM8E01' > "$TMP/test.iso"
 [[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
 
