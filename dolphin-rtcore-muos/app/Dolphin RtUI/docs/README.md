@@ -13,6 +13,8 @@ Compatibility list · Settings · Diagnostics · **Rt:Core Env Triage** · About
 
 Scans candidate directories for GameCube/Wii images, spots folders hidden by muOS rules or missing a system alias, and offers a confirmed `Rt` rename + alias-registration action. Scanning itself is read-only; it never renames folders automatically.
 
+**Why rename instead of symlink?** muOS Content Explorer's storage collector indexes real directory and regular-file entries; symbolic-link entries are skipped. In addition, exFAT ROM partitions cannot store POSIX symlinks. FolderWaker therefore renames only the directory entry (not the ROM files), then registers the alias; if registration fails, it rolls the name back. See the [muOS storage collector](https://github.com/MustardOS/frontend/blob/main/common/storage/union.c) and the [muOS symlink discussion](https://community.muos.dev/t/possible-to-create-folder-symbolic-link-for-box-art/64).
+
 ## Controls
 D-pad move (hold to scroll) · A select/play · B back · X options · Y favourite ·
 L1/R1 filter or tab · L2/R2 letter jump · START settings · MENU system drawer.
