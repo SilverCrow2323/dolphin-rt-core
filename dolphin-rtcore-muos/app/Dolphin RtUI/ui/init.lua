@@ -359,6 +359,13 @@ function M.current() return current_name end
 -- ── logical dispatch ────────────────────────────────────────
 local function dispatch(lg)
     if not lg then return end
+    -- SELECT globally switches between RTUI and Rt:Stream; START+SELECT
+    -- remains intercepted earlier as the system quit chord.
+    if lg == "SELECT" and not Modal.is_open() and current_name ~= "boot" then
+        local target = (current_name == "stream_library" or current_name == "stream_settings") and "library" or "stream_library"
+        M.go(target, nil, { no_push = true })
+        return
+    end
     local ok_sp, SP = pcall(require, "ui.system_panel")
     if ok_sp and SP then
         if SP.is_open() then SP.pad(lg); return end
