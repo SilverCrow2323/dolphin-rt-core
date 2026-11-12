@@ -109,6 +109,7 @@ local function build_grouped(tab_id)
                         table.insert(grp.regions, {
                             id = gid, region = region_of(gid),
                             n_cfg = n, in_lib = lib[gid] ~= nil,
+                            db_configs = entry.configs or {},
                         })
                     end
                 end
@@ -135,7 +136,18 @@ local function build_grouped(tab_id)
                     title = grp.title,
                     id = r.id, region = r.region,
                     n_cfg = r.n_cfg, in_lib = r.in_lib,
+                    n_db_cfg = #(r.db_configs or {}),
                 }
+                for _, cfg in ipairs(r.db_configs or {}) do
+                    rows[#rows+1] = {
+                        kind = "config",
+                        title = cfg.title or cfg.filename or "GameSettings",
+                        author = cfg.author or "Community",
+                        description = cfg.description or "",
+                        filename = cfg.filename,
+                        id = r.id,
+                    }
+                end
             end
         end
     end
@@ -206,7 +218,7 @@ function S.pad(b)
             S.expanded[row.title] = not S.expanded[row.title]
             SFX.play("menu_flip")
             refresh()
-        elseif row.kind == "region" then
+        elseif row.kind == "region" or row.kind == "config" then
             SFX.play("menu_select")
             require("ui").go("gameset_explorer", { game_id = row.id, game_title = row.title })
         end
@@ -260,11 +272,16 @@ local function draw_row(row, x, y, w, h, focused)
     elseif row.kind == "region" then
         K.region_flag(row.region, x + 30, y + h/2 - 10, 40, 20)
         K.id_plate(row.id, x + 78, y + h/2 - 10, 90, 20)
-        if row.n_cfg and row.n_cfg > 0 then
-            K.text("small", row.n_cfg .. " cfg", x + w - 64, y + h/2 - 8, K.C.ok)
+        if row.n_db_cfg and row.n_db_cfg > 0 then
+            K.text("small", row.n_db_cfg .. " in DB", x + w - 90, y + h/2 - 8, K.acc)
         elseif row.in_lib then
             K.text("small", "in library", x + w - 90, y + h/2 - 8, K.C.dim)
         end
+    elseif row.kind == "config" then
+        K.text("small", "↳", x + 48, y + h/2 - 8, K.C.faint)
+        K.text("small", K.clip("small", row.title, w - 230), x + 66, y + h/2 - 8,
+               focused and K.C.text or K.C.dim)
+        K.text("small", K.clip("small", row.author, 110), x + w - 130, y + h/2 - 8, K.C.faint)
     end
 end
 
