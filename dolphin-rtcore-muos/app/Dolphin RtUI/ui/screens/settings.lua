@@ -59,11 +59,17 @@ local function tog(label, key, default, after)
 end
 
 local function rescan()
+    if S.rescanning then
+        Notify.show("info", "ROM scan already running")
+        return
+    end
+    local ok, err = pcall(Library.scan_begin)
+    if not ok then
+        Notify.show("error", "Could not start ROM scan: " .. tostring(err))
+        return
+    end
+    S.rescanning, S.rescan_error = true, nil
     Notify.show("scan", "Scanning ROM folders…")
-    local ok = pcall(Library.scan)
-    U.card_reset()
-    Notify.show(ok and "success" or "error",
-        ok and (#Library.games .. " games found") or "Scan failed")
 end
 
 local function sync_all_gamesettings()
@@ -234,6 +240,15 @@ function S.update(dt)
     S.sec_t = math.min(1, S.sec_t + dt * 5)
     S.list:update(dt)
     Updater.poll()
+    if S.rescanning then
+        local ok, done = pcall(Library.scan_step, 0.006)
+        if not ok or done then
+            S.rescanning = false
+            U.card_reset()
+            Notify.show(ok and "success" or "error",
+                ok and (#Library.games .. " games found") or ("Scan failed: " .. tostring(done)))
+        end
+    end
     if S.list.sel ~= S._last_sel then S._last_sel = S.list.sel; S._sel_t = 0 end
     S._sel_t = S._sel_t + dt
 end
