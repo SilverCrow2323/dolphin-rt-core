@@ -137,6 +137,7 @@ local function enabled_map(profile)
 end
 
 function M.list_for(game)
+    M.restore_legacy_user_mods()
     local emu = emu_root()
     local game_id = game and tostring(game.id or ""):upper() or nil
     if game_id and not game_id:match("^[A-Z0-9]+$") then return {} end
