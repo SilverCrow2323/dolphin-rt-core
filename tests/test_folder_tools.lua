@@ -2,6 +2,16 @@
 package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;dolphin-rtcore-muos/app/Dolphin RtUI/?/init.lua;" .. package.path
 
 local Tools = require("core.folder_tools")
+local FS = require("core.fs")
+local Shell = require("core.shell")
+local Settings = require("core.settings")
+
+local original = {
+    is_dir = FS.is_dir,
+    first = Shell.first,
+    roots = Settings.rom_root_candidates,
+    data = Settings.data,
+}
 
 local function expect(ok, message)
     if not ok then error(message or "assertion failed", 2) end
@@ -48,4 +58,22 @@ expect(double_prefix == nil, "already Rt-prefixed folders must not be prefixed a
 
 local rejected = Tools.preview({ path = "/mnt/roms/Wii" }, nil)
 expect(rejected == nil, "ambiguous folders require explicit platform selection")
+
+-- Manual folder selection must diagnose the exact selected path, not only
+-- folders found by the automatic candidate-name scan.
+Settings.data = { rom_paths = {} }
+Settings.rom_root_candidates = function() return { "/mnt/roms" } end
+FS.is_dir = function(path) return path == "/mnt/roms/GameCubeZ" end
+Shell.first = function(command)
+    if command:find("find ", 1, true) then return "/mnt/roms/GameCubeZ/game.rvz" end
+    return nil
+end
+local inspected, inspect_err = Tools.inspect("/mnt/roms/GameCubeZ")
+expect(inspected ~= nil, inspect_err or "manual folder inspection")
+expect(inspected.inferred_system == "GC", "manual folder system inference")
+expect(inspected.has_roms == true, "manual folder disc image probe")
+expect(inspected.status == "unmapped", "manual folder reports missing assignment separately")
+FS.is_dir, Shell.first = original.is_dir, original.first
+Settings.rom_root_candidates, Settings.data = original.roots, original.data
+
 print("Registratore Z folder-tool tests: OK")
