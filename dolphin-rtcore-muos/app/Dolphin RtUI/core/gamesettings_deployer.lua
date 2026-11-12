@@ -7,9 +7,11 @@ local queue, index, deployed, started = {}, 1, 0, false
 
 function M.start(games)
     queue, index, deployed, started = {}, 1, 0, true
+    local seen = {}
     for _, game in ipairs(games or {}) do
         local id = game and game.id
-        if type(id) == "string" and id:match("^[%w][%w][%w][%w][%w][%w]$") then
+        if type(id) == "string" and id:match("^[%w][%w][%w][%w][%w][%w]$") and not seen[id] then
+            seen[id] = true
             local entry = Loader.for_game(id)
             if entry then queue[#queue + 1] = { id = id, entry = entry } end
         end
