@@ -24,6 +24,7 @@
 | Install or upgrade on muOS | [[Quick-Start]] · [[muOS-Registration]] |
 | Understand controller numbering and Safe Exit | [[Controller-Input]] |
 | Browse the Rt:UI screen captures | [[Interface-Gallery]] |
+| Understand overlay vs full engine packages | [[Release-Packages]] |
 | Select Jacaranda / Andromeda behaviour | [[muOS-Firmware-Profiles]] |
 | Find a GameCube/Wii result | [[Compatibility-Database]] |
 | Understand ratings and FPS | [[Rating-Guide]] |
