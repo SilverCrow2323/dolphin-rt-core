@@ -48,6 +48,7 @@ function S.enter(p)
     p = p or {}
     S.t, S.game = 0, p.game
     S.rows, S.off, S.sel_by_tab = {}, {}, {}
+    if S.game then pcall(U.migrate_legacy_graphic_mods, S.game) end
     local titles = S.game and U.vault_titles(S.game) or nil
     for i, cat in ipairs(Mods.CATS) do
         S.rows[i] = Mods.for_game(cat, S.game, titles)
