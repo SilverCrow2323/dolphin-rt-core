@@ -62,7 +62,10 @@ ActiveConfig = Performance.ini
 INI
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
 
-touch "$GSROOT/GM8E01/Arcade.ini"
+cat > "$GSROOT/GM8E01/Arcade.ini" <<'INI'
+[Core]
+Overclock = 0.9
+INI
 rt_write_active_gameset "GM8E01" "$GSROOT" "Arcade.ini"
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Arcade.ini" ]]
 grep -q '^Enabled = yes
@@ -93,16 +96,126 @@ echo "Content Explorer shared-profile runtime tests: OK"
 
 # Dolphin receives exactly one native per-game INI, copied from Workshop.
 CONFIG="$TMP/emu/GameSettings"
-rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" ""
+rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" "" "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/tools/project_gamesettings.py"
 [[ "$RT_ACTIVE_GAMESET" == "Arcade.ini" ]]
 cmp -s "$GSROOT/GM8E01/Arcade.ini" "$CONFIG/GM8E01.ini"
 
-rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" "Performance.ini"
+# Add an Rt-owned block to the previous runtime INI; the new Workshop
+# source must replace normal settings but retain only this tagged cheat block.
+cat >> "$CONFIG/GM8E01.ini" <<'INI'
+
+[Gecko]
+$[Rt] Speed Patch
+04000000 12345678
+
+[Gecko_Enabled]
+$[Rt] Speed Patch
+INI
+rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" "Performance.ini" "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/tools/project_gamesettings.py"
 [[ "$RT_ACTIVE_GAMESET" == "Performance.ini" ]]
+grep -q '^Overclock = 0.9
 cmp -s "$GSROOT/GM8E01/Performance.ini" "$CONFIG/GM8E01.ini"
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
 
-rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" "Disabled"
+rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" "Disabled" "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/tools/project_gamesettings.py"
+[[ ! -e "$CONFIG/GM8E01.ini" ]]
+[[ -z "$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)" ]]
+
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+
+printf 'GM8E01' > "$TMP/test.iso"
+[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
+
+python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
+from pathlib import Path
+import sys
+Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
+Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
+Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
+PY
+[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
+touch "$TMP/packed [GM8E01].gcz"
+[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
+
+echo "Content Explorer shared-profile runtime tests: OK"
+ "$CONFIG/GM8E01.ini"
+grep -q '^\$\[Rt\] Speed Patch
+cmp -s "$GSROOT/GM8E01/Performance.ini" "$CONFIG/GM8E01.ini"
+[[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
+
+rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" "Disabled" "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/tools/project_gamesettings.py"
+[[ ! -e "$CONFIG/GM8E01.ini" ]]
+[[ -z "$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)" ]]
+
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+
+printf 'GM8E01' > "$TMP/test.iso"
+[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
+
+python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
+from pathlib import Path
+import sys
+Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
+Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
+Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
+PY
+[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
+touch "$TMP/packed [GM8E01].gcz"
+[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
+
+echo "Content Explorer shared-profile runtime tests: OK"
+ "$CONFIG/GM8E01.ini"
+grep -q '^04000000 12345678
+cmp -s "$GSROOT/GM8E01/Performance.ini" "$CONFIG/GM8E01.ini"
+[[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
+
+rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" "Disabled" "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/tools/project_gamesettings.py"
+[[ ! -e "$CONFIG/GM8E01.ini" ]]
+[[ -z "$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)" ]]
+
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+
+printf 'GM8E01' > "$TMP/test.iso"
+[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
+
+python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
+from pathlib import Path
+import sys
+Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
+Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
+Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
+PY
+[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
+touch "$TMP/packed [GM8E01].gcz"
+[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
+
+echo "Content Explorer shared-profile runtime tests: OK"
+ "$CONFIG/GM8E01.ini"
+cmp -s "$GSROOT/GM8E01/Performance.ini" "$CONFIG/GM8E01.ini"
+[[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
+
+rt_project_active_gameset "GM8E01" "$GSROOT" "$CONFIG" "Disabled" "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/tools/project_gamesettings.py"
 [[ ! -e "$CONFIG/GM8E01.ini" ]]
 [[ -z "$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)" ]]
 
