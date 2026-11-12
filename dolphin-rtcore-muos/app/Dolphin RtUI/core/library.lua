@@ -12,10 +12,7 @@ M.games       = {}       -- { id, path, file, title, system, region, size }
 M.scanned_at  = 0
 M.last_count  = 0
 
-local EXTS = {
-  gc  = { "iso", "gcm", "rvz", "gcz", "ciso" },
-  wii = { "iso", "rvz", "wbfs", "wia", "gcz" },
-}
+local EXTS = { "iso", "gcm", "rvz", "gcz", "ciso", "wbfs", "wia" }
 
 local VALID_ID = "^[A-Z][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]$"
 
@@ -137,23 +134,22 @@ local function system_from_id(id)
   return SysDetect.from_id(id)
 end
 
-local function find_files(root, system, depth)
-  local exts = EXTS[system:lower()] or EXTS.gc
+local function find_files(root, depth)
   local clauses = {}
-  for _, e in ipairs(exts) do
-    clauses[#clauses+1] = "-iname '*." .. e .. "'"
-  end
+  for _, ext in ipairs(EXTS) do clauses[#clauses + 1] = "-iname '*." .. ext .. "'" end
   local pattern = table.concat(clauses, " -o ")
   local cmd = string.format(
     "find %s -maxdepth %d -type f \\( %s \\) 2>/dev/null",
-    Shell.shq(root), depth or 4, pattern)
+    Shell.shq(root), depth or 8, pattern)
   local out = Shell.popen(cmd, 8)
   if not out then return {} end
   local files = {}
-  for line in out:gmatch("[^\n]+") do
-    if line ~= "" then files[#files+1] = line end
+  for line in out:gmatch("[^\\n]+") do
+    if line ~= "" then files[#files + 1] = line end
   end
   return files
+end
+
 end
 
 -- ── scan ───────────────────────────────────────────────────────────
@@ -183,21 +179,27 @@ end
 function M.scan_begin()
   M.games = {}
   _queue, _qi, _seen = {}, 1, {}
-  -- Always validate first-run discovery: previous releases could leave stale
-  -- default folders in settings.json, which must not suppress mount probing.
-  if Settings.auto_discover_rom_paths then
-    local ok, err = pcall(Settings.auto_discover_rom_paths)
-    if not ok then print("[RtUI] ROM auto-discovery failed: " .. tostring(err)) end
-  end
   local paths = Settings.get("rom_paths") or {}
   local depth = math.max(8, tonumber(Settings.get("scan_depth")) or 8)
+  local roots, root_seen = {}, {}
+  local function path_key(path)
+    local clean = tostring(path or ""):gsub("/+$", "")
+    local real = Shell.first("readlink -f " .. Shell.shq(clean), 3)
+    if type(real) == "string" and real ~= "" then clean = real end
+    return clean:lower()
+  end
   for _, entry in ipairs(paths) do
     if entry.path and FS.is_dir(entry.path) then
-      for _, path in ipairs(find_files(entry.path, entry.system, depth)) do
-        if not _seen[path] then
-          _seen[path] = true
-          _queue[#_queue + 1] = { path = path, entry = entry }
-        end
+      local key = path_key(entry.path)
+      if not root_seen[key] then root_seen[key] = true; roots[#roots + 1] = entry end
+    end
+  end
+  for _, entry in ipairs(roots) do
+    for _, path in ipairs(find_files(entry.path, depth)) do
+      local key = path_key(path)
+      if not _seen[key] then
+        _seen[key] = true
+        _queue[#_queue + 1] = { path = path, entry = entry }
       end
     end
   end
