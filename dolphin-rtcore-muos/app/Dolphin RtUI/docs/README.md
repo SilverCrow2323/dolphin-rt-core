@@ -12,7 +12,12 @@ Compatibility list · Settings · Diagnostics · **Rt:Core Env Triage** · About
 ## Controls
 D-pad move (hold to scroll) · A select/play · B back · X options · Y favourite ·
 L1/R1 filter or tab · L2/R2 letter jump · START settings · MENU system drawer.
-Safe Exit defaults to MENU / M; edit the combo in Settings → Safe Exit.
+Safe Exit defaults to START + SELECT; MENU / M is the allowed single-button custom exit. Edit the combo in Settings → Safe Exit.
+
+
+## Firmware and controller mapping
+
+The System settings include a muOS profile selector: Auto, `= Andromeda`, and `!= Andromeda`. Jacaranda belongs to the non-Andromeda branch and keeps the initial EV_KEY map; Andromeda uses the alternative map. RTUI, joydev Safe Exit, and Dolphin SDL controller profiles use distinct input layers—never copy their button numbers between layers. See the repository [Controller input reference](../../../../docs/CONTROLLER_INPUT.md) and [Hotkeys / Safe Exit](../../../../docs/HOTKEYS.md).
 
 ## Layout
 - `ui/` — design system (`kit.lua`), navigation (`init.lua`), screens.
