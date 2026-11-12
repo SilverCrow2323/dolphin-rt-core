@@ -2,6 +2,22 @@
 set -eu
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI"
+# Shared handheld chrome: controller-shaped face keys and separated header lanes.
+grep -Fq 'local FACE_KEYS' "$APP/ui/kit.lua"
+grep -Fq 'A = { color = { 0.91, 0.20, 0.27 }' "$APP/ui/kit.lua"
+grep -Fq 'B = { color = { 0.97, 0.75, 0.16 }' "$APP/ui/kit.lua"
+grep -Fq 'X = { color = { 0.20, 0.48, 0.96 }' "$APP/ui/kit.lua"
+grep -Fq 'Y = { color = { 0.20, 0.70, 0.39 }' "$APP/ui/kit.lua"
+grep -Fq 'function K.header(title, sub, right, opts)' "$APP/ui/kit.lua"
+grep -Fq 'local max_title = K.W - m - tx - (right_w > 0 and right_w + 14 or 0)' "$APP/ui/kit.lua"
+grep -Fq 'local strip_x = K.W - m - strip_w' "$APP/ui/screens/settings.lua"
+grep -Fq 'K.clip("xl", category.label, strip_x - tx - 24)' "$APP/ui/screens/settings.lua"
+# Rt:Stream's vaporwave chrome exposes all three views on the handheld display.
+grep -Fq 'local function draw_vaporwave_backdrop()' "$APP/ui/screens/stream_library.lua"
+grep -Fq 'local function draw_stream_header()' "$APP/ui/screens/stream_library.lua"
+grep -Fq 'local VIEWS   = { "FLOW", "GRID", "LIST" }' "$APP/ui/screens/stream_library.lua"
+grep -Fq 'view_w, view_gap = 76, 5' "$APP/ui/screens/stream_library.lua"
+grep -Fq 'key = "SELECT", label = "Sort"' "$APP/ui/screens/stream_library.lua"
 grep -Fq 'local END_FRAME = (Mascot.FRAMES or 120) - 1' "$APP/ui/screens/boot.lua"
 grep -Fq 'local INTRO_LIMIT = { full = 5.5, quick = 2.8, off = 0.35 }' "$APP/ui/screens/boot.lua"
 grep -Fq 'love.timer.getTime() - (S.started_at' "$APP/ui/screens/boot.lua"
