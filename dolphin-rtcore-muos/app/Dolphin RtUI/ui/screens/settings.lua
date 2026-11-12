@@ -33,7 +33,7 @@ local CATS = {
     { id = "EDITORS", label = "Editors",         color = "boost", icon = "profile" },
     { id = "DISPLAY", label = "Display & Sound", color = "teal",  icon = "screen" },
     { id = "SYSTEM",  label = "System",          color = "lime",  icon = "gear" },
-    { id = "TOOLS",   label = "Tools & Diagnostics", color = "hot", icon = "tools" },
+    { id = "TOOLS",   label = "Tools & Diagnostics", color = "hot", icon = "info" },
 }
 S.cats = CATS
 
@@ -209,7 +209,7 @@ local function sections()
             { kind = "action", label = "Controller hotkeys", icon = "hotkeys",
               sub = "L2 modifier and shortcuts",
               run = function() require("ui").go("hotkeys", {}) end },
-            { kind = "action", label = "Safe Exit", icon = "power",
+            { kind = "action", label = "Safe Exit", icon = "hotkeys",
               sub = function() return require("core.safe_exit").describe() end,
               run = function() require("ui").go("safe_exit", {}) end },
             { kind = "action", label = "Diagnostics & logs", icon = "list", editor_label = "Viewer",
