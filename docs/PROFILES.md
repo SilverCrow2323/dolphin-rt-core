@@ -95,7 +95,7 @@ Use Dolphin GameINI sections such as `[Core]`, `[Video_Settings]`,
 3. The selected core profile is projected to `Config/Dolphin.ini` and
    `Config/GFX.ini`.
 4. The single active GameSettings preset is copied to
-   `Config/GameSettings/<ID>.ini` (or removed when disabled).
+   `GameSettings/<ID>.ini` in Dolphin's user root (or removed when disabled).
 5. Controller, hotkeys, logging and selected mods are projected from their
    Workshop/Load sources.
 6. Dolphin starts with `-u <emu_dir> -e <rom>`.
