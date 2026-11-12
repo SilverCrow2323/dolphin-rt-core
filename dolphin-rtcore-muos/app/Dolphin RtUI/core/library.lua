@@ -190,7 +190,7 @@ function M.scan_begin()
     if not ok then print("[RtUI] ROM auto-discovery failed: " .. tostring(err)) end
   end
   local paths = Settings.get("rom_paths") or {}
-  local depth = Settings.get("scan_depth") or 4
+  local depth = Settings.get("scan_depth") or 8
   for _, entry in ipairs(paths) do
     if entry.path and FS.is_dir(entry.path) then
       for _, path in ipairs(find_files(entry.path, entry.system, depth)) do
