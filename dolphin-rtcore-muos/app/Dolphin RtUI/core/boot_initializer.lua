@@ -266,6 +266,8 @@ end
 function M.is_done() return STATE.step == "done" end
 function M.step()    return STATE.step end
 function M.needs_rom_setup() return STATE.rom_setup_needed == true end
+function M.is_scan_pending() return STATE.step == "scan_roms" end
+function M.is_scan_running() return STATE.step == "scan_roms" and STATE.scan_started == true end
 
 M._spawn_dl = spawn_dl      -- esposto per i test
 
