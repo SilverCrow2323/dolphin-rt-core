@@ -12,7 +12,7 @@ local ok_bi, BI = pcall(require, "core.boot_initializer")
 local S = {}
 local LABEL = { update_check = "Checking for updates", scan_roms = "Scanning ROM folders",
                 build_rtid = "Building game cards", done = "Ready", idle = "Starting" }
-local END_FRAME = 98                       -- a beat after the lightning
+local END_FRAME = Mascot.FRAMES             -- complete the full 2.5D animation once
 
 function S.enter()
     S.t, S.going, S.flash = 0, false, 0
@@ -37,15 +37,16 @@ end
 function S.update(dt)
     S.t = S.t + dt
     local frame = S.t * Mascot.FPS * S.speed
-    local ready = (not ok_bi) or (BI.is_done and BI.is_done())
     if S.mode == "off" or not S.have then
-        if ready or S.t > 5 then proceed() end
+        -- The intro is presentation, not a gate: never require controller input
+        -- or wait for network/update jobs before entering the application.
+        if S.t >= 0.20 then proceed() end
         return
     end
     -- lightning flash around the hit frame
     local d = math.abs(frame - Mascot.HIT)
     S.flash = d < 5 and (1 - d / 5) or 0
-    if (ready and frame >= END_FRAME) or S.t > 9 then proceed() end
+    if frame >= END_FRAME then proceed() end
 end
 
 function S.pad(b) if b == "A" and S.t > 0.5 then proceed() end end
