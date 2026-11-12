@@ -128,41 +128,66 @@ end
 -- GameCube/Wii roots are split correctly without guessing from folder names.
 -- No directory is created, renamed, moved, or modified by this routine.
 function M.auto_discover_rom_paths()
-  local current = M.data.rom_paths or {}
-  if #current > 0 then
-    if not M.data.rom_discovery_done then
-      M.data.rom_discovery_done = true
-      M.save()
-    end
-    return 0
-  end
-  if M.data.rom_discovery_done == true then return 0 end
-
-  local found, seen = 0, {}
-  local extensions = [[\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \)]]
-  for _, path in ipairs(M.rom_root_candidates()) do
-    if FS.is_dir(path) then
-      local real = Shell.first("readlink -f " .. Shell.shq(path), 4)
-      if type(real) ~= "string" or real == "" then real = path end
-      if not seen[real] then
-        local cmd = "find " .. Shell.shq(real) .. " -maxdepth 5 -type f "
-          .. extensions .. " -print -quit 2>/dev/null"
+  if M.data.rom_discovery_done == true then
+    -- Older releases marked discovery complete merely because rom_paths was
+    -- non-empty. Validate those entries before trusting the marker.
+    local current = M.data.rom_paths or {}
+    local valid = false
+    for _, entry in ipairs(current) do
+      if entry.path and FS.is_dir(entry.path) then
+        local cmd = "find " .. Shell.shq(entry.path) .. " -maxdepth 5 -type f "
+          .. [[\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \)]]
+          .. " -print -quit 2>/dev/null"
         local sample = Shell.first(cmd, 8)
-        if type(sample) == "string" and sample ~= "" then
-          seen[real] = true
-          M.add_rom_path(real, "GC")
-          M.add_rom_path(real, "Wii")
-          found = found + 1
-        end
+        if type(sample) == "string" and sample ~= "" then valid = true; break end
       end
     end
+    if valid then return 0 end
+    M.data.rom_discovery_done = false
   end
 
-  if found > 0 then
+  local current = M.data.rom_paths or {}
+  local valid_current, checked = false, {}
+  local function contains_roms(path)
+    if type(path) ~= "string" or path == "" or not FS.is_dir(path) then return false end
+    local real = Shell.first("readlink -f " .. Shell.shq(path), 4)
+    if type(real) ~= "string" or real == "" then real = path end
+    if checked[real] ~= nil then return checked[real], real end
+    local extensions = [[\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \)]]
+    local cmd = "find " .. Shell.shq(real) .. " -maxdepth 5 -type f " ..
+      extensions .. " -print -quit 2>/dev/null"
+    local sample = Shell.first(cmd, 8)
+    checked[real] = type(sample) == "string" and sample ~= ""
+    return checked[real], real
+  end
+
+  for _, entry in ipairs(current) do
+    local has = contains_roms(entry.path)
+    if has then valid_current = true end
+  end
+  if valid_current then
     M.data.rom_discovery_done = true
     M.save()
+    return 0
   end
+
+  -- Stale defaults / paths from older installations are not trusted. Probe
+  -- the actual muOS ROM mount and known fallback mounts instead of stopping
+  -- just because settings.json contains two obsolete folder names.
+  local found, seen = 0, {}
+  for _, path in ipairs(M.rom_root_candidates()) do
+    local has, real = contains_roms(path)
+    if has and not seen[real] then
+      seen[real] = true
+      local before = #M.data.rom_paths
+      M.add_rom_path(real, "GC")
+      M.add_rom_path(real, "Wii")
+      if #M.data.rom_paths > before then found = found + 1 end
+    end
+  end
+
+  M.data.rom_discovery_done = (found > 0)
+  M.save()
   return found
 end
-
 return M
