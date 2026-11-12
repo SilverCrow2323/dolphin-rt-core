@@ -207,7 +207,7 @@ end
 
 local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
-    if r.add or r.autodetect or r.registrator then
+    if r.add or r.autodetect or r.registrator or r.registrator_browse then
         K.text("body", r.label, x + 14, y + h / 2 - 9, focused and K.acc or K.C.dim)
     elseif r.idx then
         K.text("body", K.clip("body", r.path, w - 110), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
