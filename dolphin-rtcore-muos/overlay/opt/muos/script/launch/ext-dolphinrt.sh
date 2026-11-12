@@ -50,7 +50,7 @@ SET_VAR "system" "foreground_process" "dolphin"
 HOTKEY_DEVICE=""
 if [ -s "$HOTKEYS_INI" ]; then
     cp -f "$HOTKEYS_INI" "$EMUDIR/Config/Hotkeys.ini"
-    HOTKEY_DEVICE="$(sed -n 's/^[[:space:]]*Device[[:space:]]*=[[:space:]]*//Ip' "$HOTKEYS_INI" | head -n 1 | tr -d '\r')"
+    HOTKEY_DEVICE="$(awk -F= 'tolower($1) ~ /^[[:space:]]*device[[:space:]]*$/ { gsub(/[[:space:]]/, "", $2); print $2; exit }' "$HOTKEYS_INI" 2>/dev/null)"
 else
     rm -f "$EMUDIR/Config/Hotkeys.ini"
 fi
