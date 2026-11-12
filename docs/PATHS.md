@@ -15,13 +15,18 @@ code resolves inside `frontend/`.
 /opt/muos/share/emulator/dolphin/Config/GameSettings/<ID>.ini
 ```
 
-These are copied from `workshop/` at launch time by
-`profile_manager.lua`.
+These are the live runtime projection read by Dolphin. The shared launcher
+builds them from the canonical editable sources under `workshop/` immediately
+before starting a game. Do not edit these active files as profile masters.
+
+Legacy files such as `Dolphin.ini.<profile>` and `GFX.ini.<profile>` are kept
+for compatibility/bootstrap during migration; the shared Content Explorer and
+Rt:UI launch path does not use them as the selected profile catalogue.
 
 ## 2. Workshop (managed by DolphinUI)
 
 ```
-workshop/base/                     Baseline INIs
+workshop/base/                     Legacy/shared INI baseline (migration compatibility)
 workshop/rtcoreprofile/<name>/     Rt:Core profiles
 workshop/controller/GameCube/<n>/  GC controller layouts
 workshop/controller/Wii/<n>/       Wii controller layouts
@@ -32,15 +37,29 @@ workshop/snapshots/                Snapshot files
 workshop/flashback/<id>/           Full config backups
 ```
 
+
+The same `workshop/` catalogue is used by both launch routes. The Content
+Explorer adapter resolves its selected external-core slug and ROM GameID, reads
+optional `workshop/gameslibrary/rtid_<ID>.ini` launch overrides, and invokes
+`scripts/launch.sh`. Rt:UI passes its selections to that same script directly.
+`RtSys` remains the muOS compatibility/registration layer; it is not a second
+editable profile store.
+
 ## 3. Dolphin resources
 
 ```
-/opt/muos/share/emulator/dolphin/Load/GraphicMods/   Graphics mods
-/opt/muos/share/emulator/dolphin/Load/Textures/<ID>/ HD texture packs
+/opt/muos/share/emulator/dolphin/Load/GraphicMods/   Installed graphic mods
+/opt/muos/share/emulator/dolphin/Load/Textures/<ID>/ Installed HD texture packs
 /opt/muos/share/emulator/dolphin/StateSaves/         Save states
 /opt/muos/share/emulator/dolphin/GC/USA|EUR|JAP/     GameCube BIOS
 /opt/muos/share/emulator/dolphin/Wii/title/          Wii NAND dump
 ```
+
+
+`Load/` is Dolphin's single active resource root, not a second profile
+catalogue. Rt:UI stores selection/activation plans in its data and per-game
+RTID cards, then prepares the existing `Load/` tree before launch. Do not keep
+a second copy of the same installed mod under Config or RtSys.
 
 ## 4. Runtime data
 
