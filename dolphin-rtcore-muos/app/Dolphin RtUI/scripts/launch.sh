@@ -196,18 +196,9 @@ log "profile resolved: $PROFILE tier=${VARIANT:-none} family=$IS_FAMILY"
 # ── 3. Device baseline (RtSys) ──────────────────────────────
 # Use the matching RtSys profile when there is one, otherwise "default".
 if [ -x "$RTSYS/apply_profile.sh" ]; then
+    # RtSys supplies firmware/device compatibility only. The selected core
+    # profile is read exclusively from workshop/rtcoreprofile below.
     RT_NAME="default"
-    if [ -d "$RTSYS/Config" ]; then
-        want="$(printf '%s' "$PROFILE" | tr 'A-Z ' 'a-z_')"
-        for cand in "${want}-${VARIANT}" "${want}_${VARIANT}" "$want"; do
-            [ -z "$VARIANT" ] && [ "$cand" != "$want" ] && continue
-            for d in "$RTSYS/Config"/*/; do
-                [ -d "$d" ] || continue
-                nm="$(basename "$d")"
-                if [ "$(printf '%s' "$nm" | tr 'A-Z ' 'a-z_')" = "$cand" ]; then RT_NAME="$nm"; break 2; fi
-            done
-        done
-    fi
     if "$RTSYS/apply_profile.sh" "$RT_NAME" "$ORIENT" "$NUMSTICKS" >> "$LOG" 2>&1; then
         log "RtSys baseline applied: $RT_NAME $ORIENT sticks=$NUMSTICKS"
     else
