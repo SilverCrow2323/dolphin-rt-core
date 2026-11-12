@@ -132,7 +132,7 @@ function S.draw()
     if S.capturing then
         K.footer({ { key = "PRESS", label = "Buttons to combine" }, { key = "WAIT 1s", label = "Auto-save" }, { key = "ESC", label = "Cancel" } })
     else
-        K.footer({ { key = "A", label = "Record combination" }, { key = "Y", label = "Reset to M" }, { key = "B", label = "Back" } })
+        K.footer({ { key = "A", label = "Record combination" }, { key = "Y", label = "Reset default" }, { key = "B", label = "Back" } })
     end
 end
 
