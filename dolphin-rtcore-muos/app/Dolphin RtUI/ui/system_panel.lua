@@ -87,7 +87,7 @@ local function stream_state(health, configured, pending)
     if pending then return "CHECKING", C.cyan end
     local state = tostring(health or "unknown"):lower()
     if state == "online" or state == "ok" or state == "ready" then return "ONLINE", C.green end
-    if state == "offline" or state == "error" or state == "failed" then return "OFFLINE", C.red end
+    if state == "offline" or state == "error" or state == "failed" or state == "fail" then return "OFFLINE", C.red end
     return "UNKNOWN", C.faint
 end
 
@@ -211,6 +211,17 @@ local function refresh_items()
         dep_status, dep_color, dep_detail = "WAITING", C.faint, "Deployment follows database download"
     end
     add_status("GameSettings Deployment", dep_status, dep_color, dep_detail, "gamesets")
+
+    local cheat = boot.cheats or {}
+    local cheat_labels = {
+        running = {"DOWNLOADING", C.cyan, "Checking per-game cheat and boost files"},
+        complete = {"READY", C.green, "Cheat database check completed"},
+        timeout = {"TIMEOUT", C.amber, "Some titles may not have refreshed"},
+        unavailable = {"UNAVAILABLE", C.amber, "Cheat downloader could not start"},
+        waiting = {"WAITING", C.faint, "Runs after GameSettings deployment"},
+    }
+    local cheat_row = cheat_labels[cheat.status or "waiting"] or cheat_labels.waiting
+    add_status("Cheats & Boost Data", cheat_row[1], cheat_row[2], cheat_row[3], "cheats")
 
     local lib_count, lib_detail = 0, "Library not scanned"
     local ok_lib, Library = pcall(require, "core.library")
@@ -382,7 +393,7 @@ end
 
 local function draw_section(item, x, y, w)
     local f = font("JetBrainsMono-Bold.ttf", 11)
-    text(item.title, x + 2, y + 2, f, C.cyan)
+    text(item.title, x + 2, y + 1, font("JetBrainsMono-Bold.ttf", 12), C.cyan)
     color(C.line, 0.75)
     love.graphics.rectangle("fill", x + 4 + f:getWidth(item.title), y + 9,
         math.max(8, w - f:getWidth(item.title) - 12), 1)
@@ -392,7 +403,7 @@ local function draw_status(item, x, y, w, h, focused)
     color(focused and {0.11, 0.14, 0.19} or C.card, 0.98)
     chamfer("fill", x, y, w, h, 5)
     if focused then color(item.accent or C.cyan, 1); love.graphics.rectangle("fill", x, y + 5, 3, h - 10, 1, 1) end
-    text(item.title, x + 11, y + 5, font("Orbitron-Bold.ttf", 12), focused and C.text or C.dim)
+    text(item.title, x + 11, y + 5, font("Orbitron-Bold.ttf", 13), focused and C.text or C.dim)
     right_text(item.status or "UNKNOWN", x + w - 174, y + 5, 162,
         font("JetBrainsMono-Regular.ttf", 11), item.accent or C.faint)
     love.graphics.setFont(font("JetBrainsMono-Regular.ttf", 10))
@@ -405,7 +416,7 @@ local function draw_operation(item, x, y, w, h, focused)
     local accent = (op.status == "error" and C.red) or (op.status == "done" and C.green) or C.cyan
     color(focused and {0.11, 0.14, 0.19} or C.card, 0.98)
     chamfer("fill", x, y, w, h, 5)
-    text(op.name, x + 10, y + 5, font("Orbitron-Bold.ttf", 12), C.text)
+    text(op.name, x + 10, y + 5, font("Orbitron-Bold.ttf", 13), C.text)
     love.graphics.setFont(font("JetBrainsMono-Regular.ttf", 10))
     color(C.dim)
     love.graphics.printf(op.detail ~= "" and op.detail or op.status:upper(), x + 10, y + 22, w - 20, "left")
