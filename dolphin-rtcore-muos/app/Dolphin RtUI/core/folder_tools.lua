@@ -55,8 +55,9 @@ end
 local function infer_system(name)
     -- Exact muOS Content Explorer blocked directory names only.
     -- Spaces/case are normalized, but suffixes and unrelated names are rejected.
-    local n = tostring(name or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
-    n = n:gsub("%s+", " ")
+    -- Case-insensitive, but deliberately exact: no trimming, punctuation
+    -- removal, prefix or suffix matching, or whitespace collapsing.
+    local n = tostring(name or ""):lower()
     if n == "gc" or n == "ngc" or n == "gamecube" or n == "game cube" then return "GC" end
     if n == "wii" then return "Wii" end
     return nil
