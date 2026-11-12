@@ -33,3 +33,15 @@ Do not infer that from the registration detector. The root README lists the supp
 ## Does Rt:Stream emulate on the handheld?
 
 No. Dolphin runs on the PC; Sunshine streams video and Moonlight decodes it on the handheld. See [[Rt-Stream]].
+
+## Should I delete Sys/GameSettings or Sys/Load/GraphicMods?
+
+No. They contain official Dolphin resources. Keep them intact; use Rt:UI's GameSettings and Mod Vault interfaces for game-specific changes. See [[Graphics-Mods]].
+
+## Does “All Games” activate a graphics mod for every title?
+
+No. It means the mod's marker matches every Game ID. The mod remains disabled until you enable it in that game's Mod Vault. Dolphin stores the enabled state in the per-game profile under Config/GraphicMods. See [[Graphics-Mods]].
+
+## What does the M key show?
+
+M expands the Rt:UI header into the scrollable Rt:System Status Center. It shows Wi-Fi/battery telemetry, Rt:Stream portal and Sunshine health, local database state, GameSettings deployment, library status, background operations and notification history. See [[Rt-System-Status-Center]].
