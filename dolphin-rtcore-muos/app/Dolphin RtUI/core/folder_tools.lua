@@ -53,10 +53,11 @@ local function load_assign()
 end
 
 local function infer_system(name)
+    -- Exact muOS Content Explorer blocked directory names only.
+    -- Spaces/case are normalized, but suffixes and unrelated names are rejected.
     local n = M.normalize_alias(name)
-    if n:find("gamecube", 1, true) or n == "gc" or n == "ngc"
-       or n:find("nintendogc", 1, true) then return "GC" end
-    if n:find("wii", 1, true) then return "Wii" end
+    if n == "gc" or n == "ngc" or n == "gamecube" then return "GC" end
+    if n == "wii" then return "Wii" end
     return nil
 end
 M.infer_system = infer_system
@@ -107,7 +108,7 @@ end
 
 local function is_scan_root(path)
     for _, entry in ipairs(Settings.get("rom_paths") or {}) do
-        if entry.path and entry.path:gsub("/+$", "") == path:gsub("/+$", "") then return true end
+        if entry.path and entry.path:gsub("/+$", ""):lower() == path:gsub("/+$", ""):lower() then return true end
     end
     return false
 end
@@ -151,15 +152,15 @@ function M.inspect(path)
     local mapped = assigned_system(load_assign(), alias)
     local roms = has_roms(path)
     local status
-    if #reasons > 0 then status = "skip-match"
-    elseif guess and not mapped then status = "unmapped"
-    elseif guess and mapped then status = "mapped"
+    if guess then status = "content-explorer-blocked"
+    elseif #reasons > 0 then status = "skip-match"
     elseif roms then status = "review"
     else status = "empty" end
     return {
         path = path, name = name, alias = alias,
         inferred_system = guess, mapped_system = mapped,
         has_roms = roms, skip_matches = reasons,
+        content_explorer_blocked = guess ~= nil,
         status = status, is_scan_root = is_scan_root(path),
     }
 end
@@ -217,21 +218,18 @@ function M.scan()
                 local reasons = skip_reasons(name, path, rules, root)
                 local guess = infer_system(name)
                 local mapped = assigned_system(assign, alias)
-                local candidate = (#reasons > 0 or guess ~= nil)
-                -- Avoid a recursive search of every artwork/config directory.
-                -- Only folders already identified by their name or skip rule are probed for ROM files.
+                local candidate = (guess ~= nil)
+                -- FolderWaker only processes the exact muOS blocked folder names.
                 local roms = candidate and has_roms(path) or false
                 if not seen[path] and candidate then
                     seen[path] = true
                     local status
-                    if #reasons > 0 then status = "skip-match"
-                    elseif guess and not mapped then status = "unmapped"
-                    elseif guess and mapped then status = "mapped"
-                    else status = "review" end
+                    status = "content-explorer-blocked"
                     out[#out + 1] = {
                         path = path, name = name, alias = alias,
                         inferred_system = guess, mapped_system = mapped,
                         has_roms = roms, skip_matches = reasons,
+                        content_explorer_blocked = true,
                         status = status, is_scan_root = is_scan_root(path),
                     }
                 end
@@ -250,17 +248,18 @@ end
 
 function M.preview(item, system)
     if type(item) ~= "table" or type(item.path) ~= "string" then return nil, "invalid folder" end
+    local name = item.name or item.path:match("([^/]+)$") or ""
+    local inferred = infer_system(name)
+    if not inferred then return nil, "FolderWaker only supports exact gc, ngc, gamecube, game cube, and wii folder names" end
+    system = system or inferred
+    if system ~= inferred then return nil, "selected console does not match the folder name" end
     if system ~= "GC" and system ~= "Wii" then return nil, "choose GameCube or Wii" end
-    local name = item.path:match("([^/]+)$") or item.path
-    if name:sub(1, 2):lower() == "rt" then
-        return nil, "folder already starts with Rt; do not prefix it twice"
-    end
+    if item.has_roms ~= true then return nil, "no supported GameCube/Wii disc image was found in this folder" end
     local parent = item.path:match("^(.*)/[^/]+$")
     if not parent then return nil, "folder path must be absolute" end
-    local target = parent .. "/Rt" .. name
-    local alias = M.normalize_alias("Rt" .. name)
-    if alias == "" then return nil, "folder name cannot produce a muOS alias" end
-    return { source = item.path, target = target, alias = alias, system = system }
+    local target_name = system == "GC" and "RtGC" or "RtWii"
+    local target = parent .. "/" .. target_name
+    return { source = item.path, target = target, alias = M.normalize_alias(target_name), system = system }
 end
 
 function M.rename_register(item, system)
