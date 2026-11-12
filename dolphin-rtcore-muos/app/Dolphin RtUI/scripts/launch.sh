@@ -8,9 +8,10 @@
 #  launching Dolphin. No independent static profile-copy pipeline is required.
 #
 #  Layered settings, in this order:
-#    1. RtSys/apply_profile.sh   (device baseline, orientation, sticks)
-#    2. workshop profile         (Default <- family[/tier] <- game settings)
-#    3. controller, hotkeys, logging
+#    1. RtSys/apply_profile.sh   (muOS/device compatibility baseline)
+#    2. workshop profile         (Default <- family <- tier)
+#    3. native GameSettings/<GameID>.ini from the selected Workshop preset
+#    4. controller, hotkeys, logging
 #    4. cheats + overlays        (Dolphin.ini / GFX.ini keys)
 #    5. graphic mods             (only the selected ones are active)
 #
@@ -210,7 +211,7 @@ else
     log "RtSys/apply_profile.sh not present: workshop profile only"
 fi
 
-# ── 4. Workshop profile (Default <- profile[/tier] <- game settings) ──
+# ── 4. Workshop global profile (Default <- family <- tier) ──────────
 PDIR=""
 for cand in "$RT_PROFILES/$PROFILE/$VARIANT" "$RT_PROFILES/$PROFILE" "$RT_PROFILES/Default"; do
     [ -n "$cand" ] && [ -f "$cand/Dolphin.ini" ] && { PDIR="$cand"; break; }
@@ -238,7 +239,7 @@ else
 fi
 
 # ── 4b. Per-game GameSettings (native Dolphin projection) ─────
-# Only the selected Workshop preset is copied to Config/GameSettings/<ID>.ini.
+# The selected Workshop GameINI is projected to the user-root GameSettings/<ID>.ini.
 # Dolphin applies this once as a per-game override; it is never merged into
 # the global Dolphin.ini/GFX.ini profile layer.
 if declare -F rt_project_active_gameset >/dev/null 2>&1; then
