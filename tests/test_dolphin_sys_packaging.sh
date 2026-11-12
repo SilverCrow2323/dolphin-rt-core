@@ -52,6 +52,20 @@ if unzip -Z1 "$ARCHIVE" | grep -Eq '\.bak(\.|$)|~$|\.swp$'; then
 fi
 echo "[OK] timestamped backups and editor residue are excluded"
 
+# No bundled GameSettings database/presets or HD texture payloads; only the
+# explicitly requested Bloom Removal mod may be present in either Load tree.
+if unzip -Z1 "$ARCHIVE" | grep -Eq '(^|/)(GameSettings|gamesettings)(/|\.json$)|/Load/Textures/'; then
+  echo "[FAIL] GameSettings or texture assets leaked into the package" >&2
+  exit 1
+fi
+if unzip -Z1 "$ARCHIVE" | grep -E '/Load/GraphicMods/|/Sys/Load/GraphicMods/' |
+   grep -v '/All Games Bloom Removal/'; then
+  echo "[FAIL] a non-Bloom-Removal graphics mod was packaged" >&2
+  exit 1
+fi
+unzip -Z1 "$ARCHIVE" | grep -Fq '/Load/GraphicMods/All Games Bloom Removal/'
+echo "[OK] package contains no GameSettings or texture packs and keeps only Bloom Removal"
+
 EMU_PATH="opt/muos/share/emulator/dolphin"
 for asset in \
   "$EMU_PATH/dolphin" \
