@@ -65,8 +65,8 @@ local function match_scope(name, markers, game_id, direct_name, direct_scope)
     return nil
 end
 
-local function read_metadata(folder)
-    local f = io.open(join(folder, "metadata.json"), "rb")
+local function read_metadata_file(path)
+    local f = io.open(path, "rb")
     if not f then return nil end
     local raw = f:read("*a") or ""
     f:close()
@@ -78,6 +78,22 @@ local function read_metadata(folder)
         author = type(meta.author) == "string" and meta.author or nil,
         description = type(meta.description) == "string" and meta.description or "",
     }
+end
+
+-- The native Dolphin profile's "path" is the relative metadata.json file,
+-- not the folder name. Keep paths relative to Sys/Load/GraphicMods or Load/GraphicMods.
+local function valid_metadata_path(path)
+    if type(path) ~= "string" or path == "" or path:sub(1, 1) == "/" or
+       path:find("\\", 1, true) or path:find("//", 1, true) or
+       path:find("%z") then
+        return false
+    end
+    local count = 0
+    for part in path:gmatch("[^/]+") do
+        if part == "" or part == "." or part == ".." then return false end
+        count = count + 1
+    end
+    return count >= 2 and path:match("/metadata%.json$") ~= nil
 end
 
 local function item_key(source, path)
@@ -175,26 +191,40 @@ function M.list_for(game)
                 end
             end
         end
+
+        -- Dolphin first selects compatible top-level directories, then scans
+        -- every metadata.json recursively inside each selected directory.
         for _, name in ipairs(list_directories(spec.path)) do
             local scope = match_scope(name, markers[name], game_id, direct_name, direct_scope)
             if scope then
                 local folder = join(spec.path, name)
-                local meta = read_metadata(folder)
-                if meta then
-                    local item = {
-                        name = name,
-                        title = meta.title or name,
-                        author = meta.author or (spec.source == "system" and "Dolphin" or "User"),
-                        description = meta.description or "",
-                        source = spec.source,
-                        path = name,
-                        scope = scope,
-                        enabled = false,
-                    }
-                    if game_id then
-                        item.enabled = enabled[item_key(item.source, item.path)] == true
+                local raw = Shell.popen("find " .. shq(folder) ..
+                    " -type f -name 'metadata.json' -print 2>/dev/null", 2) or ""
+                for metadata_file in raw:gmatch("[^\\n]+") do
+                    local prefix = spec.path .. "/"
+                    if metadata_file:sub(1, #prefix) == prefix then
+                        local relative = metadata_file:sub(#prefix + 1)
+                        if valid_metadata_path(relative) then
+                            local meta = read_metadata_file(metadata_file)
+                            if meta then
+                                local item_name = relative:gsub("/metadata%.json$", "")
+                                local item = {
+                                    name = item_name,
+                                    title = meta.title or item_name,
+                                    author = meta.author or (spec.source == "system" and "Dolphin" or "User"),
+                                    description = meta.description or "",
+                                    source = spec.source,
+                                    path = relative,
+                                    scope = scope,
+                                    enabled = false,
+                                }
+                                if game_id then
+                                    item.enabled = enabled[item_key(item.source, item.path)] == true
+                                end
+                                out[#out + 1] = item
+                            end
+                        end
                     end
-                    out[#out + 1] = item
                 end
             end
         end
@@ -207,7 +237,7 @@ function M.list_for(game)
         end
         if a.title:lower() == b.title:lower() then
             if a.source ~= b.source then return a.source == "system" end
-            return a.name:lower() < b.name:lower()
+            return a.path:lower() < b.path:lower()
         end
         return a.title:lower() < b.title:lower()
     end)
@@ -233,8 +263,7 @@ local function save_changes(game, changes)
     for _, change in ipairs(changes or {}) do
         if type(change) == "table" and
            (change.source == "system" or change.source == "user") and
-           type(change.path) == "string" and change.path ~= "" and
-           not change.path:find("..", 1, true) and not change.path:find("/", 1, true) then
+           valid_metadata_path(change.path) then
             local key = item_key(change.source, change.path)
             local entry = found[key]
             if not entry then
