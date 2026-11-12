@@ -7,10 +7,10 @@ layouts, hotkeys, logging presets and per-game GameSettings. Dolphin's live
 `Config/` directory is a generated runtime projection, not another profile
 library. The core-profile pipeline starts from
 `workshop/rtcoreprofile/Default/`, layers the family folder and selected tier,
-then applies the active per-game GameSettings before Dolphin starts.
-`workshop/base/` remains a shared fallback for controller, hotkey and other
-non-core profile families; its old Dolphin.ini/GFX.ini copies are not the
-authoritative core-profile baseline.
+then prepares the selected per-game GameSettings as a separate native
+GameINI. `workshop/base/` remains a shared fallback for controller, hotkey
+and other non-core profile families; its old Dolphin.ini/GFX.ini copies are
+not the authoritative core-profile baseline.
 
 Both entry points use the same pipeline:
 
@@ -34,12 +34,13 @@ A folder under `workshop/rtcoreprofile/<name>/` containing:
 - `GFX.ini`
 - `rtprofile_data.ini` (metadata)
 
-The same chain resolver is used by the Rt:UI profile manager and
-`tools/rt_profile_merge.py`: `Default -> family -> tier -> GameSettings`.
-The selected tier therefore inherits its family patch (for example,
-`RtPrime/std` applies `Default`, then `RtPrime`, then `RtPrime/std`).
-The resulting INIs are written to the live `Config/` directory; source
-profiles remain untouched.
+The same core-profile chain is used by the Rt:UI profile manager and
+`tools/rt_profile_merge.py`: `Default -> family -> tier`.
+The selected tier inherits its family patch (for example, `RtPrime/std`
+applies `Default`, then `RtPrime`, then `RtPrime/std`). The resulting
+Dolphin.ini/GFX.ini files are written to the live `Config/` directory;
+source profiles remain untouched. Per-game overrides are a separate layer
+and are never folded into these global profile files.
 
 ## 3. Families and tiers
 
@@ -70,33 +71,34 @@ under `workshop/rtcoreprofile/`.
 
 ## 5. GameSettings
 
-Per-game overrides live only in `workshop/gamesettings/<ID>/`. The
-`rtgameset_data.ini` metadata selects the active file through `ActiveConfig`.
-The shared launcher reads that same active file from both entry points and
-merges it into the runtime Dolphin.ini/GFX.ini projection. The editable source
-is never taken from Config. Sections are namespaced:
+Per-game overrides live only in `workshop/gamesettings/<ID>/`.
+The `rtgameset_data.ini` metadata selects the active file through
+`[GameSettings] ActiveConfig`. Rt:UI and Content Explorer use that same
+selector.
 
-| Dolphin.ini section | GameSettings section |
-|---|---|
-| `[Core]` | `[Core]` |
-| `[DSP]` | `[DSP]` |
-| `[Interface]` | `[Interface]` |
-| `[Settings]` (GFX) | `[Video_Settings]` |
-| `[Enhancements]` (GFX) | `[Video_Enhancements]` |
-| `[Hacks]` (GFX) | `[Video_Hacks]` |
-| `[Hardware]` (GFX) | `[Video_Hardware]` |
+Immediately before launch, the selected source is copied unchanged to
+`Config/GameSettings/<ID>.ini`. That is Dolphin's native per-game user
+override path. The copy is a disposable runtime projection, not an editable
+master. If GameSettings are disabled, the previous runtime projection for
+that GameID is removed, preventing stale settings from leaking into a later
+launch. The profile merger does not also fold these values into global
+Dolphin.ini/GFX.ini.
 
-**Rule:** writing `[Hacks]` inside a GameSettings file is silently
-ignored by Dolphin. Always use `[Video_Hacks]`.
+Use Dolphin GameINI sections such as `[Core]`, `[Video_Settings]`,
+`[Video_Hacks]` and `[Video_Enhancements]`. In particular, use
+`[Video_Hacks]`, not the global GFX section name `[Hacks]`.
 
 ## 6. Apply flow
 
-1. RtSys applies only the neutral firmware/device baseline.
-2. `scripts/launch.sh` resolves the canonical profile chain from Workshop.
-3. The active GameSettings file is merged after the selected family/tier.
-4. Controller, hotkeys, logging and selected mods are projected from their
-   Workshop sources into the runtime Config/Load paths.
-5. Dolphin starts with `-u <emu_dir> -e <rom>`.
+1. RtSys prepares the muOS/device compatibility fallback.
+2. `scripts/launch.sh` resolves `Default -> family -> tier` from Workshop.
+3. The selected core profile is projected to `Config/Dolphin.ini` and
+   `Config/GFX.ini`.
+4. The single active GameSettings preset is copied to
+   `Config/GameSettings/<ID>.ini` (or removed when disabled).
+5. Controller, hotkeys, logging and selected mods are projected from their
+   Workshop/Load sources.
+6. Dolphin starts with `-u <emu_dir> -e <rom>`.
 
 ## 7. Diff viewer
 
