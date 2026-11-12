@@ -7,7 +7,8 @@ local JSON = require("core.json")
 
 local tmp = os.tmpname()
 os.remove(tmp)
-local root_ok, root_reason, root_code = os.execute("mkdir -p " .. Shell.shq(tmp))\nassert(root_ok == true or root_ok == 0 or root_code == 0, "temporary root mkdir failed")
+local root_ok, root_reason, root_code = os.execute("mkdir -p " .. Shell.shq(tmp))
+assert(root_ok == true or root_ok == 0 or root_code == 0, "temporary root mkdir failed")
 Paths.root_emu = tmp
 
 local function mkdir(path)
