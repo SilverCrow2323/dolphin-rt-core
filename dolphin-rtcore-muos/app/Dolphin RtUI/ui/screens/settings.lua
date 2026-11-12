@@ -47,8 +47,8 @@ local function memo(fn, ttl)
     end
 end
 
-local function cyc(label, key, values, default, after)
-    return { kind = "choice", label = label, values = values,
+local function cyc(label, key, values, default, after, display)
+    return { kind = "choice", label = label, values = values, display = display,
         get = function() return Settings.get(key) or default end,
         set = function(v) Settings.set(key, v); if after then after(v) end end }
 end
@@ -184,7 +184,8 @@ local function sections()
             tog("Sound effects", "sfx_on", true, function(v) require("ui.sfx").set_enabled(v) end),
         },
         SYSTEM = {
-            cyc("muOS input profile", "muos_profile", { "auto", "andromeda", "not_andromeda" }, "auto"),
+            cyc("muOS firmware profile", "muos_profile", { "auto", "andromeda", "not_andromeda" }, "auto",
+                nil, function() return require("core.muos_platform").label() end),
             tog("Confirm before quitting", "confirm_quit", true),
             -- stessa chiave che legge boot_initializer (prima: enable_update_check, mai letta)
             tog("Update check on boot", "auto_update_check", true),
@@ -353,7 +354,7 @@ local function draw_row(row, x, y, w, h, focused)
         return
     end
     if row.kind == "choice" then
-        local v = tostring(row.get() or ""):upper()
+        local v = tostring((row.display and row.display()) or row.get() or ""):upper()
         local lw = K.width("value", v)
         K.text("value", v, right - lw, y + h / 2 - 10, focused and K.acc or K.C.text)
         if focused then
