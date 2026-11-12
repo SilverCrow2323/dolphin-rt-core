@@ -107,9 +107,10 @@ Use Dolphin GameINI sections such as `[Core]`, `[Video_Settings]`,
 `workshop/base/` fallback.
 Rows are grouped by file, section, key, with FROM and TO columns.
 
-## 8. Tier comparison
+## 8. Editing family tiers
 
-`workshop_editor` opens a Tier Overlay on SELECT when the profile
-belongs to a family with all three variants present. Columns:
-LITE / STANDARD / MAX. The overlay flags any row where the ordering
-`lite < std < max` is violated.
+The Rt:UI Profile Editor lists each available family tier as a child row:
+LITE, STD and MAX. Opening a tier edits only
+`workshop/rtcoreprofile/<family>/<tier>/`; opening the family row edits the
+family-level overlay. At launch the selected tier inherits the family first,
+then applies its own patch.
