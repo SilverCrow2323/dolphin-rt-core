@@ -20,6 +20,10 @@ S.rows, S.off, S.sel_by_tab = {}, {}, {}
 
 local TAB_Y, TAB_H = 80, 34
 
+local function per_game_mode()
+    return S.game ~= nil and not Mods.CATS[S.tab].legacy
+end
+
 local function tab_w() return (K.W - K.MARGIN * 2) / #Mods.CATS end
 
 local function counts(i)
@@ -27,7 +31,7 @@ local function counts(i)
     local on = 0
     for _, r in ipairs(rows) do
         local enabled
-        if S.game then enabled = not off[r.name] else enabled = not r.parked end
+        if per_game_mode() then enabled = not off[r.name] else enabled = not r.parked end
         if enabled then on = on + 1 end
     end
     return on, #rows
@@ -89,7 +93,7 @@ local function refresh_current_tab()
 end
 
 local function toggle_all(enabled)
-    if S.game then
+    if per_game_mode() then
         local off = S.off[S.tab]
         if enabled then
             for k in pairs(off) do off[k] = nil end
@@ -124,7 +128,7 @@ function S.pad(b)
     elseif b == "L1" or b == "LEFT" then set_tab(-1)
     elseif b == "R1" or b == "RIGHT" then set_tab(1)
     elseif b == "A" and r then
-        if S.game then
+        if per_game_mode() then
             off[r.name] = (not off[r.name]) or nil
             save()
             SFX.play("menu_toggleoption")
@@ -179,11 +183,11 @@ end
 local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
     local on
-    if S.game then on = not S.off[S.tab][r.name] else on = not r.parked end
+    if per_game_mode() then on = not S.off[S.tab][r.name] else on = not r.parked end
     local right = x + w - 60
     K.switch(x + w - 46, y + h / 2, on, focused)
     local lab = Mods.KIND_LABEL[r.kind] or ""
-    if S.game and lab ~= "" then
+    if per_game_mode() and lab ~= "" then
         local pw = K.pill(lab, right, y + h / 2, kind_color(r.kind), true)   -- x = bordo destro
         right = right - pw - 4
     end
@@ -195,19 +199,19 @@ function S.draw()
     local cat = Mods.CATS[S.tab]
     local on, total = 0, 0
     for i = 1, #Mods.CATS do local a, b = counts(i); on, total = on + a, total + b end
-    K.header("Mod Vault", S.game and (S.game.title or "") or "GLOBAL · enable or park installed mods",
+    K.header("Mod Vault", per_game_mode() and (S.game.title or "") or "GLOBAL · enable or park installed mods",
              on .. " / " .. total .. " active",
              nil, { icon = "mods", accent = K.ACC[cat.acc] })
     draw_tabs()
     if #S.list.items == 0 then
-        local msg = S.game and
+        local msg = per_game_mode() and
             ("Nothing for this game in Load/" .. cat.id .. ".\nMatch by Game ID, its first 3 characters, title, or All.")
             or ("Load/" .. cat.id .. " is empty. Install a mod folder to manage it here.")
         K.text("body", msg, 0, LIST_Y + 40, K.C.dim, 1, K.W, "center")
     else
         S.list:draw(draw_row)
     end
-    if S.game then
+    if per_game_mode() then
         K.footer({ { key = "A", label = "Toggle" }, { key = "L1 R1", label = "Tab" },
                    { key = "X", label = "All on" }, { key = "Y", label = "All off" }, { key = "B", label = "Back" } })
     else
