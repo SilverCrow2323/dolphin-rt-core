@@ -110,6 +110,59 @@ rt_read_active_gameset() {
     printf '%s\n' "$active"
 }
 
+# Persist a legacy per-game selection into the same ActiveConfig metadata used
+# by GamesetPicker, Rt:UI and the Python merge helper.
+rt_write_active_gameset() {
+    local game_id="$1" root="$2" active="$3" meta
+    [ -n "$game_id" ] || return 1
+    rt_safe_leaf_name "$active" || return 1
+    case "$active" in *.ini) ;; *) return 1 ;; esac
+    [ -f "$root/$game_id/$active" ] || return 1
+    meta="$root/$game_id/rtgameset_data.ini"
+    command -v python3 >/dev/null 2>&1 || return 1
+    python3 - "$meta" "$active" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+path = Path(sys.argv[1])
+active = sys.argv[2]
+lines = path.read_text(encoding="utf-8", errors="replace").splitlines() if path.is_file() else []
+output = []
+in_section = False
+found_section = False
+written = False
+for line in lines:
+    section = re.match(r"^\s*\[([^\]]+)\]\s*$", line)
+    if section:
+        if in_section and not written:
+            output.append(f"ActiveConfig = {active}")
+            written = True
+        in_section = section.group(1).strip() == "GameSettings"
+        found_section = found_section or in_section
+        output.append(line)
+        continue
+    if in_section and re.match(r"^\s*ActiveConfig\s*=", line):
+        if not written:
+            output.append(f"ActiveConfig = {active}")
+            written = True
+        continue
+    output.append(line)
+
+if not found_section:
+    if output and output[-1].strip():
+        output.append("")
+    output.extend(["[GameSettings]", f"ActiveConfig = {active}"])
+elif in_section and not written:
+    output.append(f"ActiveConfig = {active}")
+
+path.parent.mkdir(parents=True, exist_ok=True)
+temporary = path.with_name(path.name + ".rt-tmp")
+temporary.write_text("\n".join(output) + "\n", encoding="utf-8")
+temporary.replace(path)
+PY
+}
+
 rt_extract_game_id() {
     local rom="$1" magic offset id base
     [ -f "$rom" ] || return 1
