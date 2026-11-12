@@ -328,6 +328,9 @@ local function build()
           list = gamesettings_choices,
           get  = function()
               local GM = require("core.gameset_manager")
+              if GM.has_active_record and GM.has_active_record(g.id) then
+                  return GM.active_for(g.id) or "Disabled"
+              end
               return GM.active_for(g.id) or launch_key("GameSettings")
           end,
           set  = function(v)
