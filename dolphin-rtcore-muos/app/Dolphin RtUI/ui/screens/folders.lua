@@ -163,7 +163,7 @@ function S.pad(b)
                 -- Explicitly skip manual path selection; no paths are added.
                 Settings.set("rom_discovery_done", true)
                 Notify.show("info", "ROM setup skipped. Add GameCube/Wii folders later in Settings.")
-                require("ui").go("library", nil, { no_push = true })
+                require("ui").go("home", nil, { no_push = true })
             else
                 require("ui").back()
             end
