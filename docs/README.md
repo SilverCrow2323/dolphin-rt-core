@@ -15,6 +15,7 @@ Dolphin Rt:Core.
 | [DATA_FILES.md](DATA_FILES.md) | JSON and text data files, download pipeline, validation. |
 | [PROFILES.md](PROFILES.md) | Rt:Core profile families, tiers, GameSettings, apply/rollback. |
 | [CONTROLLER.md](CONTROLLER.md) | Controller profiles, muOS SDL numbering, button maps. |
+| [CONTROLLER_INPUT.md](CONTROLLER_INPUT.md) | Jacaranda/Andromeda EV_KEY layouts, joydev indices, Dolphin SDL tokens and Safe Exit. |
 | [HOTKEYS.md](HOTKEYS.md) | Hotkeys.ini format, live menu bindings, keyboard remap. |
 | [MINORU.md](MINORU.md) | Character engine, persona, visor, history, workspace. |
 | [DOWNLOADER.md](DOWNLOADER.md) | Download queue, install targets, extract pipeline. |
