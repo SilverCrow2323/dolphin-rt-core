@@ -77,11 +77,11 @@ Auto-discovery is read-only: it adds roots to RTUI settings and does not rename 
 
 ## Safe Exit closes a game unexpectedly or does not respond
 
-1. Open Settings → Safe Exit. The default is the single MENU / M button.
-2. Record a combination of 2–4 buttons if MENU is used by the game or device overlay.
-3. Avoid a single START or SELECT binding; those are intentionally not used as standalone Safe Exit defaults.
-4. Check `data/safe_exit.conf` and the watcher log under `data/logs/` or `RtSys/logs/watcher.log`.
-5. Test with a game that has no conflicting controller shortcut. The watcher uses raw joydev button indices, so confirm the mapping on the exact device/firmware.
+1. Open Settings → Safe Exit. The default is **START + SELECT** (joydev indices **9 + 8** on the documented RG35XX H `js1` sequence).
+2. A single-button custom exit is allowed only for **MENU / M** (index **10**); otherwise record a 2–4 button combination that does not conflict with the game or device overlay.
+3. Check `data/safe_exit.conf` and the watcher log under `data/logs/` or `RtSys/logs/watcher.log`.
+4. Verify that the launcher selected a real character device. The preferred order is `js1`, `js0`, then another available `js*`; phantom/non-character nodes are ignored.
+5. Confirm the exact firmware and controller indices. EV_KEY, joydev and Dolphin SDL button numbering are different; see [Controller input reference](CONTROLLER_INPUT.md).
 
 ## Hotkeys do not work
 
@@ -89,7 +89,7 @@ Auto-discovery is read-only: it adds roots to RTUI settings and does not rename 
 2. Keyboard mode starts `gptokeyb2`; Pad (SDL) mode does not. Do not run both paths simultaneously.
 3. Check the copied `Config/Hotkeys.ini` `Device` field and the matching `workshop/hotkeys/<profile>/ext-dolphin.gptk` file.
 4. Check the corresponding `gptokeyb2` log under `data/logs/` or `RtSys/logs/`.
-5. The bundled keyboard profile uses L2 combinations. It no longer remaps SELECT globally; Safe Exit defaults to MENU / M instead.
+5. The bundled keyboard profile uses L2 combinations and does not remap SELECT globally. Safe Exit defaults to START + SELECT; MENU / M is the supported single-button custom exit.
 
 ## Frontend does not return after a game
 
