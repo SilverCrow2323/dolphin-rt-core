@@ -23,7 +23,7 @@ end
 
 local function open_viewer(title, script, result, opts)
   opts = opts or {}
-  viewer = { title = title, result = result, t = 0, text = "", pair = opts.pair, scroll = 0 }
+  viewer = { title = title, script = script, result = result, t = 0, text = "", pair = opts.pair, scroll = 0 }
   os.remove(Stream.DIR .. "/" .. result)
   Stream.run_job(script)
   S.mode = "viewer"
@@ -52,6 +52,7 @@ local function items()
     key_choice("Codec", "CODEC", { "auto", "h264", "h265" }),
     key_choice("Network", "REMOTE", { "auto", "yes", "no" }),
     key_choice("Optimise game settings", "SOPS", { "yes", "no" }),
+    { kind = "action", label = "Scan LAN + Tailscale", hint = "find Sunshine automatically", run = function() open_viewer("Sunshine discovery", "discover.sh", "discovery.txt") end },
     { kind = "action", label = "Pair with PC", hint = "type the PIN on the PC", run = function() open_viewer("Pair with PC", "pair.sh", "pair.log", { pair = true }) end },
     { kind = "action", label = "Sync library", hint = "games and covers from the PC", run = function() open_viewer("Sync library", "sync.sh", "sync.status") end },
     { kind = "action", label = "Test connection", run = function() open_viewer("Connection test", "test.sh", "test.txt") end },
@@ -77,6 +78,20 @@ function S.update(dt)
     local d = Stream.read(Stream.DIR .. "/" .. viewer.result)
     if d then viewer.text = d end
     viewer.done = Stream.job_done()
+    if viewer.done and viewer.script == "discover.sh" and not viewer.discovery_handled then
+      viewer.discovery_handled = true
+      local host = Stream.read(Stream.DIR .. "/discovered_host.txt")
+      host = host and host:gsub("%s+", "") or ""
+      if host ~= "" then
+        local ok, err = Stream.set("HOST", host)
+        if ok then
+          Notify.show("success", "Sunshine found at " .. host .. " — pairing…", 3)
+          open_viewer("Pair with detected PC", "pair.sh", "pair.log", { pair = true })
+        else
+          Notify.show("error", "Could not save detected host: " .. tostring(err))
+        end
+      end
+    end
   end
 end
 
