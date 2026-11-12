@@ -43,16 +43,20 @@ end
 -- Returns the number of configs written.
 function M.deploy(entry, game_id)
     if not entry then return 0 end
+    if type(game_id) ~= "string" or not game_id:match("^[%w][%w][%w][%w][%w][%w]$") then return 0 end
     local dir = "workshop/gamesettings/" .. game_id
     sh.mkdir_p(dir)
     local n = 0
     for _, cfg in ipairs(entry.configs) do
-        local target = dir .. "/" .. cfg.filename
+        local filename = type(cfg.filename) == "string" and cfg.filename or ""
+        if filename:match("^[%w _%.%-]+%.ini$") and not filename:find("..", 1, true) then
+        local target = dir .. "/" .. filename
         local f = io.open(target, "r")
         if f then f:close()
         else
             local out = io.open(target, "w")
             if out then out:write(cfg.raw_content or ""); out:close(); n = n + 1 end
+        end
         end
     end
     -- write the metadata so the gameset_manager can see them
