@@ -11,6 +11,7 @@ local FolderTools = require("core.folder_tools")
 
 local S = {}
 S.list = K.List(K.MARGIN, 90, K.W - K.MARGIN * 2 - 14, K.BOT - 90, 36)
+S.warning_list = K.List(K.MARGIN + 14, 306, K.W - K.MARGIN * 2 - 28, K.BOT - 306, 26)
 S.mode, S.cwd, S.t = "set", "/", 0
 S.folder_waker_items, S.folder_waker_item, S.folder_waker_system, S.folder_waker_plan = {}, nil, nil, nil
 
@@ -81,7 +82,7 @@ local function start_folder_waker_scan(show_warning)
     S.folder_waker_rows = rows
     if show_warning and #warning_rows > 0 then
         S.mode = "folder_waker_warning"
-        S.list:set(warning_rows, false)
+        S.warning_list:set(warning_rows, false)
     else
         S.mode = "folder_waker_scan"
         S.list:set(rows, false)
@@ -143,6 +144,7 @@ end
 function S.update(dt)
     S.t = S.t + dt
     S.list:update(dt)
+    if S.mode == "folder_waker_warning" then S.warning_list:update(dt) end
 end
 
 function S.pad(b)
@@ -195,8 +197,8 @@ function S.pad(b)
     end
 
     if S.mode == "folder_waker_warning" then
-        if b == "UP" then if S.list:move(-1) then SFX.play("menu_move") end
-        elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
+        if b == "UP" then if S.warning_list:move(-1) then SFX.play("menu_move") end
+        elseif b == "DOWN" then if S.warning_list:move(1) then SFX.play("menu_move") end
         elseif b == "A" then
             S.mode = "folder_waker_scan"
             S.list:set(S.folder_waker_rows or {}, false)
@@ -289,7 +291,7 @@ function S.draw()
         K.text("small", "You can always launch these games directly from Dolphin Rt:UI.", K.MARGIN + 16, 190, K.C.ok, 1, K.W - K.MARGIN * 2 - 32)
         K.text("small", "To make them visible in Content Explorer, FolderWaker can rename GameCube folders to RtGC and Wii folders to RtWii, then register the matching muOS alias.", K.MARGIN + 16, 224, K.C.dim, 1, K.W - K.MARGIN * 2 - 32)
         K.text("key", "AFFECTED FOLDERS  ·  REVIEW BELOW", K.MARGIN + 16, 274, K.C.warn)
-        S.list:draw(draw_row)
+        S.warning_list:draw(draw_row)
         K.footer({ { key = "A", label = "YES · Review fixes" }, { key = "B", label = "NO · Rt:UI only" } })
         return
     end
