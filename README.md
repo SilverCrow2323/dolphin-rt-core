@@ -90,7 +90,17 @@ The RG35XX H uses the Allwinner H700 platform. The project's optimisation work i
 
 No universal FPS promise is made here. Use the compatibility database and record the exact Game ID, region, profile, firmware and device when testing.
 
-## 04 — What ships in the Kanzentai stack
+## 04 — Rt:UI visual gallery
+
+The CI smoke workflow captures every declared LÖVE screen at **640×480**, **720×480** and **720×720**. The current run produced 69 PNG captures.
+
+[![Open UI capture workflow](https://img.shields.io/badge/UI%20captures-69%20PNG%20screenshots-7256D8?style=for-the-badge)](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/43213964642)
+
+> These are automated Xvfb captures for review and layout regression checks, not physical RG35XX H screenshots or device certification. The artifact has limited retention.
+
+See the [Wiki visual gallery](wiki/Interface-Gallery.md) for the capture inventory.
+
+## 05 — What ships in the Kanzentai stack
 
 The current muOS line combines the formerly separate flavours into one installation.
 
