@@ -30,7 +30,7 @@ Dolphin's per-game profile is stored at:
 Config/GraphicMods/<GameID>.json
 ```
 
-A profile entry records the source (`system` or `user`), the relative mod path and its `enabled` state. The emulator still discovers the metadata and assets in their original directory; Rt:UI only updates the per-game profile.
+A profile entry records the source (`system` or `user`), the relative path to the mod's actual `metadata.json` file, its `enabled` state and Dolphin's other per-mod settings. The metadata path is not just the enclosing directory name; nested metadata files retain their full relative path. The emulator still discovers the metadata and assets in their original directory; Rt:UI only updates the per-game profile.
 
 ## Rt:UI Mod Vault
 
@@ -40,7 +40,7 @@ Matching follows Dolphin's lookup rules:
 
 1. A direct folder named with the full Game ID is preferred.
 2. A direct three-character region-free folder is used when the full-ID folder does not exist.
-3. Nested marker files named `<GameID>.txt`, `<prefix>.txt` or `all.txt` can add further matches.
+3. Nested marker files named `<GameID>.txt`, `<prefix>.txt` or `all.txt` can add further matching directories. Dolphin then scans every `metadata.json` below each selected directory, so a marker folder can contain multiple nested mod definitions.
 
 | Control | Action |
 |---|---|
