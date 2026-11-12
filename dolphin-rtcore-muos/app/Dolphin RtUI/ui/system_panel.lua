@@ -225,14 +225,20 @@ local function refresh_items()
     local cheat_row = cheat_labels[cheat.status or "waiting"] or cheat_labels.waiting
     add_status("Cheats & Boost Data", cheat_row[1], cheat_row[2], cheat_row[3], "cheats")
 
-    local lib_count, lib_detail = 0, "Library not scanned"
+    local lib_count = tonumber(boot.roms) or 0
+    local lib_status, lib_accent, lib_detail = "UNKNOWN", C.faint, "Library status unavailable"
     local ok_lib, Library = pcall(require, "core.library")
-    if ok_lib and Library then
-        lib_count = #(Library.games or {})
+    local step = tostring(boot.step or "idle")
+    if step == "scan_roms" then
+        lib_status, lib_accent, lib_detail = "SCANNING", C.cyan, "Indexing GameCube / Wii ROMs"
+    elseif step == "idle" or step == "update_check" or step == "wait_update" or step == "download_data" then
+        lib_status, lib_accent, lib_detail = "WAITING", C.faint, "ROM scan has not run yet"
+    elseif ok_lib and Library then
+        lib_count = math.max(lib_count, #(Library.games or {}))
+        lib_status, lib_accent = "INDEXED", C.green
         lib_detail = tostring(lib_count) .. " GameCube / Wii titles indexed"
     end
-    add_status("Games Library", ok_lib and "INDEXED" or "UNKNOWN",
-               ok_lib and C.green or C.faint, lib_detail, "library")
+    add_status("Games Library", lib_status, lib_accent, lib_detail, "library")
 
     add_section("BACKGROUND OPERATIONS")
     local active_ops = 0
