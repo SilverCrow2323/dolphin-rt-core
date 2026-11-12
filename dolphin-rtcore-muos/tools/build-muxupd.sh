@@ -49,6 +49,15 @@ if [ "$SYS_SOURCE" != "$DEFAULT_SYS_SOURCE" ]; then
 fi
 cp -a "$ROOT/app/Dolphin RtUI/." "$S/$APP/"
 cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, tasks, manifest tool, update hook)
+
+# Rt:Core ships no per-game GameSettings presets or HD texture packs.
+# The only bundled graphics mod is the opt-in All Games Bloom Removal.
+rm -rf "$S/$EMU/Sys/GameSettings" "$S/$EMU/Sys/Load/Textures" "$S/$EMU/Load/Textures"
+rm -rf "$S/$APP/workshop/gamesettings" "$S/$APP/data/gamesettings" "$S/$APP/data/gamesettings.json"
+for mod_root in "$S/$EMU/Load/GraphicMods" "$S/$EMU/Sys/Load/GraphicMods"; do
+  [ -d "$mod_root" ] || continue
+  find "$mod_root" -mindepth 1 -maxdepth 1 ! -name "All Games Bloom Removal" -exec rm -rf {} +
+done
 [ -n "$DOLPHIN_BIN" ] && install -m755 "$DOLPHIN_BIN" "$S/$EMU/dolphin"
 if [ -n "$DOLPHIN_LIB_DIR" ]; then
   [ -d "$DOLPHIN_LIB_DIR" ] || { echo "ERROR: DOLPHIN_LIB_DIR is not a directory: $DOLPHIN_LIB_DIR" >&2; exit 1; }
