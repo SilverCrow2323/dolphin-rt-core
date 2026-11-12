@@ -1,8 +1,6 @@
 #!/usr/bin/env luajit
 package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;dolphin-rtcore-muos/app/Dolphin RtUI/?/init.lua;" .. package.path
 
-local AI = require("core.app_input")
-AI.init()
 local SafeExit = require("core.safe_exit")
 local original = SafeExit.PATH
 local path = os.tmpname()
@@ -16,12 +14,12 @@ end
 local ok, saved = SafeExit.save_names({ "MENU" })
 expect(ok and saved == "MENU", "single MENU must be accepted")
 local raw = SafeExit.load_raw()
-expect(#raw == 1 and raw[1] == 8, "default M must persist as joydev button 8")
+expect(#raw == 1 and raw[1] == 10, "M must persist as joydev button 10")
 
 ok, saved = SafeExit.save_names({ "START", "SELECT" })
 expect(ok, "two-button combination must be accepted")
 raw = SafeExit.load_raw()
-expect(#raw == 2 and raw[1] == 6 and raw[2] == 7, "combo must persist as sorted raw button indices")
+expect(#raw == 2 and raw[1] == 8 and raw[2] == 9, "START + SELECT must persist as joydev indices 8 + 9")
 local names = SafeExit.load_names()
 expect(names[1] == "SELECT" and names[2] == "START", "combo labels must round-trip")
 
@@ -35,7 +33,7 @@ expect(not ok, "unknown logical buttons must be rejected")
 ok = SafeExit.reset()
 expect(ok, "reset must succeed")
 raw = SafeExit.load_raw()
-expect(#raw == 1 and raw[1] == 8, "reset must restore M")
+expect(#raw == 1 and raw[1] == 8 and raw[2] == 9, "reset must restore START + SELECT")
 
 os.remove(path)
 SafeExit.PATH = original
