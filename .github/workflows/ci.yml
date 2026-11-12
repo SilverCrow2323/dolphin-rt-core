@@ -62,6 +62,7 @@ jobs:
           luajit tests/test_boot_scan_async.lua
           luajit tests/test_folder_tools.lua
           luajit tests/test_rom_auto_discovery.lua
+          bash tests/test_rtui_stream_contract.sh
       - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
         run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
