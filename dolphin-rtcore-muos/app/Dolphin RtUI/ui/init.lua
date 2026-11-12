@@ -359,12 +359,22 @@ function M.current() return current_name end
 -- ── logical dispatch ────────────────────────────────────────
 local function dispatch(lg)
     if not lg then return end
+    if Modal.is_open() then Modal.pad(lg); return end
+
+    -- SELECT is the global RtUI / Rt:Stream switch. It is deliberately
+    -- handled above individual screens so it works from every normal view.
+    if lg == "SELECT" then
+        local in_stream = current_name == "stream_library"
+                       or current_name == "stream_settings"
+        M.go(in_stream and "library" or "stream_library", nil, { no_push = true })
+        return
+    end
+
     local ok_sp, SP = pcall(require, "ui.system_panel")
     if ok_sp and SP then
         if SP.is_open() then SP.pad(lg); return end
         if lg == "MENU" then SP.open(); return end
     end
-    if Modal.is_open() then Modal.pad(lg); return end
     if fade.phase ~= "idle" then return end
     if current and current.pad then
         local ok, err = pcall(current.pad, lg)
@@ -379,14 +389,14 @@ local last_press = {}
 local function now() return love.timer.getTime() end
 
 local function combo_check(lg)
-    if lg ~= "START" and lg ~= "SELECT" then return false end
+    if lg ~= "START" and lg ~= "MENU" then return false end
     held[lg] = now()
-    local o = (lg == "START") and "SELECT" or "START"
+    local o = (lg == "START") and "MENU" or "START"
     if held[o] and now() - held[o] < 0.5 and not Modal.is_open() then
-        held.START, held.SELECT = nil, nil
+        held.START, held.MENU = nil, nil
         local okS, St = pcall(require, "core.settings")
         if okS and St.get("confirm_quit") == false then love.event.quit(); return true end
-        Modal.show("Quit", "Close Dolphin Rt:UI and return to muOS?", {
+        Modal.show("Quit", "Close Dolphin Rt:UI and return to muOS? (START + MENU)", {
             accept_label = "Quit", cancel_label = "Stay", color = K.C.bad,
             on_accept = function() love.event.quit() end })
         return true
@@ -410,19 +420,23 @@ local function release(lg)
 end
 
 function M.pad(raw)
+    local logical = IM.from_raw(raw)
+    if logical == "SELECT" then press(logical, true); return end
     if current and current.raw_pad and not Modal.is_open() then
         local ok, eaten = pcall(current.raw_pad, raw)
         if ok and eaten then return end
     end
-    press(IM.from_raw(raw), true)
+    press(logical, true)
 end
 function M.pad_released(raw) release(IM.from_raw(raw)) end
 function M.gamepad(name)
+    local logical = IM.from_gamepad(name)
+    if logical == "SELECT" then press(logical, true); return end
     if current and current.raw_pad and not Modal.is_open() then
         local ok, eaten = pcall(current.raw_pad, name)
         if ok and eaten then return end
     end
-    press(IM.from_gamepad(name), true)
+    press(logical, true)
 end
 function M.gamepad_released(name) release(IM.from_gamepad(name)) end
 
