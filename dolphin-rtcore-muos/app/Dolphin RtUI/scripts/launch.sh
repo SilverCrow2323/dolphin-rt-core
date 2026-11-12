@@ -27,6 +27,8 @@ set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GAME_DIR="$(dirname "$SCRIPT_DIR")"
+SHARED_PROFILE_RUNTIME="$SCRIPT_DIR/ce_shared_profile_runtime.sh"
+[ -r "$SHARED_PROFILE_RUNTIME" ] && . "$SHARED_PROFILE_RUNTIME"
 [ -r /opt/muos/script/var/func.sh ] && . /opt/muos/script/var/func.sh >/dev/null 2>&1 || true
 
 LOOP_MODE="${DOLPHINUI_LOOP:-0}"
@@ -220,6 +222,11 @@ else
     TMPD="$GAME_DIR/data/tmp_cfg"
     rm -rf "$TMPD"; mkdir -p "$TMPD"
     merged=0
+    # Resolve ActiveConfig through the same helper used by Content Explorer.
+    # An explicit card selection is a migration fallback and is persisted below.
+    if [ -z "$GAMESETTINGS" ] && declare -F rt_read_active_gameset >/dev/null 2>&1; then
+        GAMESETTINGS="$(rt_read_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" 2>/dev/null || true)"
+    fi
     GS_ARGS=()
     if [ "$GAMESETTINGS" != "Disabled" ]; then
         # Keep paths with spaces (the app directory itself is "Dolphin RtUI")
@@ -234,7 +241,13 @@ else
                     ;;
                 *.ini)
                     GS_PATH="$WORKSHOP/gamesettings/$GAME_ID/$GAMESETTINGS"
-                    [ -f "$GS_PATH" ] && GS_ARGS+=(--gs-file "$GS_PATH")
+                    if [ -f "$GS_PATH" ]; then
+                        GS_ARGS+=(--gs-file "$GS_PATH")
+                        if declare -F rt_write_active_gameset >/dev/null 2>&1; then
+                            rt_write_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" "$GAMESETTINGS" \
+                                || log "WARN: could not persist GameSettings ActiveConfig"
+                        fi
+                    fi
                     ;;
                 *)
                     log "WARN: GameSettings must be an .ini file; explicit selection disabled"
