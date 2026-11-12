@@ -184,6 +184,7 @@ local function sections()
             tog("Sound effects", "sfx_on", true, function(v) require("ui.sfx").set_enabled(v) end),
         },
         SYSTEM = {
+            cyc("muOS input profile", "muos_profile", { "auto", "andromeda", "not_andromeda" }, "auto"),
             tog("Confirm before quitting", "confirm_quit", true),
             -- stessa chiave che legge boot_initializer (prima: enable_update_check, mai letta)
             tog("Update check on boot", "auto_update_check", true),
