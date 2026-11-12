@@ -33,7 +33,7 @@ local CATS = {
     { id = "EDITORS", label = "Editors",         color = "boost", icon = "profile" },
     { id = "DISPLAY", label = "Display & Sound", color = "teal",  icon = "screen" },
     { id = "SYSTEM",  label = "System",          color = "lime",  icon = "gear" },
-    { id = "ABOUT",   label = "About & Tools",   color = "hot",   icon = "info" },
+    { id = "ABOUT",   label = "Tools & About",   color = "hot",   icon = "info" },
 }
 S.cats = CATS
 
@@ -200,7 +200,11 @@ local function sections()
             { kind = "action", label = "Folder registration check", icon = "folder",
               sub = "ROM roots · aliases · assign", run = function() require("ui").go("folders") end },
             { kind = "action", label = "Registratore Z", icon = "folder",
-              sub = "scan · inspect · rename + alias", run = function() require("ui").go("folders") end },
+              sub = "scan · inspect · rename + alias", run = function() require("ui").go("folders", { zscan = true }) end },
+            { kind = "action", label = "GameSettings database", icon = "file",
+              sub = "browse every database preset", run = function() require("ui").go("gameset_browser") end },
+            { kind = "action", label = "muOS Assign / Content Explorer", icon = "list",
+              sub = "manifest · roots · registration", run = function() require("ui").go("diagnostics") end },
             { kind = "action", label = "Diagnostics", icon = "list", editor_label = "Viewer",
               run = function() require("ui").go("diagnostics") end },
             { kind = "action", label = "Rt:Core Env Triage", icon = "info", sub = "I · II · III health check",
