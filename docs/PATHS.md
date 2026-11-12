@@ -12,7 +12,6 @@ code resolves inside `frontend/`.
 /opt/muos/share/emulator/dolphin/Config/WiimoteNew.ini
 /opt/muos/share/emulator/dolphin/Config/Hotkeys.ini
 /opt/muos/share/emulator/dolphin/Config/Logger.ini
-/opt/muos/share/emulator/dolphin/Config/GameSettings/<ID>.ini
 ```
 
 These are the live runtime projection read by Dolphin. The shared launcher
@@ -23,11 +22,18 @@ Legacy files such as `Dolphin.ini.<profile>` and `GFX.ini.<profile>` are kept
 for compatibility/bootstrap during migration; the shared Content Explorer and
 Rt:UI launch path does not use them as the selected profile catalogue.
 
-`Config/GameSettings/<ID>.ini` is generated from the one selected
-`workshop/gamesettings/<ID>/<ActiveConfig>` file immediately before launch.
-Never edit the Config copy directly. When a game has no active preset, the
-launcher removes that game's previous user override so old values cannot leak
-into a later run.
+`/opt/muos/share/emulator/dolphin/GameSettings/<ID>.ini` is generated from
+the one selected `workshop/gamesettings/<ID>/<ActiveConfig>` file immediately
+before launch. `GameSettings/` is a sibling of `Config/` in Dolphin's user
+folder, not a subfolder of Config. Never edit this runtime copy directly.
+When a game has no active preset, the launcher removes that game's previous
+user override so old values cannot leak into a later run.
+
+Dolphin's per-game override directory is separate from Config:
+
+```
+/opt/muos/share/emulator/dolphin/GameSettings/<ID>.ini
+```
 
 ## 2. Workshop (managed by DolphinUI)
 
