@@ -197,13 +197,13 @@ on_signal() {
 }
 trap on_signal TERM INT
 
-if [ "$HOTKEY_DEVICE" = "Keyboard" ] && [ -x "$GPTK_BIN" ] && [ -s "$GPTK_CFG" ]; then
+if { [ "$HOTKEY_DEVICE" = "Keyboard" ] || [ "$HOTKEY_DEVICE" = "SDL/0/Keyboard Mouse" ]; } && [ -x "$GPTK_BIN" ] && [ -s "$GPTK_CFG" ]; then
     pkill -f "$GPTK_BIN -c" 2>/dev/null || true
     sleep 0.25
     "$GPTK_BIN" -c "$GPTK_CFG" -D states,keyboard >> "$LOG_DIR/gptokeyb2-content-explorer.log" 2>&1 &
     GPTK_PID=$!
     log "gptokeyb2 pid=$GPTK_PID profile=Default"
-elif [ "$HOTKEY_DEVICE" = "Keyboard" ]; then
+elif { [ "$HOTKEY_DEVICE" = "Keyboard" ] || [ "$HOTKEY_DEVICE" = "SDL/0/Keyboard Mouse" ]; }; then
     log "WARN keyboard hotkeys requested but gptokeyb2/config unavailable: $GPTK_BIN / $GPTK_CFG"
 else
     log "gptokeyb2 not started; Device is not Keyboard"
