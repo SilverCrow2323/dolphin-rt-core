@@ -1,11 +1,18 @@
 -- Safe Exit combo persistence.
 -- The watcher consumes raw joydev button indices, not SDL logical names.
 local FS = require("core.fs")
-local AI = require("core.app_input")
 
 local M = {}
 M.PATH = "data/safe_exit.conf"
-local DEFAULT = { "MENU" }
+local DEFAULT = { "SELECT", "START" }
+
+-- Linux joydev indices verified on the muOS H700 input device.
+-- These are NOT SDL button indices from core.app_input.
+local JOYDEV = {
+    A = 0, B = 1, X = 2, Y = 3,
+    L1 = 4, R1 = 5, L2 = 6, R2 = 7,
+    SELECT = 8, START = 9, MENU = 10, L3 = 11, R3 = 12,
+}
 local MAX_BUTTONS = 4
 
 local function trim(s)
@@ -13,8 +20,7 @@ local function trim(s)
 end
 
 local function current_pad()
-    if not AI.data and AI.init then pcall(AI.init) end
-    return (AI.pad_map and AI.pad_map()) or {}
+    return JOYDEV
 end
 
 local function unique_names(names)
@@ -48,7 +54,7 @@ local function labels(raw)
 end
 
 function M.default_names()
-    return { "MENU" }
+    return { "SELECT", "START" }
 end
 
 function M.load_raw()
@@ -64,8 +70,7 @@ function M.load_raw()
         end
     end
     if #out == 0 then
-        local menu = current_pad().MENU
-        out[1] = (type(menu) == "number") and menu or 8
+        out[1], out[2] = JOYDEV.SELECT, JOYDEV.START
     end
     table.sort(out)
     return out
