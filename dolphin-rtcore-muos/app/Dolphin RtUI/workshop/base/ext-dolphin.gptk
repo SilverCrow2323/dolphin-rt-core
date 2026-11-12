@@ -1,0 +1,23 @@
+# Dolphin Rt:Core — gptokeyb2 native state-machine fallback.
+# L2 enters the Rt hotkey layer; ordinary gameplay buttons are not remapped.
+
+[config]
+deadzone_triggers = 3000
+
+[controls]
+overlay = clear
+l2 = hold_state rt_hotkeys
+
+[controls:rt_hotkeys]
+overlay = parent
+a = f1       # Save State 1
+b = f2       # Load State 1
+x = f3       # Save State 2
+y = f4       # Load State 2
+l1 = f5      # Save State 3
+r1 = f6      # Load State 3
+up = f7      # Toggle Pause
+down = f8    # Fast Forward
+left = f9    # Frame Limit -
+right = f10  # Frame Limit +
+r2 = f11     # Screenshot
