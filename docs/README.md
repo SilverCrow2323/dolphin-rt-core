@@ -33,7 +33,7 @@ Dolphin Rt:Core.
 - **Terminology:** see `GLOSSARY.md` for Rt:Core-specific words
   (Workshop, Flashback, Triptych, Tier, Enhancer, etc.).
 
-## Where to start
+## Practical Wiki\n\nThe tracked `wiki/` directory is the GitHub Wiki source. Use [[Quick-Start]], [[Controls-and-Profiles]] and [[Troubleshooting]] for short procedures; use the technical references below for deeper implementation detail. Publish with `bash tools/publish-wiki.sh`.\n\n## Where to start
 
 - First time on the project → **ARCHITECTURE.md**.
 - Contributing UI work → **STYLEGUIDE.md**.
