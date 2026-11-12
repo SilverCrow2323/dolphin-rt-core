@@ -28,7 +28,7 @@ The Default `ext-dolphin.gptk` uses the native gptokeyb2 state-machine format: h
 | Reset | Unbound by default (configure in RtUI) | — |
 Safe Exit is not a Dolphin keyboard hotkey: the Safe Exit watcher reads MENU / M (or the user-recorded combo) directly from the raw controller stream.
 
-The launchers start gptokeyb2 before Dolphin opens the controller and intentionally do **not** pass gptokeyb2's `-1 dolphin` option. In gptokeyb2 that option enables its own START+SELECT process-kill binding; it conflicts with gameplay input and bypasses Rt:Core's configurable Safe Exit.
+The launchers start gptokeyb2 before Dolphin opens the controller and do **not** pass a positional process name. In gptokeyb2, that first argument becomes the process target for the START + hotkey kill action (the default hotkey is BACK / SELECT). The legacy `-1` flag is ignored by current gptokeyb2; omitting the process name is what disables the kill action. Rt:Core Safe Exit remains the only game-exit handler.
 
 The hotkey designer can change the combo and emitted key. The table above describes the shipped Default keyboard profile, not a restriction on user profiles.
 
@@ -46,7 +46,8 @@ The default no longer uses START+SELECT, and START is not used by the default L2
 ## Troubleshooting
 
 1. Confirm the selected profile is not Disabled.
-2. Check that the Default `.gptk` contains `[controls]`, `l2 = hold_state rt_hotkeys`, and `[controls:rt_hotkeys]`; plain `l2+a = f1` lines are not valid gptokeyb2 FSM syntax.
+2. Confirm the launcher calls `gptokeyb2 -c <profile>` without a positional `dolphin` argument; passing a process name enables the START + SELECT kill action.
+3. Check that the Default `.gptk` contains `[controls]`, `l2 = hold_state rt_hotkeys`, and `[controls:rt_hotkeys]`; plain `l2+a = f1` lines are not valid gptokeyb2 FSM syntax.
 3. For keyboard mode, check that `Device = Keyboard` is in the copied `Config/Hotkeys.ini` and that `lib/gptokeyb2` is executable.
 4. For pad mode, confirm `Device` is an SDL device, then make sure `gptokeyb2` is not running for that session.
 5. Check `data/logs/gptokeyb2_*.log` or `data/logs/gptokeyb2-content-explorer.log` and the Safe Exit watcher log.
