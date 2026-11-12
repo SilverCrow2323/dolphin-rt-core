@@ -16,7 +16,7 @@ grep -Fq 'K.clip("xl", category.label, strip_x - tx - 24)' "$APP/ui/screens/sett
 grep -Fq 'local function draw_vaporwave_backdrop()' "$APP/ui/screens/stream_library.lua"
 grep -Fq 'local function draw_stream_header()' "$APP/ui/screens/stream_library.lua"
 grep -Fq 'local VIEWS   = { "FLOW", "GRID", "LIST" }' "$APP/ui/screens/stream_library.lua"
-grep -Fq 'view_w, view_gap = 76, 5' "$APP/ui/screens/stream_library.lua"
+grep -Fq 'local view_x, view_w, view_gap = 364, 76, 5' "$APP/ui/screens/stream_library.lua"
 grep -Fq 'key = "SELECT", label = "Sort"' "$APP/ui/screens/stream_library.lua"
 grep -Fq 'local END_FRAME = (Mascot.FRAMES or 120) - 1' "$APP/ui/screens/boot.lua"
 grep -Fq 'local INTRO_LIMIT = { full = 5.5, quick = 2.8, off = 0.35 }' "$APP/ui/screens/boot.lua"
