@@ -226,8 +226,22 @@ else
         # as single argv entries; never re-expand a hand-built command string.
         GS_ARGS+=(--workshop "$WORKSHOP")
         if [ -n "$GAMESETTINGS" ]; then
-            GS_PATH="$WORKSHOP/gamesettings/$GAME_ID/$GAMESETTINGS"
-            [ -f "$GS_PATH" ] && GS_ARGS+=(--gs-file "$GS_PATH")
+            case "$GAMESETTINGS" in
+                */*|*..*|*[!A-Za-z0-9_.\ -]*)
+                    log "WARN: unsafe GameSettings filename rejected"
+                    GAMESETTINGS="Disabled"
+                    GS_ARGS=()
+                    ;;
+                *.ini)
+                    GS_PATH="$WORKSHOP/gamesettings/$GAME_ID/$GAMESETTINGS"
+                    [ -f "$GS_PATH" ] && GS_ARGS+=(--gs-file "$GS_PATH")
+                    ;;
+                *)
+                    log "WARN: GameSettings must be an .ini file; explicit selection disabled"
+                    GAMESETTINGS="Disabled"
+                    GS_ARGS=()
+                    ;;
+            esac
         fi
     fi
     if command -v python3 >/dev/null 2>&1 && [ -f "$MERGE" ]; then
