@@ -66,6 +66,7 @@ jobs:
           luajit tests/test_boot_scan_async.lua
           luajit tests/test_folder_tools.lua
           luajit tests/test_profile_merger_shared_base.lua
+          luajit tests/test_rt_profiles_tiers.lua
           bash tests/test_content_explorer_shared_profiles.sh
           python3 tests/test_rt_profile_merge.py
           luajit tests/test_rom_auto_discovery.lua
