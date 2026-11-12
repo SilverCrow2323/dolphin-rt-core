@@ -42,35 +42,50 @@ end
 -- Deploy all bundled configs of an entry into workshop/gamesettings/<ID>/.
 -- Returns the number of configs written.
 function M.deploy(entry, game_id)
-    if not entry then return 0 end
+    if not entry or type(entry.configs) ~= "table" then return 0 end
     if type(game_id) ~= "string" or not game_id:match("^[%w][%w][%w][%w][%w][%w]$") then return 0 end
+
     local dir = "workshop/gamesettings/" .. game_id
     sh.mkdir_p(dir)
     local n = 0
     for _, cfg in ipairs(entry.configs) do
         local filename = type(cfg.filename) == "string" and cfg.filename or ""
+        -- The downloaded catalogue is data, never a path source.
         if filename:match("^[%w _%.%-]+%.ini$") and not filename:find("..", 1, true) then
-        local target = dir .. "/" .. filename
-        local f = io.open(target, "r")
-        if f then f:close()
-        else
-            local out = io.open(target, "w")
-            if out then out:write(cfg.raw_content or ""); out:close(); n = n + 1 end
-        end
+            local target = dir .. "/" .. filename
+            local f = io.open(target, "r")
+            if f then
+                f:close()
+            else
+                local out = io.open(target, "w")
+                if out then
+                    out:write(type(cfg.raw_content) == "string" and cfg.raw_content or "")
+                    out:close()
+                    n = n + 1
+                end
+            end
         end
     end
-    -- write the metadata so the gameset_manager can see them
+
+    -- Write metadata so gameset_manager can see the deployed presets.
     local meta = dir .. "/rtgameset_data.ini"
-    if not io.open(meta, "r") then
+    local existing = io.open(meta, "r")
+    if existing then
+        existing:close()
+    else
         local m = io.open(meta, "w")
         if m then
+            local first = entry.configs[1]
+            local active = first and first.filename or "base.ini"
+            if not active:match("^[%w _%.%-]+%.ini$") or active:find("..", 1, true) then
+                active = "base.ini"
+            end
             m:write("[GameSettings]\n")
-            m:write("GameName = " .. (entry.game or game_id) .. "\n")
-            m:write("ActiveConfig = " .. (entry.configs[1] and entry.configs[1].filename or "base.ini") .. "\n")
+            m:write("GameName = " .. tostring(entry.game or game_id):gsub("[\r\n]", " ") .. "\n")
+            m:write("ActiveConfig = " .. active .. "\n")
             m:close()
         end
     end
     return n
 end
-
 return M
