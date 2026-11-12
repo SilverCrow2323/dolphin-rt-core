@@ -48,7 +48,7 @@ local function run_case(selected_mode, has_mascot, expected_limit)
         Boot.update(0.05)
     end
     assert(#navigations == 1, selected_mode .. ": intro never navigated automatically")
-    assert(navigations[1].name == "library", selected_mode .. ": wrong automatic destination")
+    assert(navigations[1].name == "home", selected_mode .. ": wrong automatic destination")
     assert(navigations[1].opts and navigations[1].opts.no_push == true,
         selected_mode .. ": intro should replace itself without back-stack entry")
     assert(elapsed <= expected_limit + 0.06,
