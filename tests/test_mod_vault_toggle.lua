@@ -8,8 +8,8 @@ package.preload["core.shell"] = function()
         shq = function(s) return "'" .. tostring(s):gsub("'", "'\\''") .. "'" end,
         exec = function(command) commands[#commands + 1] = command; return 0 end,
         popen = function(command)
-            if command:find("Textures%.off") then return "Parked Mod/\\n" end
-            if command:find("Textures") then return "Active Mod/\\n" end
+            if command:find("Textures%.off") then return "Parked Mod/\n" end
+            if command:find("Textures") then return "Active Mod/\n" end
             return ""
         end,
     }
@@ -17,6 +17,9 @@ end
 
 local Mods = require("core.mods")
 local cat = Mods.CATS[1]
+local applicable = Mods.for_game(cat, { id = "GZLE01" }, { "Active Mod", "Parked Mod" }, "/fake/Load")
+assert(#applicable == 1 and applicable[1].name == "Active Mod" and not applicable[1].parked,
+    "per-game launch plans must not expose a globally parked mod")
 local entry = { name = "Bloom Removal", parked = false, is_dir = true }
 local ok, err = Mods.set_enabled(cat, entry, false, "/fake/Load")
 assert(ok, err or "global disable should succeed")
