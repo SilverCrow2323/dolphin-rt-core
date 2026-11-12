@@ -17,7 +17,7 @@ S.host_list = K.List(K.MARGIN, 104, K.W - K.MARGIN * 2 - 14, K.BOT - 104, 48)
 local function read_discovered_hosts()
   local raw = Stream.read(Stream.DIR .. "/discover.sunshine") or ""
   local hosts, seen = {}, {}
-  for line in raw:gmatch("[^\\n]+") do
+  for line in raw:gmatch("[^\n]+") do
     local host = line:match("([%d%.]+)")
     if host and host:match("^[%d%.]+$") and not seen[host] then
       seen[host] = true
