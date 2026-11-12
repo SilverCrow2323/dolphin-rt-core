@@ -79,4 +79,4 @@ expect(roots[1].accessible == true and roots[1].has_roms == true, "root report e
 FS.is_dir, Shell.first = original.is_dir, original.first
 Settings.rom_root_candidates, Settings.data = original.roots, original.data
 
-print("Registratore Z folder-tool tests: OK")
+print("FolderWaker folder-tool tests: OK")
