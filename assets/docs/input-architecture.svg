@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Dolphin Rt:Core input architecture</title>
+<desc id="desc">Three separate controller input numbering layers: Linux EV_KEY, Linux joydev and Dolphin SDL button tokens.</desc>
+<defs>
+  <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#08142c"/><stop offset="1" stop-color="#211044"/></linearGradient>
+  <linearGradient id="blue" x2="1"><stop stop-color="#123c74"/><stop offset="1" stop-color="#176e9b"/></linearGradient>
+  <linearGradient id="violet" x2="1"><stop stop-color="#3b1b69"/><stop offset="1" stop-color="#652b90"/></linearGradient>
+  <linearGradient id="teal" x2="1"><stop stop-color="#07584f"/><stop offset="1" stop-color="#0a8a78"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <style>
+    .h{font:700 42px 'DejaVu Sans',Arial,sans-serif;fill:#f5f7ff}.s{font:500 22px 'DejaVu Sans',Arial,sans-serif;fill:#cfddf5}
+    .t{font:700 27px 'DejaVu Sans',Arial,sans-serif;fill:#fff}.b{font:500 20px 'DejaVu Sans',Arial,sans-serif;fill:#eff5ff}
+    .m{font:500 17px 'DejaVu Sans',Arial,sans-serif;fill:#b7c8e5}.n{font:700 19px 'DejaVu Sans',Arial,sans-serif;fill:#f8fbff}
+  </style>
+</defs>
+<rect width="1600" height="900" rx="38" fill="url(#bg)"/>
+<circle cx="1300" cy="100" r="220" fill="#442d9b" opacity=".12"/><circle cx="200" cy="820" r="260" fill="#0086bd" opacity=".10"/>
+<text x="80" y="95" class="h">DOLPHIN Rt:CORE · INPUT ARCHITECTURE</text>
+<text x="82" y="137" class="s">Three numbering domains. Keep each one in its own lane.</text>
+
+<rect x="70" y="190" width="450" height="520" rx="26" fill="url(#blue)" stroke="#55bcff" stroke-width="2"/>
+<text x="105" y="248" class="t">1 · Linux EV_KEY</text>
+<text x="105" y="286" class="s">/dev/input/event*</text>
+<text x="105" y="342" class="b">Firmware-specific kernel codes</text>
+<rect x="100" y="370" width="390" height="118" rx="16" fill="#071a36" opacity=".78"/>
+<text x="125" y="410" class="n">JACARANDA</text><text x="125" y="447" class="b">Initial mapping</text>
+<rect x="100" y="510" width="390" height="118" rx="16" fill="#071a36" opacity=".78"/>
+<text x="125" y="550" class="n">ANDROMEDA</text><text x="125" y="587" class="b">Alternative mapping</text>
+<text x="105" y="672" class="m">Used by direct evdev readers.</text>
+
+<rect x="575" y="190" width="450" height="520" rx="26" fill="url(#violet)" stroke="#c19bff" stroke-width="2"/>
+<text x="610" y="248" class="t">2 · Linux joydev</text>
+<text x="610" y="286" class="s">/dev/input/js1 · indices 0–12</text>
+<g class="b">
+<text x="620" y="350">A 0 · B 1 · X 2 · Y 3</text>
+<text x="620" y="390">L1 4 · R1 5 · L2 6 · R2 7</text>
+<text x="620" y="430">SELECT 8 · START 9 · MENU 10</text>
+<text x="620" y="470">L3 11 · R3 12</text>
+</g>
+<rect x="610" y="515" width="380" height="105" rx="16" fill="#160d30" opacity=".84"/>
+<text x="635" y="555" class="n">SAFE EXIT · DEFAULT</text>
+<text x="635" y="592" class="b">SELECT 8 + START 9</text>
+<text x="610" y="672" class="m">Raw button events for the exit watcher.</text>
+
+<rect x="1080" y="190" width="450" height="520" rx="26" fill="url(#teal)" stroke="#55edcf" stroke-width="2"/>
+<text x="1115" y="248" class="t">3 · Dolphin SDL profiles</text>
+<text x="1115" y="286" class="s">SDL/0/muOS-Keys · Button n</text>
+<g class="b">
+<text x="1125" y="350">B 0 · A 1 · X 2 · Y 3</text>
+<text x="1125" y="390">L1 4 · R1 5 · SELECT 6</text>
+<text x="1125" y="430">START 7 · MENU 8 · L2 9</text>
+<text x="1125" y="470">Z 11 · R2 12 (profile tokens)</text>
+</g>
+<rect x="1115" y="515" width="380" height="105" rx="16" fill="#042e2b" opacity=".82"/>
+<text x="1140" y="555" class="n">CONFIG FILES</text>
+<text x="1140" y="592" class="b">GCPadNew.ini · WiimoteNew.ini</text>
+<text x="1115" y="672" class="m">SDL tokens are not kernel key codes.</text>
+
+<path d="M520 450 H575 M1025 450 H1080" stroke="#d7e5ff" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 12" opacity=".55"/>
+<text x="800" y="780" text-anchor="middle" class="t">NEVER COPY A NUMBER FROM ONE LAYER INTO ANOTHER</text>
+<text x="800" y="830" text-anchor="middle" class="m">Hardware reference: Anbernic RG35XX H · firmware-specific mappings must be validated on the matching build.</text>
+</svg>
