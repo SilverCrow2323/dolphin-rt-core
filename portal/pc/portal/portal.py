@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dolphin Rt:Stream // Stream Portal - pannello di controllo PC (SPDW Factory Lab)."""
+"""Dolphin Rt:Stream PC Companion - pannello di controllo PC (SPDW Factory Lab)."""
 import getpass, os, queue, re, subprocess, sys, threading, webbrowser
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, font as tkfont
