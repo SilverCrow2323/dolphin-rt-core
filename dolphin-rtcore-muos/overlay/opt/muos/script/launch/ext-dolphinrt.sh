@@ -208,8 +208,9 @@ elif [ "$HOTKEY_DEVICE" = "Keyboard" ]; then
 else
     log "gptokeyb2 not started; Device is not Keyboard"
 fi
-sleep 0.25  # attach to the controller before Dolphin opens it
-
+if [ -n "$GPTK_PID" ]; then
+    sleep 0.25  # only wait when our keyboard helper was actually started
+fi
 
 
 ./dolphin --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMUDIR" >> "$LOG_DIR/dolphin_debug.log" 2>&1 &
