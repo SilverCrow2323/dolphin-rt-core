@@ -286,9 +286,21 @@ function U.launch(g)
         controller = card("Controller", "Default"),
         hotkeys    = card("Hotkeys", "Default"),
         gamesettings = (function()
+            local ok, GM = pcall(require, "core.gameset_manager")
+            local active = ok and GM.active_for(g.id) or nil
+            if type(active) == "string" and active ~= "" then return active end
+
+            -- One-time compatibility import from older RTID cards.
             local v = card("GameSettings", "")
-            if v == "" or v == "Disabled" then return nil end
-            return v
+            if v == "Disabled" then
+                if ok then GM.clear_active(g.id) end
+                return "Disabled"
+            end
+            if v ~= "" then
+                if ok then GM.set_active(g.id, v) end
+                return v
+            end
+            return nil
         end)(),
         cheats     = U.cheats_active(g),
         mods       = nil,                               -- set below
