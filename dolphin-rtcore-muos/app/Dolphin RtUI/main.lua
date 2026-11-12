@@ -1,6 +1,7 @@
 local Core   = require("core")
 local UI     = require("ui")
 local Notify = require("ui.notify")
+local Trace = require("core.debug_trace")
 
 -- Frame cap. conf.lua runs with vsync off, so without this the app spins a
 -- core flat out (heat + battery on the H700). 60 FPS is plenty for a UI;
@@ -61,6 +62,8 @@ function love.run()
 end
 
 function love.load()
+  Trace.start((require("version") or {}).string or "unknown")
+  Trace.write("APP", "love.load", "args=" .. tostring(arg and #arg or 0))
   -- copying the app (zip, file manager) can drop exec bits; harmless if the
   -- filesystem ignores chmod
   os.execute("chmod +x scripts/*.sh mux_launch.sh lib/love lib/gptokeyb2 2>/dev/null &")
@@ -72,8 +75,12 @@ function love.load()
       (require("version") or {}).string or "unknown")
   end)
 
-  Core.init()
-  UI.init()
+  local core_ok, core_err = pcall(Core.init)
+  Trace.write("INIT", "Core.init", core_ok, core_err or "")
+  if not core_ok then Trace.error("Core.init", core_err); error(core_err) end
+  local ui_ok, ui_err = pcall(UI.init)
+  Trace.write("INIT", "UI.init", ui_ok, ui_err or "")
+  if not ui_ok then Trace.error("UI.init", ui_err); error(ui_err) end
 
   -- Surface the outcome of the most recent launch, if any.
   pcall(function()
@@ -139,10 +146,26 @@ end
 
 local DevShot = require("core.devshot")
 
+local _trace_screen = nil
+local _trace_tick = 0
 function love.update(dt)
   DevShot.update(dt)
-  Core.update(dt)
-  UI.update(dt)
+  local okS, St = pcall(require, "core.state")
+  local screen = okS and St and St.screen or "unknown"
+  if screen ~= _trace_screen then
+    Trace.write("SCREEN", tostring(_trace_screen), "->", tostring(screen))
+    _trace_screen = screen
+  end
+  _trace_tick = _trace_tick + dt
+  if _trace_tick >= 5 then
+    Trace.write("HEARTBEAT", "screen=" .. tostring(screen), "dt=" .. tostring(dt),
+      "mem_kb=" .. tostring(collectgarbage("count")))
+    _trace_tick = 0
+  end
+  local ok, err = pcall(Core.update, dt)
+  if not ok then Trace.error("Core.update", err); error(err) end
+  ok, err = pcall(UI.update, dt)
+  if not ok then Trace.error("UI.update", err); error(err) end
   Notify.update(dt)
 end
 
@@ -199,6 +222,7 @@ end)()
 
 local _ilog_ready = false
 local function _ilog(kind, a, b)
+    Trace.write("INPUT", kind, tostring(a), tostring(b))
     local _env = os.getenv("DOLPHINUI_DEBUG_INPUT") == "1"
     local _setting = false
     pcall(function()
@@ -256,6 +280,7 @@ function love.keypressed(k, sc)
     if UI and UI.key then UI.key(sc or k) end
 end
 function love.keyreleased(k, sc)
+    Trace.write("INPUT_RELEASE", "key", k, sc)
     if UI and UI.key_released then UI.key_released(sc or k) end
 end
 
@@ -267,6 +292,7 @@ function love.joystickpressed(j, b)
     if UI and UI.pad then UI.pad(b) end
 end
 function love.joystickreleased(j, b)
+    Trace.write("INPUT_RELEASE", "joy", tostring(j), b)
     if _is_gamepad(j) then return end
     if UI and UI.pad_released then UI.pad_released(b) end
 end
@@ -288,6 +314,7 @@ function love.gamepadpressed(j, b)
     if UI and UI.gamepad then UI.gamepad(b) end
 end
 function love.gamepadreleased(j, b)
+    Trace.write("INPUT_RELEASE", "gp", tostring(j), b)
     if UI and UI.gamepad_released then UI.gamepad_released(b) end
 end
 
@@ -320,4 +347,4 @@ function love.gamepadaxis(j, axis, value)
     end
 end
 
-function love.quit()                 Core.shutdown()    end
+function love.quit() Trace.write("APP", "love.quit"); Trace.finish(); Core.shutdown() end
