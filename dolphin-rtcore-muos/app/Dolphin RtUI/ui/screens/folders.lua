@@ -114,10 +114,6 @@ local function commit_folder_waker()
         Notify.show("warning", "Rename blocked: no supported GameCube/Wii disc image was found here.")
         return
     end
-    if S.folder_waker_item.is_scan_root then
-        Notify.show("warning", "Rename blocked: this is a configured ROM root. Select a child folder instead.")
-        return
-    end
     local ok, result = FolderTools.rename_register(S.folder_waker_item, S.folder_waker_system)
     if ok then
         Notify.show("success", "Renamed to " .. (result.target:match("([^/]+)$") or result.target)
@@ -256,7 +252,7 @@ local function draw_folder_waker_preview()
     local target = (S.folder_waker_plan and S.folder_waker_plan.target) or ("Rt" .. source_name)
     local alias = (S.folder_waker_plan and S.folder_waker_plan.alias) or FolderTools.normalize_alias(target)
     local system_text = S.folder_waker_system or "not selected"
-    local status = item.is_scan_root and "This is a configured ROM root; renaming it would break the library."
+    local status = item.is_scan_root and "This is already an Rt:UI ROM path; FolderWaker will update the saved path."
         or item.status == "skip-match" and "Matches muOS skip.ini pattern(s): "
         .. table.concat(item.skip_matches or {}, ", ")
         or item.status == "unmapped" and "No matching assignment alias is present in assign.json."
@@ -274,12 +270,15 @@ local function draw_folder_waker_preview()
     K.text("small", "DIAGNOSTIC", K.MARGIN + 18, 307, K.C.dim)
     K.text("small", K.clip("small", status, K.W - K.MARGIN * 2 - 36), K.MARGIN + 18, 329,
         item.status == "skip-match" and K.C.warn or K.C.dim)
-    K.text("small", "No symlink: muOS skips symbolic-link folders. Only the directory name changes.",
+    K.text("small",
+        item.is_scan_root
+            and "Rt:UI will update this saved ROM path to the new folder name."
+            or "No symlink: muOS skips symbolic-link folders. Only the directory name changes.",
         K.MARGIN + 18, 355, K.C.dim, 1, K.W - K.MARGIN * 2 - 36)
     K.text("small", item.has_roms and "DISC CHECK: supported ROM image found" or "DISC CHECK: no supported ROM image — rename disabled",
         K.MARGIN + 18, 382, item.has_roms and K.C.ok or K.C.warn, 1, K.W - K.MARGIN * 2 - 36)
     local footer = { { key = "Y", label = "GameCube" }, { key = "X", label = "Wii" } }
-    if item.has_roms and not item.is_scan_root then
+    if item.has_roms then
         footer[#footer + 1] = { key = "A", label = "Rename + register" }
     end
     footer[#footer + 1] = { key = "B", label = "Back" }
