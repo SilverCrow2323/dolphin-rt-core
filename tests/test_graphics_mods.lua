@@ -30,15 +30,22 @@ local user = tmp .. "/Load/GraphicMods"
 local bloom = sys .. "/All Games Bloom Removal"
 local galaxy = sys .. "/Super Mario Galaxy"
 local zelda = sys .. "/Zelda Only"
+local direct_id = sys .. "/RMGE01"
+local direct_prefix = sys .. "/RMG"
+local fallback_prefix = sys .. "/GM8"
 local custom = user .. "/All User Shaders"
 
-for _, dir in ipairs({bloom, galaxy .. "/gameids", zelda .. "/gameids", custom}) do mkdir(dir) end
+for _, dir in ipairs({bloom, galaxy .. "/gameids", zelda .. "/gameids",
+                      direct_id, direct_prefix, fallback_prefix, custom}) do mkdir(dir) end
 write(bloom .. "/metadata.json", metadata("Bloom Removal", "Dolphin Team"))
 write(bloom .. "/all.txt", "")
 write(galaxy .. "/metadata.json", metadata("Super Mario Galaxy Bloom"))
 write(galaxy .. "/gameids/RMGE01.txt", "")
 write(zelda .. "/metadata.json", metadata("Zelda Only"))
 write(zelda .. "/gameids/ZELD01.txt", "")
+write(direct_id .. "/metadata.json", metadata("Exact Game ID Mod"))
+write(direct_prefix .. "/metadata.json", metadata("Region Prefix Fallback"))
+write(fallback_prefix .. "/metadata.json", metadata("Fallback Game Mod"))
 write(custom .. "/metadata.json", metadata("User Shader Pack", "Test Author"))
 write(custom .. "/all.txt", "")
 
@@ -62,6 +69,14 @@ local bloom_item = assert(by_name(rows, "All Games Bloom Removal"), "all-games m
 local galaxy_item = assert(by_name(rows, "Super Mario Galaxy"), "nested GameID marker matches game")
 assert(by_name(rows, "All User Shaders"), "user all-games marker matches game")
 assert(not by_name(rows, "Zelda Only"), "non-matching game mod is excluded")
+assert(by_name(rows, "RMGE01") and by_name(rows, "RMGE01").scope == "id",
+    "direct GameID folder is selected")
+assert(not by_name(rows, "RMG"), "direct prefix folder is suppressed when exact GameID exists")
+
+local fallback_rows = Graphics.list_for({id = "GM8P01", title = "Fallback Game"})
+assert(by_name(fallback_rows, "GM8") and by_name(fallback_rows, "GM8").scope == "prefix",
+    "three-character folder is selected when exact GameID folder is absent")
+
 for _, item in ipairs(rows) do
     assert(item.enabled == false, "mods are disabled by default: " .. item.name)
 end
