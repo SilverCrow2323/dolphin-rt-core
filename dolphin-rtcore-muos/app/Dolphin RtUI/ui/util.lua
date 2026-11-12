@@ -138,9 +138,25 @@ function U.mods_installed()
     end)
 end
 -- selected mods of a game: list of names, nil = none
+function U.migrate_legacy_graphic_mods(game)
+    if not game or not game.id then return false, "a game is required" end
+    local selected, raw = {}, U.card_get(game, "MODS", "Selected")
+    if type(raw) == "string" then
+        for name in raw:gmatch("[^,]+") do selected[name] = true end
+    end
+    local ok, migrated = require("core.graphics_mods").migrate_legacy_selection(game, selected)
+    if ok and (tonumber(migrated) or 0) > 0 then
+        U.memo_reset("vault_counts:" .. tostring(game.id))
+        U.memo_reset("mods_installed")
+    end
+    return ok, migrated
+end
+
 function U.mods_selected(game)
     local set, n = {}, 0
     if not game or not game.id then return set, n end
+    -- Preserve pre-native RTID selections once, but never overwrite a Dolphin profile.
+    pcall(U.migrate_legacy_graphic_mods, game)
     for _, item in ipairs(require("core.graphics_mods").list_for(game)) do
         if item.enabled then
             set[item.name] = true
@@ -307,7 +323,6 @@ function U.launch(g)
             return v
         end)(),
         cheats     = U.cheats_active(g),
-        mods       = nil,                               -- set below
         show_fps   = U.yes(card("OverlayFPS", "no")),
         show_vps   = U.yes(card("OverlayVPS", "no")),
         show_speed = U.yes(card("OverlaySpeed", "no")),
@@ -318,7 +333,6 @@ function U.launch(g)
     }
     if U.is_family(opts.profile) then opts.variant = card("RtProfileVariant", "std") end
     local _, nmods = U.mods_selected(g)
-    if nmods > 0 then opts.mods = U.card_get(g, "MODS", "Selected") else opts.mods = "none" end
     -- GameSettings: unica fonte di verità. Scrive sia il card LAUNCH che il
     -- metadata rtgameset_data.ini/ActiveConfig (che il merge Python legge).
     if opts.gamesettings and opts.gamesettings ~= "" then
@@ -340,9 +354,9 @@ function U.launch(g)
     end)
     Settings.set("last_game", g.id)
     require("ui.sfx").play("menu_select")
-    ulog(("launch %s [%s] rom=%s profile=%s/%s controller=%s hotkeys=%s cheats=%s mods=%s"):format(
+    ulog(("launch %s [%s] rom=%s profile=%s/%s controller=%s hotkeys=%s cheats=%s graphics_mods=%d"):format(
         tostring(g.id), tostring(g.system), tostring(g.path), opts.profile, tostring(opts.variant),
-        opts.controller, opts.hotkeys, tostring(opts.cheats), tostring(opts.mods)))
+        opts.controller, opts.hotkeys, tostring(opts.cheats), nmods))
     local ok, res, detail = pcall(require("core.launcher").launch, g, opts)
     if not ok then
         ulog("launch error: " .. tostring(res))
