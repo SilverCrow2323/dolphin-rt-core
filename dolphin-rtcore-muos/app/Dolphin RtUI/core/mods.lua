@@ -117,7 +117,7 @@ function M.for_game(cat, game, titles, root)
   for _, e in ipairs(M.entries(cat, root)) do
     -- A globally parked mod stays disabled for every game. Game-specific
     -- launch plans must not silently pull it back out of <Category>.off.
-    if not (game and e.parked) then
+    if not (game and not cat.legacy and e.parked) then
       if cat.legacy then
         e.kind = "gfx"; list[#list + 1] = e
       elseif game then
