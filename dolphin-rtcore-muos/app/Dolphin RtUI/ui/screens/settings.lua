@@ -196,6 +196,19 @@ local function sections()
               end },
         },
         ABOUT = {
+            { kind = "choice", label = "muOS profile catalogue", values = { "Standard only", "All tiers" },
+              get = function() return Settings.get("core_profile_mode") == 2 and "All tiers" or "Standard only" end,
+              set = function(v) Settings.set("core_profile_mode", v == "All tiers" and 2 or 1) end },
+            { kind = "action", label = "Apply profile catalogue", icon = "profile",
+              sub = "apply selected mode to muOS", run = function()
+                  local ok, detail = require("core.muos_tools").apply(Settings.get("core_profile_mode") or 1)
+                  Notify.show(ok and "success" or "error", ok and "Profile catalogue updated" or ("Apply failed: " .. tostring(detail)))
+              end },
+            { kind = "action", label = "Register GameCube + Wii", icon = "gamepad",
+              sub = "register Dolphin Rt:Core in muOS", run = function()
+                  local ok, detail = require("core.muos_tools").apply()
+                  Notify.show(ok and "success" or "error", ok and "GameCube / Wii registered" or ("Registration failed: " .. tostring(detail)))
+              end },
             { kind = "action", label = "Folder registration check", icon = "folder",
               sub = "ROM roots · aliases · assign", run = function() require("ui").go("folders") end },
             { kind = "action", label = "Registratore Z", icon = "folder",
