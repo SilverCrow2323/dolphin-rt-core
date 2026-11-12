@@ -89,8 +89,8 @@ function M.apply(kind, name)
     end
 
     if kind == "gamesettings" then
-        -- GameSettings are never merged into global Dolphin.ini/GFX.ini.
-        -- Config/GameSettings/<ID>.ini is the one selected runtime projection.
+        -- GameSettings live in the Dolphin user-root GameSettings/ folder,
+        -- separate from Config/. Keep [Gecko]/[ActionReplay] cheat blocks.
         if type(name) ~= "string" or not name:match("^[%w_%-]+$") then
             Notify.show("error", "Invalid GameID")
             return false
@@ -98,38 +98,30 @@ function M.apply(kind, name)
         local GM = require("core.gameset_manager")
         local active = GM.active_for(name)
         local destination = target.dir .. "/" .. name .. ".ini"
+        local source = active and ("workshop/gamesettings/" .. name .. "/" .. active) or "-"
+        local temporary = destination .. ".rt-tmp"
         os.execute("mkdir -p " .. shq(target.dir))
-        local ok = true
-        if active then
-            local source = "workshop/gamesettings/" .. name .. "/" .. active
-            local input = io.open(source, "rb")
-            if not input then
-                ok = false
-            else
-                local bytes = input:read("*a")
-                input:close()
-                local temporary = destination .. ".rt-tmp"
-                local output = io.open(temporary, "wb")
-                if not output then
-                    ok = false
+        local command = "python3 " .. shq("tools/project_gamesettings.py") .. " " ..
+            shq(source) .. " " .. shq(destination) .. " " .. shq(temporary)
+        local rc = os.execute(command)
+        local ok = (rc == true or rc == 0)
+        if ok then
+            local projected = io.open(temporary, "rb")
+            if projected then
+                local bytes = projected:read("*a") or ""
+                projected:close()
+                if bytes ~= "" then
+                    ok = os.rename(temporary, destination)
+                    if not ok then os.remove(temporary) end
                 else
-                    local wrote = output:write(bytes or "")
-                    output:close()
-                    if wrote then
-                        ok = os.rename(temporary, destination)
-                        if not ok then os.remove(temporary) end
-                    else
-                        os.remove(temporary)
-                        ok = false
-                    end
+                    os.remove(temporary)
+                    os.remove(destination)
                 end
+            else
+                ok = false
             end
         else
-            local removed = os.remove(destination)
-            if not removed then
-                local existing = io.open(destination, "r")
-                if existing then existing:close(); ok = false end
-            end
+            os.remove(temporary)
         end
         if ok then
             Notify.show("success", active and ("Projected: " .. active) or "GameSettings disabled")
