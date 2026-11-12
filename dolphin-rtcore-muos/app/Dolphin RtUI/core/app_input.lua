@@ -70,7 +70,9 @@ function M.init()
                 for k, v in pairs(d.pad) do
                     if previous_sdl[k] ~= v and mistaken_joydev[k] ~= v then
                         M.data.pad[k] = v
-                    elseif M.data.pad[k] ~= nil and M.data.pad[k] ~= v then
+                    elseif M.data.pad[k] ~= v then
+                        -- The value matched a known built-in default, but
+                        -- that default differs from the corrected SDL map.
                         changed = true
                     end
                 end
