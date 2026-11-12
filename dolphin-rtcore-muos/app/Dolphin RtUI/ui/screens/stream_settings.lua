@@ -84,8 +84,11 @@ function S.update(dt)
       host = host and host:match("([%d%.]+)") or nil
       if host then
         local ok = Stream.set("HOST", host)
-        if ok then Notify.show("success", "Sunshine PC found: " .. host, 3) end
-        S.list:set(items(), true)
+        if ok then
+          Notify.show("success", "Sunshine PC found: " .. host .. " — pairing started", 3)
+          S.list:set(items(), true)
+          open_viewer("Pair with PC", "pair.sh", "pair.log", { pair = true })
+        end
       else Notify.show("warning", "No Sunshine host found. Check LAN, Tailscale and PC firewall.", 4) end
     end
   end
