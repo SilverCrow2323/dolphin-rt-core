@@ -12,7 +12,7 @@ local FolderTools = require("core.folder_tools")
 local S = {}
 S.list = K.List(K.MARGIN, 90, K.W - K.MARGIN * 2 - 14, K.BOT - 90, 36)
 S.mode, S.cwd, S.t = "set", "/", 0
-S.z_items, S.z_item, S.z_system = {}, nil, nil
+S.z_items, S.z_item, S.z_system, S.z_plan = {}, nil, nil, nil
 
 local function show_set()
     S.mode = "set"
@@ -79,12 +79,28 @@ local function start_zscan()
 end
 
 local function preview(item, system)
-    S.z_item, S.z_system = item, system
+    local plan, err = FolderTools.preview(item, system or item.inferred_system or item.mapped_system)
+    local name = item.name or item.path:match("([^/]+)$") or item.path
+    if name:sub(1, 2):lower() == "rt" then
+        Notify.show("info", "This folder already has the Rt prefix; it will not be prefixed twice.")
+        return
+    end
+    if not plan then
+        local parent = item.path:match("^(.*)/[^/]+$")
+        if not parent then Notify.show("error", tostring(err)); return end
+        local target_name = "Rt" .. name
+        plan = {
+            source = item.path,
+            target = parent .. "/" .. target_name,
+            alias = FolderTools.normalize_alias(target_name),
+        }
+    end
+    S.z_item, S.z_system, S.z_plan = item, system or item.inferred_system or item.mapped_system, plan
     S.mode = "zpreview"
 end
 
 local function back_to_zscan()
-    S.z_item, S.z_system = nil, nil
+    S.z_item, S.z_system, S.z_plan = nil, nil, nil
     start_zscan()
 end
 
@@ -202,8 +218,8 @@ local function draw_zpreview()
     local item = S.z_item
     if not item then return end
     local source_name = item.name
-    local target = "Rt" .. source_name
-    local alias = FolderTools.normalize_alias(target)
+    local target = (S.z_plan and S.z_plan.target) or ("Rt" .. source_name)
+    local alias = (S.z_plan and S.z_plan.alias) or FolderTools.normalize_alias(target)
     local system_text = S.z_system or "not selected"
     local status = item.status == "skip-match" and "Matches muOS skip.ini pattern(s): "
         .. table.concat(item.skip_matches or {}, ", ")
