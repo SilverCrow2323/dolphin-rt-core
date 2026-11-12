@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds a ready-to-install archive of a port (Knulli "k" or ROCKNIX "r") that includes core/:
-#   core/ = the shared emulator tree (dolphin-rtcore-muos/emu/dolphin: Config, GameSettings, Load, Sys, GC, Wii)
-#           + YOUR aarch64 dolphin binary.  RtSys/ is muOS tooling and is left out.
+#   core/ = the shared emulator tree (Config, Load, Sys, GC, Wii; no GameSettings or texture packs)
+#           + YOUR aarch64 dolphin binary. RtSys/ is muOS tooling and is left out.
 #
 #   tools/make-port-release.sh k --binary /path/to/dolphin [--sys-dir /path/to/Sys] [--out DIR]
 #   tools/make-port-release.sh r --binary /path/to/dolphin [--sys-dir /path/to/Sys] [--out DIR]
@@ -41,7 +41,17 @@ D="$S/$NAME"; mkdir -p "$D"
 cp -a "$REPO/$NAME/." "$D/"
 rm -rf "$D/.git" "$D/logs" "$D/.installed" "$D/.theme_installed" "$D/legacy-muos" "$D/docs/screens"
 C="$D/core"; mkdir -p "$C/bios"
-for d in Config GameSettings Load Sys GC Wii; do cp -a "$REPO/dolphin-rtcore-muos/emu/dolphin/$d" "$C/"; done
+for d in Config Load Sys GC Wii; do
+  [ -d "$REPO/dolphin-rtcore-muos/emu/dolphin/$d" ] || continue
+  cp -a "$REPO/dolphin-rtcore-muos/emu/dolphin/$d" "$C/"
+done
+# Match the muOS package policy: no per-game GameSettings database, no HD
+# texture packs, and no graphics mods beyond the opt-in Bloom Removal mod.
+rm -rf "$C/GameSettings" "$C/Sys/GameSettings" "$C/Load/Textures" "$C/Sys/Load/Textures"
+for mod_root in "$C/Load/GraphicMods" "$C/Sys/Load/GraphicMods"; do
+  [ -d "$mod_root" ] || continue
+  find "$mod_root" -mindepth 1 -maxdepth 1 ! -name "All Games Bloom Removal" -exec rm -rf {} +
+done
 if [ "$SYS_SOURCE" != "$(cd "$REPO/dolphin-rtcore-muos/emu/dolphin/Sys" && pwd -P)" ]; then
   rm -rf "$C/Sys"
   mkdir -p "$C/Sys"
