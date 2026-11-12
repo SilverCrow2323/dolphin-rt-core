@@ -76,13 +76,15 @@ The `rtgameset_data.ini` metadata selects the active file through
 `[GameSettings] ActiveConfig`. Rt:UI and Content Explorer use that same
 selector.
 
-Immediately before launch, the selected source is copied unchanged to
-`Config/GameSettings/<ID>.ini`. That is Dolphin's native per-game user
-override path. The copy is a disposable runtime projection, not an editable
-master. If GameSettings are disabled, the previous runtime projection for
-that GameID is removed, preventing stale settings from leaking into a later
-launch. The profile merger does not also fold these values into global
-Dolphin.ini/GFX.ini.
+Immediately before launch, the selected source is projected to
+`GameSettings/<ID>.ini` in Dolphin's user root, alongside (not inside)
+`Config/`. That is Dolphin's native per-game user override path. The
+projection starts from the selected Workshop preset and carries forward
+Gecko/ActionReplay blocks from Rt:UI's cheat manager or user-written per-game
+cheat blocks. Other runtime settings are replaced by the selected Workshop
+preset. When GameSettings are disabled, non-cheat values are cleared while
+per-game cheat blocks are retained. The profile merger never folds
+GameSettings into global Dolphin.ini/GFX.ini.
 
 Use Dolphin GameINI sections such as `[Core]`, `[Video_Settings]`,
 `[Video_Hacks]` and `[Video_Enhancements]`. In particular, use
