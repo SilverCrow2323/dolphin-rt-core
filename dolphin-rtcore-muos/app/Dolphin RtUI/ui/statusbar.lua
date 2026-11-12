@@ -33,33 +33,36 @@ local function poll_battery()
     M._bat.charging = st and (st:lower():find("charging") ~= nil) or false
 end
 
+local function interface_is_up(iface)
+    if type(iface) ~= "string" or not iface:match("^[%w_.%-]+$") then return false end
+    -- /proc/net/wireless status 0000 is normal; operstate is authoritative.
+    local op = read_file("/sys/class/net/" .. iface .. "/operstate")
+    op = op and op:gsub("^%s+", ""):gsub("%s+$", ""):lower() or ""
+    if op ~= "" then return op == "up" end
+    local carrier = read_file("/sys/class/net/" .. iface .. "/carrier")
+    carrier = carrier and carrier:gsub("%s+", "") or ""
+    return carrier == "1"
+end
+
 local function poll_wifi()
-    local wl = read_file("/proc/net/wireless")
-    if not wl then M._wifi.up = false; return end
-    -- cerca la prima riga con wlanX:
-    for line in wl:gmatch("[^\n]+") do
-        local iface, status, qual = line:match("^%s*(%w+):%s*(%w+)%s*([%d%.]+)")
-        if iface and iface:match("^wlan") then
-            M._wifi.up = (status ~= "0000")
-            -- quality può essere "56." (su 70) o "56/70"
+    local wl = read_file("/proc/net/wireless") or ""
+    for line in wl:gmatch("[^\\n]+") do
+        local iface, qual = line:match("^%s*([%w_.%-]+):%s*[%x]+%s*([%d%.]+)")
+        if iface and (iface:match("^wlan") or iface:match("^wlp") or iface:match("^wl")) then
+            M._wifi.iface = iface
+            M._wifi.up = interface_is_up(iface)
             local q = tonumber(qual) or 0
-            M._wifi.quality = math.min(1, q / 70)
+            M._wifi.quality = math.min(1, math.max(0, q / 70))
             return
         end
     end
-    -- fallback: cerca una interfaccia con operstate=up
-    local h = io.popen("ls -1 /sys/class/net/ 2>/dev/null | grep -E '^wlan|^wlp' | head -1")
-    if h then
-        local iface = (h:read("*a") or ""):gsub("%s+", "")
-        h:close()
-        if iface ~= "" then
-            local op = read_file("/sys/class/net/" .. iface .. "/operstate")
-            M._wifi.up = op and op:lower():find("up") ~= nil or false
-            M._wifi.quality = M._wifi.up and 0.6 or 0
-        end
-    end
+    local h = io.popen("ls -1 /sys/class/net/ 2>/dev/null | grep -E '^(wlan|wlp|wl)' | head -1")
+    local iface = h and (h:read("*a") or ""):gsub("%s+", "") or ""
+    if h then h:close() end
+    M._wifi.iface = iface ~= "" and iface or nil
+    M._wifi.up = iface ~= "" and interface_is_up(iface) or false
+    M._wifi.quality = M._wifi.up and 0.6 or 0
 end
-
 local function poll_network()
     local h = io.popen("ip -4 -o addr show scope global 2>/dev/null")
     local chosen
