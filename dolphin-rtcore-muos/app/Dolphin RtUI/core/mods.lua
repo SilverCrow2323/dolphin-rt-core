@@ -34,10 +34,9 @@ M.CATS = {
   { id = "WiiSDSync",            label = "Wii SD Sync",   short = "SD Sync",     icon = "rescan",  acc = "lime",  link = false },
   { id = "Riivolution",          label = "Riivolution",   short = "Riivolution", icon = "boost",   acc = "boost", link = false },
   { id = "DynamicInputTextures", label = "Dynamic Input", short = "Dyn. Input",  icon = "gamepad", acc = "hot",   link = true  },
-  -- Mod grafiche native di Dolphin (Load/GraphicMods). Non si abbinano per nome:
-  -- si elencano tutte e si scelgono a mano. Default SPENTE (come prima).
-  -- Il lancio le gestisce con --mods (core/launcher), non col piano.
-  { id = "GraphicMods",          label = "Graphic Mods",  short = "Gfx Mods",    icon = "mods",    acc = "mods",  link = false, legacy = true },
+  -- Catalogo Graphics Mods nativo di Dolphin: Sys + Load, attivazione per-game.
+  -- Le mod di sistema sono read-only e restano disabilitate finché non selezionate.
+  { id = "GraphicMods",          label = "Graphics Mods", short = "Gfx Mods",    icon = "mods",    acc = "mods",  link = false, native = true },
 }
 
 local ALL_NAMES = {
@@ -69,6 +68,9 @@ end
 
 -- voci della categoria: attive (Load/<Cat>) + parcheggiate (Load/<Cat>.off)
 function M.entries(cat, root)
+  if cat.native then
+    return require("core.graphics_mods").list_for(nil)
+  end
   root = root or M.LOAD
   local seen, out = {}, {}
   for _, parked in ipairs({ false, true }) do
@@ -112,12 +114,13 @@ end
 -- Voci applicabili al gioco, ordinate: id, prefix, name, all (poi per nome).
 -- game = { id=, title= }.  Se game == nil restituisce tutto (catalogo).
 function M.for_game(cat, game, titles, root)
+  if cat.native then
+    return require("core.graphics_mods").list_for(game)
+  end
   local list = {}
   local ts = titles_set(titles)
   for _, e in ipairs(M.entries(cat, root)) do
-    if cat.legacy then
-      e.kind = "gfx"; list[#list + 1] = e
-    elseif game then
+    if game then
       local k = M.match_kind(game.id, ts, e)
       if k then e.kind = k; list[#list + 1] = e end
     else
@@ -139,7 +142,7 @@ function M.write_plan(game, titles, off_of, root, path)
   path = path or M.PLAN
   local lines = {}
   for _, cat in ipairs(M.CATS) do
-   if not cat.legacy then
+   if not cat.native then
     local off = off_of and off_of(cat.id) or {}
     local list = M.for_game(cat, game, titles, root)
     local has_native = false           -- voce che Dolphin carica da solo (id/prefix)

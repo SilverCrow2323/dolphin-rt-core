@@ -36,6 +36,26 @@ Start with the least destructive check. Keep the exact firmware, package and dev
 - Preserve a backup of the previous INI files.
 - Do not edit global Dolphin.ini to fix one title when a game-specific override is appropriate.
 
+## Rt:System Status Center shows an unexpected state
+
+- Press **M** and let the panel refresh its local status.
+- Distinguish Wi-Fi carrier state from the separate Rt:Stream portal and Sunshine checks.
+- **CACHED** means a local database is present; **UPDATED** means it downloaded during this boot.
+- **PREVIOUS COPY** means an update failed but an older local file was kept.
+- Check the frontend log and redact hostnames, IP addresses, SSIDs and tokens before sharing.
+
+See [[Rt-System-Status-Center]].
+
+## Graphics Mods are not visible or do not activate
+
+- Keep official resources under Sys/Load/GraphicMods and user mods under Load/GraphicMods.
+- Confirm each mod has a valid metadata.json and a matching Game ID / prefix / all.txt marker.
+- Enable the mod for that game in **Mod Vault → Graphics Mods**, then relaunch.
+- Check the per-game JSON under Config/GraphicMods and GFX.ini → [Settings] EnableMods.
+- Do not delete Sys/GameSettings or Sys/Load/GraphicMods to troubleshoot a per-game issue.
+
+See [[Graphics-Mods]].
+
 ## Compatibility site does not load data
 
 - Confirm internet access to raw GitHub and jsDelivr.

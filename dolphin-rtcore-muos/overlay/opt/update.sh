@@ -9,7 +9,14 @@ APP="/run/muos/storage/application/Dolphin RtUI"
 # Make sure every script is executable even if the archive lost the mode bits.
 chmod 755 /opt/muos/script/launch/ext-dolphinrt.sh 2>/dev/null
 find "$EMU/RtSys" -name '*.sh' -exec chmod 755 {} + 2>/dev/null
-find /opt/muos/share/task/"Dolphin Rt-Core" -name '*.sh' -exec chmod 755 {} + 2>/dev/null
+
+# Rt:UI now owns these controls. Remove legacy Task Toolkit trees left by
+# previous Rt:Core releases so old menu entries cannot remain on the SD card.
+TASK_ROOT="${MUOS_TASK_ROOT:-/opt/muos/share/task}"
+for TASK_DIR in "$TASK_ROOT"/Dolphin\ Rt*Core; do
+    [ -d "$TASK_DIR" ] || continue
+    rm -rf "$TASK_DIR" 2>/dev/null || true
+done
 chmod 755 "$APP/mux_launch.sh" "$APP"/scripts/*.sh "$APP"/tools/stream/*.sh "$APP/lib/moonlight" "$APP/lib/love" "$APP/lib/gptokeyb2" 2>/dev/null
 [ -f "$EMU/dolphin" ] && chmod 755 "$EMU/dolphin" 2>/dev/null
 

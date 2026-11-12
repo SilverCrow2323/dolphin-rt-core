@@ -8,6 +8,8 @@
 
 **muOS and handheld**
 - [[muOS-Registration]]
+- [[Rt-System-Status-Center]]
+- [[Graphics-Mods]]
 - [[Controls-and-Profiles]]
 - [[Troubleshooting]]
 

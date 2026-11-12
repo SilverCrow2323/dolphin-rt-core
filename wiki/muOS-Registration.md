@@ -16,6 +16,10 @@ The helper reads the muOS version from `/opt/muos/config/system/version` (or `GE
 
 The helper also checks the generated `assign.json` on manifest-based systems. A core definition without a matching content-to-system alias may not be selectable automatically in Content Explorer.
 
+## Rt:UI controls
+
+Open **Settings > System** to repair GameCube/Wii registration or switch between **Standard Only** and **All Tiers**. The installer and app launcher also run the registration check automatically.
+
 ## Commands
 
 Run on the handheld:

@@ -14,7 +14,7 @@
 #    5. graphic mods             (only the selected ones are active)
 #
 #  Args (all --key=value): rom game-id sys title profile variant controller
-#    hotkeys mods logging cheats safe-exit orient show-fps show-vps show-speed
+#    hotkeys logging cheats safe-exit orient show-fps show-vps show-speed
 #    show-osd return-to
 #
 #  Env:
@@ -33,7 +33,7 @@ LOOP_MODE="${DOLPHINUI_LOOP:-0}"
 # ── Defaults ────────────────────────────────────────────────
 ROM=""; GAME_ID=""; SYS="GC"; TITLE=""
 PROFILE="Default"; VARIANT=""; CONTROLLER=""; HOTKEYS=""
-MODS="none"; LOGGING="off"; CHEATS="0"; SAFE_EXIT="1"; ORIENT=""
+LOGGING="off"; CHEATS="0"; SAFE_EXIT="1"; ORIENT=""
 GAMESETTINGS=""
 SHOW_FPS="0"; SHOW_VPS="0"; SHOW_SPEED="0"; SHOW_OSD="1"
 RETURN_TO="library"
@@ -49,7 +49,6 @@ for arg in "$@"; do
         --controller=*)  CONTROLLER="${arg#*=}" ;;
         --hotkeys=*)     HOTKEYS="${arg#*=}" ;;
         --gamesettings=*) GAMESETTINGS="${arg#*=}" ;;
-        --mods=*)        MODS="${arg#*=}" ;;
         --logging=*)     LOGGING="${arg#*=}" ;;
         --cheats=*)      CHEATS="${arg#*=}" ;;
         --safe-exit=*)   SAFE_EXIT="${arg#*=}" ;;
@@ -147,7 +146,7 @@ fatal() {                                   # fatal <code> <message>
 }
 trap 'stop_helpers; exit 0' TERM INT
 
-log "=== launch v3 | $TITLE | id=$GAME_ID sys=$SYS | profile=$PROFILE variant=${VARIANT:-none} | controller=${CONTROLLER:-auto} hotkeys=${HOTKEYS:-auto} mods=$MODS cheats=$CHEATS loop=$LOOP_MODE"
+log "=== launch v3 | $TITLE | id=$GAME_ID sys=$SYS | profile=$PROFILE variant=${VARIANT:-none} | controller=${CONTROLLER:-auto} hotkeys=${HOTKEYS:-auto} cheats=$CHEATS loop=$LOOP_MODE"
 log "rom=$ROM"
 
 [ -x "$DOLPHIN" ] || fatal 1 "Dolphin not found or not executable: $DOLPHIN"
@@ -275,29 +274,40 @@ set_ini_key "$CONFIG/GFX.ini" "Settings" "ShowSpeed" "$(tf "$SHOW_SPEED")"
 set_ini_key "$CONFIG/Dolphin.ini" "Interface" "OnScreenDisplayMessages" "$(tf "$SHOW_OSD")"
 log "cheats=$CHEATS overlays fps=$SHOW_FPS vps=$SHOW_VPS speed=$SHOW_SPEED osd=$SHOW_OSD"
 
-# ── 8. Graphic mods: only the selected ones are active ──────
-# --mods=none | all | name1,name2   (folder names in Load/GraphicMods)
-want_mod() {
-    case "$2" in none|"") return 1 ;; all) return 0 ;; esac
-    local IFS=',' m
-    for m in $2; do [ "$m" = "$1" ] && return 0; done
-    return 1
-}
+# ── 8. Native Dolphin Graphics Mods ────────────────────────
+# Built-in Sys/Load and user Load mods are discovered by Dolphin itself.
+# Rt:UI writes Config/GraphicMods/<GameID>.json with per-game enabled flags.
+# Keep the engine off unless at least one mod is enabled for this title.
 GM_ON="$EMU/Load/GraphicMods"; GM_OFF="$EMU/Load/GraphicMods.off"
-if [ -d "$GM_ON" ] || [ -d "$GM_OFF" ]; then
-    mkdir -p "$GM_ON" "$GM_OFF" 2>/dev/null
-    for d in "$GM_ON"/*/; do
-        [ -d "$d" ] || continue; n="$(basename "$d")"
-        want_mod "$n" "$MODS" || { [ -e "$GM_OFF/$n" ] || mv "${d%/}" "$GM_OFF/$n"; }
-    done
+if [ -d "$GM_OFF" ]; then
+    mkdir -p "$GM_ON"
     for d in "$GM_OFF"/*/; do
-        [ -d "$d" ] || continue; n="$(basename "$d")"
-        want_mod "$n" "$MODS" && { [ -e "$GM_ON/$n" ] || mv "${d%/}" "$GM_ON/$n"; }
+        [ -d "$d" ] || continue
+        n="$(basename "$d")"
+        if [ ! -e "$GM_ON/$n" ]; then
+            mv "$d" "$GM_ON/$n" 2>/dev/null || true
+        fi
     done
-    log "mods active: $(ls -1 "$GM_ON" 2>/dev/null | tr '\n' ',')"
+    rmdir "$GM_OFF" 2>/dev/null || true
+fi
+GM_PROFILE="$CONFIG/GraphicMods/$GAME_ID.json"
+GM_ENABLED=0
+if [ -s "$GM_PROFILE" ]; then
+    if command -v jq >/dev/null 2>&1; then
+        jq -e '.mods | any(.enabled == true)' "$GM_PROFILE" >/dev/null 2>&1 && GM_ENABLED=1
+    else
+        grep -Eq '"enabled"[[:space:]]*:[[:space:]]*true' "$GM_PROFILE" && GM_ENABLED=1
+    fi
+fi
+if [ "$GM_ENABLED" = "1" ]; then
+    set_ini_key "$CONFIG/GFX.ini" "Settings" "EnableMods" "True"
+    log "native Graphics Mods enabled for $GAME_ID"
+else
+    set_ini_key "$CONFIG/GFX.ini" "Settings" "EnableMods" "False"
+    log "native Graphics Mods disabled for $GAME_ID"
 fi
 
-# ── 8b. Mod Vault: Textures / WiiSDSync / Riivolution / DynamicInputTextures ──
+# ── 9. Mod Vault: Textures / WiiSDSync / Riivolution / DynamicInputTextures ──
 # data/mods_plan.txt (scritto dalla UI, una riga per voce):
 #   ON|<Cat>|<nome>            la voce deve stare in Load/<Cat>   (la riporta da .off)
 #   OFF|<Cat>|<nome>           parcheggiala in Load/<Cat>.off
@@ -340,7 +350,7 @@ if [ -f "$MODS_PLAN" ]; then
     log "mods plan applied ($(wc -l < "$MODS_PLAN" 2>/dev/null) entries)"
 fi
 
-# ── 9. Run ──────────────────────────────────────────────────
+# ── 10. Run ─────────────────────────────────────────────────
 cd "$EMU" || fatal 1 "cd $EMU failed"
 # SETUP_SDL_ENVIRONMENT may alter the path; restore the private runtime path before exec.
 export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
@@ -387,7 +397,7 @@ wait "$DOLPHIN_PID"
 EXIT_CODE=$?
 log "dolphin exited: $EXIT_CODE"
 
-# ── 10. Back to the frontend ────────────────────────────────
+# ── 11. Back to the frontend ────────────────────────────────
 mods_cleanup_links
 stop_helpers
 if [ "$LOOP_MODE" != "1" ]; then

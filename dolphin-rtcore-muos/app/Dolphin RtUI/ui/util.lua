@@ -130,38 +130,42 @@ end
 local EMU = (require("core.paths").root_emu)
 function U.mods_installed()
     return U.memo("mods_installed", 2.0, function()
-        local seen, out = {}, {}
-        local base = require("core.mods").LOAD
-        for _, d in ipairs({ base .. "/GraphicMods", base .. "/GraphicMods.off" }) do
-            for _, n in ipairs(U.ls(d)) do if not seen[n] then seen[n] = true; out[#out + 1] = n end end
+        local out = {}
+        for _, item in ipairs(require("core.graphics_mods").list_for(nil)) do
+            out[#out + 1] = item.name
         end
-        table.sort(out, function(a, b) return a:lower() < b:lower() end)
         return out
     end)
 end
 -- selected mods of a game: list of names, nil = none
 function U.mods_selected(game)
-    local v = U.card_get(game, "MODS", "Selected")
     local set, n = {}, 0
-    if v then for name in v:gmatch("[^,]+") do set[name] = true; n = n + 1 end end
+    if not game or not game.id then return set, n end
+    for _, item in ipairs(require("core.graphics_mods").list_for(game)) do
+        if item.enabled then
+            set[item.name] = true
+            set[item.source .. "|" .. item.path] = true
+            n = n + 1
+        end
+    end
     return set, n
 end
 function U.mods_save(game, set)
-    local names = {}
-    for name in pairs(set) do names[#names + 1] = name end
-    table.sort(names)
-    U.card_set(game, "MODS", "Selected", table.concat(names, ","))
-    U.card_set(game, "MODS", "GraphicMods", tostring(#names))
+    if not game or not game.id then return false, "a game is required" end
+    local Graphics = require("core.graphics_mods")
+    return Graphics.set_selection(game, Graphics.list_for(game), set or {})
 end
 
 -- ── Mod Vault (Textures / WiiSDSync / Riivolution / DynamicInputTextures) ──
 -- Salviamo le voci SPENTE per categoria: [MODS] <Cat>Off = a|b|c
 -- (default = nessuna spenta = tutto cio' che e' applicabile al gioco e' attivo).
 function U.vault_off(game, cat_id)
-    if cat_id == "GraphicMods" then            -- legacy: salvato come elenco dei SELEZIONATI
-        local sel = U.mods_selected(game)
+    if cat_id == "GraphicMods" then
         local set = {}
-        for _, n in ipairs(U.mods_installed()) do if not sel[n] then set[n] = true end end
+        if not game or not game.id then return set end
+        for _, item in ipairs(require("core.graphics_mods").list_for(game)) do
+            if not item.enabled then set[item.name] = true end
+        end
         return set
     end
     local v = U.card_get(game, "MODS", cat_id .. "Off")
@@ -171,9 +175,13 @@ function U.vault_off(game, cat_id)
 end
 function U.vault_set_off(game, cat_id, set)
     if cat_id == "GraphicMods" then
-        local sel = {}
-        for _, n in ipairs(U.mods_installed()) do if not set[n] then sel[n] = true end end
-        return U.mods_save(game, sel)
+        if not game or not game.id then return false, "a game is required" end
+        local selected = {}
+        for _, item in ipairs(require("core.graphics_mods").list_for(game)) do
+            selected[item.name] = not (set and set[item.name])
+        end
+        return require("core.graphics_mods").set_selection(
+            game, require("core.graphics_mods").list_for(game), selected)
     end
     local names = {}
     for name in pairs(set) do names[#names + 1] = name end
@@ -204,10 +212,18 @@ function U.vault_counts(game)
         local on, total = 0, 0
         local titles = U.vault_titles(game)
         for _, cat in ipairs(Mods.CATS) do
-            local off = U.vault_off(game, cat.id)
-            for _, e in ipairs(Mods.for_game(cat, game, titles)) do
-                total = total + 1
-                if not off[e.name] then on = on + 1 end
+            local entries = Mods.for_game(cat, game, titles)
+            if cat.native then
+                for _, e in ipairs(entries) do
+                    total = total + 1
+                    if e.enabled then on = on + 1 end
+                end
+            else
+                local off = U.vault_off(game, cat.id)
+                for _, e in ipairs(entries) do
+                    total = total + 1
+                    if not off[e.name] then on = on + 1 end
+                end
             end
         end
         return { on, total }

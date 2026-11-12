@@ -5,6 +5,7 @@ local M = {}
 M._bat = { level = nil, charging = false, present = false }
 M._wifi = { up = false, quality = 0, ssid = nil }
 M._last_poll = 0
+M._polled = false
 M.POLL_INTERVAL = 1.0
 
 local function read_file(path)
@@ -31,38 +32,73 @@ local function poll_battery()
 end
 
 local function poll_wifi()
+    -- /proc/net/wireless starts with a status bitfield (often "0000");
+    -- that is not a connected/disconnected flag. Use carrier/operstate for link.
+    local quality = 0
     local wl = read_file("/proc/net/wireless")
-    if not wl then M._wifi.up = false; return end
-    -- cerca la prima riga con wlanX:
-    for line in wl:gmatch("[^\n]+") do
-        local iface, status, qual = line:match("^%s*(%w+):%s*(%w+)%s*([%d%.]+)")
-        if iface and iface:match("^wlan") then
-            M._wifi.up = (status ~= "0000")
-            -- quality può essere "56." (su 70) o "56/70"
-            local q = tonumber(qual) or 0
-            M._wifi.quality = math.min(1, q / 70)
-            return
+    if wl then
+        for line in wl:gmatch("[^\n]+") do
+            local iface, _, q = line:match("^%s*([%w_.%-]+):%s*([%x]+)%s*([%d%.]+)")
+            if iface and (iface:match("^wlan") or iface:match("^wlp")) then
+                quality = math.min(1, (tonumber(q) or 0) / 70)
+                break
+            end
         end
     end
-    -- fallback: cerca una interfaccia con operstate=up
-    local h = io.popen("ls -1 /sys/class/net/ 2>/dev/null | grep -E '^wlan|^wlp' | head -1")
-    if h then
-        local iface = (h:read("*a") or ""):gsub("%s+", "")
-        h:close()
-        if iface ~= "" then
-            local op = read_file("/sys/class/net/" .. iface .. "/operstate")
-            M._wifi.up = op and op:lower():find("up") ~= nil or false
-            M._wifi.quality = M._wifi.up and 0.6 or 0
-        end
+
+    local h = io.popen(
+        "for p in /sys/class/net/wlan* /sys/class/net/wlp*; do " ..
+        "[ -d \"$p\" ] && basename \"$p\"; done 2>/dev/null | head -1")
+    if not h then M._wifi.up = false; M._wifi.quality = 0; return end
+    local iface = (h:read("*a") or ""):gsub("%s+", "")
+    h:close()
+    if iface == "" or not iface:match("^[%w_.%-]+$") then
+        M._wifi.up, M._wifi.quality, M._wifi.ssid = false, 0, nil
+        return
+    end
+
+    local base = "/sys/class/net/" .. iface
+    local carrier = read_file(base .. "/carrier")
+    local operstate = read_file(base .. "/operstate")
+    if carrier then
+        M._wifi.up = carrier:gsub("%s+", "") == "1"
+    else
+        M._wifi.up = operstate and operstate:gsub("%s+", "") == "up" or false
+    end
+    M._wifi.quality = M._wifi.up and quality or 0
+
+    local iw = io.popen("iwgetid -r " .. iface .. " 2>/dev/null")
+    if iw then
+        local ssid = (iw:read("*a") or ""):gsub("[%r\n]+$", "")
+        iw:close()
+        M._wifi.ssid = ssid ~= "" and ssid or nil
+    else
+        M._wifi.ssid = nil
     end
 end
-
 function M.update(dt)
     M._last_poll = M._last_poll + dt
     if M._last_poll < M.POLL_INTERVAL then return end
     M._last_poll = 0
     pcall(poll_battery)
     pcall(poll_wifi)
+    M._polled = true
+end
+
+function M.snapshot()
+    return {
+        checked = M._polled,
+        wifi = {
+            up = M._wifi.up == true,
+            quality = tonumber(M._wifi.quality) or 0,
+            ssid = M._wifi.ssid,
+        },
+        battery = {
+            present = M._bat.present == true,
+            level = M._bat.level,
+            charging = M._bat.charging == true,
+        },
+    }
 end
 
 -- ── icone ─────────────────────────────────────────────────

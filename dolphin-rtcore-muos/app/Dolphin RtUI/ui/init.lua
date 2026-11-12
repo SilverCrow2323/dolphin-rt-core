@@ -214,6 +214,14 @@ function M.init()
         end
     end
 
+    local settings_screen = Nexus.get_screen("settings")
+    if settings_screen and settings_screen.register_actions then
+        local ok, registered, detail = pcall(settings_screen.register_actions, M)
+        if not ok or registered == false then
+            log("settings NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     -- Every registered screen gets a stable navigation action. This makes
     -- the complete screen map discoverable by diagnostics and future menus.
     for _, entry in ipairs(Nexus.list_screens()) do
@@ -496,7 +504,8 @@ local function draw_scene()
 
     -- statusbar globale (batteria + wifi) in alto a dx
     local ok_sb, SB = pcall(require, "ui.statusbar")
-    if ok_sb and SB and SB.draw then SB.draw(K.W, K.H) end
+    local panel_open = ok_sp and SP and SP.is_open and SP.is_open()
+    if not panel_open and ok_sb and SB and SB.draw then SB.draw(K.W, K.H) end
 end
 
 local trans_canvas
