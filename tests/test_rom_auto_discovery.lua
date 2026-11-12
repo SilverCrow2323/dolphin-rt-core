@@ -6,67 +6,52 @@ local FS = require("core.fs")
 local Shell = require("core.shell")
 
 local original = {
-    is_dir = FS.is_dir, mkdir_p = FS.mkdir_p, atomic_write = FS.atomic_write,
-    first = Shell.first, roots = Settings.rom_root_candidates,
+    atomic_write = FS.atomic_write,
+    first = Shell.first,
+    roots = Settings.rom_root_candidates,
+    data = Settings.data,
 }
 
-local existing_is_dir = false
-local existing_has_rom = false
-FS.is_dir = function(path)
-    return path == "/fake/roms" or (path == "/existing" and existing_is_dir)
-end
-FS.mkdir_p = function() return true end
 FS.atomic_write = function() return true end
-Settings.rom_root_candidates = function() return { "/fake/roms", "/fake/roms" } end
+Settings.rom_root_candidates = function() return { "/fake/roms", "/fake/ROMS" } end
 Shell.first = function(command)
-    if command:find("readlink%-f") then
-        if command:find("/existing", 1, true) then return "/existing" end
-        return "/fake/roms"
-    end
-    if command:find("find ", 1, true) then
-        if command:find("/existing", 1, true) then
-            return existing_has_rom and "/existing/Manual Game.iso" or nil
-        end
-        if command:find("/fake/roms", 1, true) then return "/fake/roms/Test Game.iso" end
+    local lower = command:lower()
+    if lower:find("readlink%-f") then
+        if lower:find("/fake/roms", 1, true) then return "/fake/roms" end
+        if lower:find("/mnt/sdcard/roms", 1, true) then return "/mnt/sdcard/roms" end
     end
     return nil
 end
 
+-- No boot scan or compatibility call may silently register a ROM path.
 Settings.data = { rom_paths = {}, rom_discovery_done = false }
-local count = Settings.auto_discover_rom_paths()
-assert(count == 1, "duplicate root candidates must be collapsed")
-assert(#Settings.get("rom_paths") == 2, "mixed root must be registered for both platform scanners")
-assert(Settings.get("rom_paths")[1].path == "/fake/roms", "canonical root path")
-assert(Settings.get("rom_paths")[1].system == "GC", "GC scanner registration")
-assert(Settings.get("rom_paths")[2].system == "Wii", "Wii scanner registration")
-assert(Settings.get("rom_discovery_done") == true, "successful scan should mark first-run discovery complete")
-assert(Settings.auto_discover_rom_paths() == 0, "subsequent discovery must be idempotent")
-assert(#Settings.get("rom_paths") == 2, "idempotent run must not duplicate configured roots")
+assert(Settings.auto_discover_rom_paths() == 0, "legacy discovery entry point is a no-op")
+assert(#Settings.get("rom_paths") == 0, "no roots are auto-registered")
+assert(Settings.get("rom_discovery_done") == false, "automatic discovery does not mark setup complete")
 
--- A stale legacy path must not suppress discovery, even when an older
--- release already marked the first-run scan complete.
-Settings.data = { rom_paths = { { path = "/existing", system = "GC" } }, rom_discovery_done = true }
-existing_is_dir, existing_has_rom = false, false
-count = Settings.auto_discover_rom_paths()
-assert(count == 1, "stale configured paths must trigger real ROM-root discovery")
-assert(Settings.get("rom_discovery_done") == true, "successful recovery marks discovery complete")
-assert(#Settings.get("rom_paths") == 3, "stale manual path is preserved and the discovered root is registered for both systems")
-assert(Settings.get("rom_paths")[2].path == "/fake/roms", "discovered root is appended after preserved user path")
+-- The user's Add GC / Add Wii actions register a directory only once,
+-- regardless of case or selected console.
+assert(Settings.add_rom_path("/fake/ROMS", "GC") == true, "first explicit path add")
+assert(Settings.add_rom_path("/fake/roms", "Wii") == false, "same path is not added twice")
+assert(#Settings.get("rom_paths") == 1, "one record per canonical directory")
+assert(Settings.get("rom_paths")[1].system == "Both", "mixed-system choice remains a single shared path")
+assert(Settings.get("rom_discovery_done") == true, "explicit selection completes first-run setup")
 
--- A valid manually selected folder is respected; do not add a broader root.
-Settings.data = { rom_paths = { { path = "/existing", system = "GC" } }, rom_discovery_done = false }
-existing_is_dir, existing_has_rom = true, true
-count = Settings.auto_discover_rom_paths()
-assert(count == 0, "valid manual configuration must not be overwritten or broadened")
-assert(#Settings.get("rom_paths") == 1, "valid manual folder remains the only configured path")
-assert(Settings.get("rom_discovery_done") == true, "valid manual configuration marks discovery handled")
+-- Migrate old installations that saved the same directory once per system
+-- and/or with a different path case into one canonical record.
+Settings.data = {
+    rom_paths = {
+        { path = "/mnt/sdcard/ROMS", system = "GC" },
+        { path = "/mnt/sdcard/roms", system = "Wii" },
+    },
+    rom_discovery_done = true,
+}
+assert(Settings.normalize_rom_paths() == true, "legacy duplicate paths are collapsed")
+assert(#Settings.get("rom_paths") == 1, "one legacy directory remains")
+assert(Settings.get("rom_paths")[1].system == "Both", "legacy system hints merge")
 
-Settings.data = { rom_paths = {}, rom_discovery_done = false }
-FS.is_dir = function() return false end
-assert(Settings.auto_discover_rom_paths() == 0, "no mounted roots should return zero")
-assert(Settings.get("rom_discovery_done") == false, "failed discovery stays retryable")
-
-FS.is_dir, FS.mkdir_p, FS.atomic_write = original.is_dir, original.mkdir_p, original.atomic_write
+FS.atomic_write = original.atomic_write
 Shell.first = original.first
 Settings.rom_root_candidates = original.roots
-print("ROM auto-discovery tests: OK")
+Settings.data = original.data
+print("ROM path selection and de-duplication tests: OK")
