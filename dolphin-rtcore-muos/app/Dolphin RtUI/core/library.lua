@@ -132,7 +132,7 @@ end
 -- the complete find output in scan_begin(), blocking the UI before frame one.
 M.scanning = false
 M.progress = { done = 0, total = 0 }
-local _roots, _root_index, _scan_pipe, _seen, _depth
+local _roots, _root_index, _scan_pipe, _scan_list_path, _scan_done_path, _seen, _depth
 
 local function add_game(path, entry)
   local id   = extract_gameid(path)
@@ -162,6 +162,8 @@ end
 
 local function close_scan_pipe()
   if _scan_pipe then pcall(_scan_pipe.close, _scan_pipe); _scan_pipe = nil end
+  if _scan_list_path then os.remove(_scan_list_path); _scan_list_path = nil end
+  if _scan_done_path then os.remove(_scan_done_path); _scan_done_path = nil end
 end
 
 function M.scan_begin()
@@ -198,8 +200,26 @@ end
 local function open_next_root()
   while _root_index <= #_roots do
     local entry = _roots[_root_index]
-    _scan_pipe = io.popen(find_command(entry.path, _depth), "r")
-    if _scan_pipe then return true end
+    local suffix = tostring(os.time()) .. "_" .. tostring(math.random(100000, 999999))
+    _scan_list_path = "/tmp/rt_romscan_" .. suffix .. ".list"
+    _scan_done_path = _scan_list_path .. ".done"
+    os.remove(_scan_list_path)
+    os.remove(_scan_done_path)
+    local script = "find " .. Shell.shq(entry.path) .. " -maxdepth " ..
+      tostring(_depth) .. " -type f \\( "
+    local clauses = {}
+    for _, ext in ipairs(EXTS) do clauses[#clauses + 1] = "-iname '*." .. ext .. "'" end
+    script = script .. table.concat(clauses, " -o ") .. " \\) -print > " ..
+      Shell.shq(_scan_list_path) .. "; : > " .. Shell.shq(_scan_done_path)
+    local spawn = "setsid sh -c " .. Shell.shq(script) ..
+      " </dev/null >/dev/null 2>&1 &"
+    local rc = os.execute(spawn)
+    if rc == true or rc == 0 then
+      _scan_pipe = io.open(_scan_list_path, "r")
+      if _scan_pipe then return true end
+    end
+    os.remove(_scan_list_path); os.remove(_scan_done_path)
+    _scan_list_path, _scan_done_path, _scan_pipe = nil, nil, nil
     _root_index = _root_index + 1
   end
   return false
@@ -234,8 +254,16 @@ function M.scan_step(budget)
 
     local path = _scan_pipe:read("*l")
     if not path then
-      close_scan_pipe()
-      _root_index = _root_index + 1
+      -- This is a regular file, so EOF is non-blocking. find() may still be
+      -- writing more rows; only advance when its completion marker appears.
+      local marker = _scan_done_path and io.open(_scan_done_path, "r")
+      if marker then
+        marker:close()
+        close_scan_pipe()
+        _root_index = _root_index + 1
+      else
+        break
+      end
     elseif path ~= "" then
       did_work = true
       local key = path_key(path)
