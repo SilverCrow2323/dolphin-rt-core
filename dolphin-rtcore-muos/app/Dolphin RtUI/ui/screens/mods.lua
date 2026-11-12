@@ -180,8 +180,8 @@ local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
     local on
     if S.game then on = not S.off[S.tab][r.name] else on = not r.parked end
-    local right = x + w - 14
-    if S.game then right = x + w - 60; K.switch(x + w - 46, y + h / 2, on, focused) end
+    local right = x + w - 60
+    K.switch(x + w - 46, y + h / 2, on, focused)
     local lab = Mods.KIND_LABEL[r.kind] or ""
     if S.game and lab ~= "" then
         local pw = K.pill(lab, right, y + h / 2, kind_color(r.kind), true)   -- x = bordo destro
