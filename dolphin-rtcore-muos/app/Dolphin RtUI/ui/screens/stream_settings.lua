@@ -40,6 +40,7 @@ local function items()
   local function choice(label, vals, get, set, fmt) return { kind = "choice", label = label, vals = vals, get = get, set = set, fmt = fmt } end
   local function key_choice(label, key, vals) return choice(label, vals, function() return s[key] end, function(v) return Stream.set(key, v) end) end
   return {
+    { kind = "action", label = "Scan LAN + Tailscale", hint = "find a Sunshine PC automatically", run = function() open_viewer("Find Sunshine PC", "discover.sh", "discover.txt") end },
     text("PC address", "HOST", "IP or name of the PC running Sunshine"),
     text("Library port", "SYNC_PORT", "portal port, default 8765"),
     text("PC MAC", "MAC", "only for Wake-on-LAN, 12 hex digits"),
@@ -67,6 +68,7 @@ function S.enter()
   K.set_accent("wii"); t = 0; S.mode = "list"
   Stream.init()
   S.list:set(items(), true)
+  if not Stream.configured() then open_viewer("Find Sunshine PC", "discover.sh", "discover.txt") end
 end
 function S.leave() if viewer and viewer.pair then Stream.kill_pair() end end
 
@@ -77,6 +79,16 @@ function S.update(dt)
     local d = Stream.read(Stream.DIR .. "/" .. viewer.result)
     if d then viewer.text = d end
     viewer.done = Stream.job_done()
+    if viewer.done and viewer.result == "discover.txt" and not viewer.handled then
+      viewer.handled = true
+      local host = Stream.read(Stream.DIR .. "/discover.host")
+      host = host and host:match("([%d%.]+)") or nil
+      if host then
+        local ok = Stream.set("HOST", host)
+        if ok then Notify.show("success", "Sunshine PC found: " .. host, 3) end
+        S.list:set(items(), true)
+      else Notify.show("warning", "No Sunshine host found. Check LAN, Tailscale and PC firewall.", 4) end
+    end
   end
 end
 
