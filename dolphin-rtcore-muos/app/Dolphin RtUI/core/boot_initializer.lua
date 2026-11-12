@@ -177,8 +177,9 @@ function M.update(dt)
     -- Deploy database presets only after the ROM scan has produced the exact
     -- GameIDs present on this device. Existing user configs are never replaced.
     local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
+    local library_games = (ok and Library and Library.games) or {}
     if ok_dep and DEP then
-      local ok_start, detail = pcall(DEP.start, Library.games or {})
+      local ok_start, detail = pcall(DEP.start, library_games)
       if not ok_start then Hub.push("warning", "GameSettings", tostring(detail), { silent = true, ttl = 5 }) end
     end
     STATE.step = "wait_gamesets"; STATE.t = 0
