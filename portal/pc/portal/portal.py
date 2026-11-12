@@ -168,7 +168,7 @@ class Portal(tk.Tk):
                 self.withdraw()
             except Exception:
                 pass
-        self.title("Dolphin Rt:Stream // Stream Portal")
+        self.title("Dolphin Rt:Stream // PC Companion")
         if not no_splash:
             try:
                 self._splash = Splash(self, duration=1.0, on_done=lambda: _splash_done(self))
@@ -366,6 +366,10 @@ class Portal(tk.Tk):
         self._led_lib_lbl = tk.Label(led_wrap, text="LIBRARY ...", bg=gcui.mix(FACE, BG, 0.55),
                                      fg=DIM, font=self.fs, anchor="w")
         self._led_lib_lbl.pack(side="left", padx=(0, 20))
+        self._net_lbl = tk.Label(led_wrap, text="LAN ...  ·  TAILSCALE ...",
+                                 bg=gcui.mix(FACE, BG, 0.55), fg=CYAN,
+                                 font=self.fs, anchor="e")
+        self._net_lbl.pack(side="right", padx=12)
 
         tk.Frame(wrap, bg=gcui.mix(VIOLET, BG, 0.4), height=2).pack(fill="x")
         self.sb = tk.Label(wrap, text="", bg=gcui.mix(FACE, BG, 0.5), fg=CYAN, font=self.fs, anchor="w", padx=12, pady=4)
@@ -991,6 +995,13 @@ class Portal(tk.Tk):
         srv = core.server_running()
         self.srv_lbl.config(text=f"SERVING :{self.cfg['port']}" if srv else "STOPPED", fg=RT if srv else WARN)
         self.srv_lamp.set(RT if srv else WARN, srv)
+        try:
+            net = core.network_addresses()
+            lan = ", ".join(net.get("lan") or []) or "not connected"
+            ts = net.get("tailscale") or "not detected"
+            self._net_lbl.config(text=f"LAN {lan}   ·   TAILSCALE {ts}")
+        except Exception:
+            pass
 
         # LED striscia in alto (sempre visibili)
         try:
