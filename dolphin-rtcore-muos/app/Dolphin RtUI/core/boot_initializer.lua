@@ -150,6 +150,13 @@ function M.update(dt)
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
+      if ok_c then
+        -- A screen may have loaded an empty/old catalogue while downloads were
+        -- still running. Invalidate it before deploying and before the user
+        -- returns to the DATABASE tab.
+        local ok_gl, GL = pcall(require, "core.gameset_loader")
+        if ok_gl and GL.invalidate then pcall(GL.invalidate) end
+      end
       local ok_l, Library = pcall(require, "core.library")
       local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
       if ok_dep and DEP then pcall(DEP.start, ok_l and Library and Library.games or {}) end
