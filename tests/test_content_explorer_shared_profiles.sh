@@ -23,6 +23,7 @@ CARD="$TMP/rtid_GM8E01.ini"
 cat > "$CARD" <<'INI'
 [Meta]
 Name = Example game
+
 [LAUNCH]
 RtProfile = Custom_Test
 RtProfileVariant = max
@@ -60,38 +61,18 @@ Enabled = yes
 ActiveConfig = Performance.ini
 INI
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
+
 touch "$GSROOT/GM8E01/Arcade.ini"
 rt_write_active_gameset "GM8E01" "$GSROOT" "Arcade.ini"
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Arcade.ini" ]]
-grep -q '^Enabled = yes
-[GameSettings]
-ActiveConfig = ../outside.ini
-INI
-! rt_read_active_gameset "GM8E01" "$GSROOT"
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
 
-printf 'GM8E01' > "$TMP/test.iso"
-[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
-
-python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
-from pathlib import Path
-import sys
-Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
-Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
-Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
-PY
-[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
-[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
-[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
-touch "$TMP/packed [GM8E01].gcz"
-[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
-
-echo "Content Explorer shared-profile runtime tests: OK"
- "$GSROOT/GM8E01/rtgameset_data.ini"
 cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
 [GameSettings]
 ActiveConfig = ../outside.ini
 INI
 ! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
 
 printf 'GM8E01' > "$TMP/test.iso"
 [[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
