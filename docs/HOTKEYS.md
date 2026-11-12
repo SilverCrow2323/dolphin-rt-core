@@ -11,7 +11,7 @@ Rt:Core has two distinct hotkey paths. They must not run at the same time:
 
 ## Bundled keyboard profile
 
-The Default `ext-dolphin.gptk` maps L2 combinations to function keys:
+The Default `ext-dolphin.gptk` uses the native gptokeyb2 state-machine format: holding L2 enters the `rt_hotkeys` layer, and the selected button emits a function key. The old pseudo-syntax `l2+a = F1` is not valid gptokeyb2 configuration and silently left hotkeys inactive.
 
 | Action | Default keyboard combo | Dolphin key |
 |---|---|---|
@@ -27,6 +27,8 @@ The Default `ext-dolphin.gptk` maps L2 combinations to function keys:
 | Screenshot | L2 + R2 | F11 |
 | Reset | L2 + START | F12 |
 Safe Exit is not a Dolphin keyboard hotkey: the Safe Exit watcher reads MENU / M (or the user-recorded combo) directly from the raw controller stream.
+
+The launchers intentionally do **not** pass gptokeyb2's `-1 dolphin` option. In gptokeyb2 that option enables its own START+SELECT process-kill binding; it conflicts with gameplay input and bypasses Rt:Core's configurable Safe Exit.
 
 The hotkey designer can change the combo and emitted key. The table above describes the shipped Default keyboard profile, not a restriction on user profiles.
 
@@ -44,9 +46,10 @@ The default no longer uses START+SELECT. The watcher reads button events and doe
 ## Troubleshooting
 
 1. Confirm the selected profile is not Disabled.
-2. For keyboard mode, check that `Device = Keyboard` is in the copied `Config/Hotkeys.ini` and that `lib/gptokeyb2` is executable.
-3. For pad mode, confirm `Device` is an SDL device, then make sure `gptokeyb2` is not running for that session.
-4. Check `data/logs/gptokeyb2_*.log` or `data/logs/gptokeyb2-content-explorer.log` and the Safe Exit watcher log.
-5. If START or SELECT is still intercepted, test with the Default profile and inspect other installed remappers or muOS-level hotkeys before changing Dolphin's own mappings.
+2. Check that the Default `.gptk` contains `[controls]`, `l2 = hold_state rt_hotkeys`, and `[controls:rt_hotkeys]`; plain `l2+a = f1` lines are not valid gptokeyb2 FSM syntax.
+3. For keyboard mode, check that `Device = Keyboard` is in the copied `Config/Hotkeys.ini` and that `lib/gptokeyb2` is executable.
+4. For pad mode, confirm `Device` is an SDL device, then make sure `gptokeyb2` is not running for that session.
+5. Check `data/logs/gptokeyb2_*.log` or `data/logs/gptokeyb2-content-explorer.log` and the Safe Exit watcher log.
+6. If START or SELECT is still intercepted, test with the Default profile and inspect other installed remappers or muOS-level hotkeys before changing Dolphin's own mappings.
 
 Physical-device validation is required to confirm the button numbering on a particular controller/firmware combination.
