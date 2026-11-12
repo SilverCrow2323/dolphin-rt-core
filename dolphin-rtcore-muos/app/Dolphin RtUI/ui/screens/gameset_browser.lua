@@ -343,4 +343,79 @@ function S.draw()
     end
 end
 
+-- NEXUS adapter: database browsing and preset deployment are exposed as
+-- stable actions for menus, automation and future companion integrations.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local function set_tab(index)
+        if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #TABS then
+            return false, "tab index out of range"
+        end
+        S.tab, S.expanded, S.preview = index, {}, nil
+        refresh()
+        return true
+    end
+    local specs = {
+        { id = "gamesettings.open_library", title = "Open GameSettings library tab", order = 10,
+          run = function() return set_tab(1) end },
+        { id = "gamesettings.open_storage", title = "Open local GameSettings tab", order = 20,
+          run = function() return set_tab(2) end },
+        { id = "gamesettings.open_database", title = "Open GameSettings database tab", order = 30,
+          run = function() return set_tab(3) end },
+        { id = "gamesettings.refresh_database", title = "Refresh GameSettings database", order = 40,
+          run = function()
+              GL.invalidate()
+              refresh()
+              return true
+          end },
+        { id = "gamesettings.select_row", title = "Select GameSettings browser row", order = 50,
+          run = function(index)
+              if type(index) ~= "number" or index % 1 ~= 0 or index < 1 or index > #S.rows then
+                  return false, "row index out of range"
+              end
+              S.preview = nil
+              S.list.sel = index
+              if S.list._aim then S.list:_aim(true) end
+              return true
+          end },
+        { id = "gamesettings.preview_selected", title = "Preview selected database preset", order = 60,
+          run = function(index)
+              if S.tab ~= 3 then return false, "database tab is not active" end
+              local row = index and S.rows[index] or S.list:cur()
+              if not row or row.kind ~= "region" then return false, "select a database GameID row" end
+              if not show_database_preset(row, 1) then return false, "database entry has no presets" end
+              return true
+          end },
+        { id = "gamesettings.sync_library", title = "Install missing presets for library GameIDs", order = 70,
+          run = function()
+              local ok, result = pcall(function()
+                  return require("core.gamesettings_deployer").start(Library.games or {})
+              end)
+              if not ok then return false, tostring(result) end
+              return true, result
+          end },
+        { id = "gamesettings.state", title = "Get GameSettings browser state", order = 80,
+          run = function()
+              local row = S.list:cur()
+              return {
+                  tab = TABS[S.tab] and TABS[S.tab].id or "library",
+                  row_count = #S.rows,
+                  selected_kind = row and row.kind or nil,
+                  selected_game_id = row and row.id or nil,
+                  preview_open = S.preview ~= nil,
+                  database_generation = GL.generation or 0,
+              }
+          end },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "gamesettings", screen = "gameset_browser", order = spec.order,
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
+
 return S
