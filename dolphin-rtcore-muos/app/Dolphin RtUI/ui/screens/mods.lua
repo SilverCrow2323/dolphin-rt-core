@@ -26,7 +26,8 @@ local function counts(i)
     local rows, off = S.rows[i] or {}, S.off[i] or {}
     local on = 0
     for _, r in ipairs(rows) do
-        local enabled = S.game and (not off[r.name]) or (not r.parked)
+        local enabled
+        if S.game then enabled = not off[r.name] else enabled = not r.parked end
         if enabled then on = on + 1 end
     end
     return on, #rows
@@ -128,10 +129,11 @@ function S.pad(b)
             save()
             SFX.play("menu_toggleoption")
         else
-            local ok, err = Mods.set_enabled(Mods.CATS[S.tab], r, r.parked == true)
+            local enabling = r.parked == true
+            local ok, err = Mods.set_enabled(Mods.CATS[S.tab], r, enabling)
             if ok then
                 refresh_current_tab()
-                Notify.show("success", (r.parked and "Enabled " or "Disabled ") .. r.name, 1.8)
+                Notify.show("success", (enabling and "Enabled " or "Disabled ") .. r.name, 1.8)
                 SFX.play("menu_toggleoption")
             else
                 Notify.show("error", tostring(err))
@@ -176,7 +178,8 @@ end
 
 local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
-    local on = S.game and (not S.off[S.tab][r.name]) or (not r.parked)
+    local on
+    if S.game then on = not S.off[S.tab][r.name] else on = not r.parked end
     local right = x + w - 14
     if S.game then right = x + w - 60; K.switch(x + w - 46, y + h / 2, on, focused) end
     local lab = Mods.KIND_LABEL[r.kind] or ""
