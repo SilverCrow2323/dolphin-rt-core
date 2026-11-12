@@ -26,7 +26,7 @@ The Default `ext-dolphin.gptk` maps L2 combinations to function keys:
 | Frame Limit − / + | L2 + Left / Right | F9 / F10 |
 | Screenshot | L2 + R2 | F11 |
 | Reset | L2 + START | F12 |
-| Safe Exit | MENU / M | Escape |
+Safe Exit is not a Dolphin keyboard hotkey: the Safe Exit watcher reads MENU / M (or the user-recorded combo) directly from the raw controller stream.
 
 The hotkey designer can change the combo and emitted key. The table above describes the shipped Default keyboard profile, not a restriction on user profiles.
 
