@@ -42,9 +42,10 @@ end
 os.execute = function(command)
     if command:find("setsid sh -c", 1, true) then
         find_calls = find_calls + 1
-        local list_path = command:match("> '([^']+%.list)'")
-        local done_path = command:match(": > '([^']+%.list%.done)'")
-        assert(list_path and done_path, "background find must redirect to unique list + done marker")
+        local suffix = command:match("(rt_romscan_[%d_]+%.list)")
+        assert(suffix, "background find must use a unique list file")
+        local list_path = "/tmp/" .. suffix
+        local done_path = list_path .. ".done"
         local out = assert(io.open(list_path, "w"))
         out:write(tmp, "\n", tmp:upper(), "\n")
         out:close()
