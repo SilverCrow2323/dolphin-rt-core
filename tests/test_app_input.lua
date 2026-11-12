@@ -21,7 +21,7 @@ expect(pad.X == 2 and pad.Y == 3, "SDL face-button defaults must match Dolphin B
 expect(pad.L1 == 4 and pad.R1 == 5, "shoulder defaults must match Dolphin SDL IDs")
 expect(pad.SELECT == 6 and pad.START == 7 and pad.MENU == 8,
     "system controls must match Dolphin SDL IDs")
-expect(pad.L2 == 9 and pad.R2 == 12, "trigger defaults must match Dolphin SDL IDs")
+expect(pad.L2 == 9 and pad.R2 == 12 and pad.L3 == 11, "trigger/stick defaults must match Dolphin SDL IDs")
 expect(AppInput.from_raw(1) == "A" and AppInput.from_raw(0) == "B",
     "raw SDL buttons must resolve to the matching logical face buttons")
 
