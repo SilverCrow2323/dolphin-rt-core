@@ -68,7 +68,6 @@ function S.enter()
   K.set_accent("wii"); t = 0; S.mode = "list"
   Stream.init()
   S.list:set(items(), true)
-  if not Stream.configured() then open_viewer("Find Sunshine PC", "discover.sh", "discover.txt") end
 end
 function S.leave() if viewer and viewer.pair then Stream.kill_pair() end end
 
