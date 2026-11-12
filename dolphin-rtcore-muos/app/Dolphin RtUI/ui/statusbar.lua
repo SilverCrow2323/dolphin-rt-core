@@ -4,6 +4,9 @@ local K = require("ui.kit")
 local M = {}
 M._bat = { level = nil, charging = false, present = false }
 M._wifi = { up = false, quality = 0, ssid = nil }
+M._net = { ip = nil, tailscale = nil }
+M._sunshine = "unknown"
+M._stream_poll = 0
 M._last_poll = 0
 M.POLL_INTERVAL = 1.0
 
@@ -57,12 +60,53 @@ local function poll_wifi()
     end
 end
 
+local function poll_network()
+    local h = io.popen("ip -4 -o addr show scope global 2>/dev/null")
+    local chosen
+    if h then
+        for line in h:lines() do
+            local iface, addr = line:match("%d+:%s+([%w_.%-]+)%s+inet%s+([%d%.]+)/")
+            if iface and addr and iface ~= "lo" and not iface:match("^tailscale") then
+                chosen = addr
+                if iface:match("^wlan") then break end
+            end
+        end
+        h:close()
+    end
+    M._net.ip = chosen
+    local ts = io.popen("command -v tailscale >/dev/null 2>&1 && tailscale ip -4 2>/dev/null | head -1")
+    if ts then
+        local value = (ts:read("*a") or ""):gsub("%s+", "")
+        ts:close()
+        M._net.tailscale = value ~= "" and value or nil
+    else
+        M._net.tailscale = nil
+    end
+end
+
+local function poll_stream()
+    local ok, Stream = pcall(require, "core.stream")
+    if not ok or not Stream then M._sunshine = "unknown"; return end
+    if not Stream._statusbar_initialized then
+        Stream._statusbar_initialized = pcall(Stream.init)
+    end
+    pcall(Stream.poll_health)
+    if Stream.configured() and not Stream.health.pending then Stream.check_health() end
+    M._sunshine = Stream.health.sunshine or "unknown"
+end
+
 function M.update(dt)
     M._last_poll = M._last_poll + dt
     if M._last_poll < M.POLL_INTERVAL then return end
     M._last_poll = 0
     pcall(poll_battery)
     pcall(poll_wifi)
+    pcall(poll_network)
+    M._stream_poll = M._stream_poll + 1
+    if M._stream_poll >= 5 then
+        M._stream_poll = 0
+        pcall(poll_stream)
+    end
 end
 
 -- ── icone ─────────────────────────────────────────────────
@@ -151,6 +195,14 @@ function M.draw(W, H)
     local wifi_y = y0 + 1
     local wifi_w = 14
     local wifi_h = 12
+    local ip = M._net.ip or "NO IP"
+    K.text("mono", ip, W - 205, y0 + 2, M._net.ip and K.C.dim or K.C.bad)
+    local sx = W - 112
+    local sun_ok = M._sunshine == "ok"
+    local sun_fail = M._sunshine == "fail"
+    K.color(sun_ok and K.C.ok or (sun_fail and K.C.bad or K.C.warn), 1)
+    love.graphics.circle("fill", sx, y0 + 8, 3)
+    K.text("key", "SUN", sx + 7, y0 + 1, sun_ok and K.C.ok or (sun_fail and K.C.bad or K.C.dim))
     draw_wifi(wifi_x, wifi_y, wifi_w, wifi_h)
     draw_battery(bat_x, bat_y, bat_w, bat_h)
 end
