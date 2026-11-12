@@ -1,5 +1,5 @@
 -- Safe Exit editor.
--- Default is the single MENU / M button. Multi-button combinations are also
+-- Default is START + SELECT. Multi-button combinations are also
 -- supported; the watcher reads the same raw joydev button indices.
 local K = require("ui.kit")
 local IM = require("ui.input")
@@ -108,7 +108,7 @@ function S.pad(button)
         local ok, err = SafeExit.reset()
         if ok then
             refresh()
-            Notify.show("success", "Safe Exit restored to M")
+            Notify.show("success", "Safe Exit restored to START + SELECT")
         else
             Notify.show("error", tostring(err or "Could not reset Safe Exit"))
         end
@@ -125,7 +125,7 @@ function S.draw()
     K.text("small", "CURRENT EXIT COMBINATION", K.MARGIN + 22, 137, K.C.dim)
     K.text("xl", S.capturing and (#S.capture > 0 and table.concat(S.capture, " + ") or "PRESS BUTTON(S)…") or S.current,
         K.MARGIN + 22, 168, S.capturing and K.acc or K.C.text, 1, K.W - K.MARGIN * 2 - 44)
-    K.text("body", "Default: M (MENU / Guide), one button.", K.MARGIN + 22, 226, K.C.text)
+    K.text("body", "Default: START + SELECT (hold both together).", K.MARGIN + 22, 226, K.C.text)
     K.text("small", "You can also record 2–4 buttons together, for example L1 + R1.", K.MARGIN + 22, 257, K.C.dim, 1, K.W - K.MARGIN * 2 - 44)
     K.text("small", "The watcher listens to the physical button stream; it does not remap or consume game input.", K.MARGIN + 22, 282, K.C.dim, 1, K.W - K.MARGIN * 2 - 44)
 
