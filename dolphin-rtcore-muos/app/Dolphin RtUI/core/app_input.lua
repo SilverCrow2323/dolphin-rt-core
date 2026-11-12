@@ -18,23 +18,24 @@ local FS   = require("core.fs")
 local M = {}
 local PATH = "data/app_input.json"
 
--- Ordine logico delle azioni App Pad.
--- Raw joydev/js1 indices verified on the RG35XX H. These are distinct
--- from Linux EV_KEY codes and from SDL GameController button names.
+-- Numeric values are the zero-based SDL button IDs consumed by
+-- love.joystickpressed and written to Dolphin profiles as `Button n`.
+-- They are NOT Linux EV_KEY codes or /dev/input/jsN joydev button indices.
+-- The standardized love.gamepadpressed path uses the names in GAMEPAD_TO_LOGICAL.
 M.ACTIONS = {
-    { id = "A",      label = "Confirm",       default = 0  },
-    { id = "B",      label = "Back",          default = 1  },
+    { id = "A",      label = "Confirm",       default = 1  },
+    { id = "B",      label = "Back",          default = 0  },
     { id = "X",      label = "Action X",      default = 2  },
     { id = "Y",      label = "Action Y",      default = 3  },
     { id = "L1",     label = "Page Left",     default = 4  },
     { id = "R1",     label = "Page Right",    default = 5  },
-    { id = "L2",     label = "L2",            default = 6  },
-    { id = "R2",     label = "R2",            default = 7  },
-    { id = "SELECT", label = "Select",        default = 8  },
-    { id = "START",  label = "Start",         default = 9  },
-    { id = "MENU",   label = "Menu",          default = 10 },
-    { id = "L3",     label = "Left Stick Click", default = 11 },
-    { id = "R3",     label = "Right Stick Click", default = 12 },
+    { id = "L2",     label = "L2",            default = 9  },
+    { id = "R2",     label = "R2",            default = 12 },
+    { id = "SELECT", label = "Select",        default = 6  },
+    { id = "START",  label = "Start",         default = 7  },
+    { id = "MENU",   label = "Menu",          default = 8  },
+    { id = "L3",     label = "Left Stick Click", default = nil },
+    { id = "R3",     label = "Right Stick Click", default = nil },
     { id = "UP",     label = "D-Pad Up",      default = nil },
     { id = "DOWN",   label = "D-Pad Down",    default = nil },
     { id = "LEFT",   label = "D-Pad Left",    default = nil },
@@ -56,10 +57,19 @@ function M.init()
         local ok, d = pcall(JSON.decode, raw)
         if ok and type(d) == "table" then
             if type(d.pad) == "table" then
-                local legacy = { A = 1, B = 0, X = 2, Y = 3, L1 = 4,
+                -- Treat both previous built-in default layouts as defaults:
+                -- the SDL layout shipped before the joydev/SDL mix-up, and
+                -- the mistaken joydev layout. Preserve values that differ
+                -- from both so genuine user remaps survive the correction.
+                local previous_sdl = { A = 1, B = 0, X = 2, Y = 3, L1 = 4,
                     R1 = 5, L2 = 9, R2 = 12, SELECT = 6, START = 7, MENU = 8 }
+                local mistaken_joydev = { A = 0, B = 1, X = 2, Y = 3, L1 = 4,
+                    R1 = 5, L2 = 6, R2 = 7, SELECT = 8, START = 9, MENU = 10,
+                    L3 = 11, R3 = 12 }
                 for k, v in pairs(d.pad) do
-                    if legacy[k] ~= v then M.data.pad[k] = v end
+                    if previous_sdl[k] ~= v and mistaken_joydev[k] ~= v then
+                        M.data.pad[k] = v
+                    end
                 end
             end
             if d.active_device ~= nil then
