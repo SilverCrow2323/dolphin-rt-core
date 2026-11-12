@@ -41,6 +41,40 @@ local function copy(t)
   return c
 end
 
+local function rom_path_key(path)
+  if type(path) ~= "string" or path == "" then return "" end
+  local clean = path:gsub("/+$", "")
+  local real = Shell.first("readlink -f " .. Shell.shq(clean), 3)
+  if type(real) == "string" and real ~= "" then clean = real end
+  return clean:lower()
+end
+
+function M.normalize_rom_paths()
+  local out, seen, changed = {}, {}, false
+  for _, entry in ipairs(M.data.rom_paths or {}) do
+    if type(entry) == "table" and type(entry.path) == "string" and entry.path ~= "" then
+      local key = rom_path_key(entry.path)
+      local previous = seen[key]
+      if previous then
+        if previous.system ~= entry.system then previous.system = "Both" end
+        changed = true
+      else
+        local clean = entry.path:gsub("/+$", "")
+        local copy = { path = clean, system = entry.system or "GC" }
+        out[#out + 1] = copy
+        seen[key] = copy
+        if clean ~= entry.path then changed = true end
+      end
+    else
+      changed = true
+    end
+  end
+  if #out ~= #(M.data.rom_paths or {}) then changed = true end
+  M.data.rom_paths = out
+  if changed then M.save() end
+  return changed
+end
+
 function M.init()
   M.data = copy(defaults)
   local raw = FS.read(PATH)
@@ -51,6 +85,7 @@ function M.init()
     end
   end
   M.migrate()
+  M.normalize_rom_paths()
 end
 
 function M.save()
@@ -79,15 +114,18 @@ function M.set(k, v)   M.data[k] = v; M.save() end
 
 function M.add_rom_path(path, system)
   system = system or "GC"
-  for _, e in ipairs(M.data.rom_paths) do
-    if e.path == path and e.system == system then
+  if type(path) ~= "string" or path == "" or (system ~= "GC" and system ~= "Wii") then return false end
+  M.normalize_rom_paths()
+  local key = rom_path_key(path)
+  for _, entry in ipairs(M.data.rom_paths or {}) do
+    if rom_path_key(entry.path) == key then
+      if entry.system ~= system and entry.system ~= "Both" then entry.system = "Both" end
       M.data.rom_discovery_done = true
       M.save()
       return false
     end
   end
-  table.insert(M.data.rom_paths, { path = path, system = system })
-  -- An explicit user choice is a completed first-run setup decision.
+  table.insert(M.data.rom_paths, { path = path:gsub("/+$", ""), system = system })
   M.data.rom_discovery_done = true
   M.save()
   return true
@@ -106,95 +144,22 @@ function M.rom_root_candidates()
   local function add(path)
     if type(path) ~= "string" or path == "" then return end
     path = path:gsub("/+$", "")
-    if path ~= "" and not seen[path] then
-      seen[path] = true
+    local key = rom_path_key(path)
+    if key ~= "" and not seen[key] then
+      seen[key] = true
       roots[#roots + 1] = path
     end
   end
-
   local probe = "sh -c " .. Shell.shq(
     ". /opt/muos/script/var/func.sh >/dev/null 2>&1; GET_VAR \"device\" \"storage/rom/mount\" 2>/dev/null")
   local mount = Shell.first(probe, 5)
-  if type(mount) == "string" and mount ~= "" then
-    add(mount .. "/roms")
-    add(mount .. "/ROMS")
-  end
-
-  for _, path in ipairs({
-    "/mnt/sdcard/roms", "/mnt/sdcard/ROMS",
-    "/mnt/mmc/roms", "/mnt/mmc/ROMS",
-    "/mnt/union/roms", "/mnt/union/ROMS",
-    "/roms",
-  }) do add(path) end
-
+  if type(mount) == "string" and mount ~= "" then add(mount .. "/roms") end
+  for _, path in ipairs({ "/mnt/sdcard/roms", "/mnt/mmc/roms", "/mnt/union/roms", "/roms" }) do add(path) end
   return roots
 end
 
--- First-run discovery deliberately registers the whole ROM root for both
--- platforms. The library scanner reads disc IDs from headers, so mixed
--- GameCube/Wii roots are split correctly without guessing from folder names.
--- No directory is created, renamed, moved, or modified by this routine.
+-- Backwards-compatible no-op. ROM paths are never registered automatically.
 function M.auto_discover_rom_paths()
-  if M.data.rom_discovery_done == true then
-    -- Older releases marked discovery complete merely because rom_paths was
-    -- non-empty. Validate those entries before trusting the marker.
-    local current = M.data.rom_paths or {}
-    local valid = false
-    for _, entry in ipairs(current) do
-      if entry.path and FS.is_dir(entry.path) then
-        local cmd = "find " .. Shell.shq(entry.path) .. " -maxdepth 8 -type f "
-          .. [[\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \)]]
-          .. " -print -quit 2>/dev/null"
-        local sample = Shell.first(cmd, 8)
-        if type(sample) == "string" and sample ~= "" then valid = true; break end
-      end
-    end
-    if valid then return 0 end
-    M.data.rom_discovery_done = false
-  end
-
-  local current = M.data.rom_paths or {}
-  local valid_current, checked = false, {}
-  local function contains_roms(path)
-    if type(path) ~= "string" or path == "" or not FS.is_dir(path) then return false end
-    local real = Shell.first("readlink -f " .. Shell.shq(path), 4)
-    if type(real) ~= "string" or real == "" then real = path end
-    if checked[real] ~= nil then return checked[real], real end
-    local extensions = [[\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \)]]
-    local cmd = "find " .. Shell.shq(real) .. " -maxdepth 8 -type f " ..
-      extensions .. " -print -quit 2>/dev/null"
-    local sample = Shell.first(cmd, 8)
-    checked[real] = type(sample) == "string" and sample ~= ""
-    return checked[real], real
-  end
-
-  for _, entry in ipairs(current) do
-    local has = contains_roms(entry.path)
-    if has then valid_current = true end
-  end
-  if valid_current then
-    M.data.rom_discovery_done = true
-    M.save()
-    return 0
-  end
-
-  -- Stale defaults / paths from older installations are not trusted. Probe
-  -- the actual muOS ROM mount and known fallback mounts instead of stopping
-  -- just because settings.json contains two obsolete folder names.
-  local found, seen = 0, {}
-  for _, path in ipairs(M.rom_root_candidates()) do
-    local has, real = contains_roms(path)
-    if has and not seen[real] then
-      seen[real] = true
-      local before = #M.data.rom_paths
-      M.add_rom_path(real, "GC")
-      M.add_rom_path(real, "Wii")
-      if #M.data.rom_paths > before then found = found + 1 end
-    end
-  end
-
-  M.data.rom_discovery_done = (found > 0)
-  M.save()
-  return found
+  return 0
 end
 return M
