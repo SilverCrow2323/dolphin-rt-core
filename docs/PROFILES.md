@@ -5,9 +5,12 @@
 `workshop/` is the canonical editable store for Rt:Core profiles, controller
 layouts, hotkeys, logging presets and per-game GameSettings. Dolphin's live
 `Config/` directory is a generated runtime projection, not another profile
-library. The launch pipeline starts from `workshop/base/`, layers the selected
-profile and tier, then applies the active per-game GameSettings before Dolphin
-starts.
+library. The core-profile pipeline starts from
+`workshop/rtcoreprofile/Default/`, layers the family folder and selected tier,
+then applies the active per-game GameSettings before Dolphin starts.
+`workshop/base/` remains a shared fallback for controller, hotkey and other
+non-core profile families; its old Dolphin.ini/GFX.ini copies are not the
+authoritative core-profile baseline.
 
 Both entry points use the same pipeline:
 
@@ -31,8 +34,12 @@ A folder under `workshop/rtcoreprofile/<name>/` containing:
 - `GFX.ini`
 - `rtprofile_data.ini` (metadata)
 
-At launch, `profile_manager.apply("rtcoreprofile", name)` copies
-the two INIs into the live Config directory.
+The same chain resolver is used by the Rt:UI profile manager and
+`tools/rt_profile_merge.py`: `Default -> family -> tier -> GameSettings`.
+The selected tier therefore inherits its family patch (for example,
+`RtPrime/std` applies `Default`, then `RtPrime`, then `RtPrime/std`).
+The resulting INIs are written to the live `Config/` directory; source
+profiles remain untouched.
 
 ## 3. Families and tiers
 
@@ -63,8 +70,11 @@ under `workshop/rtcoreprofile/`.
 
 ## 5. GameSettings
 
-Per-game overrides under `workshop/gamesettings/<ID>/`. Copy to
-`Config/GameSettings/<ID>.ini` at launch. Sections are namespaced:
+Per-game overrides live only in `workshop/gamesettings/<ID>/`. The
+`rtgameset_data.ini` metadata selects the active file through `ActiveConfig`.
+The shared launcher reads that same active file from both entry points and
+merges it into the runtime Dolphin.ini/GFX.ini projection. The editable source
+is never taken from Config. Sections are namespaced:
 
 | Dolphin.ini section | GameSettings section |
 |---|---|
@@ -81,16 +91,18 @@ ignored by Dolphin. Always use `[Video_Hacks]`.
 
 ## 6. Apply flow
 
-1. `profile_manager.set_active()` updates `S.opts.profile`.
-2. At launch, `launch.sh` calls into the frontend, which copies
-   the profile's INIs into `Config/`.
-3. A backup of the previous INIs is placed under
-   `Config/.backup_<timestamp>/`.
-4. The Dolphin binary is spawned with `-u <emu_dir> -e <rom>`.
+1. RtSys applies only the neutral firmware/device baseline.
+2. `scripts/launch.sh` resolves the canonical profile chain from Workshop.
+3. The active GameSettings file is merged after the selected family/tier.
+4. Controller, hotkeys, logging and selected mods are projected from their
+   Workshop sources into the runtime Config/Load paths.
+5. Dolphin starts with `-u <emu_dir> -e <rom>`.
 
 ## 7. Diff viewer
 
-`workshop_diff.lua` compares a profile against `workshop/base/`.
+`workshop_diff.lua` compares core profiles against
+`workshop/rtcoreprofile/Default/`; non-core families retain their shared
+`workshop/base/` fallback.
 Rows are grouped by file, section, key, with FROM and TO columns.
 
 ## 8. Tier comparison
