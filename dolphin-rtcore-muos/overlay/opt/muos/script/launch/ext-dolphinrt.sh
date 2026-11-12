@@ -77,17 +77,17 @@ on_signal() {
 }
 trap on_signal TERM INT
 
-if [ -x "$RTSYS/overlay_exit.sh" ]; then
-    "$RTSYS/overlay_exit.sh" "$JS_DEV" >/dev/null 2>&1 &
-    WATCHER_PID=$!
-    log "Safe Exit watcher pid=$WATCHER_PID config=$RT_SAFE_EXIT_CONFIG"
-else
-    log "WARN Safe Exit watcher not installed"
-fi
-
 ./dolphin --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMUDIR" >> "$LOG_DIR/dolphin_debug.log" 2>&1 &
 DOLPHIN_PID=$!
 log "Dolphin pid=$DOLPHIN_PID"
+
+if [ -x "$RTSYS/overlay_exit.sh" ]; then
+    "$RTSYS/overlay_exit.sh" "$JS_DEV" "$DOLPHIN_PID" >/dev/null 2>&1 &
+    WATCHER_PID=$!
+    log "Safe Exit watcher pid=$WATCHER_PID target=$DOLPHIN_PID config=$RT_SAFE_EXIT_CONFIG"
+else
+    log "WARN Safe Exit watcher not installed"
+fi
 
 if [ "$HOTKEY_DEVICE" = "Keyboard" ] && [ -x "$GPTK_BIN" ] && [ -s "$GPTK_CFG" ]; then
     sleep 0.25
