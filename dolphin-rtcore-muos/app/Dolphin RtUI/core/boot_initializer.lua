@@ -32,6 +32,7 @@ local STATE = {
   _fast_done = false,
   skip_data_download = false,
   rom_setup_needed = false,
+  scan_started = false,
 }
 
 local function marker(name) return "/tmp/rt_boot_" .. name .. ".done" end
@@ -82,6 +83,7 @@ function M.start()
   STATE._fast_done = false
   STATE.skip_data_download = false
   STATE.rom_setup_needed = false
+  STATE.scan_started = false
   Hub.push("info", "Boot sequence", "Starting up…", { silent = true, ttl = 2 })
 end
 
@@ -158,8 +160,27 @@ function M.update(dt)
     local ok, Library = pcall(require, "core.library")
     local n = 0
     if ok and Library then
-      pcall(function() Library.scan() end)
-      n = #(Library.games or {})
+      if not STATE.scan_started then
+        local started, err = pcall(Library.scan_begin)
+        if started then
+          STATE.scan_started = true
+          return
+        end
+        print("[RtUI] incremental ROM scan could not start: " .. tostring(err))
+      else
+        -- Process a small slice each frame. A blocking Library.scan() here
+        -- froze the 2.5D intro on large SD cards and made boot look stuck.
+        local scan_ok, done = pcall(Library.scan_step, 0.006)
+        if scan_ok and not done then
+          STATE.results.roms = #(Library.games or {})
+          return
+        end
+        if not scan_ok then
+          print("[RtUI] incremental ROM scan failed: " .. tostring(done))
+        end
+        STATE.scan_started = false
+        n = #(Library.games or {})
+      end
     end
     STATE.results.roms = n
     pcall(function()
