@@ -78,6 +78,7 @@ on_signal() {
 trap on_signal TERM INT
 
 if [ "$HOTKEY_DEVICE" = "Keyboard" ] && [ -x "$GPTK_BIN" ] && [ -s "$GPTK_CFG" ]; then
+    pkill -f "$GPTK_BIN dolphin -c" 2>/dev/null || true
     sleep 0.25
     "$GPTK_BIN" dolphin -c "$GPTK_CFG" -D states,keyboard >> "$LOG_DIR/gptokeyb2-content-explorer.log" 2>&1 &
     GPTK_PID=$!
