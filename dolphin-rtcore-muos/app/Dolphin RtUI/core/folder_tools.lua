@@ -112,8 +112,19 @@ local function is_scan_root(path)
     return false
 end
 
+local function is_symlink(path)
+    return Shell.first("test -L " .. Shell.shq(path) .. " && echo yes", 3) == "yes"
+end
+M.is_symlink = is_symlink
+
 function M.inspect(path)
-    if type(path) ~= "string" or path == "" or not FS.is_dir(path) then
+    if type(path) ~= "string" or path == "" then
+        return nil, "selected path is not an accessible directory"
+    end
+    if is_symlink(path) then
+        return nil, "selected path is a symbolic link; muOS Content Explorer skips symbolic-link folders"
+    end
+    if not FS.is_dir(path) then
         return nil, "selected path is not an accessible directory"
     end
     local name = path:match("([^/]+)$") or path
