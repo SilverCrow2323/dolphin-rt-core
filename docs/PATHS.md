@@ -26,8 +26,9 @@ Rt:UI launch path does not use them as the selected profile catalogue.
 ## 2. Workshop (managed by DolphinUI)
 
 ```
-workshop/base/                     Legacy/shared INI baseline (migration compatibility)
-workshop/rtcoreprofile/<name>/     Rt:Core profiles
+workshop/base/                     Shared fallbacks for non-core profiles; legacy Dolphin INIs
+workshop/rtcoreprofile/Default/    Canonical core-profile base
+workshop/rtcoreprofile/<name>/     Rt:Core profiles, families and tiers, families and tiers
 workshop/controller/GameCube/<n>/  GC controller layouts
 workshop/controller/Wii/<n>/       Wii controller layouts
 workshop/gamesettings/<ID>/        Per-game overrides
@@ -42,8 +43,10 @@ The same `workshop/` catalogue is used by both launch routes. The Content
 Explorer adapter resolves its selected external-core slug and ROM GameID, reads
 optional `workshop/gameslibrary/rtid_<ID>.ini` launch overrides, and invokes
 `scripts/launch.sh`. Rt:UI passes its selections to that same script directly.
-`RtSys` remains the muOS compatibility/registration layer; it is not a second
-editable profile store.
+`RtSys` remains the muOS compatibility/registration layer; it always applies
+the neutral device baseline. The selected core profile is never selected from
+`RtSys/Config`; it comes from `workshop/rtcoreprofile` and is layered as
+`Default -> family -> tier -> active GameSettings`.
 
 ## 3. Dolphin resources
 
