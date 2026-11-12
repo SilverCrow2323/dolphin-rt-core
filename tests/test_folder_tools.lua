@@ -28,6 +28,8 @@ expect(Tools.infer_system("GameCubeZ") == nil, "GameCubeZ must not be renamed")
 expect(Tools.infer_system("Nintendo GameCube") == nil, "prefixed labels must not be renamed")
 expect(Tools.infer_system("WiiZ") == nil, "WiiZ must not be renamed")
 expect(Tools.infer_system("Nintendo Wii") == nil, "prefixed Wii labels must not be renamed")
+expect(Tools.infer_system("Game-Cube") == nil, "hyphenated near-match must not be renamed")
+expect(Tools.infer_system("Game_Cube") == nil, "underscored near-match must not be renamed")
 expect(Tools.infer_system("PlayStation") == nil, "unknown system must remain unknown")
 
 local hidden = Tools.skip_reasons(".hidden-roms", "/mnt/roms/.hidden-roms", { ".*", "_*" })
