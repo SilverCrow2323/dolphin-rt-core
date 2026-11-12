@@ -114,6 +114,14 @@ local function commit_z()
         Notify.show("warning", "Choose GameCube (Y) or Wii (X) first")
         return
     end
+    if S.z_item.has_roms ~= true then
+        Notify.show("warning", "Rename blocked: no supported GameCube/Wii disc image was found here.")
+        return
+    end
+    if S.z_item.is_scan_root then
+        Notify.show("warning", "Rename blocked: this is a configured ROM root. Select a child folder instead.")
+        return
+    end
     local ok, result = FolderTools.rename_register(S.z_item, S.z_system)
     if ok then
         Notify.show("success", "Renamed to " .. (result.target:match("([^/]+)$") or result.target)
@@ -242,7 +250,8 @@ local function draw_zpreview()
     local target = (S.z_plan and S.z_plan.target) or ("Rt" .. source_name)
     local alias = (S.z_plan and S.z_plan.alias) or FolderTools.normalize_alias(target)
     local system_text = S.z_system or "not selected"
-    local status = item.status == "skip-match" and "Matches muOS skip.ini pattern(s): "
+    local status = item.is_scan_root and "This is a configured ROM root; renaming it would break the library."
+        or item.status == "skip-match" and "Matches muOS skip.ini pattern(s): "
         .. table.concat(item.skip_matches or {}, ", ")
         or item.status == "unmapped" and "No matching assignment alias is present in assign.json."
         or item.status == "mapped" and "An assignment alias already exists; this diagnostic still allows an explicit Rt-prefixed repair."
@@ -263,8 +272,12 @@ local function draw_zpreview()
         K.MARGIN + 18, 355, K.C.dim, 1, K.W - K.MARGIN * 2 - 36)
     K.text("small", item.has_roms and "DISC CHECK: supported ROM image found" or "DISC CHECK: no supported ROM image — rename disabled",
         K.MARGIN + 18, 382, item.has_roms and K.C.ok or K.C.warn, 1, K.W - K.MARGIN * 2 - 36)
-    K.footer({ { key = "Y", label = "GameCube" }, { key = "X", label = "Wii" },
-        { key = "A", label = "Rename + register" }, { key = "B", label = "Back" } })
+    local footer = { { key = "Y", label = "GameCube" }, { key = "X", label = "Wii" } }
+    if item.has_roms and not item.is_scan_root then
+        footer[#footer + 1] = { key = "A", label = "Rename + register" }
+    end
+    footer[#footer + 1] = { key = "B", label = "Back" }
+    K.footer(footer)
 end
 
 function S.draw()
