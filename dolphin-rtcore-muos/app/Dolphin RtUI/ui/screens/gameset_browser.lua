@@ -108,7 +108,8 @@ local function build_grouped(tab_id)
                         local n = (ok2 and type(list) == "table") and #list or 0
                         table.insert(grp.regions, {
                             id = gid, region = region_of(gid),
-                            n_cfg = n, db_cfg = #(entry.configs or {}), in_lib = lib[gid] ~= nil,
+                            n_cfg = n, db_cfg = #(entry.configs or {}),
+                            db_cfgs = entry.configs or {}, in_lib = lib[gid] ~= nil,
                         })
                     end
                 end
@@ -155,6 +156,7 @@ local function refresh()
     S.rows = r
     S.list:set(S.rows, false)
     S.list.sel = 1
+    S._db_generation = GL.generation or 0
     K.set_accent(K.ACC[TABS[S.tab].color] or K.ACC.gc)
 end
 
@@ -162,13 +164,18 @@ function S.enter()
     S.tab = 1
     S.expanded = {}
     S.sel = 1
+    S.preview = nil
     refresh()
 end
-function S.update(dt) S.list:update(dt) end
+function S.update(dt)
+    S.list:update(dt)
+    if S.tab == 3 and S._db_generation ~= (GL.generation or 0) then refresh() end
+end
 
 local function cycle_tab(d)
     S.tab = ((S.tab - 1 + d) % #TABS) + 1
     S.expanded = {}
+    S.preview = nil
     refresh()
     SFX.play("menu_pagescroll")
 end
@@ -188,7 +195,29 @@ local function alphabet_jump(d)
     end
 end
 
+local function show_database_preset(row, index)
+    local configs = row.db_cfgs or {}
+    if #configs == 0 then return false end
+    index = ((index - 1) % #configs) + 1
+    local cfg = configs[index] or {}
+    local lines = {}
+    for line in tostring(cfg.raw_content or ""):gmatch("[^\\n]+") do
+        lines[#lines + 1] = line
+    end
+    S.preview = { row = row, configs = configs, index = index, cfg = cfg, lines = lines, scroll = 0 }
+    return true
+end
+
 function S.pad(b)
+    if S.preview then
+        local p = S.preview
+        if b == "UP" then p.scroll = math.max(0, p.scroll - 1)
+        elseif b == "DOWN" then p.scroll = math.min(math.max(0, #p.lines - 10), p.scroll + 1)
+        elseif b == "L1" or b == "LEFT" then show_database_preset(p.row, p.index - 1)
+        elseif b == "R1" or b == "RIGHT" then show_database_preset(p.row, p.index + 1)
+        elseif b == "B" then S.preview = nil end
+        return
+    end
     local row = S.list:cur()
     if b == "UP" then
         if S.list:move(-1) then SFX.play("menu_move") end
@@ -208,7 +237,11 @@ function S.pad(b)
             refresh()
         elseif row.kind == "region" then
             SFX.play("menu_select")
-            require("ui").go("gameset_explorer", { game_id = row.id, game_title = row.title })
+            if S.tab == 3 and show_database_preset(row, 1) then
+                -- Open the bundled database preset in a read-only detail view.
+            else
+                require("ui").go("gameset_explorer", { game_id = row.id, game_title = row.title })
+            end
         end
     elseif b == "B" then
         require("ui").back()
@@ -274,12 +307,40 @@ function S.draw()
     else
         S.list:draw(draw_row)
     end
-    K.footer({
-        { key = "A", label = "Open / Expand" },
-        { key = "L1 R1", label = "Tab" },
-        { key = "L2 R2", label = "Letter" },
-        { key = "B", label = "Back" },
-    })
+    if S.preview then
+        local p = S.preview
+        local x, y, w, h = 28, 76, K.W - 56, K.H - 104
+        K.color(K.C.bg0, 0.97); love.graphics.rectangle("fill", 0, 0, K.W, K.H)
+        K.panel(x, y, w, h, { accent = K.ACC.wii, cut = 10, force = true })
+        local cfg_title = p.cfg.title or p.cfg.filename or ("Preset " .. p.index)
+        K.text("h", K.clip("h", cfg_title, w - 32), x + 18, y + 14, K.C.text)
+        K.text("small", (p.row.title or "Game") .. " · " .. p.row.id ..
+               " · " .. tostring(p.cfg.author or "Community") ..
+               " · " .. p.index .. "/" .. #p.configs,
+               x + 18, y + 48, K.C.dim)
+        K.text("small", K.clip("small", p.cfg.description or "", w - 36), x + 18, y + 72, K.C.text)
+        K.text("mono", p.cfg.filename or "embedded preset", x + 18, y + 112, K.ACC.wii)
+        local code_y = y + 138
+        love.graphics.setScissor(x + 12, code_y, w - 24, h - 174)
+        if #p.lines == 0 then
+            K.text("small", "No embedded INI content in this database entry.", x + 18, code_y, K.C.dim)
+        else
+            for i = 1, 10 do
+                local line = p.lines[p.scroll + i]
+                if not line then break end
+                K.text("mono", K.clip("mono", line, w - 44), x + 18, code_y + (i - 1) * 19, K.C.text)
+            end
+        end
+        love.graphics.setScissor()
+        K.footer({ { key = "UP/DOWN", label = "Scroll" }, { key = "L1/R1", label = "Preset" }, { key = "B", label = "Close" } })
+    else
+        K.footer({
+            { key = "A", label = "Open / Expand" },
+            { key = "L1 R1", label = "Tab" },
+            { key = "L2 R2", label = "Letter" },
+            { key = "B", label = "Back" },
+        })
+    end
 end
 
 return S
