@@ -12,7 +12,7 @@ local ok_bi, BI = pcall(require, "core.boot_initializer")
 local S = {}
 local LABEL = { update_check = "Checking for updates", scan_roms = "Scanning ROM folders",
                 build_rtid = "Building game cards", done = "Ready", idle = "Starting" }
-local END_FRAME = 98                       -- a beat after the lightning
+local END_FRAME = (Mascot.FRAMES or 120) - 1 -- play the complete 2.5D sequence
 
 function S.enter()
     S.t, S.going, S.flash = 0, false, 0
@@ -39,13 +39,17 @@ function S.update(dt)
     local frame = S.t * Mascot.FPS * S.speed
     local ready = (not ok_bi) or (BI.is_done and BI.is_done())
     if S.mode == "off" or not S.have then
-        if ready or S.t > 5 then proceed() end
+        -- No image available (or intro disabled): never wait for a button.
+        -- Give asynchronous boot tasks a short head start, then continue.
+        if ready or S.t >= 2.5 then proceed() end
         return
     end
     -- lightning flash around the hit frame
     local d = math.abs(frame - Mascot.HIT)
     S.flash = d < 5 and (1 - d / 5) or 0
-    if (ready and frame >= END_FRAME) or S.t > 9 then proceed() end
+    -- The intro owns its duration: once the final frame has played, leave
+    -- automatically. Boot jobs keep running in the background.
+    if frame >= END_FRAME or S.t > 7 then proceed() end
 end
 
 function S.pad(b) if b == "A" and S.t > 0.5 then proceed() end end
