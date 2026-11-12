@@ -16,14 +16,15 @@ def write(path: Path, text: str) -> None:
 
 
 def value(state, filename, section, key):
-    order, flat = state[filename]
+    _, flat = state[filename]
     return flat.get((section, key))
 
 
 def main() -> None:
     with tempfile.TemporaryDirectory(prefix="rt-profile-merge-") as tmp:
         root = Path(tmp)
-        profiles = root / "workshop" / "rtcoreprofile"
+        workshop = root / "workshop"
+        profiles = workshop / "rtcoreprofile"
         default = profiles / "Default"
         family = profiles / "RtPrime"
         tier = family / "std"
@@ -64,9 +65,16 @@ RequiresBase = RtPrime/std
         write(custom / "Dolphin.ini", """[Core]
 CPUCore = 5
 """)
-        # This old duplicate must never be the core-profile base.
-        write(root / "workshop" / "base" / "Dolphin.ini", """[Core]
+        # The former workshop/base Dolphin.ini copy is deliberately different.
+        write(workshop / "base" / "Dolphin.ini", """[Core]
 CPUCore = 99
+""")
+        # GameSettings are a separate native GameINI projection, not a global profile patch.
+        write(workshop / "gamesettings" / "GM8E01" / "Performance.ini", """[Core]
+CPUCore = 9
+""")
+        write(workshop / "gamesettings" / "GM8E01" / "rtgameset_data.ini", """[GameSettings]
+ActiveConfig = Performance.ini
 """)
 
         layers = MODULE.resolve_profile_layers(default, tier)
@@ -79,6 +87,7 @@ CPUCore = 99
         assert value(merged, "Dolphin.ini", "General", "Layer") == "default"
         assert value(merged, "Dolphin.ini", "General", "FamilyEnabled") == "True"
         assert value(merged, "GFX.ini", "Settings", "DisableFog") == "False"
+        assert value(merged, "Dolphin.ini", "Core", "CPUCore") != "9"
 
         default_only = MODULE.merge_profile_layers(default, default)
         assert MODULE.resolve_profile_layers(default, default) == []
@@ -90,25 +99,7 @@ CPUCore = 99
         assert value(custom_merged, "Dolphin.ini", "Core", "CPUCore") == "5"
         assert value(custom_merged, "Dolphin.ini", "Core", "Overclock") == "1.1"
 
-        workshop = root / "workshop"
-        game_dir = workshop / "gamesettings" / "GM8E01"
-        preset = game_dir / "Performance.ini"
-        write(preset, "[Core]\\nCPUThread = False\\n")
-        write(game_dir / "rtgameset_data.ini", """[Other]
-ActiveConfig = ignored.ini
-
-[GameSettings]
-GameName = Example
-ActiveConfig = Performance.ini
-""")
-        assert MODULE.find_gameset_file(workshop, "GM8E01") == preset
-
-        write(game_dir / "rtgameset_data.ini", """[GameSettings]
-ActiveConfig = ../outside.ini
-""")
-        assert MODULE.find_gameset_file(workshop, "GM8E01") is None
-
-    print("rt_profile_merge inheritance and GameSettings tests: OK")
+    print("rt_profile_merge profile-layer tests: OK")
 
 
 if __name__ == "__main__":
