@@ -173,11 +173,9 @@ function M.scan_begin()
   _depth = math.max(8, tonumber(Settings.get("scan_depth")) or 8)
   local roots_seen = {}
   local function root_key(path)
-    local clean = tostring(path or ""):gsub("/+$", "")
-    -- Resolve only user-selected roots, never individual ROMs.
-    local real = Shell.first("readlink -f " .. Shell.shq(clean), 3)
-    if type(real) == "string" and real ~= "" then clean = real end
-    return path_key(clean)
+    -- The settings layer already stores one lexical root. Case-insensitive
+    -- comparison is enough here and avoids child processes during boot.
+    return path_key(path)
   end
   for _, entry in ipairs(Settings.get("rom_paths") or {}) do
     if type(entry) == "table" and entry.path and FS.is_dir(entry.path) then
