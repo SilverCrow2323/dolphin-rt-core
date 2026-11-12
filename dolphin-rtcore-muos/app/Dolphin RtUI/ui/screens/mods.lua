@@ -1,6 +1,7 @@
 -- ui/screens/mods.lua — MOD VAULT.
--- 4 tab colorati, uno per cartella di /opt/muos/share/emulator/dolphin/Load/:
---   Textures · Wii SD Sync · Riivolution · Dynamic Input
+-- 4 categorie Load/ (Textures · Wii SD Sync · Riivolution · Dynamic Input)
+-- plus Graphics Mods: native Dolphin catalog from Sys/Load + Load, toggled
+-- per-game through Config/GraphicMods/<GameID>.json.
 -- Per ogni tab elenca le voci applicabili al gioco (vedi core/mods.lua):
 --   ID esatto · primi 3 char dell'ID (tutte le regioni) · nome del gioco ·
 --   cartella "All" (tutti i giochi).
