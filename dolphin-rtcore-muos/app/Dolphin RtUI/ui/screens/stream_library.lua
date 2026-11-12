@@ -300,13 +300,11 @@ local function draw_stream_header()
   K.text("title", "RT:STREAM", K.MARGIN + 14, 30, K.C.text)
 
   -- Connection indicators occupy a dedicated upper-right lane.
-  led(K.MARGIN + 286, 28, Stream.health.library, "PORTAL")
-  led(K.MARGIN + 390, 28, Stream.health.sunshine, "SUNSHINE")
   local host = Stream.configured() and ("PC  " .. tostring(Stream.s.HOST)) or "PC NOT CONFIGURED"
   K.text("key", K.clip("key", host, 190), K.W - K.MARGIN - 204,
     14, Stream.configured() and NEON_CYAN or K.C.warn)
-  K.text("key", "SORT  " .. SORTS[sort], K.W - K.MARGIN - 204,
-    33, K.C.faint)
+  led(K.MARGIN + 286, 45, Stream.health.library, "PORTAL")
+  led(K.MARGIN + 390, 45, Stream.health.sunshine, "SUNSHINE")
 
   -- Tabs, system filter and visual modes are three non-overlapping control
   -- groups. X cycles the presentation; L1/R1 and L2/R2 keep their old roles.
