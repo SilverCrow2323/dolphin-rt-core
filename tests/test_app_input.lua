@@ -38,6 +38,8 @@ expect(pad.SELECT == 6 and pad.START == 7 and pad.MENU == 8,
     "system buttons must be migrated back to SDL IDs")
 expect(AppInput.active_device() == "RG35XX H",
     "device selection must survive the default-map migration")
+expect(type(persisted) == "string" and JSON.decode(persisted).pad.A == 1,
+    "corrected SDL defaults must be persisted after migration")
 
 -- Real user remaps differ from both built-in maps and must be retained.
 saved = { pad = { A=12, B=0, X=2, Y=3, L1=4, R1=5, L2=10,
