@@ -30,6 +30,7 @@ local sys = tmp .. "/Sys/Load/GraphicMods"
 local user = tmp .. "/Load/GraphicMods"
 local bloom = sys .. "/All Games Bloom Removal"
 local galaxy = sys .. "/Super Mario Galaxy"
+local galaxy_extra = galaxy .. "/Extra Bloom"
 local zelda = sys .. "/Zelda Only"
 local direct_id = sys .. "/RMGE01"
 local direct_prefix = sys .. "/RMG"
@@ -37,12 +38,13 @@ local fallback_prefix = sys .. "/GM8"
 local custom = user .. "/All User Shaders"
 local parked_user = tmp .. "/Load/GraphicMods.off/Parked User Shaders"
 
-for _, dir in ipairs({bloom, galaxy .. "/gameids", zelda .. "/gameids",
+for _, dir in ipairs({bloom, galaxy .. "/gameids", galaxy_extra, zelda .. "/gameids",
                       direct_id, direct_prefix, fallback_prefix, custom, parked_user}) do mkdir(dir) end
 write(bloom .. "/metadata.json", metadata("Bloom Removal", "Dolphin Team"))
 write(bloom .. "/all.txt", "")
 write(galaxy .. "/metadata.json", metadata("Super Mario Galaxy Bloom"))
 write(galaxy .. "/gameids/RMGE01.txt", "")
+write(galaxy_extra .. "/metadata.json", metadata("Super Mario Galaxy Extra Bloom"))
 write(zelda .. "/metadata.json", metadata("Zelda Only"))
 write(zelda .. "/gameids/ZELD01.txt", "")
 write(direct_id .. "/metadata.json", metadata("Exact Game ID Mod"))
@@ -77,6 +79,9 @@ assert(by_name(catalog, "All User Shaders"), "user all-games mod appears in cata
 local rows = Graphics.list_for(game)
 local bloom_item = assert(by_name(rows, "All Games Bloom Removal"), "all-games marker matches game")
 local galaxy_item = assert(by_name(rows, "Super Mario Galaxy"), "nested GameID marker matches game")
+assert(by_name(rows, "Super Mario Galaxy/Extra Bloom"), "nested metadata.json under a matching directory is discovered")
+assert(by_name(rows, "Super Mario Galaxy/Extra Bloom").path ==
+    "Super Mario Galaxy/Extra Bloom/metadata.json", "nested profile path ends at metadata.json")
 assert(by_name(rows, "All User Shaders"), "user all-games marker matches game")
 assert(not by_name(rows, "Zelda Only"), "non-matching game mod is excluded")
 assert(by_name(rows, "RMGE01") and by_name(rows, "RMGE01").scope == "id",
@@ -134,9 +139,9 @@ assert(type(profile) == "table" and type(profile.mods) == "table", "Dolphin prof
 local found_system, found_user = false, false
 for _, entry in ipairs(profile.mods) do
     assert(type(entry.source) == "string" and type(entry.path) == "string", "native source/path fields")
-    if entry.source == "system" and entry.path == "All Games Bloom Removal" and entry.enabled == true then
+    if entry.source == "system" and entry.path == "All Games Bloom Removal/metadata.json" and entry.enabled == true then
         found_system = true
-    elseif entry.source == "user" and entry.path == "All User Shaders" and entry.enabled == false then
+    elseif entry.source == "user" and entry.path == "All User Shaders/metadata.json" and entry.enabled == false then
         found_user = true
     end
 end
