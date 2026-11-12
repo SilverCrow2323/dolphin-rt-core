@@ -27,8 +27,10 @@ expect(#items == 1 and items[1].file == "Preset.ini" and items[1].active,
 
 GM.clear_active(id)
 expect(GM.active_for(id) == nil, "clear_active must disable GameSettings")
+expect(GM.has_active_record(id), "Disabled must remain an explicit canonical selector")
 GM.set_active(id, "Preset.ini")
 expect(GM.active_for(id) == "Preset.ini", "set_active must persist a valid file")
+expect(GM.has_active_record(id), "enabled selection must have canonical metadata")
 
 write(dir .. "/rtgameset_data.ini", "[GameSettings]\nActiveConfig = ../escape.ini\n")
 expect(GM.active_for(id) == nil, "ActiveConfig must reject paths outside the GameID folder")
