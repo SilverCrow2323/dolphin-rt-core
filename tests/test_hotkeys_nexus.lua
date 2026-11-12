@@ -4,7 +4,7 @@ package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;" .. package.path
 local files = {
     ["workshop/hotkeys/Default/Hotkeys.ini"] =
         "[Hotkeys1]\nDevice = Keyboard\nKeys/Save State Slot 1 = \x60F1\x60\n",
-    ["workshop/hotkeys/Default/ext-dolphin.gptk"] = "a = f1\n",
+    ["workshop/hotkeys/Default/ext-dolphin.gptk"] = "[config]\ndeadzone_triggers = 3000\n\n[controls]\noverlay = clear\nl2 = hold_state rt_hotkeys\n\n[controls:rt_hotkeys]\noverlay = parent\na = f1\n",
 }
 local modal, fail_write_path
 local saved = {}
@@ -56,11 +56,11 @@ end
 
 package.preload["core.state"] = function() return { raw_input = false } end
 package.preload["core.app_input"] = function()
-    return { pad_map = function() return { A = 1, B = 2, X = 3, Y = 4 } end }
+    return { pad_map = function() return { A = 1, B = 2, X = 3, Y = 4, L2 = 9 } end }
 end
 package.preload["ui.input"] = function()
     return { from_raw = function(index)
-        return ({ [1] = "A", [2] = "B", [3] = "X", [4] = "Y" })[index]
+        return ({ [1] = "A", [2] = "B", [3] = "X", [4] = "Y", [9] = "L2" })[index]
     end }
 end
 package.preload["ui.sfx"] = function() return { play = function() end } end
@@ -161,12 +161,13 @@ assert(actions["hotkeys.start_capture"].run())
 local unknown, unknown_err = actions["hotkeys.capture_input"].run("definitely-not-a-button")
 assert(unknown == false and tostring(unknown_err):match("not recognised"))
 assert(actions["hotkeys.capture_input"].run("A"))
+assert(actions["hotkeys.capture_input"].run("L2"))
 assert(actions["hotkeys.capture_input"].run(1))
 local bad_commit, bad_commit_err = actions["hotkeys.finish_capture"].run("yes")
 assert(bad_commit == false and tostring(bad_commit_err):match("boolean"))
 assert(actions["hotkeys.finish_capture"].run(true))
 state = actions["hotkeys.state"].run()
-assert(state.dirty and state.selected_combo == "a" and state.emitted_key == "F1")
+assert(state.dirty and state.selected_combo == "l2+a" and state.emitted_key == "F1")
 
 assert(actions["hotkeys.change_key"].run(1))
 assert(actions["hotkeys.state"].run().emitted_key == "F2")
