@@ -50,6 +50,30 @@ assert(Settings.normalize_rom_paths() == true, "legacy duplicate paths are colla
 assert(#Settings.get("rom_paths") == 1, "one legacy directory remains")
 assert(Settings.get("rom_paths")[1].system == "Both", "legacy system hints merge")
 
+
+-- FolderWaker must update saved ROM roots (including nested configured paths)
+-- when the user confirms a rename of a blocked folder.
+Settings.data = {
+    rom_paths = {
+        { path = "/mnt/sdcard/roms/gamecube", system = "GC" },
+        { path = "/mnt/sdcard/roms/gamecube/translated", system = "GC" },
+    },
+}
+assert(Settings.rename_rom_path("/mnt/sdcard/roms/gamecube", "/mnt/sdcard/roms/RtGC") == true,
+    "renaming a configured ROM root should persist the new path")
+assert(Settings.get("rom_paths")[1].path == "/mnt/sdcard/roms/RtGC",
+    "configured ROM root must follow FolderWaker rename")
+assert(Settings.get("rom_paths")[2].path == "/mnt/sdcard/roms/RtGC/translated",
+    "configured descendant paths must follow FolderWaker rename")
+
+local before_failed_save = Settings.get("rom_paths")[1].path
+FS.atomic_write = function() return false end
+local saved, save_err = Settings.rename_rom_path("/mnt/sdcard/roms/RtGC", "/mnt/sdcard/roms/RtGC-failed")
+assert(saved == false and save_err, "failed settings writes must report failure")
+assert(Settings.get("rom_paths")[1].path == before_failed_save,
+    "failed settings write must restore the in-memory ROM root")
+FS.atomic_write = function() return true end
+
 FS.atomic_write = original.atomic_write
 Shell.first = original.first
 Settings.rom_root_candidates = original.roots
