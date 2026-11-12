@@ -78,7 +78,7 @@ end
 local function is_directory_skip_rule(rule)
     -- Current muOS rules that apply to directories. The remaining entries in
     -- skip.ini are file names/extensions and must not be reported as folder bans.
-    return rule == ".*" or rule == "_*" or rule:match("^/[^%.]+%*$") ~= nil
+    return rule == ".*" or rule == "_*" or rule == "/img*"
 end
 
 local function skip_reasons(name, full_path, rules, root)
