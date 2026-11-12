@@ -16,6 +16,11 @@ function M.normalize_alias(name)
     return tostring(name or ""):lower():gsub("[^a-z0-9]", "")
 end
 
+local LUA_PATTERN_ESCAPES = {
+    ["^"] = "%", ["$"] = "%", ["("] = "%", [")"] = "%", ["%"] = "%",
+    ["."] = "%", ["["] = "%", ["]"] = "%", ["+"] = "%", ["-"] = "%",
+}
+
 local function glob_match(glob, value)
     local p = tostring(glob or "")
     local out = { "^" }
@@ -23,7 +28,7 @@ local function glob_match(glob, value)
         local ch = p:sub(i, i)
         if ch == "*" then out[#out + 1] = ".*"
         elseif ch == "?" then out[#out + 1] = "."
-        elseif ch:match("[%^%$%(%)%%%.%[%]%+%-]") then out[#out + 1] = "%" .. ch
+        elseif LUA_PATTERN_ESCAPES[ch] then out[#out + 1] = LUA_PATTERN_ESCAPES[ch] .. ch
         else out[#out + 1] = ch end
     end
     out[#out + 1] = "$"
@@ -70,12 +75,26 @@ local function has_roms(path)
     return type(sample) == "string" and sample ~= ""
 end
 
-local function skip_reasons(name, full_path, rules)
-    local reasons, path_value = {}, "/" .. tostring(name or "")
+local function is_directory_skip_rule(rule)
+    -- Current muOS rules that apply to directories. The remaining entries in
+    -- skip.ini are file names/extensions and must not be reported as folder bans.
+    return rule == ".*" or rule == "_*" or rule:match("^/[^%.]+%*$") ~= nil
+end
+
+local function skip_reasons(name, full_path, rules, root)
+    local reasons = {}
+    local relative_path = "/" .. tostring(name or "")
+    if type(root) == "string" and root ~= "" then
+        local prefix = root:gsub("/+$", "") .. "/"
+        if tostring(full_path):sub(1, #prefix) == prefix then
+            relative_path = tostring(full_path):sub(#prefix)
+            relative_path = "/" .. relative_path
+        end
+    end
     for _, rule in ipairs(rules) do
-        local candidate = rule:sub(1, 1) == "/" and path_value or name
-        if glob_match(rule, candidate) then
-            reasons[#reasons + 1] = rule
+        if is_directory_skip_rule(rule) then
+            local candidate = rule:sub(1, 1) == "/" and relative_path or name
+            if glob_match(rule, candidate) then reasons[#reasons + 1] = rule end
         end
     end
     return reasons
@@ -103,7 +122,7 @@ function M.scan()
             for path in listing:gmatch("[^\r\n]+") do
                 local name = path:match("([^/]+)$") or path
                 local alias = M.normalize_alias(name)
-                local reasons = skip_reasons(name, path, rules)
+                local reasons = skip_reasons(name, path, rules, root)
                 local guess = infer_system(name)
                 local mapped = assigned_system(assign, alias)
                 local candidate = (#reasons > 0 or guess ~= nil)
