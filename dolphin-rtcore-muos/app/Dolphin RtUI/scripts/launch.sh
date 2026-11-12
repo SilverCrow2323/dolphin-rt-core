@@ -91,6 +91,24 @@ ls -t "$LOG_DIR"/dolphin_*.log 2>/dev/null | tail -n +13 | while IFS= read -r f;
 
 log() { echo "[$(date '+%T')] $*" >> "$LOG"; }
 
+# /proc/uptime and shell built-ins provide millisecond phase timings on muOS.
+rt_uptime_ms() {
+    local up whole frac
+    [ -r /proc/uptime ] || { printf '0'; return; }
+    read -r up _ < /proc/uptime
+    whole="${up%%.*}"
+    frac="${up#*.}00"
+    frac="${frac:0:2}"
+    printf '%s' "$((10#${whole} * 1000 + 10#${frac}))"
+}
+RT_PHASE_MS="$(rt_uptime_ms)"
+log_phase() {
+    local now
+    now="$(rt_uptime_ms)"
+    log "TIMING $1 $((now - RT_PHASE_MS))ms"
+    RT_PHASE_MS="$now"
+}
+
 WATCHER_PID=""; GPTK_PID=""
 
 # ── helpers ─────────────────────────────────────────────────
@@ -179,6 +197,8 @@ export XDG_CONFIG_HOME="${HOME:-/root}/.config"
 type SETUP_SDL_ENVIRONMENT >/dev/null 2>&1 && SETUP_SDL_ENVIRONMENT
 type SET_VAR >/dev/null 2>&1 && SET_VAR "system" "foreground_process" "dolphin"
 
+log_phase "environment"
+
 # ── 2. Profile: family / tier ───────────────────────────────
 # "RtPrime (Std)" → family RtPrime, tier std. Tiers exist ONLY for Rt:CORE
 # families (profile folders that have lite/ std/ max/ inside).
@@ -211,6 +231,8 @@ else
     log "RtSys/apply_profile.sh not present: workshop profile only"
 fi
 
+log_phase "device-baseline"
+
 # ── 4. Workshop global profile (Default <- family <- tier) ──────────
 PDIR=""
 for cand in "$RT_PROFILES/$PROFILE/$VARIANT" "$RT_PROFILES/$PROFILE" "$RT_PROFILES/Default"; do
@@ -238,27 +260,35 @@ else
     rm -rf "$TMPD"
 fi
 
+log_phase "core-profile-merge"
+
 # ── 4b. Per-game GameSettings (native Dolphin projection) ─────
 # The selected Workshop GameINI is projected to the user-root GameSettings/<ID>.ini.
 # Dolphin applies this once as a per-game override; it is never merged into
 # the global Dolphin.ini/GFX.ini profile layer.
-if declare -F rt_project_active_gameset >/dev/null 2>&1; then
-    if rt_project_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" "$EMU/GameSettings" "$GAMESETTINGS" "$GAME_DIR/tools/project_gamesettings.py"; then
-        log "GameSettings projection: ${RT_ACTIVE_GAMESET:-disabled}"
+if [ -n "$GAMESETTINGS" ] || [ -f "$EMU/GameSettings/$GAME_ID.ini" ]; then
+    if declare -F rt_project_active_gameset >/dev/null 2>&1; then
+        if rt_project_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" "$EMU/GameSettings" "$GAMESETTINGS" "$GAME_DIR/tools/project_gamesettings.py"; then
+            log "GameSettings projection: ${RT_ACTIVE_GAMESET:-disabled}"
+        else
+            log "WARN: GameSettings projection failed for game_id=$GAME_ID"
+        fi
     else
-        log "WARN: GameSettings projection failed for game_id=$GAME_ID"
+        log "WARN: shared GameSettings projector unavailable"
     fi
 else
-    log "WARN: shared GameSettings projector unavailable"
+    log "GameSettings projection skipped (no selected preset or previous runtime file)"
 fi
 
-# ── 5. Controller ───────────────────────────────────────────
+ ───────────────────────────────────────────
 CTRL_SUB="GameCube"; CTRL_FILE="GCPadNew.ini"
 [ "$SYS" = "Wii" ] && { CTRL_SUB="Wii"; CTRL_FILE="WiimoteNew.ini"; }
 for c in "$WORKSHOP/controller/$CTRL_SUB/${CONTROLLER:-Default}/$CTRL_FILE" \
          "$WORKSHOP/controller/$CTRL_SUB/Default/$CTRL_FILE" "$BASE_DIR/$CTRL_FILE"; do
     if [ -f "$c" ]; then cp -f "$c" "$CONFIG/$CTRL_FILE"; log "controller $CTRL_FILE <- $c"; break; fi
 done
+
+log_phase "controller-profiles"
 
 # ── 6. Hotkeys + logging ────────────────────────────────────
 if [ "${HOTKEYS:-}" = "Disabled" ]; then
@@ -352,6 +382,8 @@ if [ -f "$MODS_PLAN" ]; then
     log "mods plan applied ($(wc -l < "$MODS_PLAN" 2>/dev/null) entries)"
 fi
 
+log_phase "mod-preparation"
+
 # ── 9. Run ──────────────────────────────────────────────────
 cd "$EMU" || fatal 1 "cd $EMU failed"
 # SETUP_SDL_ENVIRONMENT may alter the path; restore the private runtime path before exec.
@@ -394,8 +426,10 @@ if [ "${HOTKEYS:-}" != "Disabled" ]; then
         log "gptokeyb2 not started; Hotkeys.ini Device='${HOTKEY_DEVICE:-missing}'"
     fi
 fi
-sleep 0.25  # allow gptokeyb2 to attach before Dolphin opens the controller
-
+if [ -n "$GPTK_PID" ]; then
+    sleep 0.25  # only wait when our keyboard helper was actually started
+fi
+log_phase "pre-dolphin"
 
 
 # muOS is a direct framebuffer target: force FBDev + OpenGL ES-capable OGL.
