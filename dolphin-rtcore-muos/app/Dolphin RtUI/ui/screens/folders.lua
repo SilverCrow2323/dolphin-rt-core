@@ -228,7 +228,7 @@ local function draw_zpreview()
         or "Folder contains ROM images but its system could not be inferred from the name."
 
     K.header("Registratore Z", "Review the exact folder before renaming", nil, { icon = "folder" })
-    K.panel(K.MARGIN, 105, K.W - K.MARGIN * 2, 278, { cut = 12 })
+    K.panel(K.MARGIN, 105, K.W - K.MARGIN * 2, 300, { cut = 12 })
     K.text("small", "SOURCE FOLDER", K.MARGIN + 18, 125, K.C.dim)
     K.text("body", K.clip("body", item.path, K.W - K.MARGIN * 2 - 36), K.MARGIN + 18, 148, K.C.text)
     K.text("small", "PROPOSED NAME", K.MARGIN + 18, 188, K.C.dim)
@@ -240,6 +240,8 @@ local function draw_zpreview()
         item.status == "skip-match" and K.C.warn or K.C.dim)
     K.text("small", "Only the folder name changes. ROM files are not modified. Alias registration follows the rename; failure rolls the rename back.",
         K.MARGIN + 18, 355, K.C.dim, 1, K.W - K.MARGIN * 2 - 36)
+    K.text("small", item.has_roms and "DISC CHECK: supported ROM image found" or "DISC CHECK: no supported ROM image — rename disabled",
+        K.MARGIN + 18, 382, item.has_roms and K.C.ok or K.C.warn, 1, K.W - K.MARGIN * 2 - 36)
     K.footer({ { key = "Y", label = "GameCube" }, { key = "X", label = "Wii" },
         { key = "A", label = "Rename + register" }, { key = "B", label = "Back" } })
 end
