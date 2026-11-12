@@ -134,6 +134,15 @@ function S.pad(b)
         require("ui").go("stream_library")
     elseif b == "START" then
         require("ui").go("settings")
+    elseif b == "B" then
+        if Settings.get("confirm_quit") ~= false then
+            require("ui.modal").show("Quit", "Close Dolphin Rt:UI?", {
+                accept_label = "Quit", cancel_label = "Stay", color = K.C.bad,
+                on_accept = function() love.event.quit() end,
+            })
+        else
+            love.event.quit()
+        end
     end
 end
 
@@ -209,6 +218,7 @@ function S.draw()
         { key = "A", label = "Open" },
         { key = "SELECT", label = "Rt:Stream" },
         { key = "START", label = "Settings" },
+        { key = "B", label = "Quit" },
     })
 end
 
