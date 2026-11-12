@@ -35,9 +35,10 @@ local direct_id = sys .. "/RMGE01"
 local direct_prefix = sys .. "/RMG"
 local fallback_prefix = sys .. "/GM8"
 local custom = user .. "/All User Shaders"
+local parked_user = tmp .. "/Load/GraphicMods.off/Parked User Shaders"
 
 for _, dir in ipairs({bloom, galaxy .. "/gameids", zelda .. "/gameids",
-                      direct_id, direct_prefix, fallback_prefix, custom}) do mkdir(dir) end
+                      direct_id, direct_prefix, fallback_prefix, custom, parked_user}) do mkdir(dir) end
 write(bloom .. "/metadata.json", metadata("Bloom Removal", "Dolphin Team"))
 write(bloom .. "/all.txt", "")
 write(galaxy .. "/metadata.json", metadata("Super Mario Galaxy Bloom"))
@@ -49,6 +50,8 @@ write(direct_prefix .. "/metadata.json", metadata("Region Prefix Fallback"))
 write(fallback_prefix .. "/metadata.json", metadata("Fallback Game Mod"))
 write(custom .. "/metadata.json", metadata("User Shader Pack", "Test Author"))
 write(custom .. "/all.txt", "")
+write(parked_user .. "/metadata.json", metadata("Parked User Pack", "Legacy User"))
+write(parked_user .. "/all.txt", "")
 
 local Graphics = require("core.graphics_mods")
 local game = {id = "RMGE01", title = "Super Mario Galaxy"}
@@ -60,6 +63,12 @@ local function by_name(items, name)
 end
 
 local catalog = Graphics.list_for(nil)
+assert(not (function()
+    local f = io.open(parked_user .. "/metadata.json", "rb")
+    if f then f:close(); return true end
+    return false
+end)(), "parked legacy user mod moved out of .off")
+assert(by_name(catalog, "Parked User Shaders"), "restored legacy user mod appears in catalog")
 assert(by_name(catalog, "All Games Bloom Removal"), "all-games system mod appears in catalog")
 assert(by_name(catalog, "Super Mario Galaxy"), "game-specific system mod appears in catalog")
 assert(by_name(catalog, "Zelda Only"), "non-matching game mod appears in global catalog")
@@ -81,6 +90,18 @@ assert(by_name(fallback_rows, "GM8") and by_name(fallback_rows, "GM8").scope == 
 for _, item in ipairs(rows) do
     assert(item.enabled == false, "mods are disabled by default: " .. item.name)
 end
+
+local migrated, migrated_count = Graphics.migrate_legacy_selection(game, {
+    ["All User Shaders"] = true,
+    ["Parked User Shaders"] = true,
+})
+assert(migrated and migrated_count == 2, "legacy RTID user selections migrate once")
+rows = Graphics.list_for(game)
+assert(by_name(rows, "All User Shaders").enabled, "legacy active user selection is preserved")
+assert(by_name(rows, "Parked User Shaders").enabled, "legacy parked user selection is restored and preserved")
+assert(not by_name(rows, "All Games Bloom Removal").enabled, "new official mods stay disabled during migration")
+local migrated_again, count_again = Graphics.migrate_legacy_selection(game, {["All Games Bloom Removal"] = true})
+assert(migrated_again and count_again == 0, "existing Dolphin profile is never overwritten by migration")
 
 assert(Graphics.set_enabled(game, bloom_item, true), "enable built-in mod")
 rows = Graphics.list_for(game)
@@ -123,8 +144,10 @@ assert(found_system, "built-in mod saved with source=system and relative path")
 assert(found_user, "user mod saved with source=user and relative path")
 
 -- The official Sys tree must never be moved, rewritten or parked.
-assert(io.open(bloom .. "/metadata.json", "rb"), "built-in metadata remains in Sys")
-assert(io.open(bloom .. "/all.txt", "rb"), "built-in all-games marker remains in Sys")
+local bloom_metadata = assert(io.open(bloom .. "/metadata.json", "rb"), "built-in metadata remains in Sys")
+bloom_metadata:close()
+local bloom_marker = assert(io.open(bloom .. "/all.txt", "rb"), "built-in all-games marker remains in Sys")
+bloom_marker:close()
 
 os.execute("rm -rf " .. Shell.shq(tmp))
 print("Native Dolphin Graphics Mods: matching and per-game profile tests passed")
