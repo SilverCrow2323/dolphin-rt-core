@@ -33,7 +33,7 @@ local CATS = {
     { id = "EDITORS", label = "Editors",         color = "boost", icon = "profile" },
     { id = "DISPLAY", label = "Display & Sound", color = "teal",  icon = "screen" },
     { id = "SYSTEM",  label = "System",          color = "lime",  icon = "gear" },
-    { id = "TOOLS",   label = "Tools & Diagnostics", color = "hot", icon = "info" },
+    { id = "TOOLS",   label = "Tools", color = "hot", icon = "info" },
 }
 S.cats = CATS
 
