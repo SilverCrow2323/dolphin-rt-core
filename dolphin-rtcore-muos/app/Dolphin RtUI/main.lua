@@ -82,6 +82,13 @@ function love.load()
   Trace.write("INIT", "UI.init", ui_ok, ui_err or "")
   if not ui_ok then Trace.error("UI.init", ui_err); error(ui_err) end
 
+  local platform_ok, Platform = pcall(require, "core.muos_platform")
+  if platform_ok then
+    Trace.write("PLATFORM", "muOS firmware profile", Platform.label())
+  else
+    Trace.write("PLATFORM", "muOS profile detection unavailable", Platform)
+  end
+
   -- Surface the outcome of the most recent launch, if any.
   pcall(function()
     local flag = "data/logs/report_pending.flag"
