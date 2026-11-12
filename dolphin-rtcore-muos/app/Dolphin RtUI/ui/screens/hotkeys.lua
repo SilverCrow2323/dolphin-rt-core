@@ -686,7 +686,8 @@ function S.draw()
         K.footer({ { key = "A", label = "Design" }, { key = "B", label = "Back" } })
         return
     end
-    K.header("Hotkeys", "profile · " .. S.profile .. (S.dirty and "   ● unsaved" or ""), nil)
+    local mode_hint = S.device == "keyboard" and "keyboard · hold L2 + one button" or "PAD (SDL) · direct controller input"
+    K.header("Hotkeys", "profile · " .. S.profile .. " · " .. mode_hint .. (S.dirty and "   ● unsaved" or ""), nil)
     local tw = (K.W - K.MARGIN * 2 - 8) / 2
     for i, it in ipairs({ { id = "keyboard", label = "KEYBOARD", sub = "gptokeyb2 F-keys" },
                           { id = "pad", label = "PAD (SDL)", sub = S.pad_device } }) do
