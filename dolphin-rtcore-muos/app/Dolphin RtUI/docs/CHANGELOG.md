@@ -1,3 +1,5 @@
+# Changelog
+
 ## Unreleased — Rt:System Status Center and native Graphics Mods
 
 - Replaced the small M notification drawer with a readable, scrollable Rt:System Status Center showing device/Wi-Fi telemetry, Rt:Stream Portal and Sunshine health, local database state, GameSettings deployment, library indexing, background operations and notification history.
@@ -7,8 +9,6 @@
 - Replaced the global `--mods` toggle with per-game enablement; `All Games` means compatible with all titles, not globally enabled.
 - Added one-time migration of legacy RTID user-mod selections and recovery of user folders parked in `Load/GraphicMods.off`.
 - Added isolated tests for Game ID/prefix/marker matching, profile persistence, migration and preservation of the official `Sys` tree.
-
-# Changelog
 
 ## 3.6.0 "Kanzentai" — Rt:Core v12.0.00 for muOS 2606.0 Andromeda
 
