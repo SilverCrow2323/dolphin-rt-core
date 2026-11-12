@@ -19,21 +19,20 @@ local M = {}
 local PATH = "data/app_input.json"
 
 -- Ordine logico delle azioni App Pad.
--- I default corrispondono alla numerazione SDL riportata da muOS su H700
--- (RG35XX H, RG40XX H, RG CubeXX): B=0 A=1 X=2 Y=3 L=4 R=5 SELECT=6
--- START=7 MENU=8 L2=9 R2=12.
+-- Raw joydev/js1 indices verified on the RG35XX H. These are distinct
+-- from Linux EV_KEY codes and from SDL GameController button names.
 M.ACTIONS = {
-    { id = "A",      label = "Confirm",       default = 1  },
-    { id = "B",      label = "Back",          default = 0  },
+    { id = "A",      label = "Confirm",       default = 0  },
+    { id = "B",      label = "Back",          default = 1  },
     { id = "X",      label = "Action X",      default = 2  },
     { id = "Y",      label = "Action Y",      default = 3  },
     { id = "L1",     label = "Page Left",     default = 4  },
     { id = "R1",     label = "Page Right",    default = 5  },
-    { id = "L2",     label = "L2",            default = 9  },
-    { id = "R2",     label = "R2",            default = 12 },
-    { id = "SELECT", label = "Select",        default = 6  },
-    { id = "START",  label = "Start",         default = 7  },
-    { id = "MENU",   label = "Menu",          default = 8 },
+    { id = "L2",     label = "L2",            default = 6  },
+    { id = "R2",     label = "R2",            default = 7  },
+    { id = "SELECT", label = "Select",        default = 8  },
+    { id = "START",  label = "Start",         default = 9  },
+    { id = "MENU",   label = "Menu",          default = 10 },
     { id = "UP",     label = "D-Pad Up",      default = nil },
     { id = "DOWN",   label = "D-Pad Down",    default = nil },
     { id = "LEFT",   label = "D-Pad Left",    default = nil },
