@@ -59,6 +59,7 @@ jobs:
           luajit tests/test_cheatdb_nexus.lua
           luajit tests/test_safe_exit.lua
           luajit tests/test_gamesettings_deployer.lua
+          luajit tests/test_gameset_loader_invalidate.lua
           luajit tests/test_boot_scan_async.lua
           luajit tests/test_folder_tools.lua
           luajit tests/test_rom_auto_discovery.lua
