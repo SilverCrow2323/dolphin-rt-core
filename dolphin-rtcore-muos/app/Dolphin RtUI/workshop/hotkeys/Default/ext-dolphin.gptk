@@ -19,5 +19,3 @@ l2+right   = F10    # Frame Limit +
 l2+r2      = F11    # Screenshot
 l2+start   = F12    # Reset
 
-# Single MENU / M is also the default Safe Exit gesture.
-m          = escape # Safe Exit
