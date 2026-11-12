@@ -38,7 +38,9 @@ local function interface_is_up(iface)
     -- /proc/net/wireless status 0000 is normal; operstate is authoritative.
     local op = read_file("/sys/class/net/" .. iface .. "/operstate")
     op = op and op:gsub("^%s+", ""):gsub("%s+$", ""):lower() or ""
-    if op ~= "" then return op == "up" end
+    if op == "up" then return true end
+    if op == "down" or op == "dormant" or op == "lowerlayerdown" then return false end
+    -- Some embedded drivers report operstate=unknown; carrier is the fallback.
     local carrier = read_file("/sys/class/net/" .. iface .. "/carrier")
     carrier = carrier and carrier:gsub("%s+", "") or ""
     return carrier == "1"
