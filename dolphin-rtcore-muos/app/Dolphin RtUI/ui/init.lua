@@ -504,7 +504,8 @@ local function draw_scene()
 
     -- statusbar globale (batteria + wifi) in alto a dx
     local ok_sb, SB = pcall(require, "ui.statusbar")
-    if ok_sb and SB and SB.draw then SB.draw(K.W, K.H) end
+    local panel_open = ok_sp and SP and SP.is_open and SP.is_open()
+    if not panel_open and ok_sb and SB and SB.draw then SB.draw(K.W, K.H) end
 end
 
 local trans_canvas
