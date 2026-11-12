@@ -1,23 +1,27 @@
-# ============================================================
-# Dolphin Rt:Core — gptokeyb2 keyboard hotkeys
-# The pad continues to be available to Dolphin through SDL.
-# No SELECT remapping/modifier: SELECT and START remain gameplay inputs.
-# Format: button = key  |  button1+button2 = key
-# ============================================================
+# Dolphin Rt:Core — gptokeyb2 native state-machine configuration.
+# No global START+SELECT kill binding: Safe Exit is handled separately by
+# overlay_exit.sh on MENU / M (default), or the user-configured combo.
 
-# Multi-button hotkeys use L2 as a modifier.
-# >>> HOTKEY DESIGNER (managed block, edit with the Hotkey Designer)
-l2+a       = F1     # Save State 1
-l2+b       = F2     # Load State 1
-l2+x       = F3     # Save State 2
-l2+y       = F4     # Load State 2
-l2+l1      = F5     # Save State 3
-l2+r1      = F6     # Load State 3
-l2+up      = F7     # Toggle Pause
-l2+down    = F8     # Fast Forward
-l2+left    = F9     # Frame Limit -
-l2+right   = F10    # Frame Limit +
-l2+r2      = F11    # Screenshot
-l2+start   = F12    # Reset
-# <<< HOTKEY DESIGNER
+[config]
+deadzone_triggers = 3000
 
+[controls]
+# Do not translate ordinary gameplay buttons into keyboard events.
+overlay = clear
+# Hold L2 to enter the Rt hotkey layer. Other buttons remain normal game input.
+l2 = hold_state rt_hotkeys
+
+[controls:rt_hotkeys]
+overlay = parent
+a = f1       # Save State 1
+b = f2       # Load State 1
+x = f3       # Save State 2
+y = f4       # Load State 2
+l1 = f5      # Save State 3
+r1 = f6      # Load State 3
+up = f7      # Toggle Pause
+down = f8    # Fast Forward
+left = f9    # Frame Limit -
+right = f10  # Frame Limit +
+r2 = f11     # Screenshot
+start = f12  # Reset (only while L2 is held)
