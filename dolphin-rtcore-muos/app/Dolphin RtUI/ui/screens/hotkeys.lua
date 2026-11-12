@@ -296,6 +296,7 @@ local function switch_device(d)
     end
     S.device = d
     S.dirty = true
+    recompute_conflicts()
     if dropped > 0 then
         Notify.show("warning", dropped .. " multi-button PAD combo(s) cleared: keyboard mode supports L2 + one button.")
     end
