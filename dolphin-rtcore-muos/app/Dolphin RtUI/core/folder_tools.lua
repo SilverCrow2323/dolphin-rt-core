@@ -87,7 +87,7 @@ local function skip_reasons(name, full_path, rules, root)
     if type(root) == "string" and root ~= "" then
         local prefix = root:gsub("/+$", "") .. "/"
         if tostring(full_path):sub(1, #prefix) == prefix then
-            relative_path = tostring(full_path):sub(#prefix)
+            relative_path = tostring(full_path):sub(#prefix + 1)
             relative_path = "/" .. relative_path
         end
     end
