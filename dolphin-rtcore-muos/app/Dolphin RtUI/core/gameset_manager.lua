@@ -120,10 +120,19 @@ function M.count_for(game_id)
 end
 
 function M.active_for(game_id)
+    if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return nil end
     local dir = BASE .. "/" .. game_id
     if not dir_exists(dir) then return nil end
     local meta = read_meta(dir .. "/rtgameset_data.ini")
-    return meta.GameSettings and meta.GameSettings.ActiveConfig or nil
+    local active = meta.GameSettings and meta.GameSettings.ActiveConfig or nil
+    if type(active) ~= "string" or active == "" or active:find("/", 1, true)
+       or active:find("..", 1, true) or active:match("^%.") then
+        return nil
+    end
+    local f = io.open(dir .. "/" .. active, "r")
+    if not f then return nil end
+    f:close()
+    return active
 end
 
 -- ── Public: mutations ──────────────────────────────────────
