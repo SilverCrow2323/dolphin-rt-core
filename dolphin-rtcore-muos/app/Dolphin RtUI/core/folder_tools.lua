@@ -269,9 +269,6 @@ end
 function M.rename_register(item, system)
     local preview, err = M.preview(item, system)
     if not preview then return false, err end
-    if item.is_scan_root or is_scan_root(preview.source) then
-        return false, "this folder is already a configured ROM scan root; changing its path would break the library"
-    end
     if item.has_roms ~= true then
         return false, "no supported GameCube/Wii disc image was found in this folder; scan it manually before renaming"
     end
@@ -284,6 +281,14 @@ function M.rename_register(item, system)
     local moved, move_err = os.rename(preview.source, preview.target)
     if not moved then return false, "rename failed: " .. tostring(move_err or "filesystem error") end
 
+    -- Keep Rt:UI's manually selected root (and any configured descendants)
+    -- valid when FolderWaker renames the directory itself.
+    local path_updated, path_err = Settings.rename_rom_path(preview.source, preview.target)
+    if not path_updated then
+        os.rename(preview.target, preview.source)
+        return false, "folder renamed back because Rt:UI could not update its saved ROM path: " .. tostring(path_err)
+    end
+
     local tool = os.getenv("RT_MUOS_MANIFEST_TOOL") or Paths.emu("RtSys", "manifest_tool.sh")
     local command = "sh " .. Shell.shq(tool) .. " alias-add " ..
         (system == "GC" and "gc" or "wii") .. " " .. Shell.shq(preview.alias)
@@ -291,6 +296,7 @@ function M.rename_register(item, system)
     local ok = (a == true or a == 0 or code == 0)
     if not ok then
         os.rename(preview.target, preview.source)
+        Settings.rename_rom_path(preview.target, preview.source)
         return false, "folder renamed back because muOS alias registration failed"
     end
 
