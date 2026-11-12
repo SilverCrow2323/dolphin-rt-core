@@ -224,9 +224,6 @@ local function draw_filter_bar()
         local n = tostring(filtered_count(i))
         K.text("small", n, x + w - K.width("small", n) - 9, 89, active and c or K.C.faint)
     end
-    if S.mine_only then
-        K.pill("MY LIBRARY", K.W - K.MARGIN, 116, K.C.ok, true)
-    end
 end
 
 local function draw_item(g, x, y, w, h, focused)
@@ -329,7 +326,7 @@ end
 function S.draw()
     local filter = FILTERS[S.filter]
     local accent = K.ACC[filter.color]
-    K.header("Compatibility", "REAL-WORLD REPORTS  ·  GAMECUBE + WII",
+    K.header("Compatibility", "REAL-WORLD REPORTS  ·  GAMECUBE + WII" .. (S.mine_only and "  ·  MY LIBRARY" or ""),
         #S.list.items .. " / " .. Compat.count, nil, { icon = "chart", accent = accent })
     draw_filter_bar()
     if Compat.error then
