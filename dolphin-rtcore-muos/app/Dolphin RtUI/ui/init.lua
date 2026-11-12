@@ -3,7 +3,7 @@
 -- Screens are plain tables: enter(params) leave() update(dt) draw()
 -- pad(logical) key(k) [raw_pad(raw)] [accept_raw_input()].
 -- Logical buttons: A B X Y L1 R1 L2 R2 START SELECT MENU UP DOWN LEFT RIGHT.
--- The D-pad auto-repeats (hold to scroll). START+SELECT asks to quit.
+-- The D-pad auto-repeats (hold to scroll). START+MENU asks to quit; SELECT switches RtUI / Rt:Stream.
 -- A screen that fails to load never takes the app down: it is skipped and
 -- the error is logged.
 
