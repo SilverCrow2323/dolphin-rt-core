@@ -453,17 +453,20 @@ function K.footer(items)
         total = total + kw + 6 + lw
     end
     local available = K.W - K.MARGIN * 2
-    if #records > 1 then gap = math.min(12, math.max(4, (available - total) / (#records - 1))) end
+    local separators = #records * 6
+    local key_total = 0
+    for _, item in ipairs(records) do key_total = key_total + item.kw end
     if total + gap * math.max(0, #records - 1) > available then
-        local each = math.max(22, (available - gap * math.max(0, #records - 1)) / #records - 28)
-        total = 0
+        local label_budget = math.max(16,
+            (available - key_total - separators - 3 * math.max(0, #records - 1)) / math.max(1, #records))
+        total = key_total + separators
         for _, item in ipairs(records) do
-            item.label = K.clip("small", item.label, each)
+            item.label = K.clip("small", item.label, label_budget)
             item.lw = small:getWidth(item.label)
-            total = total + item.kw + 6 + item.lw
+            total = total + item.lw
         end
-        if #records > 1 then gap = math.max(3, (available - total) / (#records - 1)) end
     end
+    if #records > 1 then gap = math.max(3, (available - total) / (#records - 1)) end
     local x = K.MARGIN
     for i, item in ipairs(records) do
         local cy = y + K.FOOT_H / 2
