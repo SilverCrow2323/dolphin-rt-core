@@ -30,6 +30,7 @@ local STATE = {
   ids      = {},
   results  = { roms = 0, gamesets = 0, cards = 0 },
   _fast_done = false,
+  rom_setup_needed = false,
 }
 
 local function marker(name) return "/tmp/rt_boot_" .. name .. ".done" end
@@ -78,6 +79,7 @@ function M.start()
   STATE.t        = 0
   STATE.started  = os.time()
   STATE._fast_done = false
+  STATE.rom_setup_needed = false
   Hub.push("info", "Boot sequence", "Starting up…", { silent = true, ttl = 2 })
 end
 
