@@ -21,11 +21,11 @@ This guide is intentionally conservative. Use the package named for your exact f
 
 ## First launch checks
 
-- Open Diagnostics and resolve missing dependencies.
+- Open Diagnostics and resolve missing dependencies. Press **M** to open Rt:System Status Center and review Wi-Fi, Portal/Sunshine, database and library status.
 - Check that **Nintendo > GameCube** and **Nintendo > Wii** are available in Content Explorer.
-- Open the Compatibility Database and compare Game ID, region, handheld and muOS version.
+- Open the Compatibility Database and compare Game ID, region, handheld and muOS version. Keep Dolphin's official Sys/GameSettings and Sys/Load/GraphicMods resources intact.
 - Start with the Default profile unless a reproducible report recommends otherwise.
-- Change one setting at a time and record the result.
+- Change one setting at a time and record the result. Use **Mod Vault → Graphics Mods** to enable official or user graphics mods separately for each game; All Games means compatible, not automatically enabled.
 
 ## Rollback
 
