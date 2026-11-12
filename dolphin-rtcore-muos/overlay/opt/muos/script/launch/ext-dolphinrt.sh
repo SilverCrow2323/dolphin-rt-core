@@ -97,8 +97,16 @@ if [ -r "$SHARED_RUNTIME" ] && [ -r "$SHARED_LAUNCH" ]; then
         [ -f "$APP_DIR/workshop/hotkeys/$HOTKEYS/Hotkeys.ini" ] || HOTKEYS="Default"
     }
 
-    GAMESETTINGS="$(rt_read_rtid_launch "$CARD" GameSettings)"
-    if [ -n "$GAMESETTINGS" ]; then
+    GAMESETTINGS=""
+    if [ -n "$GAME_ID" ]; then
+        # Canonical GameSettings selection wins over any stale RTID mirror.
+        GAMESETTINGS="$(rt_read_active_gameset "$GAME_ID" "$APP_DIR/workshop/gamesettings" || true)"
+    fi
+    if [ -z "$GAMESETTINGS" ]; then
+        # Migration fallback for cards created before ActiveConfig was introduced.
+        GAMESETTINGS="$(rt_read_rtid_launch "$CARD" GameSettings)"
+    fi
+    if [ "$GAMESETTINGS" != "Disabled" ] && [ -n "$GAMESETTINGS" ]; then
         if ! rt_safe_leaf_name "$GAMESETTINGS" \
            || [ -z "$GAME_ID" ] \
            || [ ! -f "$APP_DIR/workshop/gamesettings/$GAME_ID/$GAMESETTINGS" ]; then
