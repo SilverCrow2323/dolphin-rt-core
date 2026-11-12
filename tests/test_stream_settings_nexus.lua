@@ -104,7 +104,7 @@ assert(secret.sync_port == nil, "state must not expose the configured port")
 local invalid_key, invalid_key_err = actions["stream_settings.set_text"].run("TOKEN", "secret")
 assert(invalid_key == false and tostring(invalid_key_err):match("only HOST"))
 
-assert(actions["stream_settings.select"].run(6))
+assert(actions["stream_settings.select"].run(5))
 fail_set = true
 local failed_change, failed_change_err = actions["stream_settings.change_selected"].run(1)
 assert(failed_change == false and tostring(failed_change_err):match("disk full"))
@@ -113,7 +113,7 @@ fail_set = false
 assert(actions["stream_settings.change_selected"].run(1))
 assert(stream.WIDTH == "640" and stream.HEIGHT == "480", "resolution update must be committed atomically")
 
-assert(actions["stream_settings.select"].run(5))
+assert(actions["stream_settings.select"].run(6))
 assert(actions["stream_settings.change_selected"].run(1))
 assert(stream.FPS == "30", "frame-rate action must cycle to next value")
 
