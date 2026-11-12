@@ -112,6 +112,47 @@ local function is_scan_root(path)
     return false
 end
 
+function M.inspect(path)
+    if type(path) ~= "string" or path == "" or not FS.is_dir(path) then
+        return nil, "selected path is not an accessible directory"
+    end
+    local name = path:match("([^/]+)$") or path
+    local alias = M.normalize_alias(name)
+    local root, best_len
+    local candidates = {}
+    for _, candidate in ipairs(Settings.rom_root_candidates and Settings.rom_root_candidates() or {}) do
+        candidates[#candidates + 1] = candidate
+    end
+    for _, entry in ipairs(Settings.get("rom_paths") or {}) do
+        candidates[#candidates + 1] = entry.path
+    end
+    for _, candidate in ipairs(candidates) do
+        if type(candidate) == "string" and candidate ~= "" then
+            candidate = candidate:gsub("/+$", "")
+            local prefix = candidate .. "/"
+            if path:sub(1, #prefix) == prefix and (not best_len or #candidate > best_len) then
+                root, best_len = candidate, #candidate
+            end
+        end
+    end
+    local reasons = skip_reasons(name, path, load_skip(), root)
+    local guess = infer_system(name)
+    local mapped = assigned_system(load_assign(), alias)
+    local roms = has_roms(path)
+    local status
+    if #reasons > 0 then status = "skip-match"
+    elseif guess and not mapped then status = "unmapped"
+    elseif guess and mapped then status = "mapped"
+    elseif roms then status = "review"
+    else status = "empty" end
+    return {
+        path = path, name = name, alias = alias,
+        inferred_system = guess, mapped_system = mapped,
+        has_roms = roms, skip_matches = reasons,
+        status = status, is_scan_root = is_scan_root(path),
+    }
+end
+
 function M.scan()
     local roots, root_seen = {}, {}
     local function add_root(path)
