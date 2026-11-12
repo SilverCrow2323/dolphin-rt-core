@@ -1,6 +1,29 @@
 # Rt:Core profiles
 
-## 1. What a profile is
+## 1. One source of truth
+
+`workshop/` is the canonical editable store for Rt:Core profiles, controller
+layouts, hotkeys, logging presets and per-game GameSettings. Dolphin's live
+`Config/` directory is a generated runtime projection, not another profile
+library. The launch pipeline starts from `workshop/base/`, layers the selected
+profile and tier, then applies the active per-game GameSettings before Dolphin
+starts.
+
+Both entry points use the same pipeline:
+
+- **Dolphin Rt:UI** passes the selected options from its Library and game screens.
+- **muOS Content Explorer** resolves the selected external-core name to a
+  `workshop/rtcoreprofile/<name>/` entry, reads the ROM GameID and optional
+  `workshop/gameslibrary/rtid_<ID>.ini` launch settings, then invokes the same
+  `scripts/launch.sh`.
+
+`RtSys` remains the muOS integration layer: device baseline, firmware
+compatibility, core registration and Content Explorer entry points. It is not
+a second editable catalogue of per-game or Rt:UI profiles. Legacy
+`Config/Dolphin.ini.<profile>` files remain only as compatibility/bootstrap
+inputs during migration; normal launches are layered from `workshop/`.
+
+## 2. What a profile is
 
 A folder under `workshop/rtcoreprofile/<name>/` containing:
 
@@ -11,7 +34,7 @@ A folder under `workshop/rtcoreprofile/<name>/` containing:
 At launch, `profile_manager.apply("rtcoreprofile", name)` copies
 the two INIs into the live Config directory.
 
-## 2. Families and tiers
+## 3. Families and tiers
 
 | Family | Purpose | Tiers |
 |---|---|---|
@@ -32,13 +55,13 @@ Base profiles under `workshop/rtcoreprofile/`:
 | `Sweet Spot` | 0.70 | Hand-tuned |
 | `Rintromping` | 0.55 | Extreme |
 
-## 3. Locked profiles
+## 4. Locked profiles
 
 Family profiles set `Runtime.Locked = True`. The editor refuses to
 overwrite them; edits are saved as a new `Custom_<date>` profile
 under `workshop/rtcoreprofile/`.
 
-## 4. GameSettings
+## 5. GameSettings
 
 Per-game overrides under `workshop/gamesettings/<ID>/`. Copy to
 `Config/GameSettings/<ID>.ini` at launch. Sections are namespaced:
@@ -56,7 +79,7 @@ Per-game overrides under `workshop/gamesettings/<ID>/`. Copy to
 **Rule:** writing `[Hacks]` inside a GameSettings file is silently
 ignored by Dolphin. Always use `[Video_Hacks]`.
 
-## 5. Apply flow
+## 6. Apply flow
 
 1. `profile_manager.set_active()` updates `S.opts.profile`.
 2. At launch, `launch.sh` calls into the frontend, which copies
@@ -65,12 +88,12 @@ ignored by Dolphin. Always use `[Video_Hacks]`.
    `Config/.backup_<timestamp>/`.
 4. The Dolphin binary is spawned with `-u <emu_dir> -e <rom>`.
 
-## 6. Diff viewer
+## 7. Diff viewer
 
 `workshop_diff.lua` compares a profile against `workshop/base/`.
 Rows are grouped by file, section, key, with FROM and TO columns.
 
-## 7. Tier comparison
+## 8. Tier comparison
 
 `workshop_editor` opens a Tier Overlay on SELECT when the profile
 belongs to a family with all three variants present. Columns:
