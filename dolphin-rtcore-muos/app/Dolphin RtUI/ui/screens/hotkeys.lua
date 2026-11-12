@@ -1,8 +1,8 @@
 -- ui/screens/hotkeys.lua — Hotkey designer.
 -- Profile list first, then the designer for the chosen profile.
---   KEYBOARD  Hotkeys.ini: Keys/Save State Slot 1 = `F1`; the combo → key
+--   KEYBOARD  Hotkeys.ini: Save State/Save State Slot 1 = F1; the combo → key
 --             pair goes to the profile's ext-dolphin.gptk (managed block).
---   PAD (SDL) Hotkeys.ini: Keys/... = (`Button 6` & `Button 4`)
+--   PAD (SDL) Hotkeys.ini: current Dolphin [Hotkeys] action = (`Button N` & ...)
 -- [A] capture combo  [< >] change emitted key  [X] clear  [L1/R1] device
 -- [Y] reload  [SELECT] copy profile  [START] save  [B] back
 -- Capture: press the buttons together, hold 1.5 s to commit; idle 4 s cancels.
@@ -25,22 +25,42 @@ local BLOCK_B = "# <<< HOTKEY DESIGNER"
 local DEFAULT_PAD_DEVICE = "SDL/0/muOS-Keys"
 
 local ACTIONS = {
-    { key = "Keys/Save State Slot 1",    label = "Save State 1",   icon = "save" },
-    { key = "Keys/Load State Slot 1",    label = "Load State 1",   icon = "save" },
-    { key = "Keys/Save State Slot 2",    label = "Save State 2",   icon = "save" },
-    { key = "Keys/Load State Slot 2",    label = "Load State 2",   icon = "save" },
-    { key = "Keys/Save State Slot 3",    label = "Save State 3",   icon = "save" },
-    { key = "Keys/Load State Slot 3",    label = "Load State 3",   icon = "save" },
-    { key = "Keys/Toggle Pause",         label = "Toggle Pause",   icon = "controller" },
-    { key = "Keys/Toggle Fast Forward",  label = "Fast Forward",   icon = "zap" },
-    { key = "Keys/Decrease Frame Limit", label = "Frame Limit -",  icon = "zap" },
-    { key = "Keys/Increase Frame Limit", label = "Frame Limit +",  icon = "zap" },
-    { key = "Keys/Take Screenshot",      label = "Screenshot",     icon = "star" },
-    { key = "Keys/Reset",                label = "Reset",          icon = "wrench" },
-    { key = "Keys/Exit",                 label = "Exit",           icon = "off" },
-    { key = "Keys/Set State Slot to 1",  label = "State Slot 1",   icon = "save" },
-    { key = "Keys/Set State Slot to 2",  label = "State Slot 2",   icon = "save" },
-    { key = "Keys/Set State Slot to 3",  label = "State Slot 3",   icon = "save" },
+    { key = "Save State/Save State Slot 1", label = "Save State 1", icon = "save" },
+    { key = "Load State/Load State Slot 1", label = "Load State 1", icon = "save" },
+    { key = "Save State/Save State Slot 2", label = "Save State 2", icon = "save" },
+    { key = "Load State/Load State Slot 2", label = "Load State 2", icon = "save" },
+    { key = "Save State/Save State Slot 3", label = "Save State 3", icon = "save" },
+    { key = "Load State/Load State Slot 3", label = "Load State 3", icon = "save" },
+    { key = "General/Toggle Pause", label = "Toggle Pause", icon = "controller" },
+    { key = "Emulation Speed/Disable Emulation Speed Limit", label = "Fast Forward", icon = "zap" },
+    { key = "Emulation Speed/Decrease Emulation Speed", label = "Speed -", icon = "zap" },
+    { key = "Emulation Speed/Increase Emulation Speed", label = "Speed +", icon = "zap" },
+    { key = "General/Take Screenshot", label = "Screenshot", icon = "star" },
+    { key = "General/Reset", label = "Reset", icon = "wrench" },
+    { key = "General/Exit", label = "Exit", icon = "off" },
+    { key = "Other State Hotkeys/Decrease Selected State Slot", label = "State Slot -", icon = "save" },
+    { key = "Other State Hotkeys/Increase Selected State Slot", label = "State Slot +", icon = "save" },
+    { key = "Other State Hotkeys/Undo Load State", label = "Undo Load", icon = "save" },
+}
+
+-- Old Rt:Core action names are translated when loading pre-2606 profiles.
+local LEGACY_KEYS = {
+    ["Keys/Save State Slot 1"] = "Save State/Save State Slot 1",
+    ["Keys/Load State Slot 1"] = "Load State/Load State Slot 1",
+    ["Keys/Save State Slot 2"] = "Save State/Save State Slot 2",
+    ["Keys/Load State Slot 2"] = "Load State/Load State Slot 2",
+    ["Keys/Save State Slot 3"] = "Save State/Save State Slot 3",
+    ["Keys/Load State Slot 3"] = "Load State/Load State Slot 3",
+    ["Keys/Toggle Pause"] = "General/Toggle Pause",
+    ["Keys/Toggle Fast Forward"] = "Emulation Speed/Disable Emulation Speed Limit",
+    ["Keys/Decrease Frame Limit"] = "Emulation Speed/Decrease Emulation Speed",
+    ["Keys/Increase Frame Limit"] = "Emulation Speed/Increase Emulation Speed",
+    ["Keys/Take Screenshot"] = "General/Take Screenshot",
+    ["Keys/Reset"] = "General/Reset",
+    ["Keys/Exit"] = "General/Exit",
+    ["Keys/Set State Slot to 1"] = "Other State Hotkeys/Decrease Selected State Slot",
+    ["Keys/Set State Slot to 2"] = "Other State Hotkeys/Increase Selected State Slot",
+    ["Keys/Set State Slot to 3"] = "Other State Hotkeys/Undo Load State",
 }
 
 local KEY_LIST = { "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
@@ -216,18 +236,36 @@ local function load_profile(name)
     local rev = {}
     for lhs, rhs in pairs(S.gptk_map) do rev[to_gptk(from_gptk(rhs)):lower()] = lhs end
     S.model = {}
-    local dev, vals, in_sec = nil, {}, false
+    local dev, legacy_dev, vals, legacy_vals = nil, nil, {}, {}
+    local in_sec, legacy_section = false, false
     for _, l in ipairs(read_lines(ini_path(name))) do
         local sec = l:match("^%[([^%]]+)%]")
-        if sec then in_sec = (sec == "Hotkeys1") end
+        if sec then
+            legacy_section = (sec == "Hotkeys1")
+            in_sec = legacy_section or (sec == "Hotkeys")
+        end
         if in_sec then
             local k, v = l:match("^%s*([^=#]-)%s*=%s*(.-)%s*$")
-            if k == "Device" then dev = v elseif k and k:match("^Keys/") then vals[k] = v end
+            if k == "Device" then
+                if legacy_section then legacy_dev = v else dev = v end
+            elseif k then
+                local target = legacy_section and legacy_vals or vals
+                target[LEGACY_KEYS[k] or k] = v
+            end
         end
     end
-    if dev and dev:lower():match("^keyboard") then S.device = "keyboard"
-    elseif dev and dev ~= "" then S.device = "pad"; S.pad_device = dev
-    else S.device = "keyboard" end
+    for k, v in pairs(legacy_vals) do
+        if vals[k] == nil then vals[k] = v end
+    end
+    dev = dev or legacy_dev
+    local device_name = tostring(dev or ""):lower()
+    if device_name == "" or device_name == "keyboard"
+       or device_name:find("keyboard", 1, true) then
+        S.device = "keyboard"
+    else
+        S.device = "pad"
+        S.pad_device = dev
+    end
     for _, a in ipairs(ACTIONS) do
         local m = { combo = {}, key = nil }
         local v = vals[a.key]
@@ -339,19 +377,19 @@ local function save()
     local path = ini_path(S.profile)
     local lines = read_lines(path)
     if #lines == 0 then lines = { "[Hotkeys1]" } end
-    set_kv(lines, "Hotkeys1", "Device", (S.device == "keyboard") and "Keyboard" or S.pad_device)
+    set_kv(lines, "Hotkeys", "Device", (S.device == "keyboard") and "SDL/0/Keyboard Mouse" or S.pad_device)
     local skipped = 0
     for _, a in ipairs(ACTIONS) do
         local m = S.model[a.key]
         local val = ""
         if S.device == "keyboard" then
-            if m.key then val = "`" .. m.key .. "`" end
+            if m.key then val = m.key end
         else
             local why
             val, why = expr_for(m.combo)
             if why then skipped = skipped + 1 end
         end
-        set_kv(lines, "Hotkeys1", a.key, val)
+        set_kv(lines, "Hotkeys", a.key, val)
     end
     if skipped > 0 then
         Notify.show("warning", skipped .. " action(s) use the D-pad: left unbound in pad mode")

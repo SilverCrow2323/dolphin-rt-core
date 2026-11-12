@@ -1,56 +1,47 @@
 # Hotkeys
 
-## 1. Format
+Dolphin Rt:Core builds against Dolphin **2606**. Its hotkey file uses the
+current `[Hotkeys]` section and grouped action names; the old `[Hotkeys1]`,
+`Keys/...` layout is not the format used by this build.
 
-`Config/Hotkeys.ini`:
+## Keyboard / gptokeyb2 profile
+
+The bundled `workshop/hotkeys/Default/Hotkeys.ini` uses SDL's virtual keyboard:
 
 ```ini
-[Hotkeys1]
-Device = SDL/0/muOS-Keys
-Keys/Exit = `Button 9` & `Button 7`
-Keys/Save State Slot 1 = `Button 9` & `Button 1`
-Keys/Load State Slot 1 = `Button 9` & `Button 0`
-...
+[Hotkeys]
+Device = SDL/0/Keyboard Mouse
+Save State/Save State Slot 1 = F1
+Load State/Load State Slot 1 = F2
+General/Toggle Pause = F7
+General/Exit = Escape
 ```
 
-Expressions are Dolphin syntax: backtick-wrapped button tokens
-joined by `&`. `hotkey_editor.lua` builds and parses these.
+`gptokeyb2` is started by `scripts/launch.sh` and reads the matching
+`ext-dolphin.gptk` file. The default modifier is **SELECT**; individual
+SELECT + button combinations emit F-keys to Dolphin. The normal gamepad
+device remains assigned to gameplay.
 
-## 2. Bundled profile
+The exit combination is **SELECT + START**. `overlay_exit.sh` remains a
+separate safety net that terminates Dolphin from the raw muOS joystick event
+stream; it does not replace the Dolphin hotkey configuration.
 
-`workshop/hotkeys/Default/Hotkeys.ini`:
+## PAD (SDL) profile
 
-| Action | Binding |
-|---|---|
-| Exit | SELECT + START |
-| Save State 1 | SELECT + A |
-| Load State 1 | SELECT + B |
-| Toggle Pause | SELECT + X |
-| Fast Forward | SELECT + Y |
-| Reset | SELECT + L1 |
+The designer can also write direct SDL button expressions. In PAD mode the
+hotkey device is `SDL/0/muOS-Keys`, and expressions use the button indices
+from the active Rt:UI app-pad map, for example:
 
-## 3. Live Menu override
+```ini
+[Hotkeys]
+Device = SDL/0/muOS-Keys
+General/Exit = (`Button 6` & `Button 7`)
+```
 
-When Live Menu is enabled, `launch.sh` swaps in
-`scripts/livemenu/Hotkeys.internal.ini` before starting Dolphin.
-The user's file is preserved as `Hotkeys.ini.user`. The frontend
-re-applies the chosen hotkey profile on every launch, so no state
-is lost.
+## Older profiles
 
-## 4. Editor
-
-`workshop_hotkey_edit.lua` binds one action at a time:
-
-1. Navigate to the row, [A] to start capture.
-2. Press one or more buttons. Release to commit.
-3. Commit fires 1.5 s after the last button or on [Enter].
-4. [X] clears the binding, [Y] resets the file to Default.
-
-Capture mode is global: `State.capture_mode = true` while
-capturing, so main.lua routes raw pad events directly.
-
-## 5. Native exit
-
-Comfort Zone ships a native hotkey: **START + SELECT**. This sends
-SIGTERM directly to Dolphin, clean process termination, no memory
-card corruption. It is independent of the Hotkeys.ini bindings.
+The designer still reads the previous `[Hotkeys1]` / `Keys/...` layout and
+translates its known actions when loading a profile. Saving writes the
+current Dolphin 2606 format. Profiles with custom action names not present in
+the current Dolphin build are ignored by Dolphin and should be rebound in
+the designer.

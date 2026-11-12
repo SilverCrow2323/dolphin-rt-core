@@ -57,5 +57,5 @@ select+left    = F9    # Frame Limit -
 select+right   = F10    # Frame Limit +
 select+x       = F11    # Screenshot
 select+y       = F12    # Reset
-select+m	   = escape    # Exit
+select+start    = escape    # Exit
 # <<< HOTKEY DESIGNER
