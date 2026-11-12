@@ -49,7 +49,7 @@
 <text x="1125" y="350">B 0 · A 1 · X 2 · Y 3</text>
 <text x="1125" y="390">L1 4 · R1 5 · SELECT 6</text>
 <text x="1125" y="430">START 7 · MENU 8 · L2 9</text>
-<text x="1125" y="470">Z 11 · R2 12 (profile tokens)</text>
+<text x="1125" y="470">VOL+ 10 · L3 / Z 11 · R2 12</text>
 </g>
 <rect x="1115" y="515" width="380" height="105" rx="16" fill="#042e2b" opacity=".82"/>
 <text x="1140" y="555" class="n">CONFIG FILES</text>
