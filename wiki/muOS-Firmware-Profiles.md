@@ -6,7 +6,7 @@
 
 </div>
 
-![muOS profile flow](https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/docs/muos-profile-flow.svg)
+![muOS profile flow](https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/debug/heavy-muos-diagnostics/assets/docs/muos-profile-flow.svg)
 
 ## The rule
 
