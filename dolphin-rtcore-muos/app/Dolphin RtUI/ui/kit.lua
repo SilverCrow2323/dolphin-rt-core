@@ -417,7 +417,8 @@ local function draw_footer_key(key, x, cy)
     local label = footer_key_label(key)
     local w = footer_key_width(key)
     local h = 18
-    local dark = (label == "START" or label == "SELECT" or label == "D-PAD")
+    local dark = (label == "START" or label == "SELECT" or label == "D-PAD"
+        or label == "L2" or label == "R2")
     local fill = dark and { 0.17, 0.20, 0.28 } or { 0.38, 0.43, 0.54 }
     local edge = dark and { 0.35, 0.40, 0.53 } or { 0.62, 0.68, 0.79 }
     col({ 0, 0, 0 }, 0.42); love.graphics.rectangle("fill", x + 1, cy - h / 2 + 2, w, h, 4, 4)
