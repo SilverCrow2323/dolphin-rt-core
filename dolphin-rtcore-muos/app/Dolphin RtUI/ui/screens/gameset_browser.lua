@@ -142,6 +142,7 @@ local function build_grouped(tab_id)
                     rows[#rows+1] = {
                         kind = "config",
                         title = cfg.title or cfg.filename or "GameSettings",
+                        game_title = grp.title,
                         author = cfg.author or "Community",
                         description = cfg.description or "",
                         filename = cfg.filename,
@@ -220,7 +221,7 @@ function S.pad(b)
             refresh()
         elseif row.kind == "region" or row.kind == "config" then
             SFX.play("menu_select")
-            require("ui").go("gameset_explorer", { game_id = row.id, game_title = row.title })
+            require("ui").go("gameset_explorer", { game_id = row.id, game_title = row.game_title or row.title })
         end
     elseif b == "B" then
         require("ui").back()
