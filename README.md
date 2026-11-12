@@ -21,7 +21,7 @@
 
 ---
 
-> **FIELD NOTE // 2026-11-11**
+> **FIELD NOTE // 2026-11-12**
 >
 > The active hardware reference for this development line is the **Anbernic RG35XX H with the Allwinner H700 SoC**.
 > Legacy hardware notes have been reconciled with this RG35XX H reference.
@@ -43,13 +43,36 @@ This project does not promise that every GameCube or Wii title will run at full 
 | Platform | Integration | Current status |
 |---|---|---|
 | **muOS 2606.0 Andromeda** | Main v12.0.0 Kanzentai package, Rt:UI, RtSys and core registration | Primary handheld line. The reproducible H700 NoGUI build is in the native ARM64 workflow; fresh binaries still require an RG35XX H runtime test. |
-| **muOS 2601.1 Jacaranda** | Legacy v11.5.1 Triptych line | Historical/legacy release line. Do not install the Andromeda package on Jacaranda by assumption. |
+| **muOS 2601.1 Jacaranda** | Legacy v11.5.1 Triptych line | Retain the initial RG35XX H EV_KEY layout. Use a Jacaranda-matched release/package; do not assume an Andromeda `.muxupd` is interchangeable. |
 | **Knulli / Batocera** | Separate Rt:Core K integration | Existing RG35XX H / Knulli Scarab device testing is documented in the K port. Verify each new binary/resource pair before releasing it. |
 | **ROCKNIX** | Separate Rt:Core R integration with a Wayland-enabled build target | Experimental. The old fbdev binary/display mismatch is the reason for the dedicated Wayland build. A successful CI build still needs a physical-device launch test. |
 | **ARM64 desktop** | Qt GUI and NoGUI build variants | Build and diagnostic target; not a handheld firmware package. |
 
 > [!WARNING]
 > **Build status is not hardware status.** CI, Xvfb, patch checks, package dry-runs and ELF inspection cannot certify a real RG35XX H boot. Do not describe a target as device-tested until the exact firmware, binary and package have been exercised on hardware.
+
+### Controller input: three separate numbering domains
+
+![Dolphin Rt:Core input architecture](assets/docs/input-architecture.svg)
+
+| Layer | Interface | What the numbers mean |
+|---|---|---|
+| **Linux EV_KEY** | `/dev/input/event*` | Firmware-specific kernel codes. Jacaranda keeps the initial map; Andromeda uses the alternative map. |
+| **Linux joydev** | `/dev/input/js1` | Zero-based controller button indices used by raw watchers such as Safe Exit. |
+| **Dolphin SDL** | `SDL/0/muOS-Keys` | Dolphin profile tokens such as `Button 0` and `Button 1`; defined by the bundled GameCube/Wii INIs. |
+
+<details>
+<summary><strong>Firmware mapping and Safe Exit details</strong></summary>
+
+- **Jacaranda = initial EV_KEY map.**
+- **Andromeda = alternative EV_KEY map.**
+- The selector offers Auto, `= Andromeda`, and `!= Andromeda`; Jacaranda belongs to the non-Andromeda branch.
+- Safe Exit defaults to **START + SELECT** on the joydev layer (indices 9 + 8). MENU/M (index 10) is the allowed single-button custom exit.
+- Never copy EV_KEY values into `GCPadNew.ini` or `WiimoteNew.ini`.
+
+See [the complete controller input reference](docs/CONTROLLER_INPUT.md) and [Hotkeys / Safe Exit](docs/HOTKEYS.md).
+
+</details>
 
 ## 03 — The H700 reality check
 
@@ -213,6 +236,8 @@ Development should happen on short-lived branches and be merged through pull req
 - [Engineering guide](docs/REPO_GUIDE.md)
 - [Build guide](dolphin-build/README.md)
 - [muOS registration](docs/MUOS_REGISTRATION.md)
+- [Controller input & firmware maps](docs/CONTROLLER_INPUT.md)
+- [Hotkeys and Safe Exit](docs/HOTKEYS.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Project Wiki](wiki/Home.md)
 - [Dolphin upstream](https://dolphin-emu.org/)
