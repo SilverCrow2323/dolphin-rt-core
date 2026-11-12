@@ -153,7 +153,9 @@ assert(actions["hotkeys.open_selected_profile"].run())
 
 state = actions["hotkeys.state"].run()
 assert(state.mode == "designer" and state.profile == "Default")
-assert(state.action_count == 16 and state.dirty == false and state.device == "keyboard")
+assert(state.action_count == 15 and state.dirty == false and state.device == "keyboard")
+assert(not files["workshop/hotkeys/Default/Hotkeys.ini"]:match("Keys/Exit"),
+       "Safe Exit must remain outside the Dolphin hotkey designer")
 assert(actions["hotkeys.select_action"].run(1))
 assert(actions["hotkeys.start_capture"].run())
 local unknown, unknown_err = actions["hotkeys.capture_input"].run("definitely-not-a-button")
