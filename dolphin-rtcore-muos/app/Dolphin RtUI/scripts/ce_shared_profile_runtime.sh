@@ -82,6 +82,14 @@ rt_safe_leaf_name() {
     esac
 }
 
+rt_safe_game_id() {
+    case "$1" in
+        ""|*[!A-Za-z0-9_-]*|???*) ;;
+        *) return 1 ;;
+    esac
+    [ "${#1}" -ge 4 ] && [ "${#1}" -le 16 ]
+}
+
 # ActiveConfig in rtgameset_data.ini is the canonical GameSettings selector.
 # RTID [LAUNCH] GameSettings is read only as a migration fallback for old cards.
 rt_read_active_gameset() {
@@ -163,6 +171,68 @@ temporary.write_text("\n".join(output) + "\n", encoding="utf-8")
 temporary.replace(path)
 PY
 }
+
+
+# Project one selected workshop preset into Dolphin's native per-game file.
+# Config/GameSettings is a runtime output only; Workshop remains authoritative.
+rt_project_active_gameset() {
+    local game_id="$1" root="$2" config_dir="$3" requested="$4"
+    local chosen="" source target temporary
+
+    rt_safe_game_id "$game_id" || return 1
+    target="$config_dir/$game_id.ini"
+
+    if [ "$requested" = "Disabled" ]; then
+        rm -f "$target" "$target.rt-tmp"
+        RT_ACTIVE_GAMESET=""
+        return 0
+    fi
+
+    if [ -n "$requested" ]; then
+        if rt_safe_leaf_name "$requested" \
+           && [[ "$requested" == *.ini ]] \
+           && [ -f "$root/$game_id/$requested" ]; then
+            chosen="$requested"
+        else
+            printf '[Rt:Core] rejected invalid GameSettings selection for %s\n' "$game_id" >&2
+        fi
+    fi
+
+    if [ -z "$chosen" ]; then
+        chosen="$(rt_read_active_gameset "$game_id" "$root" 2>/dev/null || true)"
+    fi
+
+    if [ -z "$chosen" ]; then
+        rm -f "$target" "$target.rt-tmp"
+        RT_ACTIVE_GAMESET=""
+        return 0
+    fi
+
+    source="$root/$game_id/$chosen"
+    if [ ! -f "$source" ]; then
+        rm -f "$target" "$target.rt-tmp"
+        RT_ACTIVE_GAMESET=""
+        return 1
+    fi
+
+    # A legacy RTID choice is imported once into the canonical metadata.
+    rt_write_active_gameset "$game_id" "$root" "$chosen" || return 1
+
+    mkdir -p "$config_dir"
+    temporary="$target.rt-tmp.$"
+    if ! cp -f "$source" "$temporary"; then
+        rm -f "$temporary"
+        return 1
+    fi
+    if ! mv -f "$temporary" "$target"; then
+        rm -f "$temporary"
+        return 1
+    fi
+
+    RT_ACTIVE_GAMESET="$chosen"
+    return 0
+}
+
 
 rt_extract_game_id() {
     local rom="$1" magic offset id base
