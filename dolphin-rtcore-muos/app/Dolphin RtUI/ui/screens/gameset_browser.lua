@@ -170,6 +170,7 @@ local function refresh()
     S.rows = r
     S.list:set(S.rows, false)
     S.list.sel = 1
+    S._db_generation = GL.generation or 0
     K.set_accent(K.ACC[TABS[S.tab].color] or K.ACC.gc)
 end
 
@@ -180,7 +181,12 @@ function S.enter()
     S.preview = nil
     refresh()
 end
-function S.update(dt) S.list:update(dt) end
+function S.update(dt)
+    S.list:update(dt)
+    if S.tab == 3 and S._db_generation ~= (GL.generation or 0) then
+        refresh()
+    end
+end
 
 local function cycle_tab(d)
     S.tab = ((S.tab - 1 + d) % #TABS) + 1
