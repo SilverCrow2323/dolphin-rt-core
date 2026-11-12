@@ -67,7 +67,7 @@ cd "$APP_DIR" || exit 1
 MT="/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh"
 if [ -x "$MT" ]; then
     if ! sh "$MT" ensure >> "$LOG_DIR/manifest.log" 2>&1; then
-        echo "$(date '+%F %T') [WARN] core registration check failed; see manifest.log / run the Register task" >> "$LOG_DIR/frontend.log"
+        echo "$(date '+%F %T') [WARN] core registration check failed; see manifest.log / open Settings > System > Repair GameCube/Wii registration" >> "$LOG_DIR/frontend.log"
     fi
 fi
 
