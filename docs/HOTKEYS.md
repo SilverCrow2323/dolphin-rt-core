@@ -28,7 +28,7 @@ The Default `ext-dolphin.gptk` uses the native gptokeyb2 state-machine format: h
 | Reset | Unbound by default (configure in RtUI) | — |
 Safe Exit is not a Dolphin keyboard hotkey: the Safe Exit watcher reads MENU / M (or the user-recorded combo) directly from the raw controller stream.
 
-The launchers intentionally do **not** pass gptokeyb2's `-1 dolphin` option. In gptokeyb2 that option enables its own START+SELECT process-kill binding; it conflicts with gameplay input and bypasses Rt:Core's configurable Safe Exit.
+The launchers start gptokeyb2 before Dolphin opens the controller and intentionally do **not** pass gptokeyb2's `-1 dolphin` option. In gptokeyb2 that option enables its own START+SELECT process-kill binding; it conflicts with gameplay input and bypasses Rt:Core's configurable Safe Exit.
 
 The hotkey designer can change the combo and emitted key. The table above describes the shipped Default keyboard profile, not a restriction on user profiles.
 
