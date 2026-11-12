@@ -6,7 +6,7 @@
 
 </div>
 
-![Input architecture](https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/assets/docs/input-architecture.svg)
+![Input architecture](https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/debug/heavy-muos-diagnostics/assets/docs/input-architecture.svg)
 
 > [!WARNING]
 > Never copy a number from the Linux EV_KEY table into a Dolphin `Button n` profile. Joydev and SDL indices are separate too.
@@ -52,7 +52,7 @@ This is the joydev sequence recorded for the RG35XX H. Verify the actual charact
 
 ## Safe Exit
 
-<badge>Default: START + SELECT</badge>
+**Default: START + SELECT**
 
 - START = joydev index **9**.
 - SELECT = joydev index **8**.
