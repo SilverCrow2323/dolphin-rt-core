@@ -119,7 +119,7 @@ end
 
 function S.draw()
     K.bg_workshop(0)
-    K.header("Safe Exit", "Choose how Dolphin closes without stealing gameplay buttons", nil, nil, { icon = "hotkeys" })
+    K.header("Safe Exit", "Choose how Dolphin closes without stealing gameplay buttons", nil, { icon = "hotkeys" })
 
     K.panel(K.MARGIN, 112, K.W - K.MARGIN * 2, 230, { cut = 12 })
     K.text("small", "CURRENT EXIT COMBINATION", K.MARGIN + 22, 137, K.C.dim)
