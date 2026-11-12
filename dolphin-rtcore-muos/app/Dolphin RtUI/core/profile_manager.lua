@@ -17,7 +17,7 @@ local TARGETS = {
     controller    = { dir = (require("core.paths").root_emu .. "/Config"), files = { "GCPadNew.ini", "WiimoteNew.ini" } },
     hotkeys       = { dir = (require("core.paths").root_emu .. "/Config"), files = { "Hotkeys.ini" } },
     logging       = { dir = (require("core.paths").root_emu .. "/Config"), files = { "Logger.ini" } },
-    gamesettings  = { dir = (require("core.paths").root_emu .. "/Config/GameSettings"), files = {} },
+    gamesettings  = { dir = (require("core.paths").root_emu .. "/GameSettings"), files = {} },
 }
 
 local PREFIX = {
