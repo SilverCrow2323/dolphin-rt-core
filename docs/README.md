@@ -1,7 +1,6 @@
-# DolphinUI — Documentation
+# Dolphin Rt:Core — Technical documentation
 
-Index of every reference document for the FrontendONE flavour of
-Dolphin Rt:Core.
+Index of the current engineering references for the multi-platform Dolphin Rt:Core repository.
 
 ## Core references
 
@@ -18,7 +17,8 @@ Dolphin Rt:Core.
 | [HOTKEYS.md](HOTKEYS.md) | Hotkeys.ini format, live menu bindings, keyboard remap. |
 | [MINORU.md](MINORU.md) | Character engine, persona, visor, history, workspace. |
 | [DOWNLOADER.md](DOWNLOADER.md) | Download queue, install targets, extract pipeline. |
-| [TESTING.md](TESTING.md) | `dev.sh` usage, syntax check, live launch, log rotation. |
+| [TESTING.md](TESTING.md) | Current Lua, LÖVE, CI, package and hardware verification procedures. |
+| [FULL_PROJECT_AUDIT.md](FULL_PROJECT_AUDIT.md) | Evidence-based audit findings, quality gaps and prioritized work queue. |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues and known fixes. |
 | [GLOSSARY.md](GLOSSARY.md) | Project-specific terms and acronyms. |
 | [CHANGELOG.md](CHANGELOG.md) | Version history, newest first. |
