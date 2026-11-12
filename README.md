@@ -8,7 +8,7 @@
 
 **One engine. Multiple firmware layers. No fake benchmarks. No plug-and-play promises.**
 
-[![Release](https://img.shields.io/badge/release-12.0.0%20Kanzentai-8C59F2?style=for-the-badge)](https://github.com/SilverCrow2323/dolphin-rt-core/releases/latest)
+[![Latest stable](https://img.shields.io/badge/stable-12.0.0%20Kanzentai-8C59F2?style=for-the-badge)](https://github.com/SilverCrow2323/dolphin-rt-core/releases/latest) [![Release candidate](https://img.shields.io/badge/candidate-12.1.0%20Arcade-E6A23C?style=for-the-badge)](https://github.com/SilverCrow2323/dolphin-rt-core/pull/81)
 ![Device](https://img.shields.io/badge/reference-RG35XX%20H-FF6F00?style=for-the-badge)
 ![SoC](https://img.shields.io/badge/SoC-Allwinner%20H700-FF6F00?style=for-the-badge)
 ![Architecture](https://img.shields.io/badge/target-AArch64-22A06B?style=for-the-badge)
@@ -42,7 +42,7 @@ This project does not promise that every GameCube or Wii title will run at full 
 
 | Platform | Integration | Current status |
 |---|---|---|
-| **muOS 2606.0 Andromeda** | Main v12.0.0 Kanzentai package, Rt:UI, RtSys and core registration | Primary handheld line. The reproducible H700 NoGUI build is in the native ARM64 workflow; fresh binaries still require an RG35XX H runtime test. |
+| **muOS 2606.0 Andromeda** | Published stable: v12.0.0 Kanzentai. Release candidate: v12.1.0 Arcade / Rt:UI 3.7.0 (PR #81). | Primary handheld line. Candidate CI and package checks are in progress; RG35XX H installation and runtime validation are still required before publication. |
 | **muOS 2601.1 Jacaranda** | Legacy v11.5.1 Triptych line | Retain the initial RG35XX H EV_KEY layout. Use a Jacaranda-matched release/package; do not assume an Andromeda `.muxupd` is interchangeable. |
 | **Knulli / Batocera** | Separate Rt:Core K integration | Existing RG35XX H / Knulli Scarab device testing is documented in the K port. Verify each new binary/resource pair before releasing it. |
 | **ROCKNIX** | Separate Rt:Core R integration with a Wayland-enabled build target | Experimental. The old fbdev binary/display mismatch is the reason for the dedicated Wayland build. A successful CI build still needs a physical-device launch test. |
@@ -100,7 +100,7 @@ The CI smoke workflow captures every declared LÖVE screen at **640×480**, **72
 
 See the [Wiki visual gallery](wiki/Interface-Gallery.md) for the capture inventory.
 
-## 05 — What ships in the Kanzentai stack
+## 05 — What ships in the Arcade candidate stack
 
 The current muOS line combines the formerly separate flavours into one installation.
 
