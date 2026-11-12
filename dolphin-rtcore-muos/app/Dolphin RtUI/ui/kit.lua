@@ -231,23 +231,36 @@ end
 function K.panel(x, y, w, h, o)
     o = o or {}
     local a = o.accent or K.acc
-    local pts = K.chamfer(x, y, w, h, o.cut or 8)
-    if o.focus and K._slide and not o.force then return end   -- the list draws a sliding cursor
+    local cut = o.cut or 8
+    local pts = K.chamfer(x, y, w, h, cut)
+    if o.focus and K._slide and not o.force then return end
+
+    -- Neo-cube surface: shared extrusion, bevel and accent rim.
+    local shadow = K.chamfer(x, y + 3, w, h, cut)
+    col(K.C.bg0, o.focus and 0.78 or 0.48)
+    love.graphics.polygon("fill", shadow)
+
     if o.focus then
+        col(K.C.surf2, 1); love.graphics.polygon("fill", pts)
+        col(a, 0.10); love.graphics.polygon("fill", pts)
         if K.fx ~= "off" then
             love.graphics.setLineWidth(5)
-            col(a, 0.10 + (K.fx == "full" and 0.03 * math.sin(K.t * 4) or 0))
+            col(a, 0.10 + (K.fx == "full" and 0.035 * math.sin(K.t * 4) or 0))
             love.graphics.polygon("line", pts)
         end
-        col(K.C.surf2, 1); love.graphics.polygon("fill", pts)
-        col(a, 0.10);      love.graphics.polygon("fill", pts)
         love.graphics.setLineWidth(2)
-        col(a, 1);         love.graphics.polygon("line", pts)
+        col(a, 1); love.graphics.polygon("line", pts)
     else
-        col(o.fill or K.C.surf, o.alpha or 0.92); love.graphics.polygon("fill", pts)
+        col(o.fill or K.C.surf, o.alpha or 0.96)
+        love.graphics.polygon("fill", pts)
         love.graphics.setLineWidth(1)
-        col(K.C.line, 0.55); love.graphics.polygon("line", pts)
+        col(K.C.line, 0.72); love.graphics.polygon("line", pts)
     end
+
+    -- Top bevel: a reflected edge makes the plate read as a physical surface.
+    love.graphics.setLineWidth(1)
+    col({ 1, 1, 1 }, o.focus and 0.13 or 0.055)
+    love.graphics.line(x + cut, y + 1, x + w - cut, y + 1)
     love.graphics.setLineWidth(1)
 end
 
