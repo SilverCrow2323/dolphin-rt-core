@@ -6,7 +6,9 @@ shipped with the release (`README_Flavour_III_FrontendONE.md`).
 
 ## Screens
 Home · Library · Game options · Cheats & Boost · Cheat DB · Mod Vault · Hotkeys · Safe Exit ·
-ROM folders / Registratore Z · Controller map · Rt:Profiles / Editor · GameSettings ·
+ROM folders / FolderWaker · Controller map
+
+**FolderWaker** scans candidate directories for GameCube/Wii images, spots folders hidden by muOS rules or missing a system alias, and offers a confirmed `Rt` rename + alias-registration action. Scanning itself is read-only; it never renames folders automatically. · Rt:Profiles / Editor · GameSettings ·
 Compatibility list · Settings · Diagnostics · **Rt:Core Env Triage** · About.
 
 ## Controls
