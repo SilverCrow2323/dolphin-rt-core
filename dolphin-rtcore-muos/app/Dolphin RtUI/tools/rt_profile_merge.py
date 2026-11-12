@@ -220,7 +220,13 @@ def main():
     gs_file = None
     if args.gs_file:
         p = Path(args.gs_file)
-        if p.is_file(): gs_file = p
+        if p.is_file() and args.workshop and args.game_id and p.suffix.lower() == '.ini':
+            try:
+                expected_dir = (Path(args.workshop) / 'gamesettings' / args.game_id).resolve()
+                if p.resolve().parent == expected_dir:
+                    gs_file = p
+            except OSError:
+                gs_file = None
     if gs_file is None and args.workshop and args.game_id:
         gs_file = find_gameset_file(Path(args.workshop), args.game_id)
     if gs_file:
