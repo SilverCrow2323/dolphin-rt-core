@@ -177,6 +177,9 @@ function M.rename_register(item, system)
     if item.is_scan_root or is_scan_root(preview.source) then
         return false, "this folder is already a configured ROM scan root; changing its path would break the library"
     end
+    if item.has_roms ~= true then
+        return false, "no supported GameCube/Wii disc image was found in this folder; scan it manually before renaming"
+    end
     if not FS.is_dir(preview.source) then return false, "source folder no longer exists" end
     if FS.is_dir(preview.target) or FS.exists(preview.target) then return false, "destination already exists: " .. preview.target end
     local symlink = Shell.first("test -L " .. Shell.shq(preview.source) .. " && echo yes", 3)
