@@ -146,6 +146,8 @@ local function build_grouped(tab_id)
                         author = cfg.author or "Community",
                         description = cfg.description or "",
                         filename = cfg.filename,
+                        raw_content = cfg.raw_content or "",
+                        tags = cfg.tags or {},
                         id = r.id,
                     }
                 end
@@ -202,6 +204,16 @@ local function alphabet_jump(d)
 end
 
 function S.pad(b)
+    if S.preview then
+        if b == "UP" then
+            S.preview.scroll = math.max(0, S.preview.scroll - 1)
+        elseif b == "DOWN" then
+            S.preview.scroll = math.min(math.max(0, #S.preview.lines - 10), S.preview.scroll + 1)
+        elseif b == "B" or b == "SELECT" then
+            S.preview = nil
+        end
+        return
+    end
     local row = S.list:cur()
     if b == "UP" then
         if S.list:move(-1) then SFX.play("menu_move") end
@@ -219,7 +231,14 @@ function S.pad(b)
             S.expanded[row.title] = not S.expanded[row.title]
             SFX.play("menu_flip")
             refresh()
-        elseif row.kind == "region" or row.kind == "config" then
+        elseif row.kind == "config" then
+            SFX.play("menu_select")
+            local lines = {}
+            for line in tostring(row.raw_content or ""):gmatch("[^\\n]+") do
+                lines[#lines + 1] = line
+            end
+            S.preview = { row = row, lines = lines, scroll = 0 }
+        elseif row.kind == "region" then
             SFX.play("menu_select")
             require("ui").go("gameset_explorer", { game_id = row.id, game_title = row.game_title or row.title })
         end
@@ -295,12 +314,37 @@ function S.draw()
     else
         S.list:draw(draw_row)
     end
-    K.footer({
-        { key = "A", label = "Open / Expand" },
-        { key = "L1 R1", label = "Tab" },
-        { key = "L2 R2", label = "Letter" },
-        { key = "B", label = "Back" },
-    })
+    if S.preview then
+        local p = S.preview
+        local x, y, w, h = 28, 76, K.W - 56, K.H - 104
+        K.color(K.C.bg0, 0.96); love.graphics.rectangle("fill", 0, 0, K.W, K.H)
+        K.panel(x, y, w, h, { accent = K.ACC.wii, cut = 10, force = true })
+        K.text("h", K.clip("h", p.row.title, w - 32), x + 18, y + 14, K.C.text)
+        K.text("small", (p.row.game_title or "Game") .. " · " .. p.row.id .. " · " .. (p.row.author or "Community"),
+               x + 18, y + 48, K.C.dim)
+        K.text("small", K.clip("small", p.row.description or "", w - 36), x + 18, y + 72, K.C.text)
+        K.text("mono", p.row.filename or "embedded preset", x + 18, y + 112, K.ACC.wii)
+        local code_y = y + 138
+        love.graphics.setScissor(x + 12, code_y, w - 24, h - 174)
+        if #p.lines == 0 then
+            K.text("small", "No embedded INI content in this database entry.", x + 18, code_y, K.C.dim)
+        else
+            for i = 1, 10 do
+                local line = p.lines[p.scroll + i]
+                if not line then break end
+                K.text("mono", K.clip("mono", line, w - 44), x + 18, code_y + (i - 1) * 19, K.C.text)
+            end
+        end
+        love.graphics.setScissor()
+        K.footer({ { key = "UP/DOWN", label = "Scroll preset" }, { key = "B", label = "Close" } })
+    else
+        K.footer({
+            { key = "A", label = "Open / Expand" },
+            { key = "L1 R1", label = "Tab" },
+            { key = "L2 R2", label = "Letter" },
+            { key = "B", label = "Back" },
+        })
+    end
 end
 
 return S
