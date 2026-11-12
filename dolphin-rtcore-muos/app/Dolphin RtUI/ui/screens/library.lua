@@ -70,7 +70,12 @@ function S.enter()
     S.t = 0
     S.compat_memo = {}
     if ok_cp and Compat then pcall(Compat.load) end      -- ricarica solo se il file e' cambiato
-    S.need_scan = (#(Library.games or {}) == 0)
+    local boot_scan_pending = false
+    local ok_boot, Boot = pcall(require, "core.boot_initializer")
+    if ok_boot and Boot.is_scan_pending then boot_scan_pending = Boot.is_scan_pending() end
+    S.scanning = boot_scan_pending
+    S.need_scan = (#(Library.games or {}) == 0) and not boot_scan_pending
+    S.scan_t, S.scan_seen = 0, #(Library.games or {})
     rebuild(S.keep_id or Settings.get("last_game"))
     S.keep_id = nil
 end
