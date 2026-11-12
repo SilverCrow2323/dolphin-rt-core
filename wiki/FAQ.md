@@ -14,7 +14,7 @@ If missing or stale, run `ensure` or the Task Toolkit registration task. See [[m
 
 The H700 handhelds, firmware versions, game revisions and Dolphin profiles are not identical. Compare the exact device, muOS version, Game ID, region and Rt:Core profile. See [[Compatibility-Database]].
 
-## Does a rating of 5 mean full speed on every handheld?
+## Which controller profile should I start with?\n\nStart with **Default** for the GameCube or Wii controller family you are using. Change one profile at a time and compare the exact device and firmware. See [[Controls-and-Profiles]].\n\n## Does a rating of 5 mean full speed on every handheld?
 
 No. It means a tester observed an excellent result on the stated setup. Read the underlying report before applying it to another setup. See [[Rating-Guide]].
 
