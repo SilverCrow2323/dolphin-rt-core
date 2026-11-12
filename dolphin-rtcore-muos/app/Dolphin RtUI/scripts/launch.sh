@@ -380,7 +380,7 @@ if [ "${HOTKEYS:-}" != "Disabled" ]; then
         if [ -n "$GPTK_BIN" ] && [ -n "$GPTK_CFG" ]; then
             pkill -f "$GPTK_BIN -c" 2>/dev/null || true
             sleep 0.3
-            "$GPTK_BIN" -c "$GPTK_CFG" -1 dolphin > "$LOG_DIR/gptokeyb2_$TS.log" 2>&1 &
+            "$GPTK_BIN" dolphin -c "$GPTK_CFG" -D states,keyboard > "$LOG_DIR/gptokeyb2_$TS.log" 2>&1 &
             GPTK_PID=$!
             log "gptokeyb2 pid=$GPTK_PID cfg=$GPTK_CFG device=$HOTKEY_DEVICE"
         else
