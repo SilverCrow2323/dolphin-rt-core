@@ -39,6 +39,14 @@ if grep -Fq -- '-1 dolphin' "$APP_LAUNCH" "$EXT_LAUNCH"; then
 fi
 require "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/ext-dolphin.gptk" '[controls:rt_hotkeys]'
 require "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/ext-dolphin.gptk" 'l2 = hold_state rt_hotkeys'
+for launcher in "$APP_LAUNCH" "$EXT_LAUNCH"; do
+    gptk_line="$(grep -nF '"$GPTK_BIN" dolphin -c "$GPTK_CFG"' "$launcher" | head -1 | cut -d: -f1)"
+    dolphin_line="$(grep -nE '(^|[[:space:]])(\./)?"?\$DOLPHIN"? --platform=fbdev' "$launcher" | head -1 | cut -d: -f1)"
+    [ -n "$gptk_line" ] && [ -n "$dolphin_line" ] && [ "$gptk_line" -lt "$dolphin_line" ] || {
+        echo "FAIL: gptokeyb2 must attach before Dolphin starts in $launcher" >&2
+        exit 1
+    }
+done
 
 # The updater must reject an incomplete resource payload before packaging.
 require "$PKG" 'font_western.bin'
