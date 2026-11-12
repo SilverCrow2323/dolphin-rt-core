@@ -94,7 +94,7 @@ rt_safe_game_id() {
 # RTID [LAUNCH] GameSettings is read only as a migration fallback for old cards.
 rt_read_active_gameset() {
     local game_id="$1" root="$2" meta active
-    [ -n "$game_id" ] || return 1
+    rt_safe_game_id "$game_id" || return 1
     meta="$root/$game_id/rtgameset_data.ini"
     [ -r "$meta" ] || return 1
     active="$(awk -F= '
@@ -123,7 +123,7 @@ rt_read_active_gameset() {
 # by GamesetPicker, Rt:UI and the Python merge helper.
 rt_write_active_gameset() {
     local game_id="$1" root="$2" active="$3" meta
-    [ -n "$game_id" ] || return 1
+    rt_safe_game_id "$game_id" || return 1
     rt_safe_leaf_name "$active" || return 1
     case "$active" in *.ini) ;; *) return 1 ;; esac
     [ -f "$root/$game_id/$active" ] || return 1
