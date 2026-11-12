@@ -7,6 +7,8 @@ grep -Fq 'if frame >= END_FRAME or S.t > 7 then proceed() end' "$APP/ui/screens/
 grep -Fq 'if lg == "SELECT" then' "$APP/ui/init.lua"
 grep -Fq 'M.go(in_stream and "library" or "stream_library"' "$APP/ui/init.lua"
 grep -Fq 'scan_depth        = 8' "$APP/core/settings.lua"
+grep -Fq 'Library.scan_step, 0.006' "$APP/core/boot_initializer.lua"
+! grep -Fq 'Library.scan()' "$APP/core/boot_initializer.lua"
 grep -Fq 'n_db_cfg' "$APP/ui/screens/gameset_browser.lua"
 grep -Fq 'Scan LAN + Tailscale' "$APP/ui/screens/stream_settings.lua"
 grep -Fq 'tailscale status --json' "$APP/tools/stream/discover.sh"
