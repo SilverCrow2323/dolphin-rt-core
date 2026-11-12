@@ -220,18 +220,19 @@ else
     TMPD="$GAME_DIR/data/tmp_cfg"
     rm -rf "$TMPD"; mkdir -p "$TMPD"
     merged=0
-    GS_ARG=""
-    GS_WORKSHOP_ARG="--workshop=$WORKSHOP"
-    if [ "$GAMESETTINGS" = "Disabled" ]; then
-        # Explicit Disabled beats any previously active metadata selection.
-        GS_WORKSHOP_ARG=""
-    elif [ -n "$GAMESETTINGS" ]; then
-        GS_PATH="$WORKSHOP/gamesettings/$GAME_ID/$GAMESETTINGS"
-        [ -f "$GS_PATH" ] && GS_ARG="--gs-file=$GS_PATH"
+    GS_ARGS=()
+    if [ "$GAMESETTINGS" != "Disabled" ]; then
+        # Keep paths with spaces (the app directory itself is "Dolphin RtUI")
+        # as single argv entries; never re-expand a hand-built command string.
+        GS_ARGS+=(--workshop "$WORKSHOP")
+        if [ -n "$GAMESETTINGS" ]; then
+            GS_PATH="$WORKSHOP/gamesettings/$GAME_ID/$GAMESETTINGS"
+            [ -f "$GS_PATH" ] && GS_ARGS+=(--gs-file "$GS_PATH")
+        fi
     fi
     if command -v python3 >/dev/null 2>&1 && [ -f "$MERGE" ]; then
         if python3 "$MERGE" --default-dir "$RT_PROFILES/Default" --profile-dir "$PDIR" \
-                --out-dir "$TMPD" --game-id "$GAME_ID" $GS_WORKSHOP_ARG $GS_ARG >> "$LOG" 2>&1 \
+                --out-dir "$TMPD" --game-id "$GAME_ID" "${GS_ARGS[@]}" >> "$LOG" 2>&1 \
            && [ -s "$TMPD/Dolphin.ini" ]; then
             merged=1
         fi
