@@ -200,7 +200,7 @@ function M.list_for(game)
                 local folder = join(spec.path, name)
                 local raw = Shell.popen("find " .. shq(folder) ..
                     " -type f -name 'metadata.json' -print 2>/dev/null", 2) or ""
-                for metadata_file in raw:gmatch("[^\\n]+") do
+                for metadata_file in raw:gmatch("[^\n]+") do
                     local prefix = spec.path .. "/"
                     if metadata_file:sub(1, #prefix) == prefix then
                         local relative = metadata_file:sub(#prefix + 1)
