@@ -3,7 +3,7 @@ package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;" .. package.path
 
 local tmp = os.tmpname() .. ".iso"
 local f = assert(io.open(tmp, "wb"))
-f:write("GZLE01", string.rep("\\0", 128))
+f:write("GZLE01", string.rep("x", 128))
 f:close()
 
 local readlink_calls, find_calls = 0, 0
