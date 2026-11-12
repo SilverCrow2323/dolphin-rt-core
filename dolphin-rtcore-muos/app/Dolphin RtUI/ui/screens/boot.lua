@@ -29,7 +29,7 @@ function S.leave() Mascot.release() end
 local function proceed()
     if S.going then return end
     S.going = true
-    local target = "library"
+    local target = "home"
     local needs_setup = ok_bi and BI.needs_rom_setup and BI.needs_rom_setup()
     if not needs_setup then
         pcall(function()
