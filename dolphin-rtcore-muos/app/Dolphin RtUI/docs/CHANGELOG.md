@@ -20,6 +20,9 @@
 - Home is rebuilt as a controller-first two-column hub with an adventure banner, last-played game and compact tiles tuned to the 640×480 handheld canvas.
 - Compatibility uses compact filter chips, game covers (with a fallback tile), large FPS/status, community score, test count and field notes.
 - Select opens Rt:Stream from Home only.
+- Shared header chrome now reserves separate title, subtitle and status lanes; Settings section tabs no longer collide with section labels or navigation hints.
+- Footer hints use controller-shaped keycaps: A red, B yellow, X blue, Y green; shoulder and system controls use grey / charcoal caps.
+- Rt:Stream receives a vaporwave refresh with a neon sunset and perspective grid, dedicated connection/status lanes, visible filter and sort state, and three selectable layouts: **Flow**, **Grid** and **List**.
 
 ### Package contents
 - The muOS packager omits the GameSettings preset database and per-game presets, HD texture payloads and all bundled GraphicMods except the opt-in **All Games Bloom Removal**.
