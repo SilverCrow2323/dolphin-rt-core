@@ -71,6 +71,8 @@ jobs:
           python3 tests/test_rt_profile_merge.py
           python3 tests/test_project_gamesettings.py
           luajit tests/test_rom_auto_discovery.lua
+          bash tests/test_controller_button_schema.sh
+          bash tests/test_dolphin_sys_packaging.sh
           bash tests/test_rtui_stream_contract.sh
       - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
