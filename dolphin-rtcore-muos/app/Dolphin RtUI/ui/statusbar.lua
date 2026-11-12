@@ -44,7 +44,7 @@ end
 
 local function poll_wifi()
     local wl = read_file("/proc/net/wireless") or ""
-    for line in wl:gmatch("[^\\n]+") do
+    for line in wl:gmatch("[^\n]+") do
         local iface, qual = line:match("^%s*([%w_.%-]+):%s*[%x]+%s*([%d%.]+)")
         if iface and (iface:match("^wlan") or iface:match("^wlp") or iface:match("^wl")) then
             M._wifi.iface = iface
