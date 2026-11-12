@@ -135,7 +135,7 @@ local function build_grouped(tab_id)
                     kind = "region",
                     title = grp.title,
                     id = r.id, region = r.region,
-                    n_cfg = r.n_cfg, db_cfg = r.db_cfg, in_lib = r.in_lib,
+                    n_cfg = r.n_cfg, db_cfg = r.db_cfg, db_cfgs = r.db_cfgs, in_lib = r.in_lib,
                 }
             end
         end
