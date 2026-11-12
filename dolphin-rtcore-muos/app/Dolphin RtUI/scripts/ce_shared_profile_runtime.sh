@@ -119,13 +119,33 @@ rt_read_active_gameset() {
     printf '%s\n' "$active"
 }
 
+# True when the canonical selector exists, even if its value is empty.
+# Empty means explicitly disabled; an absent key means legacy data may migrate.
+rt_has_active_gameset() {
+    local game_id="$1" root="$2" meta
+    rt_safe_game_id "$game_id" || return 1
+    meta="$root/$game_id/rtgameset_data.ini"
+    [ -r "$meta" ] || return 1
+    awk '
+        /^ *\\[/ {
+            section = ($0 ~ /^ *\\[GameSettings\\] *$/)
+            next
+        }
+        section {
+            key = $1
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", key)
+            if (key == "ActiveConfig") found = 1
+        }
+        END { exit !found }
+    ' "$meta"
+}
+
 # Persist a legacy per-game selection into the same ActiveConfig metadata used
 # by GamesetPicker, Rt:UI and the native Dolphin GameSettings projector.
 rt_clear_active_gameset() {
     local game_id="$1" root="$2" meta
     rt_safe_game_id "$game_id" || return 1
     meta="$root/$game_id/rtgameset_data.ini"
-    [ -f "$meta" ] || return 0
     command -v python3 >/dev/null 2>&1 || return 1
     python3 - "$meta" <<'PY'
 from pathlib import Path
@@ -133,25 +153,42 @@ import re
 import sys
 
 path = Path(sys.argv[1])
-lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+lines = path.read_text(encoding="utf-8", errors="replace").splitlines() if path.is_file() else []
 output = []
 in_game_settings = False
+found_section = False
+written = False
+
 for line in lines:
     section = re.match(r"^\s*\[([^\]]+)\]\s*$", line)
     if section:
+        if in_game_settings and not written:
+            output.append("ActiveConfig =")
+            written = True
         in_game_settings = section.group(1).strip() == "GameSettings"
+        found_section = found_section or in_game_settings
         output.append(line)
         continue
     if in_game_settings and re.match(r"^\s*ActiveConfig\s*=", line):
+        if not written:
+            output.append("ActiveConfig =")
+            written = True
         continue
     output.append(line)
 
+if not found_section:
+    if output and output[-1].strip():
+        output.append("")
+    output.extend(["[GameSettings]", "ActiveConfig ="])
+elif in_game_settings and not written:
+    output.append("ActiveConfig =")
+
+path.parent.mkdir(parents=True, exist_ok=True)
 temporary = path.with_name(path.name + ".rt-tmp")
 temporary.write_text("\n".join(output) + "\n", encoding="utf-8")
 temporary.replace(path)
 PY
 }
-
 rt_write_active_gameset() {
     local game_id="$1" root="$2" active="$3" meta
     rt_safe_game_id "$game_id" || return 1
