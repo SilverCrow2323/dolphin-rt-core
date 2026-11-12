@@ -27,8 +27,6 @@ Overclock = 0.9
 [Gecko]
 $Workshop Manual Code
 12345678 00000000
-$[Rt] Stale Generated Code
-00000000 00000000
 
 [Video_Settings]
 AspectRatio = 2
@@ -45,6 +43,8 @@ RuntimeOnly = MustNotLeak
 $[Rt] Active Speed Patch
 04000000 12345678
 04000000 87654321
+$Workshop Manual Code
+99999999 00000001
 $Old Manual Runtime Code
 11111111 22222222
 
@@ -71,8 +71,9 @@ $[Rt] Active AR Patch
         assert "Overclock = 0.9" in result
         assert "RuntimeOnly = MustNotLeak" not in result
         assert "$Workshop Manual Code" in result
-        assert "$Old Manual Runtime Code" not in result
-        assert "$[Rt] Stale Generated Code" not in result
+        assert "$Old Manual Runtime Code" in result
+        assert "$Workshop Manual Code" in result
+        assert result.count("$Workshop Manual Code") == 1
         assert "$[Rt] Active Speed Patch" in result
         assert "04000000 12345678" in result and "04000000 87654321" in result
         assert "$[Rt] Active AR Patch" in result
