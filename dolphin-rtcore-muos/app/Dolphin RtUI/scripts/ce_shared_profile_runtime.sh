@@ -127,8 +127,8 @@ rt_has_active_gameset() {
     meta="$root/$game_id/rtgameset_data.ini"
     [ -r "$meta" ] || return 1
     awk '
-        /^ *\\[/ {
-            section = ($0 ~ /^ *\\[GameSettings\\] *$/)
+        /^[[:space:]]*\[/ {
+            section = ($0 ~ /^[[:space:]]*\[GameSettings\][[:space:]]*$/)
             next
         }
         section {
