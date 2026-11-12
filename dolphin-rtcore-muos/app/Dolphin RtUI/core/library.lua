@@ -183,11 +183,13 @@ end
 function M.scan_begin()
   M.games = {}
   _queue, _qi, _seen = {}, 1, {}
-  local paths = Settings.get("rom_paths") or {}
-  if #paths == 0 and Settings.auto_discover_rom_paths then
-    pcall(Settings.auto_discover_rom_paths)
-    paths = Settings.get("rom_paths") or {}
+  -- Always validate first-run discovery: previous releases could leave stale
+  -- default folders in settings.json, which must not suppress mount probing.
+  if Settings.auto_discover_rom_paths then
+    local ok, err = pcall(Settings.auto_discover_rom_paths)
+    if not ok then print("[RtUI] ROM auto-discovery failed: " .. tostring(err)) end
   end
+  local paths = Settings.get("rom_paths") or {}
   local depth = Settings.get("scan_depth") or 4
   for _, entry in ipairs(paths) do
     if entry.path and FS.is_dir(entry.path) then
