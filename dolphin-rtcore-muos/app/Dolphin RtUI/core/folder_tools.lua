@@ -106,8 +106,11 @@ function M.scan()
                 local reasons = skip_reasons(name, path, rules)
                 local guess = infer_system(name)
                 local mapped = assigned_system(assign, alias)
-                local roms = has_roms(path)
-                if not seen[path] and (roms or #reasons > 0 or guess) then
+                local candidate = (#reasons > 0 or guess ~= nil)
+                -- Avoid a recursive search of every artwork/config directory.
+                -- Only folders already identified by their name or skip rule are probed for ROM files.
+                local roms = candidate and has_roms(path) or false
+                if not seen[path] and candidate then
                     seen[path] = true
                     local status
                     if #reasons > 0 then status = "skip-match"
@@ -138,7 +141,12 @@ function M.preview(item, system)
     if type(item) ~= "table" or type(item.path) ~= "string" then return nil, "invalid folder" end
     if system ~= "GC" and system ~= "Wii" then return nil, "choose GameCube or Wii" end
     local name = item.path:match("([^/]+)$") or item.path
-    local target = item.path:match("^(.*)/[^/]+$") .. "/Rt" .. name
+    if name:sub(1, 2):lower() == "rt" then
+        return nil, "folder already starts with Rt; do not prefix it twice"
+    end
+    local parent = item.path:match("^(.*)/[^/]+$")
+    if not parent then return nil, "folder path must be absolute" end
+    local target = parent .. "/Rt" .. name
     local alias = M.normalize_alias("Rt" .. name)
     if alias == "" then return nil, "folder name cannot produce a muOS alias" end
     return { source = item.path, target = target, alias = alias, system = system }
@@ -151,7 +159,7 @@ function M.rename_register(item, system)
         return false, "this folder is already a configured ROM scan root; changing its path would break the library"
     end
     if not FS.is_dir(preview.source) then return false, "source folder no longer exists" end
-    if FS.is_dir(preview.target) then return false, "destination already exists: " .. preview.target end
+    if FS.is_dir(preview.target) or FS.exists(preview.target) then return false, "destination already exists: " .. preview.target end
     local symlink = Shell.first("test -L " .. Shell.shq(preview.source) .. " && echo yes", 3)
     if symlink == "yes" then return false, "symbolic-link folders are not renamed" end
 
