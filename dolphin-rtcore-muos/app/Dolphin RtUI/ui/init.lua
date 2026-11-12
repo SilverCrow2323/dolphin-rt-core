@@ -116,101 +116,15 @@ end
 function M.init()
     for _, s in ipairs(SCREEN_MODULES) do M.register(s[1], s[2]) end
 
-    -- Let feature screens publish stable NEXUS actions after all screens
-    -- exist, while keeping navigation ownership in this module.
-    local library_screen = Nexus.get_screen("library")
-    if library_screen and library_screen.register_actions then
-        local ok, registered, detail = pcall(library_screen.register_actions, M)
-        if not ok or registered == false then
-            log("library NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local stream_settings_screen = Nexus.get_screen("stream_settings")
-    if stream_settings_screen and stream_settings_screen.register_actions then
-        local ok, registered, detail = pcall(stream_settings_screen.register_actions, M)
-        if not ok or registered == false then
-            log("stream settings NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local hotkeys_screen = Nexus.get_screen("hotkeys")
-    if hotkeys_screen and hotkeys_screen.register_actions then
-        local ok, registered, detail = pcall(hotkeys_screen.register_actions, M)
-        if not ok or registered == false then
-            log("hotkeys NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local cheatdb_screen = Nexus.get_screen("cheatdb")
-    if cheatdb_screen and cheatdb_screen.register_actions then
-        local ok, registered, detail = pcall(cheatdb_screen.register_actions, M)
-        if not ok or registered == false then
-            log("cheat database NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local compat_screen = Nexus.get_screen("compat_list")
-    if compat_screen and compat_screen.register_actions then
-        local ok, registered, detail = pcall(compat_screen.register_actions, M)
-        if not ok or registered == false then
-            log("compatibility NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local compat_screen = Nexus.get_screen("compat_list")
-    if compat_screen and compat_screen.register_actions then
-        local ok, registered, detail = pcall(compat_screen.register_actions, M)
-        if not ok or registered == false then
-            log("compatibility NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local controller_profiles_screen = Nexus.get_screen("controller_profiles")
-    if controller_profiles_screen and controller_profiles_screen.register_actions then
-        local ok, registered, detail = pcall(controller_profiles_screen.register_actions, M)
-        if not ok or registered == false then
-            log("controller profiles NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local keymap_screen = Nexus.get_screen("keymap")
-    if keymap_screen and keymap_screen.register_actions then
-        local ok, registered, detail = pcall(keymap_screen.register_actions, M)
-        if not ok or registered == false then
-            log("keymap NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local keymap_screen = Nexus.get_screen("keymap")
-    if keymap_screen and keymap_screen.register_actions then
-        local ok, registered, detail = pcall(keymap_screen.register_actions, M)
-        if not ok or registered == false then
-            log("keymap NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local game_screen = Nexus.get_screen("game")
-    if game_screen and game_screen.register_actions then
-        local ok, registered, detail = pcall(game_screen.register_actions, M)
-        if not ok or registered == false then
-            log("game NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local cheats_screen = Nexus.get_screen("cheats")
-    if cheats_screen and cheats_screen.register_actions then
-        local ok, registered, detail = pcall(cheats_screen.register_actions, M)
-        if not ok or registered == false then
-            log("cheats NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local diagnostics_screen = Nexus.get_screen("diagnostics")
-    if diagnostics_screen and diagnostics_screen.register_actions then
-        local ok, registered, detail = pcall(diagnostics_screen.register_actions, M)
-        if not ok or registered == false then
-            log("diagnostics NEXUS actions: " .. tostring(ok and detail or registered))
+    -- Discover feature adapters dynamically. Each screen owns its behavior;
+    -- this registry owns only the stable action IDs and dispatch boundary.
+    for _, entry in ipairs(Nexus.list_screens()) do
+        local screen = Nexus.get_screen(entry.id)
+        if screen and type(screen.register_actions) == "function" then
+            local ok, registered, detail = pcall(screen.register_actions, M)
+            if not ok or registered == false then
+                log(entry.id .. " NEXUS actions: " .. tostring(ok and detail or registered))
+            end
         end
     end
 
