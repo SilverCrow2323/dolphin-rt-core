@@ -42,7 +42,7 @@ local function flavours()
         { label = "Core list: GameCube", kind = "manifest", sys = "Nintendo Gamecube", path = "MUOS/info/manifest  >  Nintendo Gamecube",
           hint = "Use Settings > Tools & About > Register GameCube + Wii." },
         { label = "Core list: Wii",      kind = "manifest", sys = "Nintendo Wii", path = "MUOS/info/manifest  >  Nintendo Wii",
-          hint = "Run Task > Dolphin Rt-Core > Register GameCube and Wii." },
+          hint = "Use Settings > Tools & About > Register GameCube + Wii." },
       } },
     { id = "II", name = "Bash Arsenal", tag = "POWER LAYER", accent = "boost",
       blurb = "Tier profiles and UI-managed catalogue controls.",
