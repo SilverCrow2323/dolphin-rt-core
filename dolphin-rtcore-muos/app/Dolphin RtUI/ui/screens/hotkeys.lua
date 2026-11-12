@@ -652,7 +652,7 @@ end
 
 function S.draw()
     if S.mode == "profiles" then
-        K.header("Hotkeys", "Choose a profile to design", nil, nil, { icon = "hotkeys" })
+        K.header("Hotkeys", "Choose a profile to design", nil, { icon = "hotkeys" })
         if #S.plist.items == 0 then K.text("body", "No hotkey profiles found in workshop/hotkeys.", 0, 200, K.C.dim, 1, K.W, "center")
         else S.plist:draw(draw_profile) end
         K.footer({ { key = "A", label = "Design" }, { key = "B", label = "Back" } })
