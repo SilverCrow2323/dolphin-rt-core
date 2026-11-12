@@ -35,13 +35,20 @@ if command -v ip >/dev/null 2>&1 && command -v curl >/dev/null 2>&1; then
         subnet="$(ip -4 route show dev "$iface" scope link 2>/dev/null | awk '$1 ~ /\/24$/ {print $1; exit}')"
         [ -n "$subnet" ] || continue
         prefix="${subnet%.*}"
-        seq 1 254 2>/dev/null |
-            xargs -P 24 -I@ sh -c '
-                host="$1"
-                if curl -k -fsS --connect-timeout 1 -m 2 "https://$host:47989/serverinfo" -o /dev/null 2>/dev/null; then
-                    printf "LAN\t%s\n" "$host"
+        n=1
+        batch=0
+        while [ "$n" -le 254 ]; do
+            host="$prefix.$n"
+            (
+                if curl -k -fsS --connect-timeout 1 -m 1 "https://$host:47989/serverinfo" -o /dev/null 2>/dev/null; then
+                    printf 'LAN\\t%s\\n' "$host" >> "$tmp"
                 fi
-            ' sh "$prefix.@" >> "$tmp"
+            ) &
+            n=$((n + 1))
+            batch=$((batch + 1))
+            if [ "$batch" -ge 24 ]; then wait; batch=0; fi
+        done
+        wait
     done
 fi
 
