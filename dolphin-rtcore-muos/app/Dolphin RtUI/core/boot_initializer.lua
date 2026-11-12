@@ -162,6 +162,10 @@ function M.update(dt)
       n = #(Library.games or {})
     end
     STATE.results.roms = n
+    pcall(function()
+      local Settings = require("core.settings")
+      STATE.rom_setup_needed = Settings.get("rom_discovery_done") ~= true
+    end)
     Hub.push("scan", "ROM scan complete",
       string.format("%d ROM(s) indexed", n), { silent = true, ttl = 4 })
     STATE.ids = {}
@@ -229,6 +233,7 @@ end
 
 function M.is_done() return STATE.step == "done" end
 function M.step()    return STATE.step end
+function M.needs_rom_setup() return STATE.rom_setup_needed == true end
 
 M._spawn_dl = spawn_dl      -- esposto per i test
 
