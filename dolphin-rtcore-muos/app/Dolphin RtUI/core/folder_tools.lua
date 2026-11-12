@@ -193,8 +193,9 @@ function M.scan()
     local function add_root(path)
         if type(path) ~= "string" or path == "" then return end
         path = path:gsub("/+$", "")
-        if path ~= "" and not root_seen[path] then
-            root_seen[path] = true
+        local key = path:lower()
+        if path ~= "" and not root_seen[key] then
+            root_seen[key] = true
             roots[#roots + 1] = path
         end
     end
@@ -221,8 +222,9 @@ function M.scan()
                 local candidate = (guess ~= nil)
                 -- FolderWaker only processes the exact muOS blocked folder names.
                 local roms = candidate and has_roms(path) or false
-                if not seen[path] and candidate then
-                    seen[path] = true
+                local path_key = path:gsub("/+$", ""):lower()
+                if not seen[path_key] and candidate then
+                    seen[path_key] = true
                     local status
                     status = "content-explorer-blocked"
                     out[#out + 1] = {
