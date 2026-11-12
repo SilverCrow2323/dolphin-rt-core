@@ -7,7 +7,7 @@ local JSON = require("core.json")
 
 local tmp = os.tmpname()
 os.remove(tmp)
-assert(os.execute("mkdir -p " .. Shell.shq(tmp)) == 0)
+local root_ok, root_reason, root_code = os.execute("mkdir -p " .. Shell.shq(tmp))\nassert(root_ok == true or root_ok == 0 or root_code == 0, "temporary root mkdir failed")
 Paths.root_emu = tmp
 
 local function mkdir(path)
@@ -38,7 +38,7 @@ write(bloom .. "/all.txt", "")
 write(galaxy .. "/metadata.json", metadata("Super Mario Galaxy Bloom"))
 write(galaxy .. "/gameids/RMGE01.txt", "")
 write(zelda .. "/metadata.json", metadata("Zelda Only"))
-write(zelda .. "/gameids/RMGE01.txt.disabled", "")
+write(zelda .. "/gameids/ZELD01.txt", "")
 write(custom .. "/metadata.json", metadata("User Shader Pack", "Test Author"))
 write(custom .. "/all.txt", "")
 
