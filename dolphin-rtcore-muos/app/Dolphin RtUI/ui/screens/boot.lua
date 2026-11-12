@@ -27,7 +27,11 @@ function S.leave() Mascot.release() end
 local function proceed()
     if S.going then return end
     S.going = true
-    require("ui").go("library", nil, { no_push = true })
+    local target = "library"
+    if ok_bi and BI.needs_rom_setup and BI.needs_rom_setup() then
+        target = "folders"
+    end
+    require("ui").go(target, nil, { no_push = true })
 end
 
 function S.update(dt)
