@@ -50,7 +50,8 @@ APP="run/muos/storage/application/Dolphin RtUI"; EMU="opt/muos/share/emulator/do
 mkdir -p "$S/$APP" "$S/$EMU"
 cp -a "$ROOT/emu/dolphin/." "$S/$EMU/"
 if [ "$SYS_SOURCE" != "$DEFAULT_SYS_SOURCE" ]; then
-  rm -rf "$S/$EMU/Sys"
+  # Merge the freshly built engine resources over the curated official Sys payload.
+  # A build output may omit bundled Sys/Load mods and other user-facing resources.
   mkdir -p "$S/$EMU/Sys"
   cp -a "$SYS_SOURCE/." "$S/$EMU/Sys/"
 fi
@@ -61,14 +62,12 @@ cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launche
 # Keep Jacaranda legacy Content Explorer assignments alongside the Andromeda manifest.
 bash "$ROOT/tools/stage-legacy-assign.sh" "$S" 1
 
-# Rt:Core ships no per-game GameSettings presets or HD texture packs.
-# The only bundled graphics mod is the opt-in All Games Bloom Removal.
-rm -rf "$S/$EMU/Sys/GameSettings" "$S/$EMU/Sys/Load/Textures" "$S/$EMU/Load/Textures"
-rm -rf "$S/$APP/workshop/gamesettings" "$S/$APP/data/gamesettings" "$S/$APP/data/gamesettings.json"
-for mod_root in "$S/$EMU/Load/GraphicMods" "$S/$EMU/Sys/Load/GraphicMods"; do
-  [ -d "$mod_root" ] || continue
-  find "$mod_root" -mindepth 1 -maxdepth 1 ! -name "All Games Bloom Removal" -exec rm -rf {} +
-done
+# Preserve the official Dolphin GameSettings, Sys/Load resources, HD textures
+# and every installed graphics mod. Rt:UI Mod Vault controls enable/disable state;
+# packaging must not silently remove the payload users can manage.
+# Only generated app-local caches are excluded from the update archive.
+rm -rf "$S/$APP/data/gamesettings"
+rm -f "$S/$APP/data/gamesettings.json"
 [ -n "$DOLPHIN_BIN" ] && install -m755 "$DOLPHIN_BIN" "$S/$EMU/dolphin"
 if [ -n "$DOLPHIN_LIB_DIR" ]; then
   [ -d "$DOLPHIN_LIB_DIR" ] || { echo "ERROR: DOLPHIN_LIB_DIR is not a directory: $DOLPHIN_LIB_DIR" >&2; exit 1; }
