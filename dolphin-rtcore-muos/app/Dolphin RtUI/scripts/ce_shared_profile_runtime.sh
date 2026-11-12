@@ -120,7 +120,7 @@ rt_read_active_gameset() {
 }
 
 # Persist a legacy per-game selection into the same ActiveConfig metadata used
-# by GamesetPicker, Rt:UI and the Python merge helper.
+# by GamesetPicker, Rt:UI and the native Dolphin GameSettings projector.
 rt_clear_active_gameset() {
     local game_id="$1" root="$2" meta
     rt_safe_game_id "$game_id" || return 1
