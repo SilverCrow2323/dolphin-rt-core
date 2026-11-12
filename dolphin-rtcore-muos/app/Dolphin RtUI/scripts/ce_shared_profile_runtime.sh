@@ -102,7 +102,7 @@ rt_extract_game_id() {
     esac
 
     base="$(basename "$rom")"
-    id="$(printf '%s\n' "$base" | sed -nE 's/.*[\[\(\{]([A-Z0-9]{6})[\]\)\}].*/\1/p')"
+    id="$(printf '%s\n' "$base" | grep -oE '(\[[A-Z0-9]{6}\]|\([A-Z0-9]{6}\)|\{[A-Z0-9]{6}\})' | head -n 1 | tr -cd 'A-Z0-9')"
     case "$id" in
         [A-Z][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9])
             case "$id" in ISO|GCM|RVZ|WBFS|WIA|GCZ) return 1 ;; esac
