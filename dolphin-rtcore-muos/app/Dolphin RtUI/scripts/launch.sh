@@ -221,13 +221,17 @@ else
     rm -rf "$TMPD"; mkdir -p "$TMPD"
     merged=0
     GS_ARG=""
-    if [ -n "$GAMESETTINGS" ] && [ "$GAMESETTINGS" != "Disabled" ]; then
+    GS_WORKSHOP_ARG="--workshop=$WORKSHOP"
+    if [ "$GAMESETTINGS" = "Disabled" ]; then
+        # Explicit Disabled beats any previously active metadata selection.
+        GS_WORKSHOP_ARG=""
+    elif [ -n "$GAMESETTINGS" ]; then
         GS_PATH="$WORKSHOP/gamesettings/$GAME_ID/$GAMESETTINGS"
         [ -f "$GS_PATH" ] && GS_ARG="--gs-file=$GS_PATH"
     fi
     if command -v python3 >/dev/null 2>&1 && [ -f "$MERGE" ]; then
         if python3 "$MERGE" --default-dir "$RT_PROFILES/Default" --profile-dir "$PDIR" \
-                --out-dir "$TMPD" --game-id "$GAME_ID" --workshop "$WORKSHOP" $GS_ARG >> "$LOG" 2>&1 \
+                --out-dir "$TMPD" --game-id "$GAME_ID" $GS_WORKSHOP_ARG $GS_ARG >> "$LOG" 2>&1 \
            && [ -s "$TMPD/Dolphin.ini" ]; then
             merged=1
         fi
