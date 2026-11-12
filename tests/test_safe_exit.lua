@@ -11,6 +11,11 @@ local function expect(ok, message)
     if not ok then error(message or "assertion failed", 2) end
 end
 
+expect(#SafeExit.load_raw() == 2 and SafeExit.load_raw()[1] == 8 and SafeExit.load_raw()[2] == 9,
+    "missing config must default to START + SELECT joydev indices")
+local default_names = SafeExit.default_names()
+expect(default_names[1] == "SELECT" and default_names[2] == "START", "default names must be START + SELECT")
+
 local ok, saved = SafeExit.save_names({ "MENU" })
 expect(ok and saved == "MENU", "single MENU must be accepted")
 local raw = SafeExit.load_raw()
