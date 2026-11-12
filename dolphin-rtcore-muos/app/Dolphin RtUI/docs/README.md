@@ -5,13 +5,14 @@ Full description, screenshots and install guide: see the Flavour III README
 shipped with the release (`README_Flavour_III_FrontendONE.md`).
 
 ## Screens
-Home · Library · Game options · Cheats & Boost · Cheat DB · Mod Vault · Hotkeys ·
-Controller map · Rt:Profiles / Editor · GameSettings · Compatibility list ·
-Settings · Diagnostics · **Rt:Core Env Triage** · About.
+Home · Library · Game options · Cheats & Boost · Cheat DB · Mod Vault · Hotkeys · Safe Exit ·
+ROM folders / Registratore Z · Controller map · Rt:Profiles / Editor · GameSettings ·
+Compatibility list · Settings · Diagnostics · **Rt:Core Env Triage** · About.
 
 ## Controls
 D-pad move (hold to scroll) · A select/play · B back · X options · Y favourite ·
-L1/R1 filter or tab · L2/R2 letter jump · START settings · START+SELECT quit · MENU system drawer.
+L1/R1 filter or tab · L2/R2 letter jump · START settings · MENU system drawer.
+Safe Exit defaults to MENU / M; edit the combo in Settings → Safe Exit.
 
 ## Layout
 - `ui/` — design system (`kit.lua`), navigation (`init.lua`), screens.
