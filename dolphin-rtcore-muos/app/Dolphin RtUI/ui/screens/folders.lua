@@ -18,9 +18,9 @@ local function show_set()
     S.mode = "set"
     S.folder_waker_browse = false
     local rows = {
-        { add = true, label = "+  Browse for a ROM folder" },
-        { autodetect = true, label = "Auto-detect ROM roots" },
-        { folder_waker = true, label = "FolderWaker — scan detected folders" },
+        { add = true, system = "GC", label = "ADD GAMECUBE ROM FOLDER" },
+        { add = true, system = "Wii", label = "ADD WII ROM FOLDER" },
+        { folder_waker = true, label = "FolderWaker — repair Content Explorer folders" },
         { folder_waker_browse = true, label = "FolderWaker — inspect a folder manually" },
     }
     for i, e in ipairs(Settings.get("rom_paths") or {}) do
@@ -42,8 +42,9 @@ local function show_dir(path)
     S.list:set(rows, false)
 end
 
-local function start_browse(for_folder_waker)
+local function start_browse(for_folder_waker, system)
     S.folder_waker_browse = (for_folder_waker == true)
+    S.add_system = system
     for _, p in ipairs(Settings.rom_root_candidates()) do
         if FS.is_dir(p) then show_dir(p); return end
     end
@@ -52,54 +53,48 @@ end
 
 local function add(system)
     if S.mode ~= "browse" then return end
+    system = system or S.add_system or "GC"
     if Settings.add_rom_path(S.cwd, system) then
         SFX.play("menu_toggleoption")
         Notify.show("success", system .. " folder added — rescan from Library")
     else
-        Notify.show("info", "Folder already registered for " .. system)
+        Notify.show("info", "Folder already registered — one shared path is kept")
     end
 end
 
-local function start_folder_waker_scan()
+local function start_folder_waker_scan(show_warning)
     S.folder_waker_items = FolderTools.scan()
     S.folder_waker_roots = FolderTools.root_report()
     S.folder_waker_item, S.folder_waker_system = nil, nil
-    S.mode = "folder_waker_scan"
-    local rows = {}
+    local rows, warning_rows = {}, {}
     for i, item in ipairs(S.folder_waker_items) do
-        local status = item.status == "skip-match" and "SKIP NAME"
-            or item.status == "unmapped" and "NO ASSIGN"
-            or item.status == "mapped" and "MAPPED"
-            or "REVIEW"
         local system = item.inferred_system or item.mapped_system or "?"
-        rows[#rows + 1] = {
+        local row = {
             folder_waker_idx = i, item = item,
             label = item.name,
-            status = status,
+            status = "CONTENT EXPLORER BLOCKED",
             system = system,
         }
+        rows[#rows + 1] = row
+        if item.content_explorer_blocked then warning_rows[#warning_rows + 1] = row end
     end
-    S.list:set(rows, false)
+    S.folder_waker_rows = rows
+    if show_warning and #warning_rows > 0 then
+        S.mode = "folder_waker_warning"
+        S.list:set(warning_rows, false)
+    else
+        S.mode = "folder_waker_scan"
+        S.list:set(rows, false)
+        if #rows == 0 then show_set() end
+    end
 end
 
 local function preview(item, system)
     local plan, err = FolderTools.preview(item, system or item.inferred_system or item.mapped_system)
-    local name = item.name or item.path:match("([^/]+)$") or item.path
-    if name:sub(1, 2):lower() == "rt" then
-        Notify.show("info", "This folder already has the Rt prefix; it will not be prefixed twice.")
-        return
-    end
-    if not plan then
-        local parent = item.path:match("^(.*)/[^/]+$")
-        if not parent then Notify.show("error", tostring(err)); return end
-        local target_name = "Rt" .. name
-        plan = {
-            source = item.path,
-            target = parent .. "/" .. target_name,
-            alias = FolderTools.normalize_alias(target_name),
-        }
-    end
-    S.folder_waker_item, S.folder_waker_system, S.folder_waker_plan = item, system or item.inferred_system or item.mapped_system, plan
+    if not plan then Notify.show("warning", tostring(err)); return end
+    S.folder_waker_item = item
+    S.folder_waker_system = plan.system
+    S.folder_waker_plan = plan
     S.mode = "folder_waker_preview"
 end
 
@@ -127,7 +122,8 @@ local function commit_folder_waker()
         Notify.show("success", "Renamed to " .. (result.target:match("([^/]+)$") or result.target)
             .. " and registered as " .. result.alias)
         SFX.play("menu_select")
-        start_folder_waker_scan()
+        start_folder_waker_scan(false)
+        show_set()
     else
         Notify.show("error", tostring(result))
     end
@@ -138,6 +134,10 @@ function S.enter()
     S.first_run = Settings.get("rom_discovery_done") ~= true
     K.set_accent("sys")
     show_set()
+    -- Automatically explain the Content Explorer restriction when affected
+    -- directory names are present. No rename or registration happens here.
+    start_folder_waker_scan(true)
+    if S.mode ~= "folder_waker_warning" then show_set() end
 end
 
 function S.update(dt)
@@ -151,29 +151,20 @@ function S.pad(b)
         if b == "UP" then if S.list:move(-1) then SFX.play("menu_move") end
         elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
         elseif b == "A" and row then
-            if row.add then start_browse(false)
+            if row.add then start_browse(false, row.system)
             elseif row.folder_waker_browse then start_browse(true)
-            elseif row.autodetect then
-                local n = Settings.auto_discover_rom_paths()
-                show_set()
-                if n > 0 then
-                    Notify.show("success", n .. " ROM root(s) discovered")
-                else
-                    Notify.show("info", "No new ROM root found. You can browse or run FolderWaker.")
-                end
-            elseif row.folder_waker then
-                start_folder_waker_scan()
-            end
+            elseif row.folder_waker then start_folder_waker_scan(true) end
         elseif b == "X" and row and row.idx then
             Settings.remove_rom_path(row.idx)
             SFX.play("menu_back")
             show_set()
+        elseif b == "Y" then start_browse(false, "GC")
+        elseif b == "X" then start_browse(false, "Wii")
         elseif b == "B" then
             if S.first_run then
-                -- Explicitly dismiss the first-run prompt; later scans remain
-                -- available from ROM folders → Auto-detect.
+                -- Explicitly skip manual path selection; no paths are added.
                 Settings.set("rom_discovery_done", true)
-                Notify.show("info", "ROM setup skipped. You can configure folders later in ROM folders.")
+                Notify.show("info", "ROM setup skipped. Add GameCube/Wii folders later in Settings.")
                 require("ui").go("library", nil, { no_push = true })
             else
                 require("ui").back()
@@ -203,6 +194,17 @@ function S.pad(b)
         return
     end
 
+    if S.mode == "folder_waker_warning" then
+        if b == "UP" then if S.list:move(-1) then SFX.play("menu_move") end
+        elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
+        elseif b == "A" then
+            S.mode = "folder_waker_scan"
+            S.list:set(S.folder_waker_rows or {}, false)
+            if #(S.folder_waker_rows or {}) == 0 then show_set() end
+        elseif b == "B" then show_set() end
+        return
+    end
+
     if S.mode == "folder_waker_scan" then
         if b == "UP" then if S.list:move(-1) then SFX.play("menu_move") end
         elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
@@ -225,7 +227,7 @@ end
 
 local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
-    if r.add or r.autodetect or r.folder_waker or r.folder_waker_browse then
+    if r.add or r.folder_waker or r.folder_waker_browse then
         K.text("body", r.label, x + 14, y + h / 2 - 9, focused and K.acc or K.C.dim)
     elseif r.idx then
         K.text("body", K.clip("body", r.path, w - 110), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
@@ -235,11 +237,9 @@ local function draw_row(r, x, y, w, h, focused)
         K.text("body", K.clip("body", r.label, w - 40), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
         K.text("body", "›", x + w - 22, y + h / 2 - 9, K.C.faint)
     elseif r.folder_waker_idx then
-        K.text("body", K.clip("body", r.label, w - 160), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
-        local colour = r.status == "SKIP NAME" and K.C.warn
-            or r.status == "NO ASSIGN" and K.C.bad
-            or r.status == "MAPPED" and K.C.ok or K.C.dim
-        K.pill(r.status, x + w - 12, y + h / 2, colour, true)
+        K.text("body", K.clip("body", r.label, w - 170), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
+        K.text("h", "!", x + w - 152, y + h / 2 - 12, K.C.warn)
+        K.pill(r.status, x + w - 12, y + h / 2, K.C.warn, true)
     end
 end
 
@@ -281,6 +281,18 @@ local function draw_folder_waker_preview()
 end
 
 function S.draw()
+    if S.mode == "folder_waker_warning" then
+        K.header("CONTENT EXPLORER WARNING", "muOS folder-name restriction detected", nil, { icon = "folder" })
+        K.panel(K.MARGIN, 92, K.W - K.MARGIN * 2, 322, { cut = 12, accent = K.C.warn })
+        K.text("body", "muOS Content Explorer explicitly blocks folders named gc, ngc, gamecube, game cube, or wii.", K.MARGIN + 16, 108, K.C.text, 1, K.W - K.MARGIN * 2 - 32)
+        K.text("small", "ROMs inside these folders will not be listed in Content Explorer, even when the files are valid.", K.MARGIN + 16, 154, K.C.dim, 1, K.W - K.MARGIN * 2 - 32)
+        K.text("small", "You can always launch these games directly from Dolphin Rt:UI.", K.MARGIN + 16, 190, K.C.ok, 1, K.W - K.MARGIN * 2 - 32)
+        K.text("small", "To make them visible in Content Explorer, FolderWaker can rename GameCube folders to RtGC and Wii folders to RtWii, then register the matching muOS alias.", K.MARGIN + 16, 224, K.C.dim, 1, K.W - K.MARGIN * 2 - 32)
+        K.text("key", "AFFECTED FOLDERS  ·  REVIEW BELOW", K.MARGIN + 16, 274, K.C.warn)
+        S.list:draw(draw_row)
+        K.footer({ { key = "A", label = "YES · Review fixes" }, { key = "B", label = "NO · Rt:UI only" } })
+        return
+    end
     if S.mode == "folder_waker_preview" then
         draw_folder_waker_preview()
         return
@@ -316,8 +328,10 @@ function S.draw()
         K.footer({ { key = "A", label = "Open" }, { key = "Y", label = "Add GC" }, { key = "X", label = "Add Wii" }, { key = "B", label = "Up" } })
     elseif S.mode == "folder_waker_scan" then
         K.footer({ { key = "A", label = "Review" }, { key = "Y", label = "Review as GC" }, { key = "X", label = "Review as Wii" }, { key = "B", label = "Back" } })
+    elseif S.mode == "set" then
+        K.footer({ { key = "A", label = "Open" }, { key = "Y", label = "Add GC" }, { key = "X", label = "Add Wii" }, { key = "B", label = "Done" } })
     else
-        K.footer({ { key = "A", label = "Open" }, { key = "X", label = "Remove" }, { key = "B", label = "Done" } })
+        K.footer({ { key = "A", label = "Open" }, { key = "Y", label = "Add GC" }, { key = "X", label = "Add Wii" }, { key = "B", label = "Done" } })
     end
 end
 
