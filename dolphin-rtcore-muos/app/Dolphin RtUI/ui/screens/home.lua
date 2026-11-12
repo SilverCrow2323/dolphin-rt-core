@@ -138,7 +138,7 @@ local function draw_banner()
     local n_titles = 0
     for _ in pairs(Cheats.index()) do n_titles = n_titles + 1 end
     local right1 = ("%d games  ·  %d titles"):format(n_games, n_titles)
-    local right2 = "GameCube  ·  Wii on muOS"
+    local right2 = "SELECT → Rt:Stream  ·  GameCube / Wii"
     local rx = K.W - K.MARGIN - 12
     K.text("small", right1, rx - K.width("small", right1), BANNER_Y + 12, K.C.dim)
     K.text("small", right2, rx - K.width("small", right2), BANNER_Y + 42, K.C.faint)
@@ -173,6 +173,7 @@ function S.draw()
         { key = "D-PAD", label = "Move" },
         { key = "A",     label = "Open" },
         { key = "START", label = "Settings" },
+        { key = "SELECT", label = "Rt:Stream" },
     })
 end
 
