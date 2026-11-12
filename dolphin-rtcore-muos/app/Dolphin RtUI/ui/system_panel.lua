@@ -405,7 +405,7 @@ local function draw_status(item, x, y, w, h, focused)
     if focused then color(item.accent or C.cyan, 1); love.graphics.rectangle("fill", x, y + 5, 3, h - 10, 1, 1) end
     text(item.title, x + 11, y + 5, font("Orbitron-Bold.ttf", 13), focused and C.text or C.dim)
     right_text(item.status or "UNKNOWN", x + w - 174, y + 5, 162,
-        font("JetBrainsMono-Regular.ttf", 11), item.accent or C.faint)
+        font("JetBrainsMono-Regular.ttf", 12), item.accent or C.faint)
     love.graphics.setFont(font("JetBrainsMono-Regular.ttf", 10))
     color(C.faint)
     love.graphics.printf(item.detail or "", x + 11, y + 23, w - 22, "left")
@@ -539,7 +539,7 @@ function M.pad(b)
         local idx = M._focus[M._sel]
         local item = idx and M._items[idx]
         if item and item.kind == "notification" and item.entry then
-            Hub.dismiss(item.entry.id)
+            Hub.remove_history(item.entry.id)
             SFX.play("menu_select")
             refresh_items()
         end
