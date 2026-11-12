@@ -38,7 +38,7 @@ end
 local function marker_map(root)
     local map = {}
     local raw = Shell.popen("find " .. shq(root) ..
-        " -mindepth 2 -type f -name '*.txt' -print 2>/dev/null", 2) or ""
+        " -mindepth 2 -type f -iname '*.txt' -print 2>/dev/null", 2) or ""
     for file in raw:gmatch("[^\n]+") do
         local relative = file:sub(#root + 2)
         local folder = relative:match("^([^/]+)/")
@@ -51,13 +51,12 @@ local function marker_map(root)
     return map
 end
 
-local function match_scope(name, markers, game_id)
+local function match_scope(name, markers, game_id, direct_name, direct_scope)
     if not game_id or game_id == "" then
         return (markers and markers.all) and "all" or "catalog"
     end
+    if name == direct_name then return direct_scope end
     local prefix = game_id:sub(1, 3)
-    if name == game_id then return "id" end
-    if name == prefix then return "prefix" end
     markers = markers or {}
     if markers.all then return "all" end
     if markers[game_id] then return "id" end
@@ -134,8 +133,19 @@ function M.list_for(game)
 
     for _, spec in ipairs(roots) do
         local markers = marker_map(spec.path)
+        local direct_name, direct_scope
+        if game_id and game_id ~= "" then
+            if FS.is_dir(join(spec.path, game_id)) then
+                direct_name, direct_scope = game_id, "id"
+            else
+                local prefix = game_id:sub(1, 3)
+                if FS.is_dir(join(spec.path, prefix)) then
+                    direct_name, direct_scope = prefix, "prefix"
+                end
+            end
+        end
         for _, name in ipairs(list_directories(spec.path)) do
-            local scope = match_scope(name, markers[name], game_id)
+            local scope = match_scope(name, markers[name], game_id, direct_name, direct_scope)
             if scope then
                 local folder = join(spec.path, name)
                 local meta = read_metadata(folder)
