@@ -1,11 +1,7 @@
 -- ui/screens/mods.lua — MOD VAULT.
--- 4 tab colorati, uno per cartella di /opt/muos/share/emulator/dolphin/Load/:
---   Textures · Wii SD Sync · Riivolution · Dynamic Input
--- Per ogni tab elenca le voci applicabili al gioco (vedi core/mods.lua):
---   ID esatto · primi 3 char dell'ID (tutte le regioni) · nome del gioco ·
---   cartella "All" (tutti i giochi).
--- [A] on/off  [X] tutte on  [Y] tutte off  [L1/R1 o SX/DX] cambia tab  [B] indietro
--- Senza gioco (tile Home) mostra il catalogo installato, sola lettura.
+-- Global and per-game controls for the installed Dolphin Load/ categories.
+-- Standard categories support per-game exceptions; native GraphicMods are global.
+-- Global disable is reversible: entries move to <Category>.off, never deleted.
 local K    = require("ui.kit")
 local SFX  = require("ui.sfx")
 local U      = require("ui.util")
@@ -20,8 +16,9 @@ S.rows, S.off, S.sel_by_tab = {}, {}, {}
 
 local TAB_Y, TAB_H = 80, 34
 
-local function per_game_mode()
-    return S.game ~= nil and not Mods.CATS[S.tab].legacy
+local function per_game_mode(index)
+    index = index or S.tab
+    return S.game ~= nil and not Mods.CATS[index].legacy
 end
 
 local function tab_w() return (K.W - K.MARGIN * 2) / #Mods.CATS end
@@ -31,7 +28,7 @@ local function counts(i)
     local on = 0
     for _, r in ipairs(rows) do
         local enabled
-        if per_game_mode() then enabled = not off[r.name] else enabled = not r.parked end
+        if per_game_mode(i) then enabled = not off[r.name] else enabled = not r.parked end
         if enabled then on = on + 1 end
     end
     return on, #rows
@@ -167,7 +164,7 @@ local function draw_tabs()
         K.draw_tool_icon(cat.icon, x + 17, TAB_Y + TAB_H / 2, 14, c, on and 1 or 0.6)
         K.text("key", K.clip("key", cat.short or cat.label, w - 36), x + 31, TAB_Y + 2, on and K.C.text or K.C.dim)
         local n_on, n = counts(i)
-        local badge = S.game and (n_on .. "/" .. n) or tostring(n)
+        local badge = n_on .. "/" .. n
         K.text("key", badge, x + 31, TAB_Y + 17, n == 0 and K.C.faint or c, on and 1 or 0.7)
     end
     K.color(acc, 1)
