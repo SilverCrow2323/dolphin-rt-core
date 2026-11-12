@@ -36,10 +36,12 @@ local direct_id = sys .. "/RMGE01"
 local direct_prefix = sys .. "/RMG"
 local fallback_prefix = sys .. "/GM8"
 local custom = user .. "/All User Shaders"
+local user_collection = user .. "/All User Collection"
+local user_nested = user_collection .. "/Shader Variant"
 local parked_user = tmp .. "/Load/GraphicMods.off/Parked User Shaders"
 
 for _, dir in ipairs({bloom, galaxy .. "/gameids", galaxy_extra, zelda .. "/gameids",
-                      direct_id, direct_prefix, fallback_prefix, custom, parked_user}) do mkdir(dir) end
+                      direct_id, direct_prefix, fallback_prefix, custom, user_collection, user_nested, parked_user}) do mkdir(dir) end
 write(bloom .. "/metadata.json", metadata("Bloom Removal", "Dolphin Team"))
 write(bloom .. "/all.txt", "")
 write(galaxy .. "/metadata.json", metadata("Super Mario Galaxy Bloom"))
@@ -52,6 +54,8 @@ write(direct_prefix .. "/metadata.json", metadata("Region Prefix Fallback"))
 write(fallback_prefix .. "/metadata.json", metadata("Fallback Game Mod"))
 write(custom .. "/metadata.json", metadata("User Shader Pack", "Test Author"))
 write(custom .. "/all.txt", "")
+write(user_collection .. "/all.txt", "")
+write(user_nested .. "/metadata.json", metadata("Collection Shader Variant", "Collection Author"))
 write(parked_user .. "/metadata.json", metadata("Parked User Pack", "Legacy User"))
 write(parked_user .. "/all.txt", "")
 
@@ -99,11 +103,14 @@ end
 local migrated, migrated_count = Graphics.migrate_legacy_selection(game, {
     ["All User Shaders"] = true,
     ["Parked User Shaders"] = true,
+    ["All User Collection"] = true,
 })
-assert(migrated and migrated_count == 2, "legacy RTID user selections migrate once")
+assert(migrated and migrated_count == 3, "legacy RTID user selections migrate once, including nested collections")
 rows = Graphics.list_for(game)
 assert(by_name(rows, "All User Shaders").enabled, "legacy active user selection is preserved")
 assert(by_name(rows, "Parked User Shaders").enabled, "legacy parked user selection is restored and preserved")
+assert(by_name(rows, "All User Collection/Shader Variant").enabled,
+    "legacy top-level selection migrates to nested metadata entries")
 assert(not by_name(rows, "All Games Bloom Removal").enabled, "new official mods stay disabled during migration")
 local migrated_again, count_again = Graphics.migrate_legacy_selection(game, {["All Games Bloom Removal"] = true})
 assert(migrated_again and count_again == 0, "existing Dolphin profile is never overwritten by migration")
