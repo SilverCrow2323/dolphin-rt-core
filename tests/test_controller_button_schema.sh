@@ -32,8 +32,12 @@ while IFS= read -r -d '' file; do
   check "$file" 'Buttons/+ = `Button 7`'
   check "$file" 'Buttons/- = `Button 6`'
   check "$file" 'Buttons/Home = `Button 8`'
-  check "$file" 'Nunchuk/Buttons/C = `Button 4`'
-  check "$file" 'Nunchuk/Buttons/Z = `Button 5`'
+  # NoNunchuk is a deliberate Wii profile variant; when Nunchuk controls are
+  # present, both mappings must use the corrected SDL button numbers.
+  if grep -Eq '^Nunchuk/Buttons/(C|Z) =' "$file"; then
+    check "$file" 'Nunchuk/Buttons/C = `Button 4`'
+    check "$file" 'Nunchuk/Buttons/Z = `Button 5`'
+  fi
 done < <(find "$APP/workshop/controller/Wii" -type f -name WiimoteNew.ini -print0)
 [ "$gc_count" -gt 0 ] && [ "$wii_count" -gt 0 ]
 echo "[OK] current SDL button numbering verified in $gc_count GameCube and $wii_count Wii profiles"
