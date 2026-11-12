@@ -48,7 +48,7 @@ The default no longer uses START+SELECT, and START is not used by the default L2
 1. Confirm the selected profile is not Disabled.
 2. Confirm the launcher calls `gptokeyb2 -c <profile>` without a positional `dolphin` argument; passing a process name enables the START + SELECT kill action.
 3. Check that the Default `.gptk` contains `[controls]`, `l2 = hold_state rt_hotkeys`, and `[controls:rt_hotkeys]`; plain `l2+a = f1` lines are not valid gptokeyb2 FSM syntax.
-3. For keyboard mode, check that `Device = Keyboard` is in the copied `Config/Hotkeys.ini` and that `lib/gptokeyb2` is executable.
+4. For keyboard mode, check that `Device = Keyboard` is in the copied `Config/Hotkeys.ini` and that `lib/gptokeyb2` is executable.
 4. For pad mode, confirm `Device` is an SDL device, then make sure `gptokeyb2` is not running for that session.
 5. Check `data/logs/gptokeyb2_*.log` or `data/logs/gptokeyb2-content-explorer.log` and the Safe Exit watcher log.
 6. If START or SELECT is still intercepted, test with the Default profile and inspect other installed remappers or muOS-level hotkeys before changing Dolphin's own mappings.
