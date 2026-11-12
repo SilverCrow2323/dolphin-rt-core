@@ -84,8 +84,8 @@ rt_safe_leaf_name() {
 
 rt_safe_game_id() {
     case "$1" in
-        ""|*[!A-Za-z0-9_-]*|???*) ;;
-        *) return 1 ;;
+        ""|*[!A-Za-z0-9_-]*) return 1 ;;
+        *) ;;
     esac
     [ "${#1}" -ge 4 ] && [ "${#1}" -le 16 ]
 }
