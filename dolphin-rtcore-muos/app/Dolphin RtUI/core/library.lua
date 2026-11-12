@@ -205,6 +205,14 @@ local function open_next_root()
     _scan_done_path = _scan_list_path .. ".done"
     os.remove(_scan_list_path)
     os.remove(_scan_done_path)
+    -- Create the regular file before starting the detached writer, removing
+    -- the race where opening the read side happened before find created it.
+    local seed = io.open(_scan_list_path, "w")
+    if not seed then
+      _scan_list_path, _scan_done_path = nil, nil
+      _root_index = _root_index + 1
+    else
+    seed:close()
     local script = "find " .. Shell.shq(entry.path) .. " -maxdepth " ..
       tostring(_depth) .. " -type f \\( "
     local clauses = {}
@@ -221,6 +229,7 @@ local function open_next_root()
     os.remove(_scan_list_path); os.remove(_scan_done_path)
     _scan_list_path, _scan_done_path, _scan_pipe = nil, nil, nil
     _root_index = _root_index + 1
+    end
   end
   return false
 end
