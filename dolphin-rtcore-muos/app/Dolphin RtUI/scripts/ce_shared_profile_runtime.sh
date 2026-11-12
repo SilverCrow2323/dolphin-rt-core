@@ -121,6 +121,37 @@ rt_read_active_gameset() {
 
 # Persist a legacy per-game selection into the same ActiveConfig metadata used
 # by GamesetPicker, Rt:UI and the Python merge helper.
+rt_clear_active_gameset() {
+    local game_id="$1" root="$2" meta
+    rt_safe_game_id "$game_id" || return 1
+    meta="$root/$game_id/rtgameset_data.ini"
+    [ -f "$meta" ] || return 0
+    command -v python3 >/dev/null 2>&1 || return 1
+    python3 - "$meta" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+path = Path(sys.argv[1])
+lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+output = []
+in_game_settings = False
+for line in lines:
+    section = re.match(r"^\s*\[([^\]]+)\]\s*$", line)
+    if section:
+        in_game_settings = section.group(1).strip() == "GameSettings"
+        output.append(line)
+        continue
+    if in_game_settings and re.match(r"^\s*ActiveConfig\s*=", line):
+        continue
+    output.append(line)
+
+temporary = path.with_name(path.name + ".rt-tmp")
+temporary.write_text("\n".join(output) + "\n", encoding="utf-8")
+temporary.replace(path)
+PY
+}
+
 rt_write_active_gameset() {
     local game_id="$1" root="$2" active="$3" meta
     rt_safe_game_id "$game_id" || return 1
@@ -183,6 +214,7 @@ rt_project_active_gameset() {
     target="$config_dir/$game_id.ini"
 
     if [ "$requested" = "Disabled" ]; then
+        rt_clear_active_gameset "$game_id" "$root" || return 1
         rm -f "$target" "$target.rt-tmp"
         RT_ACTIVE_GAMESET=""
         return 0
@@ -219,7 +251,7 @@ rt_project_active_gameset() {
     rt_write_active_gameset "$game_id" "$root" "$chosen" || return 1
 
     mkdir -p "$config_dir"
-    temporary="$target.rt-tmp.$"
+    temporary="$target.rt-tmp"
     if ! cp -f "$source" "$temporary"; then
         rm -f "$temporary"
         return 1
