@@ -349,20 +349,6 @@ export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 JS_DEV=$(ls /dev/input/js* 2>/dev/null | head -1)
 [ -z "$JS_DEV" ] && JS_DEV="/dev/input/js0"
-# muOS is a direct framebuffer target: force FBDev + OpenGL ES-capable OGL.
-# This avoids accidental X11/headless selection and ignores stale per-user backend values.
-"$DOLPHIN" --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMU" >> "$DOLPHIN_LOG" 2>&1 &
-DOLPHIN_PID=$!
-log "dolphin pid=$DOLPHIN_PID  ( --platform=fbdev --video_backend=OGL -e <rom> -u $EMU )"
-
-# Start the watcher only after Dolphin is alive; bind it to this process PID.
-# RT_NO_EXIT_WATCHER=1 is used by Knulli / ROCKNIX ports.
-if [ "$SAFE_EXIT" = "1" ] && [ "${RT_NO_EXIT_WATCHER:-0}" != "1" ]; then
-    for w in "$RTSYS/overlay_exit.sh" "$SCRIPT_DIR/overlay_exit.sh"; do
-        if [ -x "$w" ]; then "$w" "$JS_DEV" "$DOLPHIN_PID" >/dev/null 2>&1 & WATCHER_PID=$!; log "exit watcher $w pid=$WATCHER_PID target=$DOLPHIN_PID"; break; fi
-    done
-fi
-
 # gptokeyb2 injects keyboard events only for keyboard hotkey profiles.
 # SDL/pad profiles must not create virtual keystrokes or steal SELECT/START.
 if [ "${HOTKEYS:-}" != "Disabled" ]; then
@@ -389,6 +375,23 @@ if [ "${HOTKEYS:-}" != "Disabled" ]; then
     else
         log "gptokeyb2 not started; Hotkeys.ini Device='${HOTKEY_DEVICE:-missing}'"
     fi
+fi
+sleep 0.25  # allow gptokeyb2 to attach before Dolphin opens the controller
+
+
+
+# muOS is a direct framebuffer target: force FBDev + OpenGL ES-capable OGL.
+# This avoids accidental X11/headless selection and ignores stale per-user backend values.
+"$DOLPHIN" --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMU" >> "$DOLPHIN_LOG" 2>&1 &
+DOLPHIN_PID=$!
+log "dolphin pid=$DOLPHIN_PID  ( --platform=fbdev --video_backend=OGL -e <rom> -u $EMU )"
+
+# Start the watcher only after Dolphin is alive; bind it to this process PID.
+# RT_NO_EXIT_WATCHER=1 is used by Knulli / ROCKNIX ports.
+if [ "$SAFE_EXIT" = "1" ] && [ "${RT_NO_EXIT_WATCHER:-0}" != "1" ]; then
+    for w in "$RTSYS/overlay_exit.sh" "$SCRIPT_DIR/overlay_exit.sh"; do
+        if [ -x "$w" ]; then "$w" "$JS_DEV" "$DOLPHIN_PID" >/dev/null 2>&1 & WATCHER_PID=$!; log "exit watcher $w pid=$WATCHER_PID target=$DOLPHIN_PID"; break; fi
+    done
 fi
 
 wait "$DOLPHIN_PID"
