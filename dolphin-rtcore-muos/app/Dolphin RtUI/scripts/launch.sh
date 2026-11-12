@@ -1,10 +1,11 @@
 #!/bin/bash
 # ============================================================
 #  Dolphin Rt:UI — launcher v3
-#  Modelled on /opt/muos/script/launch/ext-dolphinrt.sh (the path that is
-#  known to work on the device): environment, RtSys profile baseline, then
-#  "cd <emu dir> && ./dolphin -e ROM -u <emu dir>". No session dir, no ROM/ID
-#  detection: the UI already knows the game and passes everything explicitly.
+#  Shared runtime for Dolphin Rt:UI and muOS Content Explorer.
+#  Rt:UI passes game/profile choices directly; the Content Explorer adapter
+#  resolves the selected core + ROM ID + RTID card, then calls this same script.
+#  Both entry points project the canonical workshop profiles into Config/ before
+#  launching Dolphin. No independent static profile-copy pipeline is required.
 #
 #  Layered settings, in this order:
 #    1. RtSys/apply_profile.sh   (device baseline, orientation, sticks)
