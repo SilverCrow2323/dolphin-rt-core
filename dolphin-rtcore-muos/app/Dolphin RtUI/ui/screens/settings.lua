@@ -49,7 +49,68 @@ end
 
 local function cyc(label, key, values, default, after)
     return { kind = "choice", label = label, values = values,
-        get = function() return Settings.get(key) or default end,
+        get = function() -- NEXUS maintenance actions. Settings remains the single UI entry point for
+-- registration, folder audits and the GameSettings database.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function go(screen, params)
+        local ok, err = ui.go(screen, params)
+        if ok == false then return false, err or ("could not open " .. screen) end
+        return true
+    end
+    local specs = {
+        {
+            id = "settings.set_profile_catalogue_mode", title = "Set muOS profile catalogue mode", order = 10,
+            run = function(mode)
+                local value = tonumber(mode)
+                if mode == "Standard only" then value = 1
+                elseif mode == "All tiers" then value = 2 end
+                if value ~= 1 and value ~= 2 then return false, "mode must be 1 (Standard only) or 2 (All tiers)" end
+                Settings.set("core_profile_mode", value)
+                return true
+            end,
+        },
+        {
+            id = "settings.apply_profile_catalogue", title = "Apply muOS profile catalogue", order = 20,
+            run = function()
+                local ok, detail = require("core.muos_tools").apply(Settings.get("core_profile_mode") or 1)
+                if not ok then return false, detail end
+                Notify.show("success", "Profile catalogue updated")
+                return true
+            end,
+        },
+        {
+            id = "settings.register_muos_cores", title = "Register GameCube and Wii in muOS", order = 30,
+            run = function()
+                local ok, detail = require("core.muos_tools").apply()
+                if not ok then return false, detail end
+                Notify.show("success", "GameCube / Wii registered")
+                return true
+            end,
+        },
+        { id = "settings.open_folder_registration", title = "Open folder registration check", order = 40,
+          run = function() return go("folders") end },
+        { id = "settings.open_z_folder_audit", title = "Open Registratore Z", order = 50,
+          run = function() return go("folders", { zscan = true }) end },
+        { id = "settings.open_gamesettings_database", title = "Open GameSettings database", order = 60,
+          run = function() return go("gameset_browser") end },
+        { id = "settings.open_assign_audit", title = "Open muOS Assign audit", order = 70,
+          run = function() return go("triage") end },
+    }
+
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "maintenance", screen = "settings", order = spec.order,
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
+end
+
+return Settings.get(key) or default end,
         set = function(v) Settings.set(key, v); if after then after(v) end end }
 end
 local function tog(label, key, default, after)
