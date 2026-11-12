@@ -67,18 +67,11 @@ local function rescan()
 end
 
 local function sync_all_gamesettings()
-    local GL = require("core.gameset_loader")
-    local GM = require("core.gameset_manager")
-    local n = 0
-    for _, g in ipairs(Library.games) do
-        local bundled = GL.for_game(g.id)
-        if bundled and #GM.list_for(g.id) == 0 then
-            GL.deploy(bundled, g.id)
-            n = n + 1
-        end
-    end
+    local DEP = require("core.gamesettings_deployer")
+    local result = DEP.start(Library.games or {})
+    local n = (result and result.deployed) or 0
     if n == 0 then Notify.show("info", "GameSettings already up to date")
-    else Notify.show("success", n .. " game(s) updated with bundled GameSettings") end
+    else Notify.show("success", n .. " missing preset file(s) installed") end
 end
 
 
@@ -90,12 +83,18 @@ local function missing_booster()
     return missing
 end
 local function missing_gamesettings()
-    local missing = 0
     local GL = require("core.gameset_loader")
     local GM = require("core.gameset_manager")
+    local missing = 0
     for _, g in ipairs(Library.games) do
-        local bundled = GL.for_game(g.id)
-        if bundled and #GM.list_for(g.id) == 0 then missing = missing + 1 end
+        local entry = g.id and GL.for_game(g.id)
+        if entry then
+            local have = {}
+            for _, cfg in ipairs(GM.list_for(g.id)) do have[cfg.file] = true end
+            for _, cfg in ipairs(entry.configs or {}) do
+                if cfg.filename and not have[cfg.filename] then missing = missing + 1 end
+            end
+        end
     end
     return missing
 end
