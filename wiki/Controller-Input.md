@@ -68,11 +68,13 @@ The current `GCPadNew.ini` and `WiimoteNew.ini` profiles use zero-based SDL toke
 | B | Button 0 |
 | A | Button 1 |
 | X / Y | Button 2 / Button 3 |
+| Volume + | Button 10 |
+| L3 (GameCube Z in Default) | Button 11 |
 | L1 / R1 | Button 4 / Button 5 |
 | START | Button 7 |
 | L2 analogue / R2 analogue | Button 9 / Button 12 |
 
-The Wii profile also maps 1/2, +/−, HOME and Nunchuk controls. Consult the shipped INI files rather than assuming that the GameCube table applies unchanged.
+The Wii profile also maps 1/2, +/−, HOME and Nunchuk controls. RtUI's raw joystick mapping uses these same SDL numeric IDs; standardized gamepad events use button names. Consult the shipped INI files rather than assuming that the GameCube table applies unchanged.
 
 <details>
 <summary><strong>More detail: diagnosis checklist</strong></summary>
