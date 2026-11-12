@@ -20,6 +20,7 @@
 | I want to… | Start here |
 |---|---|
 | Install or upgrade on muOS | [[Quick-Start]] · [[muOS-Registration]] |
+| Understand controls and profile families | [[Controls-and-Profiles]] |
 | Find a GameCube/Wii result | [[Compatibility-Database]] |
 | Understand ratings and FPS | [[Rating-Guide]] |
 | Submit a reproducible test | [[Reporting-a-Test]] |
@@ -27,7 +28,9 @@
 | Maintain the compatibility site | [[Compatibility-Site]] |
 | Fix a missing core or frontend issue | [[Troubleshooting]] · [[FAQ]] · [[Rt-System-Status-Center]] |
 | Build, test or contribute | [[Development]] · [[Architecture]] · [[Contributing]] |
-| Work on PC streaming | [[Rt-Stream]] |\n| Manage official or user graphics mods | [[Graphics-Mods]] |
+| Write or review a practical Wiki page | [[Conventions-and-Template]] |
+| Work on PC streaming | [[Rt-Stream]] |
+| Manage official or user graphics mods | [[Graphics-Mods]] |
 | Prepare a release | [[Quality-Gates]] · [[Release-Checklist]] |
 
 ## Project at a glance
