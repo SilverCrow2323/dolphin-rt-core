@@ -2,7 +2,7 @@
 -- lightning hits the screen, the logo types in. Meanwhile the boot job
 -- (update check, ROM scan, rtid cards) runs; the intro never delays a boot
 -- that is already ready by more than the animation itself.
---   Settings > Boot intro:  full (about 4 s) | quick (about 2 s) | off
+--   Settings > Boot intro:  full (about 5 s) | quick (about 2.5 s) | off
 -- [A] skips after a short grace period.
 local K        = require("ui.kit")
 local Mascot   = require("ui.mascot")
@@ -28,7 +28,14 @@ local function proceed()
     if S.going then return end
     S.going = true
     local target = "library"
-    if ok_bi and BI.needs_rom_setup and BI.needs_rom_setup() then
+    -- Do the first-run mount probe at the end of the intro as well. The boot
+    -- worker may still be downloading metadata; ROM setup must not depend on
+    -- that network work finishing before the animation does.
+    if Settings.get("rom_discovery_done") ~= true then
+        pcall(Settings.auto_discover_rom_paths)
+    end
+    if Settings.get("rom_discovery_done") ~= true
+       or (ok_bi and BI.needs_rom_setup and BI.needs_rom_setup()) then
         target = "folders"
     end
     require("ui").go(target, nil, { no_push = true })
