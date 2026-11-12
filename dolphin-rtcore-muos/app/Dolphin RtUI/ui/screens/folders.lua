@@ -229,7 +229,11 @@ end
 
 local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
-    if r.add or r.folder_waker or r.folder_waker_browse then
+    if r.add then
+        local c = r.system == "Wii" and K.ACC.wii or K.ACC.gc
+        K.text("body", K.clip("body", r.label, w - 150), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
+        K.pill(r.system == "Wii" and "X  ·  ADD WII" or "Y  ·  ADD GC", x + w - 12, y + h / 2, c, true)
+    elseif r.folder_waker or r.folder_waker_browse then
         K.text("body", r.label, x + 14, y + h / 2 - 9, focused and K.acc or K.C.dim)
     elseif r.idx then
         K.text("body", K.clip("body", r.path, w - 110), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
