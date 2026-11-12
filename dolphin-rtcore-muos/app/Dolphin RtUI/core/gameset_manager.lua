@@ -126,7 +126,7 @@ function M.active_for(game_id)
     local meta = read_meta(dir .. "/rtgameset_data.ini")
     local active = meta.GameSettings and meta.GameSettings.ActiveConfig or nil
     if type(active) ~= "string" or active == "" or active:find("/", 1, true)
-       or active:find("..", 1, true) or active:match("^%.") then
+       or active:find("..", 1, true) or active:match("^%.") or not active:match("%.ini$") then
         return nil
     end
     local f = io.open(dir .. "/" .. active, "r")
