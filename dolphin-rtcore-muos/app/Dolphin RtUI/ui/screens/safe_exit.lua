@@ -126,7 +126,7 @@ function S.draw()
     K.text("xl", S.capturing and (#S.capture > 0 and table.concat(S.capture, " + ") or "PRESS BUTTON(S)…") or S.current,
         K.MARGIN + 22, 168, S.capturing and K.acc or K.C.text, 1, K.W - K.MARGIN * 2 - 44)
     K.text("body", "Default: M (MENU / Guide), one button.", K.MARGIN + 22, 226, K.C.text)
-    K.text("small", "You can also record 2–4 buttons together, for example SELECT + START.", K.MARGIN + 22, 257, K.C.dim, 1, K.W - K.MARGIN * 2 - 44)
+    K.text("small", "You can also record 2–4 buttons together, for example L1 + R1.", K.MARGIN + 22, 257, K.C.dim, 1, K.W - K.MARGIN * 2 - 44)
     K.text("small", "The watcher listens to the physical button stream; it does not remap or consume game input.", K.MARGIN + 22, 282, K.C.dim, 1, K.W - K.MARGIN * 2 - 44)
 
     if S.capturing then
