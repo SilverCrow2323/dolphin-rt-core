@@ -15,6 +15,8 @@
 
 ### Build and packaging
 - Build on an Ubuntu 22.04 ARM64 userland hosted by the current Ubuntu 24.04 ARM64 runner, retaining the GLIBC 2.35 ceiling for muOS.
+- Refuse a full update unless a validated AArch64 Dolphin executable is supplied; UI-only validation requires the explicit `DOLPHIN_UI_ONLY=1` opt-in.
+- Refuse packaging when Dolphin needs `libhidapi-hidraw.so.0` but the matching AArch64 runtime is absent.
 - Preserve the ELF, private HIDAPI, system resource, MUXUPD integrity and archive-layout checks.
 - If the Actions artifact service is unavailable, publish the verified files to a SHA-specific draft GitHub Release instead of losing the completed package.
 
