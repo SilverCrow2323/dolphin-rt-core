@@ -35,7 +35,7 @@ function S.enter(params)
     S.region = region_of(S.game_id)
     K.set_accent("wii")
     local bundled = GL.for_game(S.game_id)
-    if bundled and #(GM.list_for(S.game_id) or {}) == 0 then GL.deploy(bundled, S.game_id) end
+    if bundled then GL.deploy(bundled, S.game_id) end
     build()
 end
 function S.update(dt) S.list:update(dt) end
