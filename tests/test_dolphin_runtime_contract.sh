@@ -31,10 +31,10 @@ require "$EXT_LAUNCH" '--platform=fbdev --video_backend=OGL'
 
 # gptokeyb2 uses its native FSM syntax. Never enable its built-in
 # START+SELECT kill binding; Rt:Core Safe Exit owns the M / combo watcher.
-require "$APP_LAUNCH" '"$GPTK_BIN" dolphin -c "$GPTK_CFG" -D states,keyboard'
-require "$EXT_LAUNCH" '"$GPTK_BIN" dolphin -c "$GPTK_CFG" -D states,keyboard'
-if grep -Fq -- '-1 dolphin' "$APP_LAUNCH" "$EXT_LAUNCH"; then
-    echo "FAIL: gptokeyb2 START+SELECT kill mode must remain disabled" >&2
+require "$APP_LAUNCH" '"$GPTK_BIN" -c "$GPTK_CFG" -D states,keyboard'
+require "$EXT_LAUNCH" '"$GPTK_BIN" -c "$GPTK_CFG" -D states,keyboard'
+if grep -Eq '"\$GPTK_BIN"[[:space:]]+dolphin|-[1k][[:space:]]+dolphin' "$APP_LAUNCH" "$EXT_LAUNCH"; then
+    echo "FAIL: gptokeyb2 must not receive a process name or START+SELECT kill mode" >&2
     exit 1
 fi
 require "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/ext-dolphin.gptk" '[controls:rt_hotkeys]'
@@ -45,7 +45,7 @@ if grep -Eq '^[[:space:]]*start[[:space:]]*=' "$ROOT/dolphin-rtcore-muos/app/Dol
     exit 1
 fi
 for launcher in "$APP_LAUNCH" "$EXT_LAUNCH"; do
-    gptk_line="$(grep -nF '"$GPTK_BIN" dolphin -c "$GPTK_CFG"' "$launcher" | head -1 | cut -d: -f1)"
+    gptk_line="$(grep -nF '"$GPTK_BIN" -c "$GPTK_CFG"' "$launcher" | head -1 | cut -d: -f1)"
     dolphin_line="$(grep -nE '(^|[[:space:]])(\./dolphin|"?\$DOLPHIN"?) --platform=fbdev' "$launcher" | head -1 | cut -d: -f1)"
     [ -n "$gptk_line" ] && [ -n "$dolphin_line" ] && [ "$gptk_line" -lt "$dolphin_line" ] || {
         echo "FAIL: gptokeyb2 must attach before Dolphin starts in $launcher" >&2
