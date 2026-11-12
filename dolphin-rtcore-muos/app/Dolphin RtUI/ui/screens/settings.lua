@@ -197,6 +197,10 @@ local function sections()
               end },
         },
         ABOUT = {
+            { kind = "action", label = "Folder registration check", icon = "folder",
+              sub = "ROM roots · aliases · assign", run = function() require("ui").go("folders") end },
+            { kind = "action", label = "Registratore Z", icon = "folder",
+              sub = "scan · inspect · rename + alias", run = function() require("ui").go("folders") end },
             { kind = "action", label = "Diagnostics", icon = "list", editor_label = "Viewer",
               run = function() require("ui").go("diagnostics") end },
             { kind = "action", label = "Rt:Core Env Triage", icon = "info", sub = "I · II · III health check",
