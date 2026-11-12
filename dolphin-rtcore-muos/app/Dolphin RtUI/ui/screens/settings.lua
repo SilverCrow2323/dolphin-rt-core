@@ -6,6 +6,7 @@ local Notify   = require("ui.notify")
 local Settings = require("core.settings")
 local Library  = require("core.library")
 local Cheats   = require("core.rtcheats")
+local MuOS     = require("core.muos")
 local _okT, _Triage = pcall(require, "core.rtcore_triage")
 if not _okT then print("[settings] core.rtcore_triage FAILED: " .. tostring(_Triage)) end
 local Triage = _okT and _Triage or {
@@ -186,11 +187,29 @@ local function sections()
             tog("Update check on boot", "auto_update_check", true),
             tog("Compatibility data", "enable_compat_data", true,
                 function() pcall(function() require("core.compatibility").load(true) end) end),
+            {
+                kind = "choice", label = "Core profile visibility",
+                values = { "Standard Only", "All Tiers" },
+                get = function() return MuOS.profile_mode() end,
+                set = function(value)
+                    local mode = value == "All Tiers" and 2 or 1
+                    local ok, err = MuOS.apply_profile_mode(mode)
+                    if ok then Notify.show("success", "Core profiles: " .. value)
+                    else Notify.show("error", "Profile mode failed: " .. tostring(err)) end
+                end,
+            },
+            { kind = "action", label = "Repair GameCube/Wii registration", icon = "rescan",
+              sub = "muOS manifest",
+              run = function()
+                  local ok, err = MuOS.ensure()
+                  if ok then Notify.show("success", "GameCube/Wii registration repaired")
+                  else Notify.show("error", "Registration failed: " .. tostring(err)) end
+              end },
             { kind = "action", label = "Latest release", icon = "rescan",
               sub = function() local l = Updater.latest(); return l and l.tag or "check" end,
               run = function()
                   Updater.check_async(function(d) Notify.show("info", "Latest: " .. d.tag) end)
-                  Notify.show("info", "Checking\226\128\166")
+                  Notify.show("info", "Checking\\226\\128\\166")
               end },
         },
         ABOUT = {
@@ -403,6 +422,36 @@ function S.draw()
         { key = "L1 R1", label = "Section" },
         { key = "B", label = "Back" },
     })
+end
+
+
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local specs = {
+        {
+            id = "muos.registration.ensure", title = "Repair GameCube/Wii registration", order = 10,
+            run = function() return MuOS.ensure() end,
+        },
+        {
+            id = "muos.profiles.mode", title = "Get core profile visibility", order = 20,
+            run = function()
+                return { mode = MuOS.profile_mode_id(), label = MuOS.profile_mode() }
+            end,
+        },
+        {
+            id = "muos.profiles.set_mode", title = "Set core profile visibility", order = 30,
+            run = function(mode) return MuOS.apply_profile_mode(mode) end,
+        },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "system", order = spec.order, screen = "settings",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S
