@@ -3,9 +3,10 @@
 . "$(dirname "$0")/paths.sh"
 OUT="$DATA/discover.txt"
 HOSTFILE="$DATA/discover.host"
+SUNSHINE="$DATA/discover.sunshine"
 CAND="$DATA/discover.candidates"
 TMP="$DATA/discover.probe"
-: > "$OUT"; : > "$CAND"; rm -f "$HOSTFILE"
+: > "$OUT"; : > "$CAND"; : > "$SUNSHINE"; rm -f "$HOSTFILE"
 
 add_candidate() {
     ip="$1"
@@ -74,15 +75,24 @@ while IFS= read -r ip; do
     if fetch "http://$ip:47989/serverinfo" "$TMP" 3 2>/dev/null; then
         if grep -Eqi 'root|hostname|appversion|Sunshine' "$TMP"; then
             echo "FOUND Sunshine: $ip" >> "$OUT"
-            [ -s "$HOSTFILE" ] || printf '%s\n' "$ip" > "$HOSTFILE"
+            grep -Fxq "$ip" "$SUNSHINE" 2>/dev/null || printf '%s\n' "$ip" >> "$SUNSHINE"
         else echo "Reachable service (not identified): $ip" >> "$OUT"; fi
     fi
     rm -f "$TMP"
 done < "$CAND"
 
-if [ -s "$HOSTFILE" ]; then
-    echo "Selected host: $(cat "$HOSTFILE")" >> "$OUT"
-    echo "Open Pair with PC to complete the PIN handshake." >> "$OUT"
+if [ -s "$SUNSHINE" ]; then
+    count="$(wc -l < "$SUNSHINE" | tr -d ' ')"
+    if [ "$count" -eq 1 ]; then
+        cp "$SUNSHINE" "$HOSTFILE"
+        echo "Selected host: $(cat "$HOSTFILE")" >> "$OUT"
+        echo "Open Pair with PC to complete the PIN handshake." >> "$OUT"
+    else
+        rm -f "$HOSTFILE"
+        echo "Multiple Sunshine hosts found ($count):" >> "$OUT"
+        cat "$SUNSHINE" >> "$OUT"
+        echo "Select the PC to pair with from Rt:Stream." >> "$OUT"
+    fi
 else
     echo "No Sunshine server responded on port 47989." >> "$OUT"
     echo "Check Sunshine and the PC firewall for LAN/Tailscale traffic." >> "$OUT"
