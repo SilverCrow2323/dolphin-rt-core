@@ -7,7 +7,7 @@
 -- Storage: data/app_input.json
 --   {
 --     "active_device": null,          -- GUID o nome, null = primo connesso
---     "pad": { "A": 0, "B": 1, ... }  -- logical -> SDL button index
+--     "pad": { "A": 1, "B": 0, ... }  -- logical -> zero-based SDL button ID
 --   }
 --
 -- I default riflettono ui/input.lua originale.
