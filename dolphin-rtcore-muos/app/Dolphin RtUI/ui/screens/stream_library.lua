@@ -146,7 +146,7 @@ local function start_launch(g)
   if not Stream.configured() then Notify.show("warning", "Set the PC address first (START)"); return end
   launching = { g = g, t = 0, phase = "check" }
   os.remove(Stream.DIR .. "/h_launch.done")
-  Stream.spawn("health.sh", "http://" .. Stream.s.HOST .. ":47989/serverinfo", Stream.DIR .. "/h_launch.done")
+  Stream.spawn("health.sh", "https://" .. Stream.s.HOST .. ":47989/serverinfo", Stream.DIR .. "/h_launch.done")
   SFX.play("menu_select")
 end
 
