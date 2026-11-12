@@ -104,7 +104,7 @@ assert(secret.sync_port == nil, "state must not expose the configured port")
 local invalid_key, invalid_key_err = actions["stream_settings.set_text"].run("TOKEN", "secret")
 assert(invalid_key == false and tostring(invalid_key_err):match("only HOST"))
 
-assert(actions["stream_settings.select"].run(4))
+assert(actions["stream_settings.select"].run(6))
 fail_set = true
 local failed_change, failed_change_err = actions["stream_settings.change_selected"].run(1)
 assert(failed_change == false and tostring(failed_change_err):match("disk full"))
@@ -117,7 +117,7 @@ assert(actions["stream_settings.select"].run(5))
 assert(actions["stream_settings.change_selected"].run(1))
 assert(stream.FPS == "30", "frame-rate action must cycle to next value")
 
-assert(actions["stream_settings.select"].run(1))
+assert(actions["stream_settings.select"].run(2))
 assert(actions["stream_settings.open_text_editor"].run())
 state = actions["stream_settings.state"].run()
 assert(state.mode == "osk" and state.osk_label == "PC address")
