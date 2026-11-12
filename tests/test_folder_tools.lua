@@ -66,6 +66,7 @@ local link_source = link_root .. "/GameCubeZ-real"
 local link_alias = link_root .. "/GameCubeZ"
 local setup_rc = os.execute("mkdir -p " .. Shell.shq(link_source) .. " && ln -s GameCubeZ-real " .. Shell.shq(link_alias))
 expect(setup_rc == 0 or setup_rc == true, "create symlink fixture")
+Settings.data = { rom_paths = {} }
 local link_item, link_err = Tools.inspect(link_alias)
 expect(link_item == nil and tostring(link_err):find("symbolic%-link") ~= nil,
     "FolderWaker must explain that muOS skips symbolic-link folders")
