@@ -2,7 +2,7 @@
 --
 -- Checks that the three layers of Dolphin Rt:Core are really installed:
 --   I   Comfort Zone  — emulator, launcher, content assignments
---   II  Bash Arsenal  — RtSys profile engine + Task Toolkit
+--   II  Bash Arsenal  — RtSys profile engine + UI-managed catalogue controls
 --   III FrontendONE   — this very app (Rt:UI)
 -- and collects a few numbers (ROMs, disk, content). The scan is INCREMENTAL:
 -- begin() builds a job, step(job) runs one small unit (one popen at most) so
@@ -40,19 +40,19 @@ local function flavours()
         { label = "Launcher script",   path = "/opt/muos/script/launch/ext-dolphinrt.sh", kind = "exec", crit = true,
           hint = "muOS cannot start games." },
         { label = "Core list: GameCube", kind = "manifest", sys = "Nintendo Gamecube", path = "MUOS/info/manifest  >  Nintendo Gamecube",
-          hint = "Run Task > Dolphin Rt-Core > Register GameCube and Wii." },
+          hint = "Use Settings > Tools & About > Register GameCube + Wii." },
         { label = "Core list: Wii",      kind = "manifest", sys = "Nintendo Wii", path = "MUOS/info/manifest  >  Nintendo Wii",
           hint = "Run Task > Dolphin Rt-Core > Register GameCube and Wii." },
       } },
     { id = "II", name = "Bash Arsenal", tag = "POWER LAYER", accent = "boost",
-      blurb = "Tier profiles and Task Toolkit.",
+      blurb = "Tier profiles and UI-managed catalogue controls.",
       checks = {
         { label = "RtSys engine",      path = EMU .. "/RtSys",                       kind = "dir",  crit = true,
           hint = "Tiers and device baseline need RtSys." },
         { label = "apply_profile.sh",  path = EMU .. "/RtSys/apply_profile.sh",      kind = "exec", crit = true,
           hint = "launch.sh applies the baseline with it." },
-        { label = "Task Toolkit",      path = "/opt/muos/share/task/Dolphin Rt-Core", kind = "dir",
-          hint = "Task Toolkit entry is missing." },
+        { label = "muOS manifest tool", path = EMU .. "/RtSys/manifest_tool.sh", kind = "exec",
+          hint = "Registration and profile catalogue actions require this tool." },
       } },
     { id = "III", name = "FrontendONE", tag = "THIS APP", accent = "wii",
       blurb = "Rt:UI, workshop and databases.",
