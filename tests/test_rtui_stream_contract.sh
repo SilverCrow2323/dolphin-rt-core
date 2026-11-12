@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+APP="$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI"
+grep -Fq 'local END_FRAME = (Mascot.FRAMES or 120) - 1' "$APP/ui/screens/boot.lua"
+grep -Fq 'if frame >= END_FRAME or S.t > 7 then proceed() end' "$APP/ui/screens/boot.lua"
+grep -Fq 'if lg == "SELECT" then' "$APP/ui/init.lua"
+grep -Fq 'M.go(in_stream and "library" or "stream_library"' "$APP/ui/init.lua"
+grep -Fq 'scan_depth        = 8' "$APP/core/settings.lua"
+grep -Fq 'n_db_cfg' "$APP/ui/screens/gameset_browser.lua"
+grep -Fq 'Scan LAN + Tailscale' "$APP/ui/screens/stream_settings.lua"
+grep -Fq 'tailscale status --json' "$APP/tools/stream/discover.sh"
+grep -Fq 'discovered_host.txt' "$APP/tools/stream/discover.sh"
+sh -n "$APP/tools/stream/discover.sh"
+echo "RtUI / RtStream feature contract: OK"
