@@ -207,7 +207,7 @@ PY
 # Project one selected Workshop preset into Dolphin's native per-game file.
 # The user-root GameSettings/ directory is runtime output; Workshop stays canonical.
 rt_project_active_gameset() {
-    local game_id="$1" root="$2" config_dir="$3" requested="$4"
+    local game_id="$1" root="$2" config_dir="$3" requested="$4" projector="${5:-}"
     local chosen="" source target temporary
 
     rt_safe_game_id "$game_id" || return 1
@@ -251,8 +251,13 @@ rt_project_active_gameset() {
     rt_write_active_gameset "$game_id" "$root" "$chosen" || return 1
 
     mkdir -p "$config_dir"
-    temporary="$target.rt-tmp"
-    if ! cp -f "$source" "$temporary"; then
+    temporary="$target.rt-tmp.$"
+    if [ -n "$projector" ] && [ -f "$projector" ] && command -v python3 >/dev/null 2>&1; then
+        if ! python3 "$projector" "$source" "$target" "$temporary"; then
+            rm -f "$temporary"
+            return 1
+        fi
+    elif ! cp -f "$source" "$temporary"; then
         rm -f "$temporary"
         return 1
     fi
