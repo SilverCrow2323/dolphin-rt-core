@@ -23,15 +23,21 @@ Legacy files such as `Dolphin.ini.<profile>` and `GFX.ini.<profile>` are kept
 for compatibility/bootstrap during migration; the shared Content Explorer and
 Rt:UI launch path does not use them as the selected profile catalogue.
 
+`Config/GameSettings/<ID>.ini` is generated from the one selected
+`workshop/gamesettings/<ID>/<ActiveConfig>` file immediately before launch.
+Never edit the Config copy directly. When a game has no active preset, the
+launcher removes that game's previous user override so old values cannot leak
+into a later run.
+
 ## 2. Workshop (managed by DolphinUI)
 
 ```
 workshop/base/                     Shared fallbacks for non-core profiles; legacy Dolphin INIs
 workshop/rtcoreprofile/Default/    Canonical core-profile base
-workshop/rtcoreprofile/<name>/     Rt:Core profiles, families and tiers, families and tiers
+workshop/rtcoreprofile/<name>/     Rt:Core profiles, families and tiers
 workshop/controller/GameCube/<n>/  GC controller layouts
 workshop/controller/Wii/<n>/       Wii controller layouts
-workshop/gamesettings/<ID>/        Per-game overrides
+workshop/gamesettings/<ID>/        Per-game GameINI source + ActiveConfig
 workshop/hotkeys/<name>/           Hotkey profiles
 workshop/logging/<name>/           Logger profiles
 workshop/snapshots/                Snapshot files
@@ -41,12 +47,13 @@ workshop/flashback/<id>/           Full config backups
 
 The same `workshop/` catalogue is used by both launch routes. The Content
 Explorer adapter resolves its selected external-core slug and ROM GameID, reads
-optional `workshop/gameslibrary/rtid_<ID>.ini` launch overrides, and invokes
+optional `workshop/gameslibrary/rtid_<ID>.ini` migration overrides, and invokes
 `scripts/launch.sh`. Rt:UI passes its selections to that same script directly.
-`RtSys` remains the muOS compatibility/registration layer; it always applies
-the neutral device baseline. The selected core profile is never selected from
-`RtSys/Config`; it comes from `workshop/rtcoreprofile` and is layered as
-`Default -> family -> tier -> active GameSettings`.
+The selected core profile comes only from `workshop/rtcoreprofile` and is
+layered as `Default -> family -> tier`. GameSettings remain independent and
+are projected as one native per-game INI. RtSys is the muOS integration and
+compatibility layer; its legacy INI files are bootstrap/fallback inputs, not
+the editable profile catalogue.
 
 ## 3. Dolphin resources
 
@@ -59,10 +66,12 @@ the neutral device baseline. The selected core profile is never selected from
 ```
 
 
-`Load/` is Dolphin's single active resource root, not a second profile
-catalogue. Rt:UI stores selection/activation plans in its data and per-game
-RTID cards, then prepares the existing `Load/` tree before launch. Do not keep
-a second copy of the same installed mod under Config or RtSys.
+`Load/` is Dolphin's single active resource root, not a profile catalogue.
+Installed mod/texture payloads live there; Rt:UI stores per-game enable/disable
+choices and temporary link plans in its own data, then prepares that one
+`Load/` tree before launch. A frontend/desktop package may have a staging
+directory, but the active muOS runtime destination remains
+`/opt/muos/share/emulator/dolphin/Load/`.
 
 ## 4. Runtime data
 
