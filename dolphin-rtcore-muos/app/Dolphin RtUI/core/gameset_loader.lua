@@ -5,8 +5,12 @@ local sh   = require("core.sh")
 
 local PATH = "data/gamesettings.json"
 local _cache
+M.generation = 0
 
-function M.invalidate() _cache = nil end
+function M.invalidate()
+    _cache = nil
+    M.generation = M.generation + 1
+end
 
 function M.load(force)
     if force then _cache = nil end
