@@ -62,7 +62,11 @@ mkdir -p "$S/$APP/data/logs" "$S/$APP/data/stream/covers" "$S/$APP/data/stream/k
 
 find "$S" -name '*.sh' -exec chmod 755 {} +
 chmod 755 "$S/$APP"/lib/love "$S/$APP"/lib/moonlight "$S/$APP"/lib/gptokeyb2 2>/dev/null || true
-find "$S" \( -name __pycache__ -o -name '*.rt.*' -o -name '*.tmp' -o -name '*.bak' \) -prune -exec rm -rf {} +
+# Exclude backup files, including timestamped editor/maintainer copies.
+# The old '*.bak' exact match missed names such as Dolphin.ini.bak.20261030.
+find "$S" \( -name __pycache__ -o -name '*.rt.*' -o -name '*.tmp' \
+  -o -name '*.bak' -o -name '*.bak.*' -o -name '*~' -o -name '*.swp' \) \
+  -prune -exec rm -rf {} +
 
 # Never ship personal / runtime data
 if find "$S" -path '*/data/stream/*' -type f | grep -q .; then echo "ERROR: runtime stream data in the package" >&2; exit 1; fi
