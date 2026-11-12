@@ -82,6 +82,34 @@ rt_safe_leaf_name() {
     esac
 }
 
+# ActiveConfig in rtgameset_data.ini is the canonical GameSettings selector.
+# RTID [LAUNCH] GameSettings is read only as a migration fallback for old cards.
+rt_read_active_gameset() {
+    local game_id="$1" root="$2" meta active
+    [ -n "$game_id" ] || return 1
+    meta="$root/$game_id/rtgameset_data.ini"
+    [ -r "$meta" ] || return 1
+    active="$(awk -F= '
+        /^[[:space:]]*\[/ {
+            section = ($0 ~ /^[[:space:]]*\[GameSettings\][[:space:]]*$/)
+            next
+        }
+        section {
+            key = $1
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", key)
+            if (key == "ActiveConfig") {
+                sub(/^[^=]*=/, "")
+                gsub(/^[[:space:]]+|[[:space:]]+$/, "")
+                print
+                exit
+            }
+        }
+    ' "$meta")"
+    rt_safe_leaf_name "$active" || return 1
+    [ -f "$root/$game_id/$active" ] || return 1
+    printf '%s\n' "$active"
+}
+
 rt_extract_game_id() {
     local rom="$1" magic offset id base
     [ -f "$rom" ] || return 1
