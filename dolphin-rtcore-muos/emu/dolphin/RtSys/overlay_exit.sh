@@ -1,8 +1,8 @@
 #!/bin/bash
 # Configurable Safe Exit watcher. Reads raw joydev button indices from RTUI.
-# Default: MENU / M (button 8). Multi-button combinations are supported.
+# Default: START + SELECT (buttons 9 + 8). Multi-button combinations are supported.
 set -u
-JS_DEV="${1:-/dev/input/js0}"
+JS_DEV="${1:-/dev/input/js1}"
 DOLPHIN_PID="${2:-}"
 RTSYS="/opt/muos/share/emulator/dolphin/RtSys"
 LOG="$RTSYS/logs/watcher.log"
@@ -22,7 +22,7 @@ if [ -r "$CONFIG" ]; then
         [ "$duplicate" -eq 1 ] || COMBO+=("$token")
     done
 fi
-[ "${#COMBO[@]}" -gt 0 ] || COMBO=(8)
+[ "${#COMBO[@]}" -gt 0 ] || COMBO=(8 9)
 log "Safe Exit watcher on $JS_DEV; combo=$(IFS=,; echo "${COMBO[*]}"); config=$CONFIG"
 [ -e "$JS_DEV" ] || { log "ERROR: $JS_DEV not found"; exit 1; }
 exec 3< "$JS_DEV"
