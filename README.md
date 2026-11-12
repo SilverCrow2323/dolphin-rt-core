@@ -229,3 +229,7 @@ Development should happen on short-lived branches and be merged through pull req
 **BUILD IT. INSPECT IT. BOOT IT. THEN CALL IT DONE.**
 
 </div>
+
+## 📚 Practical Wiki
+
+The tracked [Wiki source](wiki/) provides short task guides for installation, controller profiles, compatibility reports and troubleshooting. One page covers one topic; required information is labelled **MUST KNOW!!**, non-essential enhancements are **Optional**, and basic steps stay unlabelled. Publish with `bash tools/publish-wiki.sh`.
