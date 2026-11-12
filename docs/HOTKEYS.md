@@ -1,56 +1,52 @@
-# Hotkeys
+# Hotkeys and Safe Exit
 
-## 1. Format
+## Input modes
 
-`Config/Hotkeys.ini`:
+Rt:Core has two distinct hotkey paths. They must not run at the same time:
 
-```ini
-[Hotkeys1]
-Device = SDL/0/muOS-Keys
-Keys/Exit = `Button 9` & `Button 7`
-Keys/Save State Slot 1 = `Button 9` & `Button 1`
-Keys/Load State Slot 1 = `Button 9` & `Button 0`
-...
-```
+- **Keyboard:** Dolphin receives keyboard events injected by `gptokeyb2`. Rt:Core starts it only when the selected `Hotkeys.ini` contains `Device = Keyboard`.
+- **SDL / Pad:** Dolphin receives button expressions such as `(\`Button 9\` & \`Button 1\`)` directly through SDL. `gptokeyb2` is not started in this mode.
 
-Expressions are Dolphin syntax: backtick-wrapped button tokens
-joined by `&`. `hotkey_editor.lua` builds and parses these.
+`START` and `SELECT` are not remapped as a global modifier in the bundled keyboard profile. This keeps them available to games.
 
-## 2. Bundled profile
+## Bundled keyboard profile
 
-`workshop/hotkeys/Default/Hotkeys.ini`:
+The Default `ext-dolphin.gptk` maps L2 combinations to function keys:
 
-| Action | Binding |
-|---|---|
-| Exit | SELECT + START |
-| Save State 1 | SELECT + A |
-| Load State 1 | SELECT + B |
-| Toggle Pause | SELECT + X |
-| Fast Forward | SELECT + Y |
-| Reset | SELECT + L1 |
+| Action | Default keyboard combo | Dolphin key |
+|---|---|---|
+| Save State 1 | L2 + A | F1 |
+| Load State 1 | L2 + B | F2 |
+| Save State 2 | L2 + X | F3 |
+| Load State 2 | L2 + Y | F4 |
+| Save State 3 | L2 + L1 | F5 |
+| Load State 3 | L2 + R1 | F6 |
+| Toggle Pause | L2 + Up | F7 |
+| Fast Forward | L2 + Down | F8 |
+| Frame Limit − / + | L2 + Left / Right | F9 / F10 |
+| Screenshot | L2 + R2 | F11 |
+| Reset | L2 + START | F12 |
+| Safe Exit | MENU / M | Escape |
 
-## 3. Live Menu override
+The hotkey designer can change the combo and emitted key. The table above describes the shipped Default keyboard profile, not a restriction on user profiles.
 
-When Live Menu is enabled, `launch.sh` swaps in
-`scripts/livemenu/Hotkeys.internal.ini` before starting Dolphin.
-The user's file is preserved as `Hotkeys.ini.user`. The frontend
-re-applies the chosen hotkey profile on every launch, so no state
-is lost.
+## Safe Exit
 
-## 4. Editor
+Safe Exit is a separate raw-button watcher, not Dolphin's ordinary `Hotkeys.ini` exit action.
 
-`workshop_hotkey_edit.lua` binds one action at a time:
+- Default: **MENU / M only** (RG35XX H joydev button index 8).
+- RTUI → Settings → Safe Exit records a single MENU button or a combination of 2–4 buttons.
+- The selected raw joydev button indices are saved in `data/safe_exit.conf` and shared by RTUI and the muOS Content Explorer launcher.
+- The watcher requests graceful termination first and uses a forced termination only as a fallback.
 
-1. Navigate to the row, [A] to start capture.
-2. Press one or more buttons. Release to commit.
-3. Commit fires 1.5 s after the last button or on [Enter].
-4. [X] clears the binding, [Y] resets the file to Default.
+The default no longer uses START+SELECT. The watcher reads button events and does not synthesize input or remap gameplay buttons. A custom combination should avoid buttons needed by the current game.
 
-Capture mode is global: `State.capture_mode = true` while
-capturing, so main.lua routes raw pad events directly.
+## Troubleshooting
 
-## 5. Native exit
+1. Confirm the selected profile is not Disabled.
+2. For keyboard mode, check that `Device = Keyboard` is in the copied `Config/Hotkeys.ini` and that `lib/gptokeyb2` is executable.
+3. For pad mode, confirm `Device` is an SDL device, then make sure `gptokeyb2` is not running for that session.
+4. Check `data/logs/gptokeyb2_*.log` or `data/logs/gptokeyb2-content-explorer.log` and the Safe Exit watcher log.
+5. If START or SELECT is still intercepted, test with the Default profile and inspect other installed remappers or muOS-level hotkeys before changing Dolphin's own mappings.
 
-Comfort Zone ships a native hotkey: **START + SELECT**. This sends
-SIGTERM directly to Dolphin, clean process termination, no memory
-card corruption. It is independent of the Hotkeys.ini bindings.
+Physical-device validation is required to confirm the button numbering on a particular controller/firmware combination.
