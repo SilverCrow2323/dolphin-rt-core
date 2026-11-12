@@ -5,6 +5,7 @@ local U        = require("ui.util")
 local GL       = require("core.gameset_loader")
 local GM       = require("core.gameset_manager")
 local Library  = require("core.library")
+local Deployer = require("core.gamesettings_deployer")
 
 local S = {}
 S.tab = 1
@@ -186,6 +187,16 @@ function S.update(dt)
     if S.tab == 3 and S._db_generation ~= (GL.generation or 0) then
         refresh()
     end
+    if S._deploy_pending then
+        local ok, done, stats = pcall(Deployer.poll)
+        if not ok then
+            S._deploy_pending = false
+            S._deploy_error = tostring(done)
+        else
+            S._deploy_stats = stats or S._deploy_stats
+            if done then S._deploy_pending = false end
+        end
+    end
 end
 
 local function cycle_tab(d)
@@ -352,6 +363,99 @@ function S.draw()
             { key = "B", label = "Back" },
         })
     end
+end
+
+
+-- NEXUS actions use the same tab, refresh and preview state as the controller UI.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function set_tab(index)
+        S.preview = nil
+        S.tab = index
+        S.expanded = {}
+        refresh()
+        return true
+    end
+
+    local function selected_row()
+        return S.rows[S.list and S.list.sel or 0]
+    end
+
+    local function preview_selected()
+        local row = selected_row()
+        if not row or row.kind ~= "config" then
+            return false, "selected row is not a database preset"
+        end
+        local lines = {}
+        for line in tostring(row.raw_content or ""):gmatch("[^\\n]+") do
+            lines[#lines + 1] = line
+        end
+        S.preview = { row = row, lines = lines, scroll = 0 }
+        return true
+    end
+
+    local specs = {
+        { id = "gamesettings.open_library", title = "Open GameSettings library", order = 10,
+          run = function() return set_tab(1) end },
+        { id = "gamesettings.open_storage", title = "Open stored GameSettings", order = 20,
+          run = function() return set_tab(2) end },
+        { id = "gamesettings.open_database", title = "Open GameSettings database", order = 30,
+          run = function() return set_tab(3) end },
+        { id = "gamesettings.refresh_database", title = "Refresh GameSettings database", order = 40,
+          run = function()
+              GL.invalidate()
+              return set_tab(3)
+          end },
+        { id = "gamesettings.select_row", title = "Select GameSettings row", order = 50,
+          run = function(index)
+              if type(index) ~= "number" or index % 1 ~= 0
+                 or index < 1 or index > #S.rows then
+                  return false, "GameSettings row index out of range"
+              end
+              S.list.sel, S.sel = index, index
+              if S.list._aim then pcall(S.list._aim, S.list) end
+              return true
+          end },
+        { id = "gamesettings.preview_selected", title = "Preview selected database preset", order = 60,
+          run = preview_selected },
+        { id = "gamesettings.sync_library", title = "Queue GameSettings library sync", order = 70,
+          run = function()
+              if S._deploy_pending then return false, "GameSettings sync is already running" end
+              local ok, queued = pcall(Deployer.start, Library.games or {})
+              if not ok then return false, tostring(queued) end
+              queued = tonumber(queued) or 0
+              S._deploy_pending = queued > 0
+              S._deploy_error = nil
+              S._deploy_stats = { deployed = 0, matched = queued, queued = queued, processed = 0 }
+              return true, { queued = queued, deployed = 0, matched = queued }
+          end },
+        { id = "gamesettings.state", title = "Get GameSettings browser state", order = 80,
+          run = function()
+              local row = selected_row()
+              return {
+                  tab = TABS[S.tab] and TABS[S.tab].id or "library",
+                  row_count = #S.rows,
+                  selected_index = S.list and S.list.sel or 0,
+                  selected_kind = row and row.kind or nil,
+                  preview_open = S.preview ~= nil,
+                  deployment_pending = S._deploy_pending == true,
+                  deployment = S._deploy_stats,
+                  error = S._deploy_error,
+              }
+          end },
+    }
+
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "gamesettings", order = spec.order,
+            screen = "gameset_browser",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S
