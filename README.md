@@ -55,6 +55,8 @@ This project does not promise that every GameCube or Wii title will run at full 
 
 ![Dolphin Rt:Core input architecture](assets/docs/input-architecture.svg)
 
+![muOS firmware profile flow](assets/docs/muos-profile-flow.svg)
+
 | Layer | Interface | What the numbers mean |
 |---|---|---|
 | **Linux EV_KEY** | `/dev/input/event*` | Firmware-specific kernel codes. Jacaranda keeps the initial map; Andromeda uses the alternative map. |
