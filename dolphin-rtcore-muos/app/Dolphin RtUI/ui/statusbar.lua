@@ -56,14 +56,14 @@ local function poll_network()
     M._network.ip = ip
     M._network.tailscale = command_first("command -v tailscale >/dev/null 2>&1 && tailscale ip -4 | head -1")
 end
-local function poll_stream()
+local function poll_stream(dt)
     local ok, Stream = pcall(require, "core.stream")
     if not ok then return end
     if not M._stream_ready then M._stream_ready = pcall(Stream.init) end
     if M._stream_ready then
         Stream.poll_health()
         M._stream = Stream.health or M._stream
-        M._stream_poll = M._stream_poll + M.POLL_INTERVAL
+        M._stream_poll = M._stream_poll + (dt or 0)
         if Stream.configured() and M._stream_poll >= 5 and not Stream.health.pending then
             M._stream_poll = 0
             Stream.check_health()
@@ -72,9 +72,10 @@ local function poll_stream()
 end
 function M.update(dt)
     M._last_poll = M._last_poll + dt
-    if M._last_poll < M.POLL_INTERVAL then poll_stream(); return end
+    pcall(poll_stream, dt)
+    if M._last_poll < M.POLL_INTERVAL then return end
     M._last_poll = 0
-    pcall(poll_battery); pcall(poll_wifi); pcall(poll_network); pcall(poll_stream)
+    pcall(poll_battery); pcall(poll_wifi); pcall(poll_network)
 end
 local function draw_battery(x, y, w, h)
     local b = M._bat
