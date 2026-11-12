@@ -326,8 +326,16 @@ local function build()
           editor_target = "gameset_explorer",
           editor_params = function() return { game_id = g.id, game_title = g.title } end,
           list = gamesettings_choices,
-          get  = function() return launch_key("GameSettings") end,
-          set  = function(v) put("GameSettings", v) end },
+          get  = function()
+              local GM = require("core.gameset_manager")
+              return GM.active_for(g.id) or launch_key("GameSettings")
+          end,
+          set  = function(v)
+              local GM = require("core.gameset_manager")
+              if v == "Disabled" then GM.clear_active(g.id)
+              else GM.set_active(g.id, v) end
+              put("GameSettings", v)
+          end },
 
         { kind = "section", label = "INPUT", icon = "gamepad", color = "teal", skip = true },
         { kind = "choice", label = U.is_wii(g) and "Wii Mote" or "GameCube Pad",
