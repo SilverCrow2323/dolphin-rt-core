@@ -7,10 +7,12 @@
 
 Rt:Core has two distinct hotkey paths. They must not run at the same time:
 
-- **Keyboard:** Dolphin receives keyboard events injected by `gptokeyb2`. Rt:Core starts it only when the selected `Hotkeys.ini` contains `Device = Keyboard`.
+- **Keyboard:** Dolphin receives keyboard events injected by `gptokeyb2`. Rt:Core starts it only when the selected `Hotkeys.ini` contains `Device = SDL/0/Keyboard Mouse`.
 - **SDL / Pad:** Dolphin receives button expressions such as `(`Button 9` & `Button 1`)` directly through SDL. `gptokeyb2` is not started in this mode.
 
 `START` and `SELECT` are not global modifiers in the bundled keyboard profile, so games retain those controls.
+
+The Hotkey Designer reads legacy `[Hotkeys1]` / `Keys/...` profiles and translates known actions; saving writes the Dolphin 2606 `[Hotkeys]` schema. Pad profiles use `Device = SDL/0/muOS-Keys`; virtual-keyboard profiles use `Device = SDL/0/Keyboard Mouse`.
 
 ## Bundled keyboard profile
 
@@ -58,8 +60,8 @@ The RTUI launcher and Content Explorer launcher both prefer `/dev/input/js1`, th
 1. Confirm the selected hotkey profile is not Disabled.
 2. Confirm the launcher calls `gptokeyb2 -c <profile>` without a positional `dolphin` argument.
 3. Check that the Default `.gptk` contains `[controls]`, `l2 = hold_state rt_hotkeys`, and `[controls:rt_hotkeys]`; plain `l2+a = f1` lines are not valid gptokeyb2 FSM syntax.
-4. For keyboard mode, check that `Device = Keyboard` is in the copied `Config/Hotkeys.ini` and that `lib/gptokeyb2` is executable.
-5. For pad mode, confirm `Device` is an SDL device and that gptokeyb2 is not running for that session.
+4. For keyboard mode, check that `Device = SDL/0/Keyboard Mouse` is in the copied `Config/Hotkeys.ini` and that `lib/gptokeyb2` is executable.
+5. For pad mode, confirm `Device = SDL/0/muOS-Keys` and that gptokeyb2 is not running for that session.
 6. Check `data/logs/gptokeyb2_*.log`, `data/logs/gptokeyb2-content-explorer.log`, the launch log and the Safe Exit watcher log.
 7. If START or SELECT is intercepted, test with the Default profile and inspect other installed remappers or muOS-level hotkeys before changing Dolphin's own mappings.
 
