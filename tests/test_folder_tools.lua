@@ -19,18 +19,23 @@ end
 
 expect(Tools.normalize_alias("GameCube Z") == "gamecubez", "alias normalisation")
 expect(Tools.normalize_alias("Rt_GameCube-Z") == "rtgamecubez", "Rt alias normalisation")
-expect(Tools.infer_system("Nintendo GameCube") == "GC", "GameCube inference")
-expect(Tools.infer_system("GameCubeZ") == "GC", "GameCubeZ inference")
-expect(Tools.infer_system("Nintendo Wii") == "Wii", "Wii inference")
-expect(Tools.infer_system("WiiZ") == "Wii", "WiiZ inference")
+expect(Tools.infer_system("gc") == "GC", "gc exact match")
+expect(Tools.infer_system("NGC") == "GC", "ngc exact match")
+expect(Tools.infer_system("GameCube") == "GC", "gamecube exact match")
+expect(Tools.infer_system("Game Cube") == "GC", "game cube spaced exact match")
+expect(Tools.infer_system("Wii") == "Wii", "wii exact match")
+expect(Tools.infer_system("GameCubeZ") == nil, "GameCubeZ must not be renamed")
+expect(Tools.infer_system("Nintendo GameCube") == nil, "prefixed labels must not be renamed")
+expect(Tools.infer_system("WiiZ") == nil, "WiiZ must not be renamed")
+expect(Tools.infer_system("Nintendo Wii") == nil, "prefixed Wii labels must not be renamed")
 expect(Tools.infer_system("PlayStation") == nil, "unknown system must remain unknown")
 
 local hidden = Tools.skip_reasons(".hidden-roms", "/mnt/roms/.hidden-roms", { ".*", "_*" })
 expect(#hidden == 1 and hidden[1] == ".*", "hidden-directory skip match")
 local underscore = Tools.skip_reasons("_private", "/mnt/roms/_private", { ".*", "_*" })
 expect(#underscore == 1 and underscore[1] == "_*", "underscore-directory skip match")
-local normal = Tools.skip_reasons("GameCubeZ", "/mnt/roms/GameCubeZ", { ".*", "_*", "/img*", "*.ips*", "neogeo.zip" }, "/mnt/roms")
-expect(#normal == 0, "GameCubeZ is not falsely reported as a skip.ini match")
+local normal = Tools.skip_reasons("GameCube", "/mnt/roms/GameCube", { ".*", "_*", "/img*", "*.ips*", "neogeo.zip" }, "/mnt/roms")
+expect(#normal == 0, "GameCube is not falsely reported as a skip.ini match")
 
 local img_root = Tools.skip_reasons("img-assets", "/mnt/roms/img-assets", { ".*", "_*", "/img*", "*.ips*" }, "/mnt/roms")
 expect(#img_root == 1 and img_root[1] == "/img*", "root-level img path rule")
@@ -42,28 +47,43 @@ local file_pattern = Tools.skip_reasons("game.ips", "/mnt/roms/game.ips", { "*.i
 expect(#file_pattern == 0, "file extension skip patterns must not be reported as folder bans")
 
 local preview, err = Tools.preview({
-    path = "/mnt/sdcard/roms/GameCubeZ",
-    name = "GameCubeZ",
+    path = "/mnt/sdcard/roms/Game Cube",
+    name = "Game Cube",
+    has_roms = true,
 }, "GC")
 expect(preview ~= nil, err or "preview must be generated")
-expect(preview.target == "/mnt/sdcard/roms/RtGameCubeZ", "preview target path")
-expect(preview.alias == "rtgamecubez", "preview alias key")
+expect(preview.target == "/mnt/sdcard/roms/RtGC", "GC folders receive canonical RtGC name")
+expect(preview.alias == "rtgc", "GC alias key")
 expect(preview.system == "GC", "preview platform")
 
-local double_prefix = Tools.preview({
-    path = "/mnt/sdcard/roms/RtGameCubeZ",
-    name = "RtGameCubeZ",
-}, "GC")
-expect(double_prefix == nil, "already Rt-prefixed folders must not be prefixed again")
+local wii_preview, wii_err = Tools.preview({
+    path = "/mnt/sdcard/roms/wii",
+    name = "wii",
+    has_roms = true,
+}, nil)
+expect(wii_preview ~= nil, wii_err or "Wii exact match preview")
+expect(wii_preview.target == "/mnt/sdcard/roms/RtWii", "Wii folders receive canonical RtWii name")
+expect(wii_preview.alias == "rtwii", "Wii alias key")
 
-local rejected = Tools.preview({ path = "/mnt/roms/Wii" }, nil)
-expect(rejected == nil, "ambiguous folders require explicit platform selection")
+local unsupported = Tools.preview({
+    path = "/mnt/sdcard/roms/GameCubeZ",
+    name = "GameCubeZ",
+    has_roms = true,
+}, "GC")
+expect(unsupported == nil, "near-match directory must never be renamed")
+
+local missing_disc = Tools.preview({
+    path = "/mnt/sdcard/roms/gc",
+    name = "gc",
+    has_roms = false,
+}, "GC")
+expect(missing_disc == nil, "folder without a disc image must not be renamed")
 
 -- muOS Content Explorer skips symbolic-link directory entries. FolderWaker
 -- must reject them instead of offering a misleading rename/alias operation.
 local link_root = "/tmp/folderwaker-symlink-test-" .. tostring(os.time()) .. "-" .. tostring(math.random(1000, 999999))
-local link_source = link_root .. "/GameCubeZ-real"
-local link_alias = link_root .. "/GameCubeZ"
+local link_source = link_root .. "/GameCube-real"
+local link_alias = link_root .. "/GameCube"
 local setup_rc = os.execute("mkdir -p " .. Shell.shq(link_source) .. " && ln -s GameCubeZ-real " .. Shell.shq(link_alias))
 expect(setup_rc == 0 or setup_rc == true, "create symlink fixture")
 Settings.data = { rom_paths = {} }
@@ -81,16 +101,17 @@ os.execute("rm -rf " .. Shell.shq(link_root))
 -- folders found by the automatic candidate-name scan.
 Settings.data = { rom_paths = {} }
 Settings.rom_root_candidates = function() return { "/mnt/roms" } end
-FS.is_dir = function(path) return path == "/mnt/roms" or path == "/mnt/roms/GameCubeZ" end
+FS.is_dir = function(path) return path == "/mnt/roms" or path == "/mnt/roms/GameCube" end
 Shell.first = function(command)
-    if command:find("find ", 1, true) then return "/mnt/roms/GameCubeZ/game.rvz" end
+    if command:find("find ", 1, true) then return "/mnt/roms/GameCube/game.rvz" end
     return nil
 end
-local inspected, inspect_err = Tools.inspect("/mnt/roms/GameCubeZ")
+local inspected, inspect_err = Tools.inspect("/mnt/roms/GameCube")
 expect(inspected ~= nil, inspect_err or "manual folder inspection")
 expect(inspected.inferred_system == "GC", "manual folder system inference")
 expect(inspected.has_roms == true, "manual folder disc image probe")
-expect(inspected.status == "unmapped", "manual folder reports missing assignment separately")
+expect(inspected.status == "content-explorer-blocked", "manual folder is marked as Content Explorer blocked")
+expect(inspected.content_explorer_blocked == true, "blocked marker is retained")
 local roots = Tools.root_report()
 expect(#roots == 1 and roots[1].path == "/mnt/roms", "root report lists the configured scan root")
 expect(roots[1].accessible == true and roots[1].has_roms == true, "root report exposes mount and ROM visibility")
