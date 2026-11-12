@@ -60,6 +60,7 @@ jobs:
           luajit tests/test_safe_exit.lua
           luajit tests/test_folder_tools.lua
           luajit tests/test_rom_auto_discovery.lua
+          luajit tests/test_gamesettings_deployer.lua
       - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
         run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
@@ -144,6 +145,7 @@ jobs:
           bash -n tools/capture-ui.sh tools/publish-wiki.sh tools/build-compat-site.sh
           bash -n dolphin-build/build-dolphin.sh dolphin-build/verify-patches.sh dolphin-build/validate-aarch64-elf.sh tests/test_aarch64_elf_validator.sh
           bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/launch.sh"
+          sh -n "dolphin-rtcore-muos/app/Dolphin RtUI/tools/stream/discover.sh"
           bash -n dolphin-rtcore-muos/overlay/opt/muos/script/launch/ext-dolphinrt.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
