@@ -1,4 +1,4 @@
--- ROM folders + Registratore Z.
+-- ROM folders + FolderWaker.
 -- No directory is changed by scanning. A rename is a two-step, explicit action.
 local K           = require("ui.kit")
 local SFX         = require("ui.sfx")
@@ -12,16 +12,16 @@ local FolderTools = require("core.folder_tools")
 local S = {}
 S.list = K.List(K.MARGIN, 90, K.W - K.MARGIN * 2 - 14, K.BOT - 90, 36)
 S.mode, S.cwd, S.t = "set", "/", 0
-S.z_items, S.z_item, S.z_system, S.z_plan = {}, nil, nil, nil
+S.folder_waker_items, S.folder_waker_item, S.folder_waker_system, S.folder_waker_plan = {}, nil, nil, nil
 
 local function show_set()
     S.mode = "set"
-    S.z_browse = false
+    S.folder_waker_browse = false
     local rows = {
         { add = true, label = "+  Browse for a ROM folder" },
         { autodetect = true, label = "Auto-detect ROM roots" },
-        { registrator = true, label = "Registratore Z — scan detected folders" },
-        { registrator_browse = true, label = "Registratore Z — choose a folder manually" },
+        { folder_waker = true, label = "FolderWaker — scan detected folders" },
+        { folder_waker_browse = true, label = "FolderWaker — inspect a folder manually" },
     }
     for i, e in ipairs(Settings.get("rom_paths") or {}) do
         rows[#rows + 1] = { idx = i, path = e.path, system = e.system }
@@ -42,8 +42,8 @@ local function show_dir(path)
     S.list:set(rows, false)
 end
 
-local function start_browse(for_z)
-    S.z_browse = (for_z == true)
+local function start_browse(for_folder_waker)
+    S.folder_waker_browse = (for_folder_waker == true)
     for _, p in ipairs(Settings.rom_root_candidates()) do
         if FS.is_dir(p) then show_dir(p); return end
     end
@@ -60,20 +60,20 @@ local function add(system)
     end
 end
 
-local function start_zscan()
-    S.z_items = FolderTools.scan()
-    S.z_roots = FolderTools.root_report()
-    S.z_item, S.z_system = nil, nil
-    S.mode = "zscan"
+local function start_folder_waker_scan()
+    S.folder_waker_items = FolderTools.scan()
+    S.folder_waker_roots = FolderTools.root_report()
+    S.folder_waker_item, S.folder_waker_system = nil, nil
+    S.mode = "folder_waker_scan"
     local rows = {}
-    for i, item in ipairs(S.z_items) do
+    for i, item in ipairs(S.folder_waker_items) do
         local status = item.status == "skip-match" and "SKIP NAME"
             or item.status == "unmapped" and "NO ASSIGN"
             or item.status == "mapped" and "MAPPED"
             or "REVIEW"
         local system = item.inferred_system or item.mapped_system or "?"
         rows[#rows + 1] = {
-            zidx = i, item = item,
+            folder_waker_idx = i, item = item,
             label = item.name,
             status = status,
             system = system,
@@ -99,35 +99,35 @@ local function preview(item, system)
             alias = FolderTools.normalize_alias(target_name),
         }
     end
-    S.z_item, S.z_system, S.z_plan = item, system or item.inferred_system or item.mapped_system, plan
-    S.mode = "zpreview"
+    S.folder_waker_item, S.folder_waker_system, S.folder_waker_plan = item, system or item.inferred_system or item.mapped_system, plan
+    S.mode = "folder_waker_preview"
 end
 
-local function back_to_zscan()
-    S.z_item, S.z_system, S.z_plan = nil, nil, nil
-    start_zscan()
+local function back_to_folder_waker_scan()
+    S.folder_waker_item, S.folder_waker_system, S.folder_waker_plan = nil, nil, nil
+    start_folder_waker_scan()
 end
 
-local function commit_z()
-    if not S.z_item then return end
-    if S.z_system ~= "GC" and S.z_system ~= "Wii" then
+local function commit_folder_waker()
+    if not S.folder_waker_item then return end
+    if S.folder_waker_system ~= "GC" and S.folder_waker_system ~= "Wii" then
         Notify.show("warning", "Choose GameCube (Y) or Wii (X) first")
         return
     end
-    if S.z_item.has_roms ~= true then
+    if S.folder_waker_item.has_roms ~= true then
         Notify.show("warning", "Rename blocked: no supported GameCube/Wii disc image was found here.")
         return
     end
-    if S.z_item.is_scan_root then
+    if S.folder_waker_item.is_scan_root then
         Notify.show("warning", "Rename blocked: this is a configured ROM root. Select a child folder instead.")
         return
     end
-    local ok, result = FolderTools.rename_register(S.z_item, S.z_system)
+    local ok, result = FolderTools.rename_register(S.folder_waker_item, S.folder_waker_system)
     if ok then
         Notify.show("success", "Renamed to " .. (result.target:match("([^/]+)$") or result.target)
             .. " and registered as " .. result.alias)
         SFX.play("menu_select")
-        start_zscan()
+        start_folder_waker_scan()
     else
         Notify.show("error", tostring(result))
     end
@@ -152,17 +152,17 @@ function S.pad(b)
         elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
         elseif b == "A" and row then
             if row.add then start_browse(false)
-            elseif row.registrator_browse then start_browse(true)
+            elseif row.folder_waker_browse then start_browse(true)
             elseif row.autodetect then
                 local n = Settings.auto_discover_rom_paths()
                 show_set()
                 if n > 0 then
                     Notify.show("success", n .. " ROM root(s) discovered")
                 else
-                    Notify.show("info", "No new ROM root found. You can browse or run Registratore Z.")
+                    Notify.show("info", "No new ROM root found. You can browse or run FolderWaker.")
                 end
-            elseif row.registrator then
-                start_zscan()
+            elseif row.folder_waker then
+                start_folder_waker_scan()
             end
         elseif b == "X" and row and row.idx then
             Settings.remove_rom_path(row.idx)
@@ -189,7 +189,7 @@ function S.pad(b)
             show_dir(row.dir)
         elseif b == "X" or b == "Y" then
             local system = b == "Y" and "GC" or "Wii"
-            if S.z_browse and row and row.dir then
+            if S.folder_waker_browse and row and row.dir then
                 local item, err = FolderTools.inspect(row.dir)
                 if not item then Notify.show("error", tostring(err))
                 else preview(item, system) end
@@ -203,7 +203,7 @@ function S.pad(b)
         return
     end
 
-    if S.mode == "zscan" then
+    if S.mode == "folder_waker_scan" then
         if b == "UP" then if S.list:move(-1) then SFX.play("menu_move") end
         elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
         elseif (b == "A" or b == "Y" or b == "X") and row and row.item then
@@ -215,17 +215,17 @@ function S.pad(b)
         return
     end
 
-    if S.mode == "zpreview" then
-        if b == "Y" then S.z_system = "GC"; SFX.play("menu_toggleoption")
-        elseif b == "X" then S.z_system = "Wii"; SFX.play("menu_toggleoption")
-        elseif b == "A" then commit_z()
-        elseif b == "B" then back_to_zscan() end
+    if S.mode == "folder_waker_preview" then
+        if b == "Y" then S.folder_waker_system = "GC"; SFX.play("menu_toggleoption")
+        elseif b == "X" then S.folder_waker_system = "Wii"; SFX.play("menu_toggleoption")
+        elseif b == "A" then commit_folder_waker()
+        elseif b == "B" then back_to_folder_waker_scan() end
     end
 end
 
 local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
-    if r.add or r.autodetect or r.registrator or r.registrator_browse then
+    if r.add or r.autodetect or r.folder_waker or r.folder_waker_browse then
         K.text("body", r.label, x + 14, y + h / 2 - 9, focused and K.acc or K.C.dim)
     elseif r.idx then
         K.text("body", K.clip("body", r.path, w - 110), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
@@ -234,7 +234,7 @@ local function draw_row(r, x, y, w, h, focused)
     elseif r.dir then
         K.text("body", K.clip("body", r.label, w - 40), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
         K.text("body", "›", x + w - 22, y + h / 2 - 9, K.C.faint)
-    elseif r.zidx then
+    elseif r.folder_waker_idx then
         K.text("body", K.clip("body", r.label, w - 160), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
         local colour = r.status == "SKIP NAME" and K.C.warn
             or r.status == "NO ASSIGN" and K.C.bad
@@ -243,13 +243,13 @@ local function draw_row(r, x, y, w, h, focused)
     end
 end
 
-local function draw_zpreview()
-    local item = S.z_item
+local function draw_folder_waker_preview()
+    local item = S.folder_waker_item
     if not item then return end
     local source_name = item.name
-    local target = (S.z_plan and S.z_plan.target) or ("Rt" .. source_name)
-    local alias = (S.z_plan and S.z_plan.alias) or FolderTools.normalize_alias(target)
-    local system_text = S.z_system or "not selected"
+    local target = (S.folder_waker_plan and S.folder_waker_plan.target) or ("Rt" .. source_name)
+    local alias = (S.folder_waker_plan and S.folder_waker_plan.alias) or FolderTools.normalize_alias(target)
+    local system_text = S.folder_waker_system or "not selected"
     local status = item.is_scan_root and "This is a configured ROM root; renaming it would break the library."
         or item.status == "skip-match" and "Matches muOS skip.ini pattern(s): "
         .. table.concat(item.skip_matches or {}, ", ")
@@ -257,7 +257,7 @@ local function draw_zpreview()
         or item.status == "mapped" and "An assignment alias already exists; this diagnostic still allows an explicit Rt-prefixed repair."
         or "Folder contains ROM images but its system could not be inferred from the name."
 
-    K.header("Registratore Z", "Review the exact folder before renaming", nil, { icon = "folder" })
+    K.header("FolderWaker", "Review folder name and system alias before applying changes", nil, { icon = "folder" })
     K.panel(K.MARGIN, 105, K.W - K.MARGIN * 2, 300, { cut = 12 })
     K.text("small", "SOURCE FOLDER", K.MARGIN + 18, 125, K.C.dim)
     K.text("body", K.clip("body", item.path, K.W - K.MARGIN * 2 - 36), K.MARGIN + 18, 148, K.C.text)
@@ -281,20 +281,20 @@ local function draw_zpreview()
 end
 
 function S.draw()
-    if S.mode == "zpreview" then
-        draw_zpreview()
+    if S.mode == "folder_waker_preview" then
+        draw_folder_waker_preview()
         return
     end
 
     local title = S.mode == "browse" and S.cwd
-        or S.mode == "zscan" and "Folders that may be hidden or lack a system alias"
+        or S.mode == "folder_waker_scan" and "Find hidden game folders or missing muOS system aliases"
         or "Folders scanned for GameCube / Wii games"
-    K.header(S.mode == "zscan" and "Registratore Z" or "ROM folders", title, nil, { icon = "folder" })
+    K.header(S.mode == "folder_waker_scan" and "FolderWaker" or "ROM folders", title, nil, { icon = "folder" })
 
     if #S.list.items == 0 then
-        if S.mode == "zscan" then
+        if S.mode == "folder_waker_scan" then
             K.text("body", "No candidate folders found. These are the ROM roots checked:", K.MARGIN, 145, K.C.dim, 1, K.W - K.MARGIN * 2)
-            for i, root in ipairs(S.z_roots or {}) do
+            for i, root in ipairs(S.folder_waker_roots or {}) do
                 if i > 6 then break end
                 local status = not root.accessible and "NOT MOUNTED"
                     or root.has_roms and "ROMs FOUND" or "NO SUPPORTED ROM"
@@ -314,7 +314,7 @@ function S.draw()
 
     if S.mode == "browse" then
         K.footer({ { key = "A", label = "Open" }, { key = "Y", label = "Add GC" }, { key = "X", label = "Add Wii" }, { key = "B", label = "Up" } })
-    elseif S.mode == "zscan" then
+    elseif S.mode == "folder_waker_scan" then
         K.footer({ { key = "A", label = "Review" }, { key = "Y", label = "Review as GC" }, { key = "X", label = "Review as Wii" }, { key = "B", label = "Back" } })
     else
         K.footer({ { key = "A", label = "Open" }, { key = "X", label = "Remove" }, { key = "B", label = "Done" } })
