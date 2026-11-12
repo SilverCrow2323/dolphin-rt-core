@@ -148,6 +148,13 @@ fatal() {                                   # fatal <code> <message>
 }
 trap 'stop_helpers; exit 0' TERM INT
 
+# Resolve the muOS release once and expose the chosen override to all helpers.
+MUOS_VERSION=""
+type GET_VAR >/dev/null 2>&1 && MUOS_VERSION="$(GET_VAR system version 2>/dev/null)"
+[ -z "$MUOS_VERSION" ] && [ -r /opt/muos/config/system/version ] && MUOS_VERSION="$(cat /opt/muos/config/system/version)"
+export MUOS_VERSION
+RT_MUOS_PROFILE="$(grep -o '"muos_profile"[[:space:]]*:[[:space:]]*"[^"]*"' "$GAME_DIR/data/settings.json" 2>/dev/null | sed 's/.*"\([^"]*\)"$/\1/')"
+export RT_MUOS_PROFILE="${RT_MUOS_PROFILE:-auto}"
 log "=== launch v3 | $TITLE | id=$GAME_ID sys=$SYS | profile=$PROFILE variant=${VARIANT:-none} | controller=${CONTROLLER:-auto} hotkeys=${HOTKEYS:-auto} mods=$MODS cheats=$CHEATS loop=$LOOP_MODE"
 log "rom=$ROM"
 
