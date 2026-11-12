@@ -51,7 +51,14 @@ if [ -r "$SHARED_RUNTIME" ] && [ -r "$SHARED_LAUNCH" ]; then
 
     GAME_ID="$(rt_extract_game_id "$ROM" 2>/dev/null || true)"
     SYS="GC"
-    case "$GAME_ID" in [RSWH]*) SYS="Wii" ;; esac
+    ROM_EXT="$(printf '%s' "$ROM" | sed 's/.*\.//' | tr '[:upper:]' '[:lower:]')"
+    case "$ROM_EXT" in
+        wbfs|wia) SYS="Wii" ;;
+        gcm) SYS="GC" ;;
+        *)
+            case "$GAME_ID" in [RSWH]*) SYS="Wii" ;; esac
+            ;;
+    esac
 
     CARD=""
     [ -n "$GAME_ID" ] && CARD="$APP_DIR/workshop/gameslibrary/rtid_$GAME_ID.ini"
