@@ -5,6 +5,7 @@ local M = {}
 M._bat = { level = nil, charging = false, present = false }
 M._wifi = { up = false, quality = 0, ssid = nil }
 M._last_poll = 0
+M._polled = false
 M.POLL_INTERVAL = 1.0
 
 local function read_file(path)
@@ -63,6 +64,19 @@ function M.update(dt)
     M._last_poll = 0
     pcall(poll_battery)
     pcall(poll_wifi)
+    M._polled = true
+end
+
+function M.snapshot()
+    return {
+        checked = M._polled,
+        wifi = { up = M._wifi.up == true, quality = tonumber(M._wifi.quality) or 0 },
+        battery = {
+            present = M._bat.present == true,
+            level = M._bat.level,
+            charging = M._bat.charging == true,
+        },
+    }
 end
 
 -- ── icone ─────────────────────────────────────────────────
