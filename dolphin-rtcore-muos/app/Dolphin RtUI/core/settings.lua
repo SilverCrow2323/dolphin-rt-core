@@ -12,7 +12,7 @@ local defaults = {
   rom_paths         = {},
   rom_discovery_done = false,
   theme             = "gc",
-  scan_depth        = 4,
+  scan_depth        = 8,
   show_fps          = false,
   last_scan         = 0,
   -- v1.0.1 additions
@@ -141,7 +141,7 @@ function M.auto_discover_rom_paths()
     local valid = false
     for _, entry in ipairs(current) do
       if entry.path and FS.is_dir(entry.path) then
-        local cmd = "find " .. Shell.shq(entry.path) .. " -maxdepth 5 -type f "
+        local cmd = "find " .. Shell.shq(entry.path) .. " -maxdepth 8 -type f "
           .. [[\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \)]]
           .. " -print -quit 2>/dev/null"
         local sample = Shell.first(cmd, 8)
@@ -160,7 +160,7 @@ function M.auto_discover_rom_paths()
     if type(real) ~= "string" or real == "" then real = path end
     if checked[real] ~= nil then return checked[real], real end
     local extensions = [[\( -iname '*.iso' -o -iname '*.gcm' -o -iname '*.rvz' -o -iname '*.gcz' -o -iname '*.ciso' -o -iname '*.wbfs' -o -iname '*.wia' \)]]
-    local cmd = "find " .. Shell.shq(real) .. " -maxdepth 5 -type f " ..
+    local cmd = "find " .. Shell.shq(real) .. " -maxdepth 8 -type f " ..
       extensions .. " -print -quit 2>/dev/null"
     local sample = Shell.first(cmd, 8)
     checked[real] = type(sample) == "string" and sample ~= ""
