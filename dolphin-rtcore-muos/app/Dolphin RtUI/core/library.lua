@@ -69,30 +69,15 @@ local function extract_gameid(path)
   return id or id_from_filename(path)
 end
 
--- Peso file in byte, con 3 strategie (la prima basta quasi sempre):
---   1) seek("end") — zero processi. Con LuaJIT a 32 bit su file > 2 GB
---      (Wii) puo' dare 0/negativo/clamp: in quel caso si passa alla 2)
---   2) stat -c %s   (coreutils / busybox)
---   3) wc -c        (ultima spiaggia)
--- Ritorna 0 SOLO se il file e' davvero illeggibile (la UI mostra "—").
-local TWO_GB = 2147483647
+-- Read size without spawning stat/wc for every ROM. The target is ARM64:
+-- LuaJIT's seek("end") uses the platform off_t and handles Wii images > 2 GiB.
 local function file_size(path)
-  local wrapped
   local f = io.open(path, "rb")
-  if f then
-    local ok, sz = pcall(f.seek, f, "end")
-    f:close()
-    if ok and type(sz) == "number" then
-      if sz < 0 then wrapped = sz + 4294967296        -- overflow int32
-      elseif sz > 0 and sz < TWO_GB then return sz
-      elseif sz >= TWO_GB then wrapped = sz end        -- da confermare
-    end
-  end
-  local n = tonumber(Shell.first("stat -c %s " .. Shell.shq(path), 4) or "")
-  if n and n > 0 then return n end
-  n = tonumber((Shell.first("wc -c < " .. Shell.shq(path), 10) or ""):match("%d+") or "")
-  if n and n > 0 then return n end
-  return wrapped or 0
+  if not f then return 0 end
+  local ok, size = pcall(f.seek, f, "end")
+  f:close()
+  if ok and type(size) == "number" and size > 0 then return size end
+  return 0
 end
 
 local REGION_TAGS = {
@@ -134,30 +119,20 @@ local function system_from_id(id)
   return SysDetect.from_id(id)
 end
 
-local function find_files(root, depth)
+local function find_command(root, depth)
   local clauses = {}
   for _, ext in ipairs(EXTS) do clauses[#clauses + 1] = "-iname '*." .. ext .. "'" end
   local pattern = table.concat(clauses, " -o ")
-  local cmd = string.format(
-    "find %s -maxdepth %d -type f \\( %s \\) 2>/dev/null",
+  return string.format(
+    "find %s -maxdepth %d -type f \\( %s \\) -print 2>/dev/null",
     Shell.shq(root), depth or 8, pattern)
-  local out = Shell.popen(cmd, 8)
-  if not out then return {} end
-  local files = {}
-  for line in out:gmatch("[^" .. string.char(10) .. "]+") do
-    if line ~= "" then files[#files + 1] = line end
-  end
-  return files
 end
 
--- ── scan ───────────────────────────────────────────────────────────
--- Due modi, stesso risultato:
---   M.scan()                        bloccante (compat col codice vecchio)
---   M.scan_begin() + M.scan_step()  incrementale: la UI resta fluida e puo'
---                                   mostrare una barra (M.progress = {done,total})
+-- Enumeration and ROM inspection are both incremental. The old scanner read
+-- the complete find output in scan_begin(), blocking the UI before frame one.
 M.scanning = false
 M.progress = { done = 0, total = 0 }
-local _queue, _qi, _seen
+local _roots, _root_index, _scan_pipe, _seen, _depth
 
 local function add_game(path, entry)
   local id   = extract_gameid(path)
@@ -174,51 +149,64 @@ local function add_game(path, entry)
   })
 end
 
+local function path_key(path)
+  return tostring(path or ""):gsub("/+", "/"):gsub("/+$", ""):lower()
+end
+
+local function wall_time()
+  if type(love) == "table" and love.timer and love.timer.getTime then
+    return love.timer.getTime()
+  end
+  return os.clock()
+end
+
+local function close_scan_pipe()
+  if _scan_pipe then pcall(_scan_pipe.close, _scan_pipe); _scan_pipe = nil end
+end
+
 function M.scan_begin()
+  close_scan_pipe()
   M.games = {}
-  _queue, _qi, _seen = {}, 1, {}
-  local paths = Settings.get("rom_paths") or {}
-  local depth = math.max(8, tonumber(Settings.get("scan_depth")) or 8)
-  local roots, root_seen = {}, {}
-  -- Resolve configured roots once, not every ROM file. Running readlink for
-  -- every disc image spawned hundreds of child processes on large SD cards.
+  _roots, _root_index, _seen, _depth = {}, 1, {}, nil
+  _depth = math.max(8, tonumber(Settings.get("scan_depth")) or 8)
+  local roots_seen = {}
   local function root_key(path)
     local clean = tostring(path or ""):gsub("/+$", "")
+    -- Resolve only user-selected roots, never individual ROMs.
     local real = Shell.first("readlink -f " .. Shell.shq(clean), 3)
     if type(real) == "string" and real ~= "" then clean = real end
-    return clean:lower()
+    return path_key(clean)
   end
-  local function file_key(path)
-    return tostring(path or ""):gsub("/+", "/"):gsub("/+$", ""):lower()
-  end
-  for _, entry in ipairs(paths) do
-    if entry.path and FS.is_dir(entry.path) then
+  for _, entry in ipairs(Settings.get("rom_paths") or {}) do
+    if type(entry) == "table" and entry.path and FS.is_dir(entry.path) then
       local key = root_key(entry.path)
-      if not root_seen[key] then
-        root_seen[key] = #roots + 1
-        roots[#roots + 1] = { path = entry.path, system = entry.system or "GC" }
-      else
-        -- A path shared by the GC and Wii selectors is still one scan root.
-        local kept = roots[root_seen[key]]
-        if kept.system ~= entry.system then kept.system = "Both" end
+      local existing = roots_seen[key]
+      if not existing then
+        local root = { path = entry.path, system = entry.system or "GC" }
+        _roots[#_roots + 1] = root
+        roots_seen[key] = root
+      elseif existing.system ~= entry.system then
+        existing.system = "Both"
       end
     end
   end
-  for _, entry in ipairs(roots) do
-    for _, path in ipairs(find_files(entry.path, depth)) do
-      local key = file_key(path)
-      if not _seen[key] then
-        _seen[key] = true
-        _queue[#_queue + 1] = { path = path, entry = entry }
-      end
-    end
+  M.scanning = #_roots > 0
+  M.progress = { done = 0, total = 0 }
+  if not M.scanning then M.scan_finish() end
+end
+
+local function open_next_root()
+  while _root_index <= #_roots do
+    local entry = _roots[_root_index]
+    _scan_pipe = io.popen(find_command(entry.path, _depth), "r")
+    if _scan_pipe then return true end
+    _root_index = _root_index + 1
   end
-  M.scanning = true
-  M.progress = { done = 0, total = #_queue }
-  if #_queue == 0 then M.scan_finish() end
+  return false
 end
 
 function M.scan_finish()
+  close_scan_pipe()
   table.sort(M.games, function(a, b)
     local ta, tb = (a.title or ""):lower(), (b.title or ""):lower()
     if ta == tb then return (a.path or "") < (b.path or "") end
@@ -227,22 +215,39 @@ function M.scan_finish()
   M.scanned_at = os.time()
   M.last_count = #M.games
   M.scanning = false
-  _queue = nil
+  M.progress.done = M.progress.total
+  _roots, _seen = nil, nil
 end
 
--- Elabora ROM per al massimo `budget` secondi (default 8 ms = 1/2 frame a 60).
--- Ritorna true quando ha finito.
+-- Process file discovery and header reads for a small real-time budget. The
+-- wall clock includes time spent waiting for child processes; os.clock does not.
 function M.scan_step(budget)
   if not M.scanning then return true end
-  local t0, limit = os.clock(), budget or 0.008
-  while _qi <= #_queue do
-    local job = _queue[_qi]; _qi = _qi + 1
-    local ok = pcall(add_game, job.path, job.entry)
-    M.progress.done = _qi - 1
-    if os.clock() - t0 >= limit then break end
+  local t0, limit = wall_time(), budget or 0.008
+  local did_work = false
+  while M.scanning do
+    if did_work and (wall_time() - t0) >= limit then break end
+    if not _scan_pipe and not open_next_root() then
+      M.scan_finish()
+      break
+    end
+
+    local path = _scan_pipe:read("*l")
+    if not path then
+      close_scan_pipe()
+      _root_index = _root_index + 1
+    elseif path ~= "" then
+      did_work = true
+      local key = path_key(path)
+      if not _seen[key] then
+        _seen[key] = true
+        M.progress.total = M.progress.total + 1
+        local ok = pcall(add_game, path, _roots[_root_index])
+        if ok then M.progress.done = M.progress.done + 1 end
+      end
+    end
   end
-  if _qi > #_queue then M.scan_finish(); return true end
-  return false
+  return not M.scanning
 end
 
 -- Public: full scan. Blocking (usa scan_begin/scan_step per la versione fluida).
@@ -255,6 +260,7 @@ end
 function M.count() return #M.games end
 
 M._file_size = file_size           -- esposto per i test
+M._find_command = find_command
 M._extract_gameid = extract_gameid
 
 return M
