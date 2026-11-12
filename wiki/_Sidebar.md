@@ -7,7 +7,10 @@
 - [[FAQ]]
 
 **muOS and handheld**
-- [[muOS-Registration]]\n- [[Rt-System-Status-Center]]\n- [[Graphics-Mods]]
+- [[muOS-Registration]]
+- [[Rt-System-Status-Center]]
+- [[Graphics-Mods]]
+- [[Controls-and-Profiles]]
 - [[Troubleshooting]]
 
 **Compatibility Database**
@@ -29,5 +32,6 @@
 - [[Visual-Assets]]
 - [[Contributing]]
 - [[Release-Checklist]]
+- [[Conventions-and-Template]]
 
 [Repository](https://github.com/SilverCrow2323/dolphin-rt-core) · [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases) · [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues)
