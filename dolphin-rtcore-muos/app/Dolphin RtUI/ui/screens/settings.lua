@@ -33,7 +33,7 @@ local CATS = {
     { id = "EDITORS", label = "Editors",         color = "boost", icon = "profile" },
     { id = "DISPLAY", label = "Display & Sound", color = "teal",  icon = "screen" },
     { id = "SYSTEM",  label = "System",          color = "lime",  icon = "gear" },
-    { id = "ABOUT",   label = "About & Tools",   color = "hot",   icon = "info" },
+    { id = "TOOLS",   label = "Tools & Diagnostics", color = "hot", icon = "tools" },
 }
 S.cats = CATS
 
@@ -196,8 +196,23 @@ local function sections()
                   Notify.show("info", "Checking\226\128\166")
               end },
         },
-        ABOUT = {
-            { kind = "action", label = "Diagnostics", icon = "list", editor_label = "Viewer",
+        TOOLS = {
+            { kind = "action", label = "ROM folders & Registratore Z", icon = "folder",
+              sub = "scan, inspect, register aliases",
+              run = function() require("ui").go("folders") end },
+            { kind = "action", label = "GameSettings database", icon = "file",
+              sub = "browse presets by GameID",
+              run = function() require("ui").go("gameset_browser") end },
+            { kind = "action", label = "Rt:Stream network & pairing", icon = "play",
+              sub = "LAN scan, Tailscale, Sunshine",
+              run = function() require("ui").go("stream_settings") end },
+            { kind = "action", label = "Controller hotkeys", icon = "hotkeys",
+              sub = "L2 modifier and shortcuts",
+              run = function() require("ui").go("hotkeys", {}) end },
+            { kind = "action", label = "Safe Exit", icon = "power",
+              sub = function() return require("core.safe_exit").describe() end,
+              run = function() require("ui").go("safe_exit", {}) end },
+            { kind = "action", label = "Diagnostics & logs", icon = "list", editor_label = "Viewer",
               run = function() require("ui").go("diagnostics") end },
             { kind = "action", label = "Rt:Core Env Triage", icon = "info", sub = "I · II · III health check",
               run = function() SFX.play("menu_select"); require("ui").go("triage") end },
