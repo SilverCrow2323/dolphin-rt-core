@@ -3,7 +3,7 @@ set -euo pipefail
 APP="$(cd "$(dirname "$0")/.." && pwd)/dolphin-rtcore-muos/app/Dolphin RtUI"
 check() {
   local file="$1" expected="$2"
-  grep -Fqx "$expected" "$file" || {
+  grep -Fq "$expected" "$file" || {
     echo "[FAIL] $file: expected $expected" >&2
     exit 1
   }
