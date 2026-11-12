@@ -10,6 +10,7 @@ local Shell = require("core.shell")
 local Paths = require("core.paths")
 
 local M = {}
+local _restore_checked = {}
 local function emu_root()
     return os.getenv("DOLPHINUI_GRAPHICSMOD_ROOT") or Paths.root_emu
 end
@@ -86,9 +87,14 @@ end
 -- One-time recovery of folders parked by the previous Rt:Core --mods switch.
 -- Only user data is restored; the official Sys tree is never touched.
 function M.restore_legacy_user_mods()
-    local active = join(emu_root(), "Load/GraphicMods")
+    local root = emu_root()
+    if _restore_checked[root] then return 0 end
+    local active = join(root, "Load/GraphicMods")
     local parked = active .. ".off"
-    if not FS.is_dir(parked) then return 0 end
+    if not FS.is_dir(parked) then
+        _restore_checked[root] = true
+        return 0
+    end
     FS.mkdir_p(active)
     local restored = 0
     for _, name in ipairs(list_directories(parked)) do
@@ -103,6 +109,7 @@ function M.restore_legacy_user_mods()
         end
     end
     os.execute("rmdir " .. shq(parked) .. " 2>/dev/null")
+    _restore_checked[root] = true
     return restored
 end
 
