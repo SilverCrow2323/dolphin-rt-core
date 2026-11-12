@@ -28,13 +28,14 @@ function M.set_enabled(v) enabled = v == true end
 
 function M.write(tag, ...)
   if not enabled then return end
+  local args = {...}
   pcall(function()
     os.execute("mkdir -p " .. string.format("%q", PATH:match("^(.*)/") or "data/logs") .. " 2>/dev/null")
     rotate()
     local f = io.open(PATH, "a")
     if not f then return end
     local parts = {}
-    for i = 1, select("#", ...) do parts[#parts+1] = clean(select(i, ...)) end
+    for i = 1, #args do parts[#parts+1] = clean(args[i]) end
     local stamp = os.date("%Y-%m-%d %H:%M:%S")
     local clock = (love and love.timer and love.timer.getTime and love.timer.getTime()) or 0
     f:write(stamp, string.format(" +%.3f", clock), " [", clean(tag), "] ",
