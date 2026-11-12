@@ -124,16 +124,28 @@ end
 local function trim(s) return (s:gsub("^%s+", ""):gsub("%s+$", "")) end
 
 local function load_gptk(profile)
-    local map = {}
+    local map, section = {}, ""
     S.menu_tok = "guide"
     for _, l in ipairs(read_lines(gptk_path(profile))) do
         local t = trim(l)
-        if t ~= "" and t:sub(1, 1) ~= "#" and t:sub(1, 1) ~= ";" then
+        local sec = t:match("^%[([^%]]+)%]$")
+        if sec then
+            section = sec:lower()
+        elseif t ~= "" and t:sub(1, 1) ~= "#" and t:sub(1, 1) ~= ";" then
             local lhs, rhs = t:match("^([%w%+_]+)%s*=%s*(%S+)")
             if lhs then
-                map[lhs:lower()] = rhs
-                for part in lhs:gmatch("[^%+]+") do
-                    if part:lower() == "m" then S.menu_tok = "m" end
+                lhs = lhs:lower()
+                if section == "controls:rt_hotkeys" then
+                    -- Native gptokeyb2 FSM: L2 enters this state, the
+                    -- selected button emits the configured keyboard key.
+                    map["l2+" .. lhs] = rhs
+                elseif section == "" then
+                    -- Read older flat files for migration; new saves are
+                    -- always emitted in native gptokeyb2 section syntax.
+                    map[lhs] = rhs
+                    for part in lhs:gmatch("[^%+]+") do
+                        if part == "m" then S.menu_tok = "m" end
+                    end
                 end
             end
         end
@@ -142,8 +154,12 @@ local function load_gptk(profile)
 end
 
 local function combo_str(combo)
-    local p = {}
-    for _, b in ipairs(combo) do p[#p + 1] = btn_to_gptk(b) end
+    local p, rest, has_l2 = {}, {}, false
+    for _, b in ipairs(combo) do
+        if b == "L2" then has_l2 = true else rest[#rest + 1] = btn_to_gptk(b) end
+    end
+    if has_l2 then p[#p + 1] = "l2" end
+    for _, b in ipairs(rest) do p[#p + 1] = b end
     return table.concat(p, "+")
 end
 local function combo_from_str(s)
@@ -296,43 +312,47 @@ local function set_kv(lines, section, key, value)
 end
 
 local function write_gptk()
-    local lines = read_lines(gptk_path(S.profile))
-    local out, skipping = {}, false
-    for _, l in ipairs(lines) do
-        if l == BLOCK_A then skipping = true
-        elseif l == BLOCK_B then skipping = false
-        elseif not skipping then out[#out + 1] = l end
-    end
-    local managed, block = {}, {}
+    local block = {}
+    local used = {}
     for _, a in ipairs(ACTIONS) do
         local m = S.model[a.key]
         if m and #m.combo > 0 and m.key then
-            local lhs = combo_str(m.combo)
-            if managed[lhs] then
-                block[#block + 1] = ("# CONFLICT %-14s = %s    # %s"):format(lhs, to_gptk(m.key), a.label)
-            else
-                managed[lhs] = true
-                block[#block + 1] = ("%-14s = %s    # %s"):format(lhs, to_gptk(m.key), a.label)
+            local combo = combo_str(m.combo)
+            local target = combo:match("^l2%+([%w_]+)$")
+            if target and not used[target] then
+                used[target] = true
+                block[#block + 1] = (("%-8s = %-5s # %s"):format(target, to_gptk(m.key), a.label))
+            elseif target and used[target] then
+                block[#block + 1] = ("# CONFLICT %s = %s # %s"):format(combo, to_gptk(m.key), a.label)
             end
         end
     end
-    -- hand-written lines that clash with a managed combo go away
-    local kept = {}
-    for _, l in ipairs(out) do
-        local t = trim(l)
-        local lhs = t:match("^([%w%+_]+)%s*=")
-        if not (lhs and t:sub(1, 1) ~= "#" and managed[lhs:lower()]) then kept[#kept + 1] = l end
-    end
-    while #kept > 0 and kept[#kept] == "" do kept[#kept] = nil end
-    kept[#kept + 1] = ""
-    kept[#kept + 1] = BLOCK_A
-    for _, b in ipairs(block) do kept[#kept + 1] = b end
-    kept[#kept + 1] = BLOCK_B
-    local ok = write_lines(gptk_path(S.profile), kept)
+
+    -- Emit the documented gptokeyb2 FSM format. The old "l2+a = F1"
+    -- pseudo-syntax is not understood by gptokeyb2 and silently disables
+    -- every hotkey. Ordinary controls are cleared; only the L2 state layer
+    -- emits keyboard events.
+    local lines = {
+        "# Dolphin Rt:Core — native gptokeyb2 state-machine configuration.",
+        "# L2 enters the Rt hotkey layer; all other gameplay input is untouched.",
+        "",
+        "[config]",
+        "deadzone_triggers = 3000",
+        "",
+        "[controls]",
+        "overlay = clear",
+        "l2 = hold_state rt_hotkeys",
+        "",
+        "[controls:rt_hotkeys]",
+        "overlay = parent",
+        "# >>> HOTKEY DESIGNER (managed block, edit with the Hotkey Designer)",
+    }
+    for _, line in ipairs(block) do lines[#lines + 1] = line end
+    lines[#lines + 1] = "# <<< HOTKEY DESIGNER"
+    local ok = write_lines(gptk_path(S.profile), lines)
     if ok then S.gptk_map = load_gptk(S.profile) end
     return ok
 end
-
 local function save()
     os.execute("mkdir -p " .. sh.shq(HK_DIR .. S.profile))
     local path = ini_path(S.profile)
@@ -399,6 +419,15 @@ local function end_capture(commit)
         if #filtered ~= #names then Notify.show("warning", "D-pad cannot be used in pad expressions") end
         names = filtered
         if #names == 0 then return end
+    else
+        local has_l2, other = false, 0
+        for _, n in ipairs(names) do
+            if n == "L2" then has_l2 = true else other = other + 1 end
+        end
+        if not has_l2 or other ~= 1 or #names ~= 2 then
+            Notify.show("warning", "Keyboard hotkeys require L2 + one button. Use PAD (SDL) for other combinations.")
+            return
+        end
     end
     table.sort(names, function(a, b)
         local wa = (a == "SELECT" or a == "MENU") and 0 or 1
