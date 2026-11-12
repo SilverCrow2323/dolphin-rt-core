@@ -15,13 +15,13 @@ The muOS packager supports two different outputs. They are both `.muxupd`, but t
 | **Rt:UI / RtSys overlay** | Frontend, firmware launchers, registration tools, controller/UI settings, Dolphin `Sys/` resources and integrity manifest. | A compatible Dolphin executable at `/opt/muos/share/emulator/dolphin/dolphin`. |
 | **Full engine bundle** | Everything in the overlay plus the AArch64 Dolphin executable and private runtime libraries from one matching build. | No separately installed Dolphin executable is required; still back up existing saves and configuration. |
 
-### Current HEAVY DEBUG artifact
+### Current Arcade 12.1.0 candidate artifact
 
 **Overlay update · not a standalone emulator**
 
-The CI job builds the archive without `DOLPHIN_BIN`. It therefore creates an Rt:UI/RtSys update, **not** a complete Dolphin engine package. Apply it only when a compatible Dolphin binary is already installed.
+The Arcade 12.1.0 candidate workflow builds the archive without `DOLPHIN_BIN`. It therefore creates an Rt:UI/RtSys overlay update, **not** a complete Dolphin engine package. Apply it only when a compatible Dolphin binary is already installed. The candidate is tracked in [PR #81](https://github.com/SilverCrow2323/dolphin-rt-core/pull/81); it is not a published GitHub Release.
 
-[Open the verified CI run and its artifacts](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/43214657869)
+[Open the verified CI run and its artifacts](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/43283168682)
 
 ## Build a full engine bundle
 
@@ -66,7 +66,7 @@ CI confirms:
 - Manifest checksum integrity.
 - LÖVE screen loading and automated screenshots.
 
-CI does **not** certify a physical boot, controller input, performance or clean exit on a real RG35XX H. Those checks must be completed on the exact firmware and device.
+CI does **not** certify a physical boot, controller input, performance or clean exit on a real RG35XX H. Those checks must be completed on the exact firmware and device. The Arcade candidate is not hardware-certified yet; the RG35XX H boot, input, performance and clean-exit gate remains open.
 
 </details>
 
