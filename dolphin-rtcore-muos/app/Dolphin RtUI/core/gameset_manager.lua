@@ -135,6 +135,16 @@ function M.active_for(game_id)
     return active
 end
 
+-- Distinguish an explicitly empty ActiveConfig (Disabled) from a legacy
+-- metadata file that has no canonical selector yet and may import its RTID card.
+function M.has_active_record(game_id)
+    if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return false end
+    local dir = BASE .. "/" .. game_id
+    if not dir_exists(dir) then return false end
+    local meta = read_meta(dir .. "/rtgameset_data.ini")
+    return meta.GameSettings ~= nil and meta.GameSettings.ActiveConfig ~= nil
+end
+
 -- ── Public: mutations ──────────────────────────────────────
 function M.ensure_dir(game_id)
     local dir = BASE .. "/" .. game_id
