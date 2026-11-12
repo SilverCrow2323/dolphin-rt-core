@@ -18,6 +18,9 @@ grep -Fq 'elseif b == "SELECT" then' "$APP/ui/screens/home.lua"
 grep -Fq 'ADD GAMECUBE ROM FOLDER' "$APP/ui/screens/folders.lua"
 grep -Fq 'ADD WII ROM FOLDER' "$APP/ui/screens/folders.lua"
 grep -Fq 'FolderWaker' "$APP/ui/screens/settings.lua"
+[ "$(grep -Fc 'label = "GameSettings Editor"' "$APP/ui/screens/settings.lua")" -eq 1 ]
+[ "$(grep -Fc 'label = "Hotkeys"' "$APP/ui/screens/settings.lua")" -eq 1 ]
+[ "$(grep -Fc 'label = "Safe Exit"' "$APP/ui/screens/settings.lua")" -eq 1 ]
 grep -Fq 'FIX CONTENT EXPLORER FOLDERS?' "$APP/ui/screens/folders.lua"
 ! grep -Fq 'Registratore Z' "$APP/ui/screens/settings.lua"
 ! grep -Fq 'GameSettings database' "$APP/ui/screens/settings.lua"
