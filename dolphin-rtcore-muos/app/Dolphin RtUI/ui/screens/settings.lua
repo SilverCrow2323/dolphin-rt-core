@@ -378,37 +378,54 @@ end
 
 -- titolo grande + icona dedicata nel colore della sezione + chip delle 5 sezioni
 local function draw_header()
-    local c = CATS[S.sec]
-    local acc = K.ACC[c.color] or K.ACC.gc
+    local category = CATS[S.sec]
+    local acc = K.ACC[category.color] or K.ACC.gc
     local m = K.MARGIN
-    local cx, cy, r = m + 26, 42, 26
-    K.color(acc, 0.16); love.graphics.circle("fill", cx, cy, r)
-    K.color(acc, 1); love.graphics.setLineWidth(2); love.graphics.circle("line", cx, cy, r)
+    local chip, gap, chip_h = 30, 4, 28
+    local strip_w = #CATS * chip + (#CATS - 1) * gap
+    local strip_x = K.W - m - strip_w
+
+    -- Left title lane and right navigation lane are fixed-width neighbours;
+    -- no title, subtitle, hint or category chip can overlap another element.
+    K.panel(m, 8, K.W - m * 2, 72, { cut = 10, accent = acc })
+    local cx, cy = m + 25, 44
+    K.color(acc, 0.14); love.graphics.circle("fill", cx, cy, 19)
+    K.color(acc, 0.8); love.graphics.setLineWidth(1.4)
+    love.graphics.circle("line", cx, cy, 19)
     love.graphics.setLineWidth(1)
-    K.draw_tool_icon(c.icon, cx, cy, 30, acc, 1)
+    K.draw_tool_icon(category.icon, cx, cy, 22, acc, 1)
 
-    local tx = m + 64
-    local slide = (1 - (1 - (1 - S.sec_t) ^ 3)) * 0       -- (titolo fermo, scorre solo la lista)
-    K.text("xl", K.clip("xl", c.label, 270), tx + slide, 6, K.C.text)
-    K.text("small", ("Settings  \194\183  %d / %d"):format(S.sec, #CATS), tx, 50, K.C.dim)
+    local tx = m + 53
+    K.text("key", "SETTINGS / CONFIGURATION", tx, 17, acc)
+    K.text("xl", K.clip("xl", category.label, strip_x - tx - 24), tx, 32, K.C.text)
+    local meta = ("SECTION %02d  /  %02d"):format(S.sec, #CATS)
+    K.text("small", meta, tx, 59, K.C.faint)
 
-    -- chip sezioni (L1 R1)
-    local chip, gap = 34, 6
-    local total = #CATS * chip + (#CATS - 1) * gap
-    local x0 = K.W - m - total
-    K.text("key", "L1", x0 - 26, 30, K.C.faint)
-    K.text("key", "R1", x0 + total + 4, 30, K.C.faint)
-    for i, cat in ipairs(CATS) do
-        local ca = K.ACC[cat.color] or K.ACC.gc
-        local on = (i == S.sec)
-        local x = x0 + (i - 1) * (chip + gap)
-        K.color(ca, on and 0.30 or 0.08); love.graphics.rectangle("fill", x, 24, chip, 30, 6, 6)
-        K.color(ca, on and 1 or 0.35);    love.graphics.rectangle("line", x, 24, chip, 30, 6, 6)
-        K.draw_tool_icon(cat.icon, x + chip / 2, 39, 15, ca, on and 1 or 0.55)
+    -- Section hints sit above the tabs rather than beside them.
+    local hint = "L1   /   R1"
+    K.text("key", hint, strip_x, 14, K.C.faint, 1, strip_w, "center")
+    for i, item in ipairs(CATS) do
+        local c = K.ACC[item.color] or K.ACC.gc
+        local active = i == S.sec
+        local x = strip_x + (i - 1) * (chip + gap)
+        local y = 34
+        K.color(c, active and 0.24 or 0.06)
+        love.graphics.rectangle("fill", x, y, chip, chip_h, 6, 6)
+        K.color(c, active and 1 or 0.28)
+        love.graphics.setLineWidth(active and 1.6 or 1)
+        love.graphics.rectangle("line", x, y, chip, chip_h, 6, 6)
+        love.graphics.setLineWidth(1)
+        K.draw_tool_icon(item.icon, x + chip / 2, y + chip_h / 2, 14, c, active and 1 or 0.55)
+        if active then
+            K.color(c, 1)
+            love.graphics.rectangle("fill", x + 6, y + chip_h + 3, chip - 12, 2, 1, 1)
+        end
     end
 
-    K.color(acc, 1); love.graphics.rectangle("fill", m, 78, 72, 3)
-    K.color(K.C.line, 0.5); love.graphics.rectangle("fill", m + 72, 79, K.W - m * 2 - 72, 1)
+    K.color(acc, 0.9)
+    love.graphics.rectangle("fill", m, 84, 64, 2)
+    K.color(K.C.line, 0.42)
+    love.graphics.rectangle("fill", m + 64, 84, K.W - m * 2 - 64, 1)
 end
 
 function S.draw()
