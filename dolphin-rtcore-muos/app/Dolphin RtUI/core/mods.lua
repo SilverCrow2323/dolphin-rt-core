@@ -168,4 +168,59 @@ function M.write_plan(game, titles, off_of, root, path)
   return #lines
 end
 
+
+-- Globally park/unpark a mod without deleting it. This is intentionally
+-- separate from the per-game OFF plan: the active Load/ tree is what Dolphin
+-- sees at runtime, while <Category>.off is the reversible disabled shelf.
+local function safe_entry_name(name)
+  return type(name) == "string" and name ~= "" and name ~= "." and name ~= ".."
+    and not name:find("/", 1, true) and not name:find("\\", 1, true)
+end
+
+function M.set_enabled(cat, entry, enabled, root)
+  root = root or M.LOAD
+  if type(cat) ~= "table" or type(cat.id) ~= "string"
+     or not cat.id:match("^[%w_%-]+$") then
+    return false, "invalid mod category"
+  end
+  if type(entry) ~= "table" or not safe_entry_name(entry.name) then
+    return false, "invalid mod entry"
+  end
+  if type(enabled) ~= "boolean" then return false, "enabled must be boolean" end
+  local currently_enabled = entry.parked ~= true
+  if currently_enabled == enabled then return true, "unchanged" end
+
+  local on_dir = root .. "/" .. cat.id
+  local off_dir = on_dir .. ".off"
+  local source_dir = currently_enabled and on_dir or off_dir
+  local target_dir = enabled and on_dir or off_dir
+  local source = source_dir .. "/" .. entry.name
+  local target = target_dir .. "/" .. entry.name
+  local command = "if [ ! -e " .. Shell.shq(source) .. " ]; then exit 2; fi; " ..
+    "if [ -e " .. Shell.shq(target) .. " ]; then exit 3; fi; " ..
+    "mkdir -p " .. Shell.shq(target_dir) .. " && mv " ..
+    Shell.shq(source) .. " " .. Shell.shq(target)
+  local rc = Shell.exec(command)
+  if rc == true or rc == 0 then
+    entry.parked = not enabled
+    return true
+  end
+  return false, "could not move mod between Load/" .. cat.id .. " and Load/" .. cat.id .. ".off"
+end
+
+function M.set_all_enabled(cat, enabled, root)
+  if type(enabled) ~= "boolean" then return 0, { "enabled must be boolean" } end
+  local changed, errors = 0, {}
+  local rows = M.entries(cat, root)
+  for _, entry in ipairs(rows) do
+    local ok, err = M.set_enabled(cat, entry, enabled, root)
+    if ok then
+      if err ~= "unchanged" then changed = changed + 1 end
+    else
+      errors[#errors + 1] = entry.name .. ": " .. tostring(err)
+    end
+  end
+  return changed, errors
+end
+
 return M
