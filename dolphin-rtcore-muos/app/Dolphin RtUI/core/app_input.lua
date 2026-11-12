@@ -34,7 +34,7 @@ M.ACTIONS = {
     { id = "SELECT", label = "Select",        default = 6  },
     { id = "START",  label = "Start",         default = 7  },
     { id = "MENU",   label = "Menu",          default = 8  },
-    { id = "L3",     label = "Left Stick Click", default = nil },
+    { id = "L3",     label = "Left Stick Click", default = 11 },
     { id = "R3",     label = "Right Stick Click", default = nil },
     { id = "UP",     label = "D-Pad Up",      default = nil },
     { id = "DOWN",   label = "D-Pad Down",    default = nil },
@@ -62,7 +62,7 @@ function M.init()
                 -- the mistaken joydev layout. Preserve values that differ
                 -- from both so genuine user remaps survive the correction.
                 local previous_sdl = { A = 1, B = 0, X = 2, Y = 3, L1 = 4,
-                    R1 = 5, L2 = 9, R2 = 12, SELECT = 6, START = 7, MENU = 8 }
+                    R1 = 5, L2 = 9, R2 = 12, SELECT = 6, START = 7, MENU = 8, L3 = 11 }
                 local mistaken_joydev = { A = 0, B = 1, X = 2, Y = 3, L1 = 4,
                     R1 = 5, L2 = 6, R2 = 7, SELECT = 8, START = 9, MENU = 10,
                     L3 = 11, R3 = 12 }
