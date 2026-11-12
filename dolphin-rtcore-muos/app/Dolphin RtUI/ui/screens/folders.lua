@@ -62,6 +62,7 @@ end
 
 local function start_zscan()
     S.z_items = FolderTools.scan()
+    S.z_roots = FolderTools.root_report()
     S.z_item, S.z_system = nil, nil
     S.mode = "zscan"
     local rows = {}
@@ -278,9 +279,22 @@ function S.draw()
     K.header(S.mode == "zscan" and "Registratore Z" or "ROM folders", title, nil, { icon = "folder" })
 
     if #S.list.items == 0 then
-        local msg = S.mode == "zscan" and "No candidate folders found under the detected ROM roots."
-            or "No sub-folders here."
-        K.text("body", msg, 0, 200, K.C.dim, 1, K.W, "center")
+        if S.mode == "zscan" then
+            K.text("body", "No candidate folders found. These are the ROM roots checked:", K.MARGIN, 145, K.C.dim, 1, K.W - K.MARGIN * 2)
+            for i, root in ipairs(S.z_roots or {}) do
+                if i > 6 then break end
+                local status = not root.accessible and "NOT MOUNTED"
+                    or root.has_roms and "ROMs FOUND" or "NO SUPPORTED ROM"
+                local colour = not root.accessible and K.C.bad
+                    or root.has_roms and K.C.ok or K.C.warn
+                K.text("small", K.clip("small", root.path, K.W - K.MARGIN * 2 - 110),
+                    K.MARGIN, 178 + (i - 1) * 38, K.C.text)
+                K.pill(status, K.W - K.MARGIN, 188 + (i - 1) * 38, colour, true)
+            end
+            K.text("small", "Use “choose a folder manually” to inspect another directory or verify the ROM card mount.", K.MARGIN, 420, K.C.dim, 1, K.W - K.MARGIN * 2)
+        else
+            K.text("body", "No sub-folders here.", 0, 200, K.C.dim, 1, K.W, "center")
+        end
     else
         S.list:draw(draw_row)
     end
