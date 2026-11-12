@@ -73,9 +73,14 @@ local function scan()
         if leaf ~= "lite" and leaf ~= "std" and leaf ~= "max" then
             local meta = it.meta or {}
             local pm, ui, rt = meta.Profile or {}, meta.UI or {}, meta.Runtime or {}
+            local function has_tier(tier)
+                local file = io.open(it.dir .. "/" .. tier .. "/rtprofile_data.ini", "r")
+                if not file then return false end
+                file:close()
+                return true
+            end
             local has = {
-                lite = sh.is_dir(it.dir .. "/lite"), std = sh.is_dir(it.dir .. "/std"),
-                max  = sh.is_dir(it.dir .. "/max"),
+                lite = has_tier("lite"), std = has_tier("std"), max = has_tier("max"),
             }
             local family = has.lite or has.std or has.max
             local cat = pm.Type or (family and "Rt:CORE") or "Custom"
@@ -110,7 +115,19 @@ local function build_rows()
         local g = S.groups[gname]
         if g and #g > 0 then
             S.rows[#S.rows + 1] = { head = true, label = gname }
-            for _, p in ipairs(g) do S.rows[#S.rows + 1] = { profile = p } end
+            for _, p in ipairs(g) do
+                S.rows[#S.rows + 1] = { profile = p }
+                -- Families expose their editable Lite/Std/Max overlays as
+                -- first-class rows; previously the picker only opened the
+                -- family directory and tiers were impossible to customise.
+                if p.family then
+                    for _, tier in ipairs({ "lite", "std", "max" }) do
+                        if p.has[tier] then
+                            S.rows[#S.rows + 1] = { profile = p, tier = tier }
+                        end
+                    end
+                end
+            end
         end
     end
     S.rows[#S.rows + 1] = { new = true }
@@ -127,7 +144,11 @@ function S.enter(params)
     for i, r in ipairs(S.rows) do if not r.head then S.sel = i; break end end
     if params.focus then
         for i, r in ipairs(S.rows) do
-            if r.profile and r.profile.name == params.focus then S.sel = i; break end
+            if r.profile and (r.profile.name == params.focus
+               or (r.tier and r.profile.name .. "/" .. r.tier == params.focus)) then
+                S.sel = i
+                break
+            end
         end
     end
     K.set_accent("gc")
@@ -167,21 +188,22 @@ local function create_new()
     local name = "Custom_" .. os.date("%m%d_%H%M")
     local dst = "workshop/rtcoreprofile/" .. name
     sh.mkdir_p(dst)
-    local src = "workshop/rtcoreprofile/Default"
-    if sh.is_dir(src) then
-        os.execute("cp -a " .. sh.shq(src) .. "/. " .. sh.shq(dst) .. "/ 2>/dev/null")
-    else
-        for _, f in ipairs({ "Dolphin.ini", "GFX.ini" }) do
-            local o = io.open(dst .. "/" .. f, "w"); if o then o:write(""); o:close() end
-        end
+
+    -- Custom profiles are sparse overlays. The canonical Default is merged
+    -- at launch; cloning its full INIs here would create a second copy of
+    -- hundreds of unchanged values in every user profile.
+    for _, filename in ipairs({ "Dolphin.ini", "GFX.ini" }) do
+        local out = io.open(dst .. "/" .. filename, "w")
+        if out then out:write(""); out:close() end
     end
+
     local meta = io.open(dst .. "/rtprofile_data.ini", "w")
     if meta then
         meta:write("[Profile]\nName        = " .. name .. "\nType        = Custom\n")
-        meta:write("Family      = Custom\nDescription = Created from Profile Editor\n")
+        meta:write("Family      = Custom\nDescription = Sparse custom overlay over Default\n")
         meta:write("Author      = RtUI\nVersion     = 1.0.0\n\n")
         meta:write("[UI]\nColor       = #F5A742\nIcon        = star\nOrder       = 999\n\n")
-        meta:write("[Runtime]\nLocked      = False\n")
+        meta:write("[Runtime]\nLocked      = False\nRequiresBase = Default\n")
         meta:close()
     end
     SFX.play("newupdate")
@@ -202,7 +224,22 @@ function S.pad(b)
     elseif b == "A" and row then
         if row.new then create_new()
         elseif row.profile then
-            S.picked = row.profile
+            if row.tier then
+                local tier_name = row.profile.name .. "/" .. row.tier
+                local meta = PM.meta("rtcoreprofile", tier_name) or {}
+                local runtime = meta.Runtime or {}
+                S.picked = {
+                    name = tier_name,
+                    label = row.profile.label .. " / " .. row.tier:upper(),
+                    dir = row.profile.dir .. "/" .. row.tier,
+                    locked = tostring(runtime.Locked or "False"):lower() == "true",
+                    icon = row.profile.icon,
+                    type_label = row.profile.type_label,
+                    rgb = row.profile.rgb,
+                }
+            else
+                S.picked = row.profile
+            end
             S.phase = "pick"
             SFX.play("menu_select")
         end
@@ -225,6 +262,19 @@ local function draw_row(row, x, y, w, h, focused)
         return
     end
     local p = row.profile
+    if row.tier then
+        local tier_color = (row.tier == "lite" and K.ACC.wii)
+            or (row.tier == "std" and K.C.ok) or K.C.bad
+        K.panel(x + 18, y + 2, w - 18, h - 4, {
+            focus = focused, cut = 5, accent = tier_color,
+        })
+        K.text("small", "↳", x + 34, y + h / 2 - 8, tier_color)
+        K.text("body", row.tier:upper() .. "  ·  " .. p.label,
+            x + 54, y + h / 2 - 9, focused and K.C.text or K.C.dim)
+        K.text("key", "EDIT TIER", x + w - K.width("key", "EDIT TIER") - 16,
+            y + h / 2 - 7, focused and tier_color or K.C.faint)
+        return
+    end
     local acc = p.rgb or K.ACC.gc
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6, accent = acc })
     local cx, cy = x + 26, y + h / 2

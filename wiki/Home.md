@@ -14,13 +14,21 @@
 
 > [!IMPORTANT]
 > Compatibility results are community reports, not universal guarantees. Always match the exact console, game region, handheld, firmware, Rt:Core build and profile before applying settings.
+>
+> **Input reminder:** EV_KEY, joydev `js1`, and Dolphin SDL `Button n` are separate numbering systems. Jacaranda uses the initial EV_KEY map; Andromeda uses the alternative map.
+
+> [!WARNING]
+> **Current development line:** Rt:Core 12.1.0 / Rt:UI 3.7.0 “Arcade” is being prepared in [PR #81](https://github.com/SilverCrow2323/dolphin-rt-core/pull/81). The published 12.0.0 Kanzentai package remains the latest stable release until the candidate passes CI and RG35XX H hardware validation.
 
 ## Choose your path
 
 | I want to… | Start here |
 |---|---|
 | Install or upgrade on muOS | [[Quick-Start]] · [[muOS-Registration]] |
-| Understand controls and profile families | [[Controls-and-Profiles]] |
+| Understand controller numbering and Safe Exit | [[Controller-Input]] |
+| Browse the Rt:UI screen captures | [[Interface-Gallery]] |
+| Understand overlay vs full engine packages | [[Release-Packages]] |
+| Select Jacaranda / Andromeda behaviour | [[muOS-Firmware-Profiles]] |
 | Find a GameCube/Wii result | [[Compatibility-Database]] |
 | Understand ratings and FPS | [[Rating-Guide]] |
 | Submit a reproducible test | [[Reporting-a-Test]] |
@@ -28,7 +36,6 @@
 | Maintain the compatibility site | [[Compatibility-Site]] |
 | Fix a missing core or frontend issue | [[Troubleshooting]] · [[FAQ]] |
 | Build, test or contribute | [[Development]] · [[Architecture]] · [[Contributing]] |
-| Write or review a practical Wiki page | [[Conventions-and-Template]] |
 | Work on PC streaming | [[Rt-Stream]] |
 | Prepare a release | [[Quality-Gates]] · [[Release-Checklist]] |
 

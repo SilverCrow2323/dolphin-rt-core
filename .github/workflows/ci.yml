@@ -57,7 +57,30 @@ jobs:
           luajit tests/test_controller_profiles_nexus.lua
           luajit tests/test_compat_nexus.lua
           luajit tests/test_cheatdb_nexus.lua
-      - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
+          luajit tests/test_safe_exit.lua
+          luajit tests/test_muos_platform.lua
+          luajit tests/test_app_input.lua
+          luajit tests/test_gamesettings_deployer.lua
+          luajit tests/test_gameset_active_config.lua
+          luajit tests/test_gameset_loader_invalidate.lua
+          luajit tests/test_boot_scan_async.lua
+          luajit tests/test_boot_animation.lua
+          luajit tests/test_folder_tools.lua
+          luajit tests/test_profile_merger_shared_base.lua
+          luajit tests/test_rt_profiles_tiers.lua
+          bash tests/test_content_explorer_shared_profiles.sh
+          python3 tests/test_rt_profile_merge.py
+          python3 tests/test_project_gamesettings.py
+          luajit tests/test_rom_auto_discovery.lua
+          luajit tests/test_library_scan_dedup.lua
+          luajit tests/test_mod_vault_toggle.lua
+          luajit tests/test_muos_tools.lua
+          luajit tests/test_settings_nexus.lua
+          luajit tests/test_gameset_browser_nexus.lua
+          bash tests/test_controller_button_schema.sh
+          bash tests/test_dolphin_sys_packaging.sh
+          bash tests/test_rtui_stream_contract.sh
+      - run: DOLPHIN_UI_ONLY=1 bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
         run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
       - uses: actions/upload-artifact@v4
@@ -141,16 +164,26 @@ jobs:
           bash -n tools/capture-ui.sh tools/publish-wiki.sh tools/build-compat-site.sh
           bash -n dolphin-build/build-dolphin.sh dolphin-build/verify-patches.sh dolphin-build/validate-aarch64-elf.sh tests/test_aarch64_elf_validator.sh
           bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/launch.sh"
+          bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/ce_shared_profile_runtime.sh"
+          bash -n "dolphin-rtcore-muos/overlay/opt/muos/script/launch/ext-dolphinrt.sh"
           bash -n dolphin-rtcore-muos/overlay/opt/muos/script/launch/ext-dolphinrt.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
           bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh
-          bash -n tests/test_muos_registration.sh tests/test_dolphin_runtime_contract.sh tests/test_dolphin_sys_packaging.sh tests/test_port_sys_packaging.sh tests/test_dolphin_build_workflow_triggers.sh
-          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
-      - name: Test native Dolphin workflow self-triggers
-        run: bash tests/test_dolphin_build_workflow_triggers.sh
+          bash -n tests/test_muos_registration.sh tests/test_muos_controls.sh tests/test_muos_glibc_abi.sh tests/test_dolphin_runtime_contract.sh tests/test_dolphin_sys_packaging.sh tests/test_port_sys_packaging.sh tests/test_dolphin_build_workflow_triggers.sh
+          bash -n dolphin-rtcore-muos/emu/dolphin/RtSys/overlay_exit.sh
+          bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/overlay_exit.sh"
+          sh -n "dolphin-rtcore-muos/app/Dolphin RtUI/tools/stream/discover.sh"
+          bash tests/test_rtui_stream_contract.sh
+          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py tests/test_rt_profile_merge.py "dolphin-rtcore-muos/app/Dolphin RtUI/tools/rt_profile_merge.py" "dolphin-rtcore-muos/app/Dolphin RtUI/tools/project_gamesettings.py" tests/test_project_gamesettings.py
       - name: Test AArch64 ELF validation contract
         run: bash tests/test_aarch64_elf_validator.sh
+      - name: Test native Dolphin workflow self-triggers
+        run: bash tests/test_dolphin_build_workflow_triggers.sh
+      - name: Test muOS controller and input profiles
+        run: bash tests/test_muos_controls.sh
+      - name: Test muOS runtime ABI gate
+        run: bash tests/test_muos_glibc_abi.sh
       - name: Test muOS generation detection and core registration
         run: bash tests/test_muos_registration.sh
       - name: Test Dolphin muOS runtime contract

@@ -1,15 +1,12 @@
 -- ui/screens/mods.lua — MOD VAULT.
--- 4 tab colorati, uno per cartella di /opt/muos/share/emulator/dolphin/Load/:
---   Textures · Wii SD Sync · Riivolution · Dynamic Input
--- Per ogni tab elenca le voci applicabili al gioco (vedi core/mods.lua):
---   ID esatto · primi 3 char dell'ID (tutte le regioni) · nome del gioco ·
---   cartella "All" (tutti i giochi).
--- [A] on/off  [X] tutte on  [Y] tutte off  [L1/R1 o SX/DX] cambia tab  [B] indietro
--- Senza gioco (tile Home) mostra il catalogo installato, sola lettura.
+-- Global and per-game controls for the installed Dolphin Load/ categories.
+-- Standard categories support per-game exceptions; native GraphicMods are global.
+-- Global disable is reversible: entries move to <Category>.off, never deleted.
 local K    = require("ui.kit")
 local SFX  = require("ui.sfx")
-local U    = require("ui.util")
-local Mods = require("core.mods")
+local U      = require("ui.util")
+local Notify = require("ui.notify")
+local Mods   = require("core.mods")
 
 local S = {}
 local LIST_Y = 124
@@ -19,12 +16,21 @@ S.rows, S.off, S.sel_by_tab = {}, {}, {}
 
 local TAB_Y, TAB_H = 80, 34
 
+local function per_game_mode(index)
+    index = index or S.tab
+    return S.game ~= nil and not Mods.CATS[index].legacy
+end
+
 local function tab_w() return (K.W - K.MARGIN * 2) / #Mods.CATS end
 
 local function counts(i)
     local rows, off = S.rows[i] or {}, S.off[i] or {}
     local on = 0
-    for _, r in ipairs(rows) do if not off[r.name] then on = on + 1 end end
+    for _, r in ipairs(rows) do
+        local enabled
+        if per_game_mode(i) then enabled = not off[r.name] else enabled = not r.parked end
+        if enabled then on = on + 1 end
+    end
     return on, #rows
 end
 
@@ -68,6 +74,43 @@ local function save()
     if S.game then U.vault_set_off(S.game, Mods.CATS[S.tab].id, S.off[S.tab]) end
 end
 
+local function refresh_current_tab()
+    local selected = S.list:cur()
+    local selected_name = selected and selected.name or nil
+    local cat = Mods.CATS[S.tab]
+    local titles = S.game and U.vault_titles(S.game) or nil
+    S.rows[S.tab] = Mods.for_game(cat, S.game, titles)
+    S.off[S.tab] = S.game and U.vault_off(S.game, cat.id) or {}
+    S.list:set(S.rows[S.tab], false)
+    if selected_name then
+        for i, item in ipairs(S.list.items) do
+            if item.name == selected_name then S.list.sel = i; S.list:_aim(true); break end
+        end
+    end
+end
+
+local function toggle_all(enabled)
+    if per_game_mode() then
+        local off = S.off[S.tab]
+        if enabled then
+            for k in pairs(off) do off[k] = nil end
+        else
+            for _, row in ipairs(S.list.items) do off[row.name] = true end
+        end
+        save()
+    else
+        local changed, errors = Mods.set_all_enabled(Mods.CATS[S.tab], enabled)
+        refresh_current_tab()
+        local label = enabled and "enabled" or "disabled"
+        if #errors > 0 then
+            Notify.show("warning", changed .. " mod(s) " .. label .. " · " .. #errors .. " failed")
+        else
+            Notify.show("success", changed .. " mod(s) " .. label)
+        end
+    end
+    SFX.play(enabled and "menu_toggleoption" or "menu_back")
+end
+
 local function set_tab(d)
     local n = #Mods.CATS
     local i = (S.tab - 1 + d) % n + 1
@@ -81,15 +124,28 @@ function S.pad(b)
     elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
     elseif b == "L1" or b == "LEFT" then set_tab(-1)
     elseif b == "R1" or b == "RIGHT" then set_tab(1)
-    elseif b == "A" and r and S.game then
-        off[r.name] = (not off[r.name]) or nil
-        save(); SFX.play("menu_toggleoption")
-    elseif b == "X" and S.game then
-        for k in pairs(off) do off[k] = nil end
-        save(); SFX.play("menu_toggleoption")
-    elseif b == "Y" and S.game then
-        for _, row in ipairs(S.list.items) do off[row.name] = true end
-        save(); SFX.play("menu_back")
+    elseif b == "A" and r then
+        if per_game_mode() then
+            off[r.name] = (not off[r.name]) or nil
+            save()
+            SFX.play("menu_toggleoption")
+        else
+            local enabling = r.parked == true
+            local ok, err = Mods.set_enabled(Mods.CATS[S.tab], r, enabling)
+            if ok then
+                refresh_current_tab()
+                Notify.show("success", (enabling and "Enabled " or "Disabled ") .. r.name, 1.8)
+                SFX.play("menu_toggleoption")
+            else
+                Notify.show("error", tostring(err))
+            end
+        end
+    elseif b == "X" then
+        toggle_all(true)
+        if S.game then refresh_current_tab() end
+    elseif b == "Y" then
+        toggle_all(false)
+        if S.game then refresh_current_tab() end
     elseif b == "B" then require("ui").back() end
 end
 
@@ -108,7 +164,7 @@ local function draw_tabs()
         K.draw_tool_icon(cat.icon, x + 17, TAB_Y + TAB_H / 2, 14, c, on and 1 or 0.6)
         K.text("key", K.clip("key", cat.short or cat.label, w - 36), x + 31, TAB_Y + 2, on and K.C.text or K.C.dim)
         local n_on, n = counts(i)
-        local badge = S.game and (n_on .. "/" .. n) or tostring(n)
+        local badge = n_on .. "/" .. n
         K.text("key", badge, x + 31, TAB_Y + 17, n == 0 and K.C.faint or c, on and 1 or 0.7)
     end
     K.color(acc, 1)
@@ -123,11 +179,12 @@ end
 
 local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
-    local on = (not S.game) or not S.off[S.tab][r.name]
-    local right = x + w - 14
-    if S.game then right = x + w - 60; K.switch(x + w - 46, y + h / 2, on, focused) end
+    local on
+    if per_game_mode() then on = not S.off[S.tab][r.name] else on = not r.parked end
+    local right = x + w - 60
+    K.switch(x + w - 46, y + h / 2, on, focused)
     local lab = Mods.KIND_LABEL[r.kind] or ""
-    if S.game and lab ~= "" then
+    if per_game_mode() and lab ~= "" then
         local pw = K.pill(lab, right, y + h / 2, kind_color(r.kind), true)   -- x = bordo destro
         right = right - pw - 4
     end
@@ -139,24 +196,25 @@ function S.draw()
     local cat = Mods.CATS[S.tab]
     local on, total = 0, 0
     for i = 1, #Mods.CATS do local a, b = counts(i); on, total = on + a, total + b end
-    K.header("Mod Vault", S.game and (S.game.title or "") or "Installed in Load/",
-             S.game and (on .. " / " .. total .. " on") or (total .. " found"),
+    K.header("Mod Vault", per_game_mode() and (S.game.title or "") or "GLOBAL · enable or park installed mods",
+             on .. " / " .. total .. " active",
              nil, { icon = "mods", accent = K.ACC[cat.acc] })
     draw_tabs()
     if #S.list.items == 0 then
-        local msg = cat.legacy and "Load/GraphicMods is empty."
-            or S.game
-            and ("Nothing for this game in Load/" .. cat.id .. ".\nName a folder with the Game ID, its first 3 characters,\nthe game title, or put it in a folder called All.")
-            or ("Load/" .. cat.id .. " is empty.")
+        local msg = per_game_mode() and
+            ("Nothing for this game in Load/" .. cat.id .. ".\nMatch by Game ID, its first 3 characters, title, or All.")
+            or ("Load/" .. cat.id .. " is empty. Install a mod folder to manage it here.")
         K.text("body", msg, 0, LIST_Y + 40, K.C.dim, 1, K.W, "center")
     else
         S.list:draw(draw_row)
     end
-    if S.game then
+    if per_game_mode() then
         K.footer({ { key = "A", label = "Toggle" }, { key = "L1 R1", label = "Tab" },
                    { key = "X", label = "All on" }, { key = "Y", label = "All off" }, { key = "B", label = "Back" } })
     else
-        K.footer({ { key = "L1 R1", label = "Tab" }, { key = "B", label = "Back" } })
+        K.footer({ { key = "A", label = "Enable / Disable" }, { key = "L1 R1", label = "Tab" },
+                   { key = "X", label = "Enable all" }, { key = "Y", label = "Disable all" },
+                   { key = "B", label = "Back" } })
     end
 end
 

@@ -12,35 +12,72 @@ code resolves inside `frontend/`.
 /opt/muos/share/emulator/dolphin/Config/WiimoteNew.ini
 /opt/muos/share/emulator/dolphin/Config/Hotkeys.ini
 /opt/muos/share/emulator/dolphin/Config/Logger.ini
-/opt/muos/share/emulator/dolphin/Config/GameSettings/<ID>.ini
 ```
 
-These are copied from `workshop/` at launch time by
-`profile_manager.lua`.
+These are the live runtime projection read by Dolphin. The shared launcher
+builds them from the canonical editable sources under `workshop/` immediately
+before starting a game. Do not edit these active files as profile masters.
+
+Legacy files such as `Dolphin.ini.<profile>` and `GFX.ini.<profile>` are kept
+for compatibility/bootstrap during migration; the shared Content Explorer and
+Rt:UI launch path does not use them as the selected profile catalogue.
+
+`/opt/muos/share/emulator/dolphin/GameSettings/<ID>.ini` is generated from
+the one selected `workshop/gamesettings/<ID>/<ActiveConfig>` file immediately
+before launch. `GameSettings/` is a sibling of `Config/` in Dolphin's user
+folder, not a subfolder of Config. Never edit this runtime copy directly.
+When a game has no active preset, the launcher removes that game's previous
+user override so old values cannot leak into a later run.
+
+Dolphin's per-game override directory is separate from Config:
+
+```
+/opt/muos/share/emulator/dolphin/GameSettings/<ID>.ini
+```
 
 ## 2. Workshop (managed by DolphinUI)
 
 ```
-workshop/base/                     Baseline INIs
-workshop/rtcoreprofile/<name>/     Rt:Core profiles
+workshop/base/                     Shared fallbacks for non-core profiles; legacy Dolphin INIs
+workshop/rtcoreprofile/Default/    Canonical core-profile base
+workshop/rtcoreprofile/<name>/     Rt:Core profiles, families and tiers
 workshop/controller/GameCube/<n>/  GC controller layouts
 workshop/controller/Wii/<n>/       Wii controller layouts
-workshop/gamesettings/<ID>/        Per-game overrides
+workshop/gamesettings/<ID>/        Per-game GameINI source + ActiveConfig
 workshop/hotkeys/<name>/           Hotkey profiles
 workshop/logging/<name>/           Logger profiles
 workshop/snapshots/                Snapshot files
 workshop/flashback/<id>/           Full config backups
 ```
 
+
+The same `workshop/` catalogue is used by both launch routes. The Content
+Explorer adapter resolves its selected external-core slug and ROM GameID, reads
+optional `workshop/gameslibrary/rtid_<ID>.ini` migration overrides, and invokes
+`scripts/launch.sh`. Rt:UI passes its selections to that same script directly.
+The selected core profile comes only from `workshop/rtcoreprofile` and is
+layered as `Default -> family -> tier`. GameSettings remain independent and
+are projected as one native per-game INI. RtSys is the muOS integration and
+compatibility layer; its legacy INI files are bootstrap/fallback inputs, not
+the editable profile catalogue.
+
 ## 3. Dolphin resources
 
 ```
-/opt/muos/share/emulator/dolphin/Load/GraphicMods/   Graphics mods
-/opt/muos/share/emulator/dolphin/Load/Textures/<ID>/ HD texture packs
+/opt/muos/share/emulator/dolphin/Load/GraphicMods/   Installed graphic mods
+/opt/muos/share/emulator/dolphin/Load/Textures/<ID>/ Installed HD texture packs
 /opt/muos/share/emulator/dolphin/StateSaves/         Save states
 /opt/muos/share/emulator/dolphin/GC/USA|EUR|JAP/     GameCube BIOS
 /opt/muos/share/emulator/dolphin/Wii/title/          Wii NAND dump
 ```
+
+
+`Load/` is Dolphin's single active resource root, not a profile catalogue.
+Installed mod/texture payloads live there; Rt:UI stores per-game enable/disable
+choices and temporary link plans in its own data, then prepares that one
+`Load/` tree before launch. A frontend/desktop package may have a staging
+directory, but the active muOS runtime destination remains
+`/opt/muos/share/emulator/dolphin/Load/`.
 
 ## 4. Runtime data
 

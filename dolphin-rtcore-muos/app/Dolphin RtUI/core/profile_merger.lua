@@ -81,26 +81,41 @@ function M.resolve_chain(kind, name, base_workshop)
         gamesettings  = "rtgameset",
     })[kind] or kind
 
-    local chain = {}
-    local cur = name
-    local seen = {}
-    while cur and not seen[cur] do
+    local chain, seen = {}, {}
+    local function add(cur)
+        if type(cur) ~= "string" or cur == "" or seen[cur] then return end
         seen[cur] = true
-        table.insert(chain, 1, cur)
+        -- The canonical Default profile is the merge base, not an overlay.
+        if kind == "rtcoreprofile" and cur == "Default" then return end
+
+        -- A tier directory inherits its family folder (RtPrime/std inherits
+        -- RtPrime) before applying its own patch, matching rt_profile_merge.py.
+        if kind == "rtcoreprofile" then
+            local parent = cur:match("^(.*)/[^/]+$")
+            if parent then add(parent) end
+        end
+
         local meta_path = base_workshop .. "/" .. kind .. "/" .. cur .. "/" .. prefix .. "_data.ini"
         local meta = parse_ini(meta_path)
-        if meta and meta.data.Runtime and meta.data.Runtime.RequiresBase then
-            cur = meta.data.Runtime.RequiresBase
-        else
-            cur = nil
-        end
+        local required = meta and meta.data.Runtime and meta.data.Runtime.RequiresBase
+        if required and required ~= cur then add(required) end
+        table.insert(chain, cur)
     end
+    add(name)
     return chain
 end
 
 function M.merge_chain(kind, name, target_filename, base_workshop)
     base_workshop = base_workshop or "workshop"
-    local base_path = base_workshop .. "/base/" .. target_filename
+    local base_path
+    if kind == "rtcoreprofile" then
+        -- Keep the editor/applicator on the same canonical Default as launch.sh.
+        base_path = base_workshop .. "/rtcoreprofile/Default/" .. target_filename
+    else
+        -- Other workshop families (controllers/hotkeys/logging) keep their
+        -- shared baseline, then apply the selected named patch.
+        base_path = base_workshop .. "/base/" .. target_filename
+    end
     local base = parse_ini(base_path)
     if not base then return nil end
 

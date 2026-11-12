@@ -7,7 +7,7 @@
 -- Storage: data/app_input.json
 --   {
 --     "active_device": null,          -- GUID o nome, null = primo connesso
---     "pad": { "A": 0, "B": 1, ... }  -- logical -> SDL button index
+--     "pad": { "A": 1, "B": 0, ... }  -- logical -> zero-based SDL button ID
 --   }
 --
 -- I default riflettono ui/input.lua originale.
@@ -18,10 +18,10 @@ local FS   = require("core.fs")
 local M = {}
 local PATH = "data/app_input.json"
 
--- Ordine logico delle azioni App Pad.
--- I default corrispondono alla numerazione SDL riportata da muOS su H700
--- (RG35XX H, RG40XX H, RG CubeXX): B=0 A=1 X=2 Y=3 L=4 R=5 SELECT=6
--- START=7 MENU=8 L2=9 R2=12.
+-- Numeric values are the zero-based SDL button IDs consumed by
+-- love.joystickpressed and written to Dolphin profiles as `Button n`.
+-- They are NOT Linux EV_KEY codes or /dev/input/jsN joydev button indices.
+-- The standardized love.gamepadpressed path uses the names in GAMEPAD_TO_LOGICAL.
 M.ACTIONS = {
     { id = "A",      label = "Confirm",       default = 1  },
     { id = "B",      label = "Back",          default = 0  },
@@ -33,7 +33,9 @@ M.ACTIONS = {
     { id = "R2",     label = "R2",            default = 12 },
     { id = "SELECT", label = "Select",        default = 6  },
     { id = "START",  label = "Start",         default = 7  },
-    { id = "MENU",   label = "Menu",          default = 8 },
+    { id = "MENU",   label = "Menu",          default = 8  },
+    { id = "L3",     label = "Left Stick Click", default = 11 },
+    { id = "R3",     label = "Right Stick Click", default = nil },
     { id = "UP",     label = "D-Pad Up",      default = nil },
     { id = "DOWN",   label = "D-Pad Down",    default = nil },
     { id = "LEFT",   label = "D-Pad Left",    default = nil },
@@ -50,13 +52,29 @@ end
 
 function M.init()
     M.data = defaults()
+    local changed = false
     local raw = FS.read(PATH)
     if raw then
         local ok, d = pcall(JSON.decode, raw)
         if ok and type(d) == "table" then
             if type(d.pad) == "table" then
+                -- Treat both previous built-in default layouts as defaults:
+                -- the SDL layout shipped before the joydev/SDL mix-up, and
+                -- the mistaken joydev layout. Preserve values that differ
+                -- from both so genuine user remaps survive the correction.
+                local previous_sdl = { A = 1, B = 0, X = 2, Y = 3, L1 = 4,
+                    R1 = 5, L2 = 9, R2 = 12, SELECT = 6, START = 7, MENU = 8, L3 = 11 }
+                local mistaken_joydev = { A = 0, B = 1, X = 2, Y = 3, L1 = 4,
+                    R1 = 5, L2 = 6, R2 = 7, SELECT = 8, START = 9, MENU = 10,
+                    L3 = 11, R3 = 12 }
                 for k, v in pairs(d.pad) do
-                    M.data.pad[k] = v
+                    if previous_sdl[k] ~= v and mistaken_joydev[k] ~= v then
+                        M.data.pad[k] = v
+                    elseif M.data.pad[k] ~= v then
+                        -- The value matched a known built-in default, but
+                        -- that default differs from the corrected SDL map.
+                        changed = true
+                    end
                 end
             end
             if d.active_device ~= nil then
@@ -64,6 +82,7 @@ function M.init()
             end
         end
     end
+    if changed then M.save() end
 end
 
 function M.save()
@@ -99,6 +118,7 @@ end
 -- User remap: if a value in data.pad is a string, it overrides the default.
 M.GAMEPAD_TO_LOGICAL = {
     a = "A", b = "B", x = "X", y = "Y",
+    leftstick = "L3", rightstick = "R3",
     start = "START", back = "SELECT", guide = "MENU",
     leftshoulder = "L1", rightshoulder = "R1",
     lefttrigger = "L2", righttrigger = "R2",

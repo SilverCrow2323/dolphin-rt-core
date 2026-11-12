@@ -1,6 +1,32 @@
 # Rt:Core profiles
 
-## 1. What a profile is
+## 1. One source of truth
+
+`workshop/` is the canonical editable store for Rt:Core profiles, controller
+layouts, hotkeys, logging presets and per-game GameSettings. Dolphin's live
+`Config/` directory is a generated runtime projection, not another profile
+library. The core-profile pipeline starts from
+`workshop/rtcoreprofile/Default/`, layers the family folder and selected tier,
+then prepares the selected per-game GameSettings as a separate native
+GameINI. `workshop/base/` remains a shared fallback for controller, hotkey
+and other non-core profile families; its old Dolphin.ini/GFX.ini copies are
+not the authoritative core-profile baseline.
+
+Both entry points use the same pipeline:
+
+- **Dolphin Rt:UI** passes the selected options from its Library and game screens.
+- **muOS Content Explorer** resolves the selected external-core name to a
+  `workshop/rtcoreprofile/<name>/` entry, reads the ROM GameID and optional
+  `workshop/gameslibrary/rtid_<ID>.ini` launch settings, then invokes the same
+  `scripts/launch.sh`.
+
+`RtSys` remains the muOS integration layer: device baseline, firmware
+compatibility, core registration and Content Explorer entry points. It is not
+a second editable catalogue of per-game or Rt:UI profiles. Legacy
+`Config/Dolphin.ini.<profile>` files remain only as compatibility/bootstrap
+inputs during migration; normal launches are layered from `workshop/`.
+
+## 2. What a profile is
 
 A folder under `workshop/rtcoreprofile/<name>/` containing:
 
@@ -8,10 +34,15 @@ A folder under `workshop/rtcoreprofile/<name>/` containing:
 - `GFX.ini`
 - `rtprofile_data.ini` (metadata)
 
-At launch, `profile_manager.apply("rtcoreprofile", name)` copies
-the two INIs into the live Config directory.
+The same core-profile chain is used by the Rt:UI profile manager and
+`tools/rt_profile_merge.py`: `Default -> family -> tier`.
+The selected tier inherits its family patch (for example, `RtPrime/std`
+applies `Default`, then `RtPrime`, then `RtPrime/std`). The resulting
+Dolphin.ini/GFX.ini files are written to the live `Config/` directory;
+source profiles remain untouched. Per-game overrides are a separate layer
+and are never folded into these global profile files.
 
-## 2. Families and tiers
+## 3. Families and tiers
 
 | Family | Purpose | Tiers |
 |---|---|---|
@@ -32,47 +63,56 @@ Base profiles under `workshop/rtcoreprofile/`:
 | `Sweet Spot` | 0.70 | Hand-tuned |
 | `Rintromping` | 0.55 | Extreme |
 
-## 3. Locked profiles
+## 4. Locked profiles
 
 Family profiles set `Runtime.Locked = True`. The editor refuses to
 overwrite them; edits are saved as a new `Custom_<date>` profile
 under `workshop/rtcoreprofile/`.
 
-## 4. GameSettings
+## 5. GameSettings
 
-Per-game overrides under `workshop/gamesettings/<ID>/`. Copy to
-`Config/GameSettings/<ID>.ini` at launch. Sections are namespaced:
+Per-game overrides live only in `workshop/gamesettings/<ID>/`.
+The `rtgameset_data.ini` metadata selects the active file through
+`[GameSettings] ActiveConfig`. Rt:UI and Content Explorer use that same
+selector.
 
-| Dolphin.ini section | GameSettings section |
-|---|---|
-| `[Core]` | `[Core]` |
-| `[DSP]` | `[DSP]` |
-| `[Interface]` | `[Interface]` |
-| `[Settings]` (GFX) | `[Video_Settings]` |
-| `[Enhancements]` (GFX) | `[Video_Enhancements]` |
-| `[Hacks]` (GFX) | `[Video_Hacks]` |
-| `[Hardware]` (GFX) | `[Video_Hardware]` |
+Immediately before launch, the selected source is projected to
+`GameSettings/<ID>.ini` in Dolphin's user root, alongside (not inside)
+`Config/`. That is Dolphin's native per-game user override path. The
+projection starts from the selected Workshop preset and carries forward
+Gecko/ActionReplay blocks from Rt:UI's cheat manager or user-written per-game
+cheat blocks. Other runtime settings are replaced by the selected Workshop
+preset. When GameSettings are disabled, non-cheat values are cleared while
+per-game cheat blocks are retained. The profile merger never folds
+GameSettings into global Dolphin.ini/GFX.ini.
 
-**Rule:** writing `[Hacks]` inside a GameSettings file is silently
-ignored by Dolphin. Always use `[Video_Hacks]`.
+Use Dolphin GameINI sections such as `[Core]`, `[Video_Settings]`,
+`[Video_Hacks]` and `[Video_Enhancements]`. In particular, use
+`[Video_Hacks]`, not the global GFX section name `[Hacks]`.
 
-## 5. Apply flow
+## 6. Apply flow
 
-1. `profile_manager.set_active()` updates `S.opts.profile`.
-2. At launch, `launch.sh` calls into the frontend, which copies
-   the profile's INIs into `Config/`.
-3. A backup of the previous INIs is placed under
-   `Config/.backup_<timestamp>/`.
-4. The Dolphin binary is spawned with `-u <emu_dir> -e <rom>`.
+1. RtSys prepares the muOS/device compatibility fallback.
+2. `scripts/launch.sh` resolves `Default -> family -> tier` from Workshop.
+3. The selected core profile is projected to `Config/Dolphin.ini` and
+   `Config/GFX.ini`.
+4. The single active GameSettings preset is copied to
+   `GameSettings/<ID>.ini` in Dolphin's user root (or removed when disabled).
+5. Controller, hotkeys, logging and selected mods are projected from their
+   Workshop/Load sources.
+6. Dolphin starts with `-u <emu_dir> -e <rom>`.
 
-## 6. Diff viewer
+## 7. Diff viewer
 
-`workshop_diff.lua` compares a profile against `workshop/base/`.
+`workshop_diff.lua` compares core profiles against
+`workshop/rtcoreprofile/Default/`; non-core families retain their shared
+`workshop/base/` fallback.
 Rows are grouped by file, section, key, with FROM and TO columns.
 
-## 7. Tier comparison
+## 8. Editing family tiers
 
-`workshop_editor` opens a Tier Overlay on SELECT when the profile
-belongs to a family with all three variants present. Columns:
-LITE / STANDARD / MAX. The overlay flags any row where the ordering
-`lite < std < max` is violated.
+The Rt:UI Profile Editor lists each available family tier as a child row:
+LITE, STD and MAX. Opening a tier edits only
+`workshop/rtcoreprofile/<family>/<tier>/`; opening the family row edits the
+family-level overlay. At launch the selected tier inherits the family first,
+then applies its own patch.

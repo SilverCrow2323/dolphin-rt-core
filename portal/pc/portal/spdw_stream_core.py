@@ -74,6 +74,37 @@ def say(msg):
     print(msg, flush=True)
 
 
+def network_addresses():
+    """Return routable LAN IPv4 addresses and Tailscale IPv4, if installed."""
+    lan = []
+    try:
+        result = subprocess.run(["ip", "-o", "-4", "addr", "show", "scope", "global"],
+                                capture_output=True, text=True, timeout=2, check=False)
+        for line in result.stdout.splitlines():
+            fields = line.split()
+            if "inet" not in fields:
+                continue
+            addr = fields[fields.index("inet") + 1].split("/", 1)[0]
+            if addr and not addr.startswith("127.") and addr not in lan:
+                lan.append(addr)
+    except Exception:
+        pass
+    if not lan:
+        try:
+            result = subprocess.run(["hostname", "-I"], capture_output=True, text=True, timeout=2, check=False)
+            lan = [ip for ip in result.stdout.split() if not ip.startswith("127.")]
+        except Exception:
+            pass
+    tailscale = ""
+    if shutil.which("tailscale"):
+        try:
+            result = subprocess.run(["tailscale", "ip", "-4"], capture_output=True, text=True, timeout=2, check=False)
+            tailscale = next((x.strip() for x in result.stdout.splitlines() if x.strip() and ":" not in x), "")
+        except Exception:
+            pass
+    return {"lan": lan, "tailscale": tailscale}
+
+
 # ------------------------------------------------------------------ config
 def load_config():
     cfg = json.loads(json.dumps(DEFAULTS))

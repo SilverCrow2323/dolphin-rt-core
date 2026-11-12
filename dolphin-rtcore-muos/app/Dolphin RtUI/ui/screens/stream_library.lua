@@ -14,8 +14,8 @@ local TABS    = { "LIBRARY", "FAVOURITES", "RECENT" }
 local VIEWS   = { "FLOW", "GRID", "LIST" }
 local FILTERS = { "ALL", "GAMECUBE", "WII" }
 local SORTS   = { "A-Z", "RECENT", "MOST PLAYED" }
-local GRID = { cols = 5, cw = 88, ch = 120, cellw = 120, rowh = 150, x0 = 20, y0 = 88, rows = 2 }
-local FW, FH, FBASE = 132, 184, 330
+local GRID = { cols = 5, cw = 82, ch = 112, cellw = 120, rowh = 136, x0 = 20, y0 = 116, rows = 2 }
+local FW, FH, FBASE = 126, 176, 330
 
 local tab, view, filter, sort = 1, 1, 1, 1
 local sel, scroll = { 1, 1, 1 }, { 0, 0, 0 }
@@ -23,7 +23,7 @@ local flowPos, t, health_t = 1, 0, 0
 local covers, ncovers = {}, 0
 local cache, dirty = {}, true
 local launching
-S.list = K.List(K.MARGIN, 88, K.W - K.MARGIN * 2 - 14, 270, 40)
+S.list = K.List(K.MARGIN, 114, K.W - K.MARGIN * 2 - 14, 270, 40)
 
 local function acc_of(g) return g.kind == "wii" and K.ACC.wii or K.ACC.gc end
 
@@ -146,7 +146,7 @@ local function start_launch(g)
   if not Stream.configured() then Notify.show("warning", "Set the PC address first (START)"); return end
   launching = { g = g, t = 0, phase = "check" }
   os.remove(Stream.DIR .. "/h_launch.done")
-  Stream.spawn("health.sh", "http://" .. Stream.s.HOST .. ":47989/serverinfo", Stream.DIR .. "/h_launch.done")
+  Stream.spawn("health.sh", "https://" .. Stream.s.HOST .. ":47989/serverinfo", Stream.DIR .. "/h_launch.done")
   SFX.play("menu_select")
 end
 
@@ -241,15 +241,107 @@ end
 
 local function draw_row(g, x, y, w, h, focused)
   local acc = acc_of(g)
-  K.text("body", K.clip("body", g.title, w - 150), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
+  K.panel(x, y + 2, w, h - 4, { focus = focused, accent = acc, cut = 7 })
+  K.color(acc, focused and 1 or 0.6)
+  love.graphics.rectangle("fill", x + 9, y + 10, 3, h - 20, 1.5, 1.5)
+  local title = K.clip("body", g.title, w - 178)
+  K.text("body", title, x + 22, y + h / 2 - 9, focused and K.C.text or K.C.dim)
+  local st = Stream.stat(g.app)
+  if st.fav then K.star(x + w - 108, y + h / 2, 7, K.ACC.boost, 1) end
   K.pill(g.kind == "wii" and "WII" or "GC", x + w - 12, y + h / 2, acc, focused)
-  if Stream.stat(g.app).fav then K.star(x + w - 64, y + h / 2, 7, K.ACC.boost, 1) end
+  local plays = tostring(st.plays or 0) .. " PLAYS"
+  K.text("key", plays, x + w - 176, y + h / 2 - 6, K.C.faint)
 end
 
 local function led(x, y, state, label)
   local c = state == "ok" and K.C.ok or (state == "fail" and K.C.bad or K.C.faint)
   K.color(c, 0.25); lg.circle("fill", x, y, 7); K.color(c, 1); lg.circle("fill", x, y, 4)
   K.text("small", label, x + 11, y - 8, K.C.dim)
+end
+
+local NEON_PINK = { 0.98, 0.28, 0.72 }
+local NEON_CYAN = { 0.20, 0.88, 0.96 }
+local NEON_PURPLE = { 0.48, 0.30, 0.98 }
+local NEON_ORANGE = { 1.00, 0.48, 0.40 }
+
+local function draw_vaporwave_backdrop()
+  -- Retrowave sunset: restrained neon so covers and text stay readable.
+  local sx, sy, sr = 514, 212, 76
+  K.color(NEON_PINK, 0.12)
+  lg.circle("fill", sx, sy, sr + 9)
+  for yy = -sr, sr, 6 do
+    local half = math.sqrt(math.max(0, sr * sr - yy * yy))
+    local c = yy < -16 and NEON_PINK or (yy < 28 and NEON_ORANGE or NEON_PURPLE)
+    K.color(c, 0.42)
+    lg.rectangle("fill", sx - half, sy + yy, half * 2, 3)
+  end
+
+  -- Perspective grid converges at the horizon and fades toward the footer.
+  local horizon = 292
+  K.color(NEON_CYAN, 0.15)
+  for i = -10, 10 do
+    local bx = K.W / 2 + i * 42
+    lg.line(K.W / 2, horizon, bx, K.H)
+  end
+  for i = 0, 10 do
+    local p = i / 10
+    local yy = horizon + p * p * 150
+    K.color(NEON_PURPLE, 0.10 + p * 0.08)
+    lg.line(0, yy, K.W, yy)
+  end
+  K.color(NEON_PINK, 0.16)
+  lg.line(0, horizon, K.W, horizon)
+end
+
+local function draw_stream_header()
+  K.panel(K.MARGIN, 8, K.W - K.MARGIN * 2, 92,
+    { cut = 12, accent = NEON_PURPLE })
+  K.text("key", "SUNSHINE  /  MOONLIGHT  //  NIGHT DRIVE", K.MARGIN + 14, 14, NEON_CYAN)
+  K.text("title", "RT:STREAM", K.MARGIN + 14, 30, K.C.text)
+
+  -- Connection indicators occupy a dedicated upper-right lane.
+  local sort_label = "SORT  " .. SORTS[sort]
+  K.text("key", sort_label, K.MARGIN + 242, 14, NEON_PINK)
+  local host = Stream.configured() and ("PC  " .. tostring(Stream.s.HOST)) or "PC NOT CONFIGURED"
+  K.text("key", K.clip("key", host, 190), K.W - K.MARGIN - 204,
+    14, Stream.configured() and NEON_CYAN or K.C.warn)
+  led(K.MARGIN + 286, 45, Stream.health.library, "PORTAL")
+  led(K.MARGIN + 390, 45, Stream.health.sunshine, "SUNSHINE")
+
+  -- Tabs, system filter and visual modes are three non-overlapping control
+  -- groups. X cycles the presentation; L1/R1 and L2/R2 keep their old roles.
+  local tab_labels = { "LIBRARY", "FAVES", "RECENT" }
+  local tab_x, tab_y, tab_w, tab_gap = K.MARGIN + 14, 66, 68, 5
+  for i = 1, #TABS do
+    local x = tab_x + (i - 1) * (tab_w + tab_gap)
+    local active = i == tab
+    local c = active and NEON_PINK or K.C.faint
+    K.color(c, active and 0.22 or 0.06)
+    lg.rectangle("fill", x, tab_y, tab_w, 22, 5, 5)
+    K.color(c, active and 1 or 0.35)
+    lg.rectangle("line", x, tab_y, tab_w, 22, 5, 5)
+    K.text("key", tab_labels[i], x + 2, tab_y + 6, active and K.C.text or K.C.dim,
+      1, tab_w - 4, "center")
+  end
+
+  local filter_x, filter_w = 270, 84
+  K.color(NEON_CYAN, 0.10); lg.rectangle("fill", filter_x, tab_y, filter_w, 22, 5, 5)
+  K.color(NEON_CYAN, 0.5); lg.rectangle("line", filter_x, tab_y, filter_w, 22, 5, 5)
+  K.text("key", "FILTER  " .. (filter == 1 and "ALL" or filter == 2 and "GC" or "WII"),
+    filter_x + 2, tab_y + 6, NEON_CYAN, 1, filter_w - 4, "center")
+
+  local view_x, view_w, view_gap = 364, 76, 5
+  for i, label in ipairs({ "FLOW", "GRID", "LIST" }) do
+    local x = view_x + (i - 1) * (view_w + view_gap)
+    local active = i == view
+    local c = active and NEON_PURPLE or K.C.faint
+    K.color(c, active and 0.25 or 0.05)
+    lg.rectangle("fill", x, tab_y, view_w, 22, 5, 5)
+    K.color(c, active and 1 or 0.32)
+    lg.rectangle("line", x, tab_y, view_w, 22, 5, 5)
+    K.text("key", label, x, tab_y + 6, active and K.C.text or K.C.dim,
+      1, view_w, "center")
+  end
 end
 
 local function draw_overlay()
@@ -274,31 +366,42 @@ end
 function S.draw()
   local list = cur_list()
   local g = list[sel[tab]]
-  K.set_accent(g and acc_of(g) or K.ACC.gc)
+  K.set_accent(g and acc_of(g) or NEON_PURPLE)
   K.bg()
-  K.header("RT:STREAM", TABS[tab] .. "   " .. VIEWS[view] .. "   " .. FILTERS[filter] .. "   " .. #list .. " games", nil, { accent = K.acc })
-  led(K.W - 214, 56, Stream.health.library, "PORTAL")
-  led(K.W - 124, 56, Stream.health.sunshine, "SUNSHINE")
+  draw_vaporwave_backdrop()
+  draw_stream_header()
 
   if #list == 0 then
-    local msg = not Stream.configured() and "Set your PC address in START > Stream settings, then sync."
-      or (#Stream.games == 0 and "No games yet. START > Sync library." or "Nothing here yet.")
-    K.cube(K.W / 2, 190, 34, t * 0.8, 0.55, K.acc, 0.9)
-    K.text("body", msg, 0, 250, K.C.dim, 1, K.W, "center")
-  elseif view == 1 then draw_flow(list)
-  elseif view == 2 then draw_grid(list)
-  else S.list:draw(function(item, x, y, w, h, focused) draw_row(item, x, y, w, h, focused) end) end
+    local msg = not Stream.configured() and "SET YOUR PC ADDRESS IN STREAM SETTINGS"
+      or (#Stream.games == 0 and "SYNC YOUR SUNSHINE LIBRARY TO GET STARTED" or "NOTHING IN THIS SECTION YET")
+    K.panel(76, 164, K.W - 152, 174, { cut = 14, accent = NEON_PINK })
+    K.cube(K.W / 2, 220, 34, t * 0.8, 0.55, NEON_PURPLE, 0.9)
+    K.text("body", msg, 92, 286, K.C.text, 1, K.W - 184, "center")
+    K.text("small", "START  ·  CONNECTION & SYNC TOOLS", 92, 311, NEON_CYAN, 1, K.W - 184, "center")
+  elseif view == 1 then
+    draw_flow(list)
+  elseif view == 2 then
+    draw_grid(list)
+  else
+    S.list:draw(function(item, x, y, w, h, focused) draw_row(item, x, y, w, h, focused) end)
+  end
 
   if g then
     local y = K.BOT - 40
-    K.panel(K.MARGIN, y, K.W - K.MARGIN * 2, 40, { accent = acc_of(g), cut = 6 })
-    K.text("body", K.clip("body", g.title, 380), K.MARGIN + 14, y + 10, K.C.text)
+    K.panel(K.MARGIN, y, K.W - K.MARGIN * 2, 40, { accent = acc_of(g), cut = 8 })
+    K.text("body", K.clip("body", g.title, 300), K.MARGIN + 14, y + 8, K.C.text)
     local st = Stream.stat(g.app)
-    local info = (g.id and (g.id .. "   ") or "") .. SL.ago(st.last, os.time())
-    K.text("small", info, K.W - K.MARGIN - 14 - K.width("small", info), y + 12, K.C.dim)
+    local details = (g.id and (g.id .. "  ·  ") or "") .. tostring(st.plays or 0) ..
+      " PLAYS  ·  " .. SL.ago(st.last, os.time())
+    K.text("small", K.clip("small", details, 244), K.W - K.MARGIN - 14 - 244,
+      y + 12, NEON_CYAN, 1, 244, "right")
   end
-  K.footer({ { key = "A", label = "Play" }, { key = "X", label = "View" }, { key = "Y", label = "Fav" },
-             { key = "L1/R1", label = "Tab" }, { key = "START", label = "Stream" } })
+
+  K.footer({
+    { key = "A", label = "Play" }, { key = "X", label = "View" },
+    { key = "Y", label = "Favourite" }, { key = "L1/R1", label = "Tab" },
+    { key = "SELECT", label = "Sort" }, { key = "START", label = "Connect" },
+  })
   if launching then draw_overlay() end
 end
 

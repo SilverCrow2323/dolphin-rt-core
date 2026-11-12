@@ -17,7 +17,7 @@ local TARGETS = {
     controller    = { dir = (require("core.paths").root_emu .. "/Config"), files = { "GCPadNew.ini", "WiimoteNew.ini" } },
     hotkeys       = { dir = (require("core.paths").root_emu .. "/Config"), files = { "Hotkeys.ini" } },
     logging       = { dir = (require("core.paths").root_emu .. "/Config"), files = { "Logger.ini" } },
-    gamesettings  = { dir = (require("core.paths").root_emu .. "/Config/GameSettings"), files = {} },
+    gamesettings  = { dir = (require("core.paths").root_emu .. "/GameSettings"), files = {} },
 }
 
 local PREFIX = {
@@ -88,6 +88,49 @@ function M.apply(kind, name)
         return false
     end
 
+    if kind == "gamesettings" then
+        -- GameSettings live in the Dolphin user-root GameSettings/ folder,
+        -- separate from Config/. Keep [Gecko]/[ActionReplay] cheat blocks.
+        if type(name) ~= "string" or not name:match("^[%w_%-]+$") then
+            Notify.show("error", "Invalid GameID")
+            return false
+        end
+        local GM = require("core.gameset_manager")
+        local active = GM.active_for(name)
+        local destination = target.dir .. "/" .. name .. ".ini"
+        local source = active and ("workshop/gamesettings/" .. name .. "/" .. active) or "-"
+        local temporary = destination .. ".rt-tmp"
+        os.execute("mkdir -p " .. shq(target.dir))
+        local command = "python3 " .. shq("tools/project_gamesettings.py") .. " " ..
+            shq(source) .. " " .. shq(destination) .. " " .. shq(temporary)
+        local rc = os.execute(command)
+        local ok = (rc == true or rc == 0)
+        if ok then
+            local projected = io.open(temporary, "rb")
+            if projected then
+                local bytes = projected:read("*a") or ""
+                projected:close()
+                if bytes ~= "" then
+                    ok = os.rename(temporary, destination)
+                    if not ok then os.remove(temporary) end
+                else
+                    os.remove(temporary)
+                    os.remove(destination)
+                end
+            else
+                ok = false
+            end
+        else
+            os.remove(temporary)
+        end
+        if ok then
+            Notify.show("success", active and ("Projected: " .. active) or "GameSettings disabled")
+        else
+            Notify.show("error", "Could not project GameSettings for " .. tostring(name))
+        end
+        return ok
+    end
+
     local valid = PV.validate(kind, name)
     if not valid.ok then
         Notify.show("error", "Validation failed: " .. (valid.errors[1] or "?"))
@@ -98,24 +141,8 @@ function M.apply(kind, name)
         BM.backup(file)
     end
 
-    local ok = true
-    if kind == "gamesettings" then
-        local id = name
-        local src_ini = "workshop/gamesettings/" .. id .. "/" .. id .. ".ini"
-        local f = io.open(src_ini, "r")
-        if f then
-            f:close()
-            os.execute("mkdir -p " .. shq(target.dir))
-            local rc = os.execute("cp " .. shq(src_ini) .. " " ..
-                       shq(target.dir .. "/" .. id .. ".ini"))
-            ok = (rc == true or rc == 0)
-        else
-            ok = false
-        end
-    else
-        ok = PMerger.apply_profile(kind, name, target.dir,
-                                   target.files, "workshop")
-    end
+    local ok = PMerger.apply_profile(kind, name, target.dir,
+                                     target.files, "workshop");
 
     if ok then
         Notify.show("success", "Applied: " .. name)

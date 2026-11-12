@@ -64,13 +64,32 @@ The package builder verifies that `font_western.bin`,
 `font_japanese.bin`, `dsp_rom.bin`, and `dsp_coef.bin` are present in
 `Sys/GC/` before creating the update archive.
 
-## Nexus loads but library is empty
+## RTUI library is empty or does not discover ROM folders
 
-1. Check ROM paths in Settings → ROM Paths.
-2. Verify the paths exist and are readable.
-3. Wait for the scan to complete (bottom-right of the Nexus shows
-   the count).
-4. Look at `data/logs/launcher_<timestamp>.log` for scan errors.
+1. Open Settings → ROM folders and use **Auto-detect ROM roots**. On the first library scan RTUI also probes the muOS ROM mount and common `roms` / `ROMS` paths.
+2. Confirm the detected paths exist and contain supported disc images (`.iso`, `.gcm`, `.rvz`, `.gcz`, `.ciso`, `.wbfs`, or `.wia`).
+3. If auto-detection misses the folder, use **Browse for a ROM folder** and add it to the correct GC/Wii scanner.
+4. Use **Registratore Z** to inspect names that match muOS skip patterns, lack a GameCube/Wii assignment, or need manual review. It shows the exact reason and proposed `Rt...` rename before changing anything.
+5. The scanner does not treat every GameCube/Wii-named directory as banned. muOS `skip.ini` rules currently include hidden names (`.*`), underscore-prefixed names (`_*`), `/img*`, and file patterns; they do not explicitly ban `GameCube` or `Wii` folders by name.
+6. Look at `data/logs/ui.log`, launch logs, and the muOS assignment generator log if folders still do not appear.
+
+Auto-discovery is read-only: it adds roots to RTUI settings and does not rename or move ROM folders.
+
+## Safe Exit closes a game unexpectedly or does not respond
+
+1. Open Settings → Safe Exit. The default is **START + SELECT** (joydev indices **9 + 8** on the documented RG35XX H `js1` sequence).
+2. A single-button custom exit is allowed only for **MENU / M** (index **10**); otherwise record a 2–4 button combination that does not conflict with the game or device overlay.
+3. Check `data/safe_exit.conf` and the watcher log under `data/logs/` or `RtSys/logs/watcher.log`.
+4. Verify that the launcher selected a real character device. The preferred order is `js1`, `js0`, then another available `js*`; phantom/non-character nodes are ignored.
+5. Confirm the exact firmware and controller indices. EV_KEY, joydev and Dolphin SDL button numbering are different; see [Controller input reference](CONTROLLER_INPUT.md).
+
+## Hotkeys do not work
+
+1. Confirm that the selected hotkey profile is not Disabled.
+2. Keyboard mode starts `gptokeyb2`; Pad (SDL) mode does not. Do not run both paths simultaneously.
+3. Check the copied `Config/Hotkeys.ini` `Device` field and the matching `workshop/hotkeys/<profile>/ext-dolphin.gptk` file.
+4. Check the corresponding `gptokeyb2` log under `data/logs/` or `RtSys/logs/`.
+5. The bundled keyboard profile uses L2 combinations and does not remap SELECT globally. Safe Exit defaults to START + SELECT; MENU / M is the supported single-button custom exit.
 
 ## Frontend does not return after a game
 

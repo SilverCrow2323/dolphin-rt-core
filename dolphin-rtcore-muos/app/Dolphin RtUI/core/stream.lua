@@ -97,7 +97,7 @@ function M.check_health()
   if not M.configured() then M.health.library, M.health.sunshine = "unknown", "unknown"; return end
   os.remove(DIR .. "/h_lib.done"); os.remove(DIR .. "/h_sun.done")
   M.spawn("health.sh", "http://" .. M.s.HOST .. ":" .. M.s.SYNC_PORT .. "/library.tsv", DIR .. "/h_lib.done")
-  M.spawn("health.sh", "http://" .. M.s.HOST .. ":47989/serverinfo", DIR .. "/h_sun.done")
+  M.spawn("health.sh", "https://" .. M.s.HOST .. ":47989/serverinfo", DIR .. "/h_sun.done")
   M.health.pending = true
 end
 

@@ -47,6 +47,17 @@ for port in k r; do
   done
   tar -xOzf "$archive" "$name/core/dolphin" | cmp -s "$TMP/dolphin" -
   tar -xOzf "$archive" "$name/core/Sys/$MARKER_REL" | cmp -s "$SYS/$MARKER_REL" -
+  if grep -Eq '(^|/)(GameSettings|gamesettings)(/|\.json$)|/(Load|Sys/Load)/Textures/' "$listing"; then
+    echo "[FAIL] $name archive contains GameSettings or texture packs" >&2
+    exit 1
+  fi
+  if grep -E '/(Sys/)?Load/GraphicMods/' "$listing" | grep -v -E '/GraphicMods/$|/All Games Bloom Removal/'; then
+    echo "[FAIL] $name archive contains a non-Bloom-Removal graphics mod" >&2
+    exit 1
+  fi
+  grep -Fq '/Load/GraphicMods/All Games Bloom Removal/' "$listing" ||
+    grep -Fq '/Sys/Load/GraphicMods/All Games Bloom Removal/' "$listing"
+  echo "[OK] $name archive has no GameSettings or textures and keeps only Bloom Removal"
   echo "[OK] $name archive includes matching binary and supplied Sys tree"
 done
 
