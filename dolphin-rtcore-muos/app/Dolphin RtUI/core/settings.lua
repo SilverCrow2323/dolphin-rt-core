@@ -79,9 +79,15 @@ function M.set(k, v)   M.data[k] = v; M.save() end
 function M.add_rom_path(path, system)
   system = system or "GC"
   for _, e in ipairs(M.data.rom_paths) do
-    if e.path == path and e.system == system then return false end
+    if e.path == path and e.system == system then
+      M.data.rom_discovery_done = true
+      M.save()
+      return false
+    end
   end
   table.insert(M.data.rom_paths, { path = path, system = system })
+  -- An explicit user choice is a completed first-run setup decision.
+  M.data.rom_discovery_done = true
   M.save()
   return true
 end
