@@ -1,8 +1,8 @@
 -- core/boot_initializer.lua — orchestrated boot sequence, riscritto pulito.
 --
 -- Fasi:
---   update_check    → wait_update    → download_data
---   → scan_roms     → wait_gamesets  → download_cheats
+--   update_check    → wait_update    → scan_roms
+--   → download_data  → wait_gamesets  → download_cheats
 --   → wait_cheats   → build_rtid     → done
 --
 -- Nel download_data scarichiamo 3 file JSON da GitHub (games_data,
@@ -30,6 +30,7 @@ local STATE = {
   ids      = {},
   results  = { roms = 0, gamesets = 0, cards = 0 },
   _fast_done = false,
+  skip_data_download = false,
   rom_setup_needed = false,
 }
 
@@ -79,6 +80,7 @@ function M.start()
   STATE.t        = 0
   STATE.started  = os.time()
   STATE._fast_done = false
+  STATE.skip_data_download = false
   STATE.rom_setup_needed = false
   Hub.push("info", "Boot sequence", "Starting up…", { silent = true, ttl = 2 })
 end
@@ -98,6 +100,7 @@ function M.update(dt)
      and STATE.step ~= "scan_roms"
      and STATE.step ~= "build_rtid" then
     STATE._fast_done = true
+    STATE.skip_data_download = true
     STATE.step = "scan_roms"; STATE.t = 0
     return
   end
@@ -118,10 +121,7 @@ function M.update(dt)
       if S.get("auto_update_check") == false then skip_update = true end
     end)
     if skip_update then
-      STATE.step = "download_data"; STATE.t = 0
-      spawn_dl("games_data",        URLS.games_data,        "data/games_data.json")
-      spawn_dl("gamesettings_json", URLS.gamesettings_json, "data/gamesettings.json")
-      spawn_dl("rtcheats_db",       URLS.rtcheats_db,       "data/rtcheats_db.json")
+      STATE.step = "scan_roms"; STATE.t = 0
       return
     end
     local ok, AU = (function() local ok,m = pcall(require, "core.app_updater"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.app_updater") end; return ok and m end)()
@@ -131,10 +131,7 @@ function M.update(dt)
   elseif step == "wait_update" then
     local ok, AU = pcall(require, "core.app_updater")
     if not ok or AU.poll() or STATE.t > 3 then
-      STATE.step = "download_data"; STATE.t = 0
-      spawn_dl("games_data",        URLS.games_data,        "data/games_data.json")
-      spawn_dl("gamesettings_json", URLS.gamesettings_json, "data/gamesettings.json")
-      spawn_dl("rtcheats_db",       URLS.rtcheats_db,       "data/rtcheats_db.json")
+      STATE.step = "scan_roms"; STATE.t = 0
     end
 
   elseif step == "download_data" then
@@ -151,7 +148,9 @@ function M.update(dt)
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
-      STATE.step = "scan_roms"; STATE.t = 0
+      local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
+      if ok_dep and DEP then pcall(DEP.start, Library and Library.games or {}) end
+      STATE.step = "wait_gamesets"; STATE.t = 0
     end
 
   elseif step == "scan_roms" then
@@ -174,9 +173,16 @@ function M.update(dt)
         if g.id and g.id ~= "" then STATE.ids[#STATE.ids+1] = g.id end
       end
     end
-    local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
-    if ok_dep and DEP then pcall(DEP.start, Library and Library.games or {}) end
-    STATE.step = "wait_gamesets"; STATE.t = 0
+    if STATE.skip_data_download then
+      local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
+      if ok_dep and DEP then pcall(DEP.start, Library and Library.games or {}) end
+      STATE.step = "wait_gamesets"; STATE.t = 0
+    else
+      spawn_dl("games_data",        URLS.games_data,        "data/games_data.json")
+      spawn_dl("gamesettings_json", URLS.gamesettings_json, "data/gamesettings.json")
+      spawn_dl("rtcheats_db",       URLS.rtcheats_db,       "data/rtcheats_db.json")
+      STATE.step = "download_data"; STATE.t = 0
+    end
 
   elseif step == "wait_gamesets" then
     local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
