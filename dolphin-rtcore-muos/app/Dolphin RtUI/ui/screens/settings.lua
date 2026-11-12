@@ -6,6 +6,7 @@ local Notify   = require("ui.notify")
 local Settings = require("core.settings")
 local Library  = require("core.library")
 local Cheats   = require("core.rtcheats")
+local MuOS     = require("core.muos")
 local _okT, _Triage = pcall(require, "core.rtcore_triage")
 if not _okT then print("[settings] core.rtcore_triage FAILED: " .. tostring(_Triage)) end
 local Triage = _okT and _Triage or {
@@ -442,6 +443,36 @@ function S.draw()
         { key = "L1 R1", label = "Section" },
         { key = "B", label = "Back" },
     })
+end
+
+
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+    local specs = {
+        {
+            id = "muos.registration.ensure", title = "Repair GameCube/Wii registration", order = 10,
+            run = function() return MuOS.ensure() end,
+        },
+        {
+            id = "muos.profiles.mode", title = "Get core profile visibility", order = 20,
+            run = function()
+                return { mode = MuOS.profile_mode_id(), label = MuOS.profile_mode() }
+            end,
+        },
+        {
+            id = "muos.profiles.set_mode", title = "Set core profile visibility", order = 30,
+            run = function(mode) return MuOS.apply_profile_mode(mode) end,
+        },
+    }
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "system", order = spec.order, screen = "settings",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S
