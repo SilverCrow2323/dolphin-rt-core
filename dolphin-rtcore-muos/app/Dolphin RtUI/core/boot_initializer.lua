@@ -28,7 +28,10 @@ local STATE = {
   t        = 0,
   started  = 0,
   ids      = {},
-  results  = { roms = 0, gamesets = 0, cards = 0 },
+  results  = {
+    roms = 0, gamesets = 0, cards = 0, downloads = {},
+    gamesets_status = "waiting", cheats_status = "waiting",
+  },
   _fast_done = false,
 }
 
@@ -77,6 +80,10 @@ function M.start()
   STATE.step     = "update_check"
   STATE.t        = 0
   STATE.started  = os.time()
+  STATE.results = {
+    roms = 0, gamesets = 0, cards = 0, downloads = {},
+    gamesets_status = "waiting", cheats_status = "waiting",
+  }
   STATE._fast_done = false
   Hub.push("info", "Boot sequence", "Starting up…", { silent = true, ttl = 2 })
 end
@@ -144,13 +151,21 @@ function M.update(dt)
       local ok_b = is_done("rtcheats_db")
       local ok_c = is_done("gamesettings_json")
       local n_ok = (ok_a and 1 or 0) + (ok_b and 1 or 0) + (ok_c and 1 or 0)
+      STATE.results.downloads = {
+        games_data = ok_a, rtcheats_db = ok_b, gamesettings_json = ok_c,
+      }
       if n_ok == 3 then
         Hub.push("success", "Data Center", "3/3 updated", { ttl = 4 })
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
       local ok_dep, DEP = (function() local ok,m = pcall(require, "core.gamesettings_deployer"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.gamesettings_deployer") end; return ok and m end)()
-      if ok_dep and DEP then pcall(DEP.start) end
+      if ok_dep and DEP then
+        STATE.results.gamesets_status = "running"
+        pcall(DEP.start)
+      else
+        STATE.results.gamesets_status = "unavailable"
+      end
       STATE.step = "scan_roms"; STATE.t = 0
     end
 
@@ -177,6 +192,7 @@ function M.update(dt)
     local done, res = true, {}
     if ok_dep and DEP then done, res = DEP.poll() end
     if done or STATE.t > 20 then
+      STATE.results.gamesets_status = done and "complete" or "timeout"
       if res and res.deployed and res.deployed > 0 then
         STATE.results.gamesets = res.deployed
         Hub.push("success", "GameSettings deployed",
@@ -188,7 +204,12 @@ function M.update(dt)
 
   elseif step == "download_cheats" then
     local ok, CD = (function() local ok,m = pcall(require, "core.cheats_downloader"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.cheats_downloader") end; return ok and m end)()
-    if ok then CD.start_for(STATE.ids) end
+    if ok then
+      STATE.results.cheats_status = "running"
+      CD.start_for(STATE.ids)
+    else
+      STATE.results.cheats_status = "unavailable"
+    end
     STATE.step = "wait_cheats"; STATE.t = 0
 
   elseif step == "wait_cheats" then
@@ -199,6 +220,7 @@ function M.update(dt)
       done = d
     end
     if done or STATE.t > 20 then
+      STATE.results.cheats_status = done and "complete" or "timeout"
       STATE.step = "build_rtid"; STATE.t = 0
     end
 
@@ -225,6 +247,59 @@ function M.update(dt)
   else
     STATE.step = "done"
   end
+end
+
+local DATABASES = {
+  games_data = "data/games_data.json",
+  gamesettings_json = "data/gamesettings.json",
+  rtcheats_db = "data/rtcheats_db.json",
+}
+
+local function local_file_info(path)
+  local f = io.open(path, "rb")
+  if not f then return false, 0 end
+  local size = f:seek("end") or 0
+  f:close()
+  return true, size
+end
+
+local function database_snapshot(key, path)
+  local present, size = local_file_info(path)
+  local result = STATE.results.downloads or {}
+  local state
+  if is_done(key) then
+    state = "updated"
+  elseif result[key] == false then
+    state = present and "retained" or "failed"
+  elseif STATE.step == "download_data" then
+    state = "downloading"
+  elseif present then
+    state = "cached"
+  elseif STATE.step == "idle" then
+    state = "not_checked"
+  else
+    state = "missing"
+  end
+  return {state = state, present = present, size = size}
+end
+
+function M.snapshot()
+  local databases = {}
+  for key, path in pairs(DATABASES) do
+    databases[key] = database_snapshot(key, path)
+  end
+  return {
+    step = STATE.step,
+    done = STATE.step == "done",
+    databases = databases,
+    gamesets = {
+      status = STATE.results.gamesets_status or "waiting",
+      deployed = STATE.results.gamesets or 0,
+    },
+    cheats = {status = STATE.results.cheats_status or "waiting"},
+    roms = STATE.results.roms or 0,
+    cards = STATE.results.cards or 0,
+  }
 end
 
 function M.is_done() return STATE.step == "done" end
