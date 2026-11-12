@@ -287,10 +287,13 @@ function U.launch(g)
         hotkeys    = card("Hotkeys", "Default"),
         gamesettings = (function()
             local ok, GM = pcall(require, "core.gameset_manager")
-            local active = ok and GM.active_for(g.id) or nil
-            if type(active) == "string" and active ~= "" then return active end
+            if ok and GM.has_active_record and GM.has_active_record(g.id) then
+                -- Empty ActiveConfig is an explicit Disabled choice; never
+                -- reactivate an older value from the RTID compatibility card.
+                return GM.active_for(g.id) or "Disabled"
+            end
 
-            -- One-time compatibility import from older RTID cards.
+            -- One-time compatibility import only when canonical metadata is absent.
             local v = card("GameSettings", "")
             if v == "Disabled" then
                 if ok then GM.clear_active(g.id) end
