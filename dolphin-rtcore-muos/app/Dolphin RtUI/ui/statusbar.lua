@@ -196,7 +196,11 @@ function M.draw(W, H)
     local wifi_w = 14
     local wifi_h = 12
     local ip = M._net.ip or "NO IP"
-    K.text("mono", ip, W - 205, y0 + 2, M._net.ip and K.C.dim or K.C.bad)
+    K.text("mono", "IP " .. ip, W - 310, y0 + 2, M._net.ip and K.C.dim or K.C.bad)
+    local tx = W - 160
+    K.color(M._net.tailscale and K.C.ok or K.C.faint, 1)
+    love.graphics.circle("fill", tx, y0 + 8, 3)
+    K.text("key", "TS", tx + 7, y0 + 1, M._net.tailscale and K.C.ok or K.C.faint)
     local sx = W - 112
     local sun_ok = M._sunshine == "ok"
     local sun_fail = M._sunshine == "fail"
