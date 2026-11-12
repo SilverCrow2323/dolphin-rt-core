@@ -15,13 +15,13 @@ The muOS packager supports two different outputs. They are both `.muxupd`, but t
 | **Rt:UI / RtSys overlay** | Frontend, firmware launchers, registration tools, controller/UI settings, Dolphin `Sys/` resources and integrity manifest. | A compatible Dolphin executable at `/opt/muos/share/emulator/dolphin/dolphin`. |
 | **Full engine bundle** | Everything in the overlay plus the AArch64 Dolphin executable and private runtime libraries from one matching build. | No separately installed Dolphin executable is required; still back up existing saves and configuration. |
 
-### Current Arcade 12.1.0 candidate artifact
+### Current Arcade 12.5.00 candidate package
 
-**Overlay update · not a standalone emulator**
+**Full engine bundle · draft candidate**
 
-The Arcade 12.1.0 candidate workflow builds the archive without `DOLPHIN_BIN`. It therefore creates an Rt:UI/RtSys overlay update, **not** a complete Dolphin engine package. Apply it only when a compatible Dolphin binary is already installed. The candidate is tracked in [PR #81](https://github.com/SilverCrow2323/dolphin-rt-core/pull/81); it is not a published GitHub Release.
+The next release candidate is **Dolphin Rt:Core 12.5.00** with **Rt:UI 3.7.0 “Arcade”**. The Andromeda release workflow builds a complete AArch64 update containing Dolphin, matching system resources and required private runtime libraries. It preserves official GameSettings, Sys/Load assets, stock textures and graphics mods; Rt:UI Mod Vault controls their activation.
 
-[Open the verified CI run and its artifacts](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/43283168682)
+The separate CI UI-only archive is explicitly labelled and must not be installed as a full engine update. The candidate is tracked in [PR #81](https://github.com/SilverCrow2323/dolphin-rt-core/pull/81); it is not yet a published GitHub Release. Physical RG35XX H testing on the target firmware remains required before publication.
 
 ## Build a full engine bundle
 

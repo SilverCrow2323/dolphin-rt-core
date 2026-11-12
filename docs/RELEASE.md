@@ -1,8 +1,8 @@
-# Release checklist — Rt:Core 12.1.0 Arcade
+# Release checklist — Rt:Core 12.5.00 Arcade
 
 ## Current release candidate
 
-- **Rt:Core:** 12.1.0
+- **Rt:Core:** 12.5.00
 - **Rt:UI:** 3.7.0 “Arcade”
 - **Source:** [PR #81](https://github.com/SilverCrow2323/dolphin-rt-core/pull/81)
 - **Release state:** draft candidate only; the final release is not published.
@@ -17,7 +17,7 @@
 
 The dedicated `.github/workflows/build-muos-andromeda.yml` workflow builds the full Andromeda update from a matching AArch64 Dolphin executable, Sys resource tree and private libraries. It refuses to publish a full update when the Dolphin binary is missing or not AArch64, and checks any bundled HIDAPI runtime against the same architecture.
 
-After a successful push build on main, the workflow creates a **draft** release candidate tagged `v12.1.0-rc-<commit>`. It remains a draft until physical-device testing is recorded.
+After a successful push build on main, the workflow creates a **draft** release candidate tagged `v12.5.00-rc-<commit>`. It remains a draft until physical-device testing is recorded.
 
 ## Official resources and Mod Vault
 

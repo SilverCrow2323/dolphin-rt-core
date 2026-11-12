@@ -1,4 +1,4 @@
-## 3.7.0 "Arcade" — Rt:Core v12.1.0 for muOS 2606.0 Andromeda
+## 3.7.0 "Arcade" — Rt:Core v12.5.00 for muOS 2606.0 Andromeda
 **Release candidate · 2026-11-12**
 
 ### Boot and library
@@ -25,8 +25,11 @@
 - Rt:Stream receives a vaporwave refresh with a neon sunset and perspective grid, dedicated connection/status lanes, visible filter and sort state, and three selectable layouts: **Flow**, **Grid** and **List**.
 
 ### Package contents
-- The muOS packager omits the GameSettings preset database and per-game presets, HD texture payloads and all bundled GraphicMods except the opt-in **All Games Bloom Removal**.
-- The muxupd is an Rt:UI / RtSys overlay unless a matching AArch64 Dolphin binary, Sys tree and private libraries are supplied explicitly.
+- The full Andromeda release bundle includes the native AArch64 Dolphin executable, its matching Sys resources and required private runtime libraries.
+- Official Dolphin GameSettings, Sys/Load resources, stock textures, GraphicMods and Rt:UI per-game presets are retained. Mod Vault manages activation/deactivation without deleting their source payload.
+- A fresh build Sys tree is merged over the curated Sys payload; it does not erase official resources that are absent from the build output.
+- Developer-local settings, generated app-local caches, backups and temporary files are excluded.
+- CI's UI-only package is separately labelled and is not a substitute for the full engine update.
 
 ### Release gate
 - CI and Xvfb checks are required for this candidate; a green CI result is not a physical-device certification.

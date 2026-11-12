@@ -1,4 +1,4 @@
-# Dolphin Rt:UI 3.7 "Arcade" — Release candidate for Rt:Core 12.1.0
+# Dolphin Rt:UI 3.7 "Arcade" — Release candidate for Rt:Core 12.5.00
 
 Controller-first frontend for Dolphin on muOS (RG35XX H, 640x480, 1 GB RAM).
 Full description, screenshots and install guide: see the Flavour III README

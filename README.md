@@ -28,6 +28,10 @@
 >
 > A successful build is not a successful device boot. The current H700 binaries still need to pass the on-device launch, font, input, rendering and clean-exit checks described below.
 
+## Next release candidate — Rt:Core 12.5.00
+
+The next planned muOS release is **Dolphin Rt:Core 12.5.00** with **Rt:UI 3.7.0 “Arcade”**. This is a development candidate, not a published release. The full Andromeda update is being prepared with a native AArch64 Dolphin build, matching runtime resources and the official GameSettings / graphics-mod payload. The current published release remains v12.0.0 until the candidate passes CI and RG35XX H device validation.
+
 ## 01 — The project
 
 Dolphin Rt:Core is a community engineering stack for running and integrating **Dolphin GameCube/Wii emulation** on constrained ARM64 handhelds.
