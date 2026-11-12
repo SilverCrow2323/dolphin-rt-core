@@ -142,7 +142,11 @@ function U.mods_selected(game)
     local set, n = {}, 0
     if not game or not game.id then return set, n end
     for _, item in ipairs(require("core.graphics_mods").list_for(game)) do
-        if item.enabled then set[item.name] = true; n = n + 1 end
+        if item.enabled then
+            set[item.name] = true
+            set[item.source .. "|" .. item.path] = true
+            n = n + 1
+        end
     end
     return set, n
 end
