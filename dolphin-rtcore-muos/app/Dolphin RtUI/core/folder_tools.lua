@@ -153,6 +153,29 @@ function M.inspect(path)
     }
 end
 
+function M.root_report()
+    local out, seen = {}, {}
+    local roots = {}
+    for _, path in ipairs(Settings.rom_root_candidates and Settings.rom_root_candidates() or {}) do
+        roots[#roots + 1] = path
+    end
+    for _, entry in ipairs(Settings.get("rom_paths") or {}) do
+        roots[#roots + 1] = entry.path
+    end
+    for _, path in ipairs(roots) do
+        if type(path) == "string" and path ~= "" and not seen[path] then
+            seen[path] = true
+            local accessible = FS.is_dir(path)
+            out[#out + 1] = {
+                path = path,
+                accessible = accessible,
+                has_roms = accessible and has_roms(path) or false,
+            }
+        end
+    end
+    return out
+end
+
 function M.scan()
     local roots, root_seen = {}, {}
     local function add_root(path)
