@@ -24,4 +24,3 @@ down = f8    # Fast Forward
 left = f9    # Frame Limit -
 right = f10  # Frame Limit +
 r2 = f11     # Screenshot
-start = f12  # Reset (only while L2 is held)
