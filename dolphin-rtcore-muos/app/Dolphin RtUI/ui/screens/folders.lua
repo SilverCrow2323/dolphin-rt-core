@@ -3,6 +3,7 @@
 local K           = require("ui.kit")
 local SFX         = require("ui.sfx")
 local U           = require("ui.util")
+local FS          = require("core.fs")
 local Notify      = require("ui.notify")
 local Settings    = require("core.settings")
 local Library     = require("core.library")
@@ -41,7 +42,7 @@ end
 
 local function start_browse()
     for _, p in ipairs(Settings.rom_root_candidates()) do
-        if U.exists(p .. "/.") then show_dir(p); return end
+        if FS.is_dir(p) then show_dir(p); return end
     end
     show_dir("/")
 end
