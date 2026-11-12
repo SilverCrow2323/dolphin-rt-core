@@ -117,6 +117,9 @@ function S.pad(b)
         SFX.play("menu_select")
         if it.fn then it.fn()
         elseif it.go then require("ui").go(it.go, it.params) end
+    elseif b == "SELECT" then
+        -- Rt:Stream is a Home-only mode switch; SELECT has no global handler.
+        require("ui").go("stream_library")
     elseif b == "START" then require("ui").go("settings")
     end
 end
