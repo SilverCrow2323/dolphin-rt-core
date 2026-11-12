@@ -143,22 +143,29 @@ function M.ensure_dir(game_id)
 end
 
 function M.set_active(game_id, filename)
-    local dir = M.ensure_dir(game_id)
+    if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return false end
+    if type(filename) ~= "string" or filename == "" or filename:find("/", 1, true)
+       or filename:find("..", 1, true) or filename:match("^%.") or not filename:match("%.ini$") then
+        return false
+    end
+    local dir = BASE .. "/" .. game_id
+    local source = io.open(dir .. "/" .. filename, "r")
+    if not source then return false end
+    source:close()
     local meta = read_meta(dir .. "/rtgameset_data.ini")
     meta.GameSettings = meta.GameSettings or {}
-    meta.GameSettings.ActiveConfig = filename or ""
-    write_meta(dir .. "/rtgameset_data.ini", meta)
-    return true
+    meta.GameSettings.ActiveConfig = filename
+    return write_meta(dir .. "/rtgameset_data.ini", meta)
 end
 
 function M.clear_active(game_id)
+    if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return false end
     local dir = BASE .. "/" .. game_id
     if not dir_exists(dir) then return true end
     local meta = read_meta(dir .. "/rtgameset_data.ini")
     meta.GameSettings = meta.GameSettings or {}
     meta.GameSettings.ActiveConfig = ""
-    write_meta(dir .. "/rtgameset_data.ini", meta)
-    return true
+    return write_meta(dir .. "/rtgameset_data.ini", meta)
 end
 
 function M.add(game_id, filename)
