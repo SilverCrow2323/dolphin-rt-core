@@ -40,6 +40,98 @@ log() { echo "$(date '+%F %T') | $*" >> "$LOG"; }
 [ -x "$EMUDIR/dolphin" ] || { log "[FATAL] $EMUDIR/dolphin missing or not executable"; exit 1; }
 [ -f "$ROM" ] || { log "[FATAL] ROM not found: $ROM"; exit 1; }
 
+# Shared profile pipeline: Content Explorer and Rt:UI now project the same
+# workshop catalogue into Config/ and use the same launch script.
+SHARED_RUNTIME="$APP_DIR/scripts/ce_shared_profile_runtime.sh"
+SHARED_LAUNCH="$APP_DIR/scripts/launch.sh"
+if [ -r "$SHARED_RUNTIME" ] && [ -r "$SHARED_LAUNCH" ]; then
+    # shellcheck source=/dev/null
+    . "$SHARED_RUNTIME"
+    rt_resolve_ce_core "$CORE" "$APP_DIR/workshop/rtcoreprofile"
+
+    GAME_ID="$(rt_extract_game_id "$ROM" 2>/dev/null || true)"
+    SYS="GC"
+    case "$GAME_ID" in [RSWH]*) SYS="Wii" ;; esac
+
+    CARD=""
+    [ -n "$GAME_ID" ] && CARD="$APP_DIR/workshop/gameslibrary/rtid_$GAME_ID.ini"
+
+    # Per-game RTID values override the Content Explorer core selection,
+    # matching the precedence used by core/launcher.lua in Rt:UI.
+    VALUE="$(rt_read_rtid_launch "$CARD" RtProfile)"
+    if [ -n "$VALUE" ] && rt_safe_profile_name "$VALUE" \
+       && [ -d "$APP_DIR/workshop/rtcoreprofile/$VALUE" ]; then
+        RT_PROFILE="$VALUE"
+        RT_VARIANT=""
+        if [ -d "$APP_DIR/workshop/rtcoreprofile/$VALUE/lite" ] \
+           || [ -d "$APP_DIR/workshop/rtcoreprofile/$VALUE/std" ] \
+           || [ -d "$APP_DIR/workshop/rtcoreprofile/$VALUE/max" ]; then
+            RT_VARIANT="std"
+        fi
+    fi
+
+    VALUE="$(rt_read_rtid_launch "$CARD" RtProfileVariant)"
+    case "$VALUE" in lite|std|max)
+        if [ -d "$APP_DIR/workshop/rtcoreprofile/$RT_PROFILE/$VALUE" ]; then
+            RT_VARIANT="$VALUE"
+        fi
+        ;;
+    esac
+
+    CONTROLLER="$(rt_read_rtid_launch "$CARD" Controller)"
+    rt_safe_profile_name "$CONTROLLER" || CONTROLLER="Default"
+    CTRL_SUB="GameCube"; CTRL_FILE="GCPadNew.ini"
+    [ "$SYS" = "Wii" ] && { CTRL_SUB="Wii"; CTRL_FILE="WiimoteNew.ini"; }
+    [ -f "$APP_DIR/workshop/controller/$CTRL_SUB/$CONTROLLER/$CTRL_FILE" ] || CONTROLLER="Default"
+
+    HOTKEYS="$(rt_read_rtid_launch "$CARD" Hotkeys)"
+    [ "$HOTKEYS" = "Disabled" ] || {
+        rt_safe_profile_name "$HOTKEYS" || HOTKEYS="Default"
+        [ -f "$APP_DIR/workshop/hotkeys/$HOTKEYS/Hotkeys.ini" ] || HOTKEYS="Default"
+    }
+
+    GAMESETTINGS="$(rt_read_rtid_launch "$CARD" GameSettings)"
+    if [ -n "$GAMESETTINGS" ]; then
+        if ! rt_safe_leaf_name "$GAMESETTINGS" \
+           || [ -z "$GAME_ID" ] \
+           || [ ! -f "$APP_DIR/workshop/gamesettings/$GAME_ID/$GAMESETTINGS" ]; then
+            GAMESETTINGS=""
+        fi
+    fi
+
+    LOGGING="$(rt_read_rtid_launch "$CARD" Logger)"
+    case "$LOGGING" in
+        ""|off|Disabled) LOGGING="off" ;;
+        *)
+            rt_safe_profile_name "$LOGGING" || LOGGING="off"
+            [ -f "$APP_DIR/workshop/logging/$LOGGING/Logger.ini" ] || LOGGING="off"
+            ;;
+    esac
+
+    CHEATS="0"
+    [ "$(rt_read_rtid_launch "$CARD" Cheats)" = "yes" ] && CHEATS="1"
+    MODS="none"
+    [ "$(rt_read_rtid_launch "$CARD" Mods)" = "yes" ] && MODS="all"
+    FPS="0"; VPS="0"; SPEED="0"; OSD="1"
+    [ "$(rt_read_rtid_launch "$CARD" OverlayFPS)" = "yes" ] && FPS="1"
+    [ "$(rt_read_rtid_launch "$CARD" OverlayVPS)" = "yes" ] && VPS="1"
+    [ "$(rt_read_rtid_launch "$CARD" OverlaySpeed)" = "yes" ] && SPEED="1"
+    [ "$(rt_read_rtid_launch "$CARD" OverlayOSD)" = "no" ] && OSD="0"
+
+    export DOLPHINUI_LOOP=1
+    export RT_EMUDIR="$EMUDIR"
+    log "shared profile pipeline | game_id=$GAME_ID system=$SYS profile=$RT_PROFILE tier=$RT_VARIANT orientation=$RT_ORIENT"
+    exec /bin/bash "$SHARED_LAUNCH" \
+        --rom="$ROM" --game-id="$GAME_ID" --sys="$SYS" --title="$NAME" \
+        --profile="$RT_PROFILE" --variant="$RT_VARIANT" \
+        --controller="$CONTROLLER" --hotkeys="$HOTKEYS" \
+        --gamesettings="$GAMESETTINGS" --logging="$LOGGING" --mods="$MODS" \
+        --cheats="$CHEATS" --safe-exit=1 --orient="$RT_ORIENT" \
+        --show-fps="$FPS" --show-vps="$VPS" --show-speed="$SPEED" --show-osd="$OSD" \
+        --return-to=library
+fi
+
+# Legacy fallback remains available if Rt:UI's shared runtime is absent.
 SETUP_SDL_ENVIRONMENT
 SET_VAR "system" "foreground_process" "dolphin"
 "$RTSYS/apply_profile.sh" "$PROFILE" "$ORIENT" "$NUMSTICKS" >> "$LOG" 2>&1     || { log "[FATAL] apply_profile failed"; exit 1; }
