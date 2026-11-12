@@ -9,7 +9,6 @@ APP="/run/muos/storage/application/Dolphin RtUI"
 # Make sure every script is executable even if the archive lost the mode bits.
 chmod 755 /opt/muos/script/launch/ext-dolphinrt.sh 2>/dev/null
 find "$EMU/RtSys" -name '*.sh' -exec chmod 755 {} + 2>/dev/null
-find /opt/muos/share/task/"Dolphin Rt-Core" -name '*.sh' -exec chmod 755 {} + 2>/dev/null
 chmod 755 "$APP/mux_launch.sh" "$APP"/scripts/*.sh "$APP"/tools/stream/*.sh "$APP/lib/moonlight" "$APP/lib/love" "$APP/lib/gptokeyb2" 2>/dev/null
 [ -f "$EMU/dolphin" ] && chmod 755 "$EMU/dolphin" 2>/dev/null
 
