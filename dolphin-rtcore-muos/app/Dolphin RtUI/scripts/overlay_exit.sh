@@ -1,8 +1,8 @@
 #!/bin/bash
 # Configurable Safe Exit watcher for RTUI-launched Dolphin sessions.
-# Default: MENU / M (button 8). Multi-button combinations are supported.
+# Default: START + SELECT (buttons 9 + 8). Multi-button combinations are supported.
 set -u
-JS_DEV="${1:-/dev/input/js0}"
+JS_DEV="${1:-/dev/input/js1}"
 DOLPHIN_PID="${2:-}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_DIR="$(dirname "$SCRIPT_DIR")"
@@ -24,7 +24,7 @@ if [ -r "$CONFIG" ]; then
         [ "$duplicate" -eq 1 ] || COMBO+=("$token")
     done
 fi
-[ "${#COMBO[@]}" -gt 0 ] || COMBO=(8)
+[ "${#COMBO[@]}" -gt 0 ] || COMBO=(8 9)
 log "Safe Exit watcher on $JS_DEV; combo=$(IFS=,; echo "${COMBO[*]}"); pid=${DOLPHIN_PID:-auto}"
 [ -e "$JS_DEV" ] || { log "ERROR: $JS_DEV not present"; exit 1; }
 exec 3< "$JS_DEV"
