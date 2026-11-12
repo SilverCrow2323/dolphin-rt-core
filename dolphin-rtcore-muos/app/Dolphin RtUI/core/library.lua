@@ -144,12 +144,10 @@ local function find_files(root, depth)
   local out = Shell.popen(cmd, 8)
   if not out then return {} end
   local files = {}
-  for line in out:gmatch("[^\\n]+") do
+  for line in out:gmatch("[^" .. string.char(10) .. "]+") do
     if line ~= "" then files[#files + 1] = line end
   end
   return files
-end
-
 end
 
 -- ── scan ───────────────────────────────────────────────────────────
