@@ -300,6 +300,8 @@ local function draw_stream_header()
   K.text("title", "RT:STREAM", K.MARGIN + 14, 30, K.C.text)
 
   -- Connection indicators occupy a dedicated upper-right lane.
+  local sort_label = "SORT  " .. SORTS[sort]
+  K.text("key", sort_label, K.MARGIN + 242, 14, NEON_PINK)
   local host = Stream.configured() and ("PC  " .. tostring(Stream.s.HOST)) or "PC NOT CONFIGURED"
   K.text("key", K.clip("key", host, 190), K.W - K.MARGIN - 204,
     14, Stream.configured() and NEON_CYAN or K.C.warn)
