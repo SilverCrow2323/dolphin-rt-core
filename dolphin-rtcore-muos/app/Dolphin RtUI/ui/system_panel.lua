@@ -153,6 +153,8 @@ local function refresh_items()
         local q = math.floor((tonumber(device.wifi.quality) or 0) * 100 + 0.5)
         wifi_status, wifi_color = "CONNECTED", C.green
         wifi_detail = q > 0 and ("Wi-Fi link · signal " .. q .. "%") or "Wi-Fi link active"
+        local ssid = tostring(device.wifi.ssid or ""):gsub("[%c]", " ")
+        if ssid ~= "" then wifi_detail = wifi_detail .. " · " .. ssid:sub(1, 22) end
     else
         wifi_status, wifi_color, wifi_detail = "OFFLINE", C.red, "No active Wi-Fi link detected"
     end
