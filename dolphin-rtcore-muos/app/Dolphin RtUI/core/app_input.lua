@@ -58,12 +58,8 @@ function M.init()
             if type(d.pad) == "table" then
                 local legacy = { A = 1, B = 0, X = 2, Y = 3, L1 = 4,
                     R1 = 5, L2 = 9, R2 = 12, SELECT = 6, START = 7, MENU = 8 }
-                local is_legacy = true
-                for k, v in pairs(legacy) do
-                    if d.pad[k] ~= v then is_legacy = false; break end
-                end
-                if not is_legacy then
-                    for k, v in pairs(d.pad) do M.data.pad[k] = v end
+                for k, v in pairs(d.pad) do
+                    if legacy[k] ~= v then M.data.pad[k] = v end
                 end
             end
             if d.active_device ~= nil then
