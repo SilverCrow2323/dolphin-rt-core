@@ -106,6 +106,7 @@ rt_read_active_gameset() {
         }
     ' "$meta")"
     rt_safe_leaf_name "$active" || return 1
+    case "$active" in *.ini) ;; *) return 1 ;; esac
     [ -f "$root/$game_id/$active" ] || return 1
     printf '%s\n' "$active"
 }
