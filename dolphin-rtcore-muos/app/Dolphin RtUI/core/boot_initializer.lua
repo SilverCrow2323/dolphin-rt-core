@@ -109,7 +109,7 @@ function M.update(dt)
 
   STATE.t = STATE.t + dt
   if STATE.t > 90 then
-    Trace.write("BOOT_TIMEOUT", "step=" .. tostring(STATE.step), "step_elapsed=" .. tostring(STATE.t), "roms=" .. tostring(STATE.results.roms), "gamesets=" .. tostring(STATE.results.gamesets))
+    Trace.write("BOOT_TIMEOUT", "step=" .. tostring(STATE.step), "step_elapsed=" .. tostring(STATE.t), "roms=" .. tostring(STATE.results.roms))
     Hub.push("warning", "Boot sequence", "Timed out")
     STATE.step = "done"
     return
