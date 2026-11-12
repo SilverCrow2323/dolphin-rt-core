@@ -63,7 +63,7 @@ expect(rejected == nil, "ambiguous folders require explicit platform selection")
 -- folders found by the automatic candidate-name scan.
 Settings.data = { rom_paths = {} }
 Settings.rom_root_candidates = function() return { "/mnt/roms" } end
-FS.is_dir = function(path) return path == "/mnt/roms/GameCubeZ" end
+FS.is_dir = function(path) return path == "/mnt/roms" or path == "/mnt/roms/GameCubeZ" end
 Shell.first = function(command)
     if command:find("find ", 1, true) then return "/mnt/roms/GameCubeZ/game.rvz" end
     return nil
@@ -73,6 +73,9 @@ expect(inspected ~= nil, inspect_err or "manual folder inspection")
 expect(inspected.inferred_system == "GC", "manual folder system inference")
 expect(inspected.has_roms == true, "manual folder disc image probe")
 expect(inspected.status == "unmapped", "manual folder reports missing assignment separately")
+local roots = Tools.root_report()
+expect(#roots == 1 and roots[1].path == "/mnt/roms", "root report lists the configured scan root")
+expect(roots[1].accessible == true and roots[1].has_roms == true, "root report exposes mount and ROM visibility")
 FS.is_dir, Shell.first = original.is_dir, original.first
 Settings.rom_root_candidates, Settings.data = original.roots, original.data
 
