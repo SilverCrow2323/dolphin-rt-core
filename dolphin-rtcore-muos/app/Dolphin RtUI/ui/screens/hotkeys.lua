@@ -270,9 +270,24 @@ end
 
 local function switch_device(d)
     if d == S.device then return end
+    local dropped = 0
     if d == "keyboard" then
         for _, a in ipairs(ACTIONS) do
             local m = S.model[a.key]
+            if #m.combo > 0 then
+                local rest, has_l2 = {}, false
+                for _, name in ipairs(m.combo) do
+                    if name == "L2" then has_l2 = true else rest[#rest + 1] = name end
+                end
+                if not has_l2 and #rest == 1 then
+                    m.combo = { "L2", rest[1] }
+                elseif not has_l2 or #rest ~= 1 then
+                    -- gptokeyb2 FSM supports one hold-state modifier plus one
+                    -- target button. Do not silently emit invalid pseudo-combos.
+                    m.combo = {}
+                    dropped = dropped + 1
+                end
+            end
             if #m.combo > 0 and not m.key then
                 local mapped = S.gptk_map[combo_str(m.combo)]
                 m.key = mapped and from_gptk(mapped) or auto_key()
@@ -281,6 +296,9 @@ local function switch_device(d)
     end
     S.device = d
     S.dirty = true
+    if dropped > 0 then
+        Notify.show("warning", dropped .. " multi-button PAD combo(s) cleared: keyboard mode supports L2 + one button.")
+    end
     SFX.play("menu_pagescroll")
     rebuild_rows()
 end
