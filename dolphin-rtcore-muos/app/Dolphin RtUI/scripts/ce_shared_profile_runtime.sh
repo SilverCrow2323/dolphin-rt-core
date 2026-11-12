@@ -213,14 +213,13 @@ rt_project_active_gameset() {
     rt_safe_game_id "$game_id" || return 1
     target="$config_dir/$game_id.ini"
 
+    local force_disabled=0
     if [ "$requested" = "Disabled" ]; then
         rt_clear_active_gameset "$game_id" "$root" || return 1
-        rm -f "$target" "$target.rt-tmp"
-        RT_ACTIVE_GAMESET=""
-        return 0
+        force_disabled=1
     fi
 
-    if [ -n "$requested" ]; then
+    if [ "$force_disabled" = "0" ] && [ -n "$requested" ]; then
         if rt_safe_leaf_name "$requested" \
            && [[ "$requested" == *.ini ]] \
            && [ -f "$root/$game_id/$requested" ]; then
@@ -230,12 +229,31 @@ rt_project_active_gameset() {
         fi
     fi
 
-    if [ -z "$chosen" ]; then
+    if [ -z "$chosen" ] && [ "$force_disabled" = "0" ]; then
         chosen="$(rt_read_active_gameset "$game_id" "$root" 2>/dev/null || true)"
     fi
 
     if [ -z "$chosen" ]; then
-        rm -f "$target" "$target.rt-tmp"
+        # No active preset: discard prior non-cheat settings but retain
+        # per-game Gecko/ActionReplay blocks from Rt:UI's cheat manager.
+        if [ -n "$projector" ] && [ -f "$projector" ] \
+           && command -v python3 >/dev/null 2>&1 && [ -f "$target" ]; then
+            temporary="$target.rt-tmp.$"
+            if ! python3 "$projector" "-" "$target" "$temporary"; then
+                rm -f "$temporary"
+                return 1
+            fi
+            if [ -s "$temporary" ]; then
+                if ! mv -f "$temporary" "$target"; then
+                    rm -f "$temporary"
+                    return 1
+                fi
+            else
+                rm -f "$temporary" "$target"
+            fi
+        else
+            rm -f "$target" "$target.rt-tmp"
+        fi
         RT_ACTIVE_GAMESET=""
         return 0
     fi
