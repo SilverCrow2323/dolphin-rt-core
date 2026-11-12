@@ -13,6 +13,7 @@ local function trim(s)
 end
 
 local function current_pad()
+    if not AI.data and AI.init then pcall(AI.init) end
     return (AI.pad_map and AI.pad_map()) or {}
 end
 
