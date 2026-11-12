@@ -31,6 +31,7 @@ local STATE = {
   results  = { roms = 0, gamesets = 0, cards = 0 },
   _fast_done = false,
   rom_setup_needed = false,
+  scan_started = false,
 }
 
 local function marker(name) return "/tmp/rt_boot_" .. name .. ".done" end
@@ -80,6 +81,7 @@ function M.start()
   STATE.started  = os.time()
   STATE._fast_done = false
   STATE.rom_setup_needed = false
+  STATE.scan_started = false
   Hub.push("info", "Boot sequence", "Starting up…", { silent = true, ttl = 2 })
 end
 
@@ -151,6 +153,10 @@ function M.update(dt)
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
+      if ok_c then
+        local ok_gl, GL = pcall(require, "core.gameset_loader")
+        if ok_gl and GL.invalidate then pcall(GL.invalidate) end
+      end
       STATE.step = "scan_roms"; STATE.t = 0
     end
 
@@ -158,8 +164,26 @@ function M.update(dt)
     local ok, Library = pcall(require, "core.library")
     local n = 0
     if ok and Library then
-      pcall(function() Library.scan() end)
-      n = #(Library.games or {})
+      if not STATE.scan_started then
+        local started, err = pcall(Library.scan_begin)
+        if started then
+          STATE.scan_started = true
+          return
+        end
+        print("[RtUI] incremental ROM scan could not start: " .. tostring(err))
+      else
+        -- Yield after a small slice so the 2.5D intro and UI remain responsive.
+        local scan_ok, done = pcall(Library.scan_step, 0.006)
+        if scan_ok and not done then
+          STATE.results.roms = #(Library.games or {})
+          return
+        end
+        if not scan_ok then
+          print("[RtUI] incremental ROM scan failed: " .. tostring(done))
+        end
+        STATE.scan_started = false
+        n = #(Library.games or {})
+      end
     end
     STATE.results.roms = n
     pcall(function()
@@ -174,8 +198,8 @@ function M.update(dt)
         if g.id and g.id ~= "" then STATE.ids[#STATE.ids+1] = g.id end
       end
     end
-    -- Deploy database presets only after the ROM scan has produced the exact
-    -- GameIDs present on this device. Existing user configs are never replaced.
+    -- Deploy database presets only after the incremental scan has produced
+    -- the exact GameIDs present on this device.
     local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
     local library_games = (ok and Library and Library.games) or {}
     if ok_dep and DEP then
