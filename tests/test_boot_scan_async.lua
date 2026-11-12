@@ -46,14 +46,14 @@ end
 local B = require("core.boot_initializer")
 B.start()
 B.update(0.016) -- fast boot enters scan_roms
-assert(B.step() == "scan_roms", "fast boot should start ROM scan")
+assert(B.step() == "scan_roms" and B.is_scan_pending(), "fast boot should expose pending ROM scan")
 B.update(0.016) -- scan_begin
-assert(begin_count == 1 and step_count == 0, "scan must begin without processing every ROM")
+assert(begin_count == 1 and step_count == 0 and B.is_scan_running(), "scan must begin without processing every ROM")
 B.update(0.016) -- first incremental slice
 assert(B.step() == "scan_roms" and step_count == 1, "scan should yield between frames")
 assert(blocking_calls == 0, "blocking scan was called")
 B.update(0.016) -- second slice completes and schedules GameSettings
-assert(B.step() == "wait_gamesets", "completed scan should advance boot")
+assert(B.step() == "wait_gamesets" and not B.is_scan_pending(), "completed scan should advance boot")
 assert(deployed_games == games and deployed_games[1].id == "GZLE01",
        "GameSettings deployer must receive the scanned library")
 print("Boot incremental ROM scan: OK")
