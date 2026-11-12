@@ -17,6 +17,9 @@
 >
 > **Input reminder:** EV_KEY, joydev `js1`, and Dolphin SDL `Button n` are separate numbering systems. Jacaranda uses the initial EV_KEY map; Andromeda uses the alternative map.
 
+> [!WARNING]
+> **Current development line:** Rt:Core 12.1.0 / Rt:UI 3.7.0 “Arcade” is being prepared in [PR #81](https://github.com/SilverCrow2323/dolphin-rt-core/pull/81). The published 12.0.0 Kanzentai package remains the latest stable release until the candidate passes CI and RG35XX H hardware validation.
+
 ## Choose your path
 
 | I want to… | Start here |
