@@ -113,7 +113,24 @@ local function is_scan_root(path)
 end
 
 function M.scan()
-    local roots = Settings.rom_root_candidates and Settings.rom_root_candidates() or {}
+    local roots, root_seen = {}, {}
+    local function add_root(path)
+        if type(path) ~= "string" or path == "" then return end
+        path = path:gsub("/+$", "")
+        if path ~= "" and not root_seen[path] then
+            root_seen[path] = true
+            roots[#roots + 1] = path
+        end
+    end
+    for _, path in ipairs(Settings.rom_root_candidates and Settings.rom_root_candidates() or {}) do
+        add_root(path)
+    end
+    -- Also include manually configured roots, which may live outside the
+    -- common muOS SD-card mount paths.
+    for _, entry in ipairs(Settings.get("rom_paths") or {}) do
+        add_root(entry.path)
+    end
+
     local rules, assign, out, seen = load_skip(), load_assign(), {}, {}
     for _, root in ipairs(roots) do
         if FS.is_dir(root) then
