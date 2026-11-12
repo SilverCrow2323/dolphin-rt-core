@@ -89,7 +89,7 @@ end
 
 function M.save()
   FS.mkdir_p("data")
-  FS.atomic_write(PATH, JSON.encode(M.data))
+  return FS.atomic_write(PATH, JSON.encode(M.data))
 end
 
 -- Migrazione chiavi rinominate (idempotente). Chiamata da init().
@@ -133,6 +133,41 @@ end
 function M.remove_rom_path(idx)
   table.remove(M.data.rom_paths, idx)
   M.save()
+end
+
+function M.rename_rom_path(old_path, new_path)
+  if type(old_path) ~= "string" or old_path == ""
+     or type(new_path) ~= "string" or new_path == "" then
+    return false, "invalid ROM path"
+  end
+  old_path = old_path:gsub("/+$", "")
+  new_path = new_path:gsub("/+$", "")
+  if old_path == "" or new_path == "" then return false, "invalid ROM path" end
+
+  local previous = copy(M.data.rom_paths or {})
+  local old_key = old_path:lower()
+  local changed = false
+  for _, entry in ipairs(M.data.rom_paths or {}) do
+    if type(entry) == "table" and type(entry.path) == "string" then
+      local path = entry.path:gsub("/+$", "")
+      local key = path:lower()
+      if key == old_key then
+        entry.path = new_path
+        changed = true
+      elseif key:sub(1, #old_key + 1) == old_key .. "/" then
+        entry.path = new_path .. path:sub(#old_path + 1)
+        changed = true
+      end
+    end
+  end
+  if not changed then return true end
+
+  local saved = M.save()
+  if saved ~= true and saved ~= 0 then
+    M.data.rom_paths = previous
+    return false, "could not save the updated ROM path"
+  end
+  return true
 end
 
 -- muOS can mount the ROM partition under different device paths and the
