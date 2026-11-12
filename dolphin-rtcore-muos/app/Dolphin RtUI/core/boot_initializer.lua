@@ -228,7 +228,7 @@ function M.update(dt)
             res.built or 0, res.updated or 0, res.orphans or 0),
           { silent = true, ttl = 5 })
       else
-        Trace.write("BOOT_RTI D_REBUILD", "failed", tostring(res))
+        Trace.write("BOOT_RTID_REBUILD", "failed", tostring(res))
         Hub.push("warning", "GamesLibrary", "Card refresh skipped; existing cards kept", { silent = true, ttl = 4 })
       end
     else
