@@ -223,6 +223,7 @@ end
 -- (attive, totali) su tutte le categorie, per il badge in Game options
 function U.vault_counts(game)
     if not game or not game.id then return 0, 0 end
+    pcall(U.migrate_legacy_graphic_mods, game)
     local r = U.memo("vault_counts:" .. game.id, 1.5, function()
         local Mods = require("core.mods")
         local on, total = 0, 0
