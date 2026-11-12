@@ -38,7 +38,7 @@ expect(not ok, "unknown logical buttons must be rejected")
 ok = SafeExit.reset()
 expect(ok, "reset must succeed")
 raw = SafeExit.load_raw()
-expect(#raw == 1 and raw[1] == 8 and raw[2] == 9, "reset must restore START + SELECT")
+expect(#raw == 2 and raw[1] == 8 and raw[2] == 9, "reset must restore START + SELECT")
 
 os.remove(path)
 SafeExit.PATH = original
