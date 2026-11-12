@@ -177,6 +177,7 @@ function S.enter()
     S.tab = 1
     S.expanded = {}
     S.sel = 1
+    S.preview = nil
     refresh()
 end
 function S.update(dt) S.list:update(dt) end
