@@ -59,6 +59,23 @@ expect(double_prefix == nil, "already Rt-prefixed folders must not be prefixed a
 local rejected = Tools.preview({ path = "/mnt/roms/Wii" }, nil)
 expect(rejected == nil, "ambiguous folders require explicit platform selection")
 
+-- muOS Content Explorer skips symbolic-link directory entries. FolderWaker
+-- must reject them instead of offering a misleading rename/alias operation.
+local link_root = "/tmp/folderwaker-symlink-test-" .. tostring(os.time()) .. "-" .. tostring(math.random(1000, 999999))
+local link_source = link_root .. "/GameCubeZ"
+local link_alias = link_root .. "/RtGameCubeZ"
+local setup_rc = os.execute("mkdir -p " .. Shell.shq(link_source) .. " && ln -s GameCubeZ " .. Shell.shq(link_alias))
+expect(setup_rc == 0 or setup_rc == true, "create symlink fixture")
+local link_item, link_err = Tools.inspect(link_alias)
+expect(link_item == nil and tostring(link_err):find("symbolic%-link") ~= nil,
+    "FolderWaker must explain that muOS skips symbolic-link folders")
+local link_ok, link_commit_err = Tools.rename_register({
+    path = link_alias, has_roms = true, is_scan_root = false,
+}, "GC")
+expect(link_ok == false and tostring(link_commit_err):find("symbolic%-link") ~= nil,
+    "FolderWaker must not register a symlink alias as a ROM directory")
+os.execute("rm -rf " .. Shell.shq(link_root))
+
 -- Manual folder selection must diagnose the exact selected path, not only
 -- folders found by the automatic candidate-name scan.
 Settings.data = { rom_paths = {} }
