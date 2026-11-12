@@ -75,6 +75,10 @@ for _, id in ipairs({
     "stream_settings.open_text_editor",
     "stream_settings.run_selected",
     "stream_settings.cancel_mode",
+    "stream_settings.discover_hosts",
+    "stream_settings.pair",
+    "stream_settings.select_discovered_host",
+    "stream_settings.connection_status",
     "stream_settings.state",
 }) do
     assert(actions[id], "missing action " .. id)
