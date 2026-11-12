@@ -25,7 +25,7 @@ The Default `ext-dolphin.gptk` uses the native gptokeyb2 state-machine format: h
 | Fast Forward | L2 + Down | F8 |
 | Frame Limit − / + | L2 + Left / Right | F9 / F10 |
 | Screenshot | L2 + R2 | F11 |
-| Reset | L2 + START | F12 |
+| Reset | Unbound by default (configure in RtUI) | — |
 Safe Exit is not a Dolphin keyboard hotkey: the Safe Exit watcher reads MENU / M (or the user-recorded combo) directly from the raw controller stream.
 
 The launchers intentionally do **not** pass gptokeyb2's `-1 dolphin` option. In gptokeyb2 that option enables its own START+SELECT process-kill binding; it conflicts with gameplay input and bypasses Rt:Core's configurable Safe Exit.
@@ -41,7 +41,7 @@ Safe Exit is a separate raw-button watcher, not Dolphin's ordinary `Hotkeys.ini`
 - The selected raw joydev button indices are saved in `data/safe_exit.conf` and shared by RTUI and the muOS Content Explorer launcher.
 - The watcher requests graceful termination first and uses a forced termination only as a fallback.
 
-The default no longer uses START+SELECT. The watcher reads button events and does not synthesize input or remap gameplay buttons. A custom combination should avoid buttons needed by the current game.
+The default no longer uses START+SELECT, and START is not used by the default L2 hotkey layer. The watcher reads button events and does not synthesize input or remap gameplay buttons. A custom combination should avoid buttons needed by the current game.
 
 ## Troubleshooting
 
