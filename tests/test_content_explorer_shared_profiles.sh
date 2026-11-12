@@ -6,6 +6,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
+
+# Core slug -> canonical family/tier resolution.
 PROFILES="$TMP/workshop/rtcoreprofile"
 mkdir -p "$PROFILES/Default" "$PROFILES/RtPrime/lite" "$PROFILES/RtPrime/std" "$PROFILES/RtPrime/max" \
     "$PROFILES/Black Screen Fix" "$PROFILES/Custom_Test"
@@ -19,6 +21,7 @@ rt_resolve_ce_core "ext-dolphin-blackscreenfix-upright" "$PROFILES"
 rt_resolve_ce_core "ext-dolphin-unknown-upright" "$PROFILES"
 [[ "$RT_PROFILE" == "Default" ]]
 
+# RTID compatibility card reader and path validation.
 CARD="$TMP/rtid_GM8E01.ini"
 cat > "$CARD" <<'INI'
 [Meta]
@@ -51,7 +54,7 @@ rt_safe_leaf_name "Performance.ini"
 rt_safe_game_id "GM8E01"
 ! rt_safe_game_id "../escape"
 
-# ActiveConfig is the shared, canonical GameSettings selector.
+# Canonical GameSettings source and ActiveConfig metadata.
 GSROOT="$TMP/workshop/gamesettings"
 mkdir -p "$GSROOT/GM8E01"
 cat > "$GSROOT/GM8E01/Performance.ini" <<'INI'
@@ -70,7 +73,6 @@ Enabled = yes
 ActiveConfig = Performance.ini
 INI
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
-
 rt_write_active_gameset "GM8E01" "$GSROOT" "Arcade.ini"
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Arcade.ini" ]]
 grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
@@ -82,8 +84,7 @@ rt_project_active_gameset "GM8E01" "$GSROOT" "$RUNTIME" "" "$PROJECTOR"
 [[ "$RT_ACTIVE_GAMESET" == "Arcade.ini" ]]
 grep -q '^Overclock = 0.9$' "$RUNTIME/GM8E01.ini"
 
-# Replace non-cheat runtime values with the selected Workshop preset, while
-# preserving Rt-generated and handwritten Gecko/ActionReplay blocks.
+# Preset changes replace normal values and preserve Gecko/ActionReplay cheat blocks.
 cat >> "$RUNTIME/GM8E01.ini" <<'INI'
 
 [Gecko]
@@ -105,7 +106,7 @@ grep -q '^\$Manual Runtime Cheat$' "$RUNTIME/GM8E01.ini"
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
 grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
 
-# Disabled removes the selected preset but leaves only the per-game cheat blocks.
+# Explicit Disabled retains the empty canonical key and the cheat-only runtime file.
 rt_project_active_gameset "GM8E01" "$GSROOT" "$RUNTIME" "Disabled" "$PROJECTOR"
 [[ -e "$RUNTIME/GM8E01.ini" ]]
 grep -q '^\$\[Rt\] Speed Patch$' "$RUNTIME/GM8E01.ini"
@@ -114,35 +115,10 @@ grep -q '^\$Manual Runtime Cheat$' "$RUNTIME/GM8E01.ini"
 ! grep -q '^Overclock = ' "$RUNTIME/GM8E01.ini"
 [[ -z "$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)" ]]
 rt_has_active_gameset "GM8E01" "$GSROOT"
-grep -q '^Enabled = yes
-cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
-[GameSettings]
-ActiveConfig = ../outside.ini
-INI
-! rt_read_active_gameset "GM8E01" "$GSROOT"
-! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+grep -q '^ActiveConfig[[:space:]]*=[[:space:]]*$' "$GSROOT/GM8E01/rtgameset_data.ini"
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
 
-# Disc ID extraction: raw ISO, WBFS, RVZ, CISO and filename-tagged GCZ.
-printf 'GM8E01' > "$TMP/test.iso"
-[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
-
-python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
-from pathlib import Path
-import sys
-Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
-Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
-Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
-PY
-[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
-[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
-[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
-touch "$TMP/packed [GM8E01].gcz"
-[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
-
-echo "Content Explorer shared-profile runtime tests: OK"
- "$GSROOT/GM8E01/rtgameset_data.ini"
-
-# An explicit empty selector must beat a stale RTID value.
+# A blank canonical selector must beat the stale RTID GameSettings field.
 MIGRATED_SELECTION=""
 if rt_has_active_gameset "GM8E01" "$GSROOT"; then
     MIGRATED_SELECTION="$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)"
@@ -152,7 +128,7 @@ else
 fi
 [[ "$MIGRATED_SELECTION" == "Disabled" ]]
 
-# Old metadata without ActiveConfig is eligible for one-time RTID migration.
+# Old metadata with no ActiveConfig is eligible for one-time RTID migration.
 cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
 [GameSettings]
 GameName = Example game
@@ -178,7 +154,6 @@ INI
 # Disc ID extraction: raw ISO, WBFS, RVZ, CISO and filename-tagged GCZ.
 printf 'GM8E01' > "$TMP/test.iso"
 [[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
-
 python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
 from pathlib import Path
 import sys
