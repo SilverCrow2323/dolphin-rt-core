@@ -216,7 +216,7 @@ local function sections()
             { kind = "action", label = "GameSettings database", icon = "file",
               sub = "browse every database preset", run = function() require("ui").go("gameset_browser") end },
             { kind = "action", label = "muOS Assign / Content Explorer", icon = "list",
-              sub = "manifest · roots · registration", run = function() require("ui").go("diagnostics") end },
+              sub = "manifest · roots · registration", run = function() require("ui").go("triage") end },
             { kind = "action", label = "Diagnostics", icon = "list", editor_label = "Viewer",
               run = function() require("ui").go("diagnostics") end },
             { kind = "action", label = "Rt:Core Env Triage", icon = "info", sub = "I · II · III health check",
