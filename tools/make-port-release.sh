@@ -45,6 +45,12 @@ for d in Config Load Sys GC Wii; do
   [ -d "$REPO/dolphin-rtcore-muos/emu/dolphin/$d" ] || continue
   cp -a "$REPO/dolphin-rtcore-muos/emu/dolphin/$d" "$C/"
 done
+if [ "$SYS_SOURCE" != "$(cd "$REPO/dolphin-rtcore-muos/emu/dolphin/Sys" && pwd -P)" ]; then
+  rm -rf "$C/Sys"
+  mkdir -p "$C/Sys"
+  cp -a "$SYS_SOURCE/." "$C/Sys/"
+fi
+
 # Match the muOS package policy: no per-game GameSettings database, no HD
 # texture packs, and no graphics mods beyond the opt-in Bloom Removal mod.
 rm -rf "$C/GameSettings" "$C/Sys/GameSettings" "$C/Load/Textures" "$C/Sys/Load/Textures"
@@ -52,11 +58,6 @@ for mod_root in "$C/Load/GraphicMods" "$C/Sys/Load/GraphicMods"; do
   [ -d "$mod_root" ] || continue
   find "$mod_root" -mindepth 1 -maxdepth 1 ! -name "All Games Bloom Removal" -exec rm -rf {} +
 done
-if [ "$SYS_SOURCE" != "$(cd "$REPO/dolphin-rtcore-muos/emu/dolphin/Sys" && pwd -P)" ]; then
-  rm -rf "$C/Sys"
-  mkdir -p "$C/Sys"
-  cp -a "$SYS_SOURCE/." "$C/Sys/"
-fi
 install -m755 "$BIN" "$C/dolphin"
 find "$D" -name '*.sh' -exec chmod 755 {} +
 # archive layout from the README: extracted into <userdata>/emulators, "dolphin-rtcore-<k|r>.sh" registers everything
