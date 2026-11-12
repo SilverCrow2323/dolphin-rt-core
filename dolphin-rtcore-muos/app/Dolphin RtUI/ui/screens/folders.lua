@@ -211,7 +211,7 @@ local function draw_zpreview()
         or item.status == "mapped" and "An assignment alias already exists; this diagnostic still allows an explicit Rt-prefixed repair."
         or "Folder contains ROM images but its system could not be inferred from the name."
 
-    K.header("Registratore Z", "Review the exact folder before renaming", nil, nil, { icon = "folder" })
+    K.header("Registratore Z", "Review the exact folder before renaming", nil, { icon = "folder" })
     K.panel(K.MARGIN, 105, K.W - K.MARGIN * 2, 278, { cut = 12 })
     K.text("small", "SOURCE FOLDER", K.MARGIN + 18, 125, K.C.dim)
     K.text("body", K.clip("body", item.path, K.W - K.MARGIN * 2 - 36), K.MARGIN + 18, 148, K.C.text)
@@ -237,7 +237,7 @@ function S.draw()
     local title = S.mode == "browse" and S.cwd
         or S.mode == "zscan" and "Folders that may be hidden or lack a system alias"
         or "Folders scanned for GameCube / Wii games"
-    K.header(S.mode == "zscan" and "Registratore Z" or "ROM folders", title, nil, nil, { icon = "folder" })
+    K.header(S.mode == "zscan" and "Registratore Z" or "ROM folders", title, nil, { icon = "folder" })
 
     if #S.list.items == 0 then
         local msg = S.mode == "zscan" and "No candidate folders found under the detected ROM roots."
