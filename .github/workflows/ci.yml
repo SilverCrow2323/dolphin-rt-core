@@ -64,7 +64,9 @@ jobs:
           luajit tests/test_gameset_loader_invalidate.lua
           luajit tests/test_boot_scan_async.lua
           luajit tests/test_folder_tools.lua
+          luajit tests/test_profile_merger_shared_base.lua
           bash tests/test_content_explorer_shared_profiles.sh
+          python3 tests/test_rt_profile_merge.py
           luajit tests/test_rom_auto_discovery.lua
           bash tests/test_rtui_stream_contract.sh
       - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
@@ -162,7 +164,7 @@ jobs:
           bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/overlay_exit.sh"
           sh -n "dolphin-rtcore-muos/app/Dolphin RtUI/tools/stream/discover.sh"
           bash tests/test_rtui_stream_contract.sh
-          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
+          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py tests/test_rt_profile_merge.py "dolphin-rtcore-muos/app/Dolphin RtUI/tools/rt_profile_merge.py"
       - name: Test AArch64 ELF validation contract
         run: bash tests/test_aarch64_elf_validator.sh
       - name: Test muOS generation detection and core registration
