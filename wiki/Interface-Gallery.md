@@ -18,7 +18,7 @@ The CI capture job exercised the declared Rt:UI screens and exported **69 PNG ca
 
 The archive contains Library, Boot, Settings, Controller Map, Key Map, Safe Exit, Hotkeys, Diagnostics, Rt:Profiles, GameSettings, Rt:Stream and the other registered screens.
 
-<badge color="success">All screen smoke checks passed</badge>
+**All screen smoke checks passed.**
 
 **Download the PNG capture archive:** [GitHub Actions · CI run #1035](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/43213964642)
 
