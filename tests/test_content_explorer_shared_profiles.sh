@@ -89,8 +89,8 @@ cat >> "$RUNTIME/GM8E01.ini" <<'INI'
 [Gecko]
 $[Rt] Speed Patch
 04000000 12345678
-$Old Runtime-Only Manual Cheat
-11111111 22222222
+$Manual Runtime Cheat
+87654321 00000001
 
 [Gecko_Enabled]
 $[Rt] Speed Patch
@@ -101,7 +101,173 @@ grep -q '^CPUThread = True$' "$RUNTIME/GM8E01.ini"
 ! grep -q '^Overclock = 0.9$' "$RUNTIME/GM8E01.ini"
 grep -q '^\$\[Rt\] Speed Patch$' "$RUNTIME/GM8E01.ini"
 grep -q '^04000000 12345678$' "$RUNTIME/GM8E01.ini"
-! grep -q 'Old Runtime-Only Manual Cheat' "$RUNTIME/GM8E01.ini"
+grep -q '^\$Manual Runtime Cheat
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
+
+rt_project_active_gameset "GM8E01" "$GSROOT" "$RUNTIME" "Disabled" "$PROJECTOR"
+[[ -e "$RUNTIME/GM8E01.ini" ]]
+grep -q '^\$\[Rt\] Speed Patch
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
+
+# Invalid/traversal ActiveConfig values never resolve outside the GameID folder.
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+
+# Disc ID extraction: raw ISO, WBFS, RVZ, CISO and filename-tagged GCZ.
+printf 'GM8E01' > "$TMP/test.iso"
+[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
+
+python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
+from pathlib import Path
+import sys
+Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
+Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
+Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
+PY
+[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
+touch "$TMP/packed [GM8E01].gcz"
+[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
+
+echo "Content Explorer shared-profile runtime tests: OK"
+ "$RUNTIME/GM8E01.ini"
+[[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
+
+rt_project_active_gameset "GM8E01" "$GSROOT" "$RUNTIME" "Disabled" "$PROJECTOR"
+[[ ! -e "$RUNTIME/GM8E01.ini" ]]
+[[ -z "$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)" ]]
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
+
+# Invalid/traversal ActiveConfig values never resolve outside the GameID folder.
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+
+# Disc ID extraction: raw ISO, WBFS, RVZ, CISO and filename-tagged GCZ.
+printf 'GM8E01' > "$TMP/test.iso"
+[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
+
+python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
+from pathlib import Path
+import sys
+Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
+Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
+Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
+PY
+[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
+touch "$TMP/packed [GM8E01].gcz"
+[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
+
+echo "Content Explorer shared-profile runtime tests: OK"
+ "$RUNTIME/GM8E01.ini"
+grep -q '^\$Manual Runtime Cheat
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
+
+# Invalid/traversal ActiveConfig values never resolve outside the GameID folder.
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+
+# Disc ID extraction: raw ISO, WBFS, RVZ, CISO and filename-tagged GCZ.
+printf 'GM8E01' > "$TMP/test.iso"
+[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
+
+python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
+from pathlib import Path
+import sys
+Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
+Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
+Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
+PY
+[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
+touch "$TMP/packed [GM8E01].gcz"
+[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
+
+echo "Content Explorer shared-profile runtime tests: OK"
+ "$RUNTIME/GM8E01.ini"
+[[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
+
+rt_project_active_gameset "GM8E01" "$GSROOT" "$RUNTIME" "Disabled" "$PROJECTOR"
+[[ ! -e "$RUNTIME/GM8E01.ini" ]]
+[[ -z "$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)" ]]
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
+
+# Invalid/traversal ActiveConfig values never resolve outside the GameID folder.
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+
+# Disc ID extraction: raw ISO, WBFS, RVZ, CISO and filename-tagged GCZ.
+printf 'GM8E01' > "$TMP/test.iso"
+[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
+
+python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
+from pathlib import Path
+import sys
+Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
+Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
+Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
+PY
+[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
+touch "$TMP/packed [GM8E01].gcz"
+[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
+
+echo "Content Explorer shared-profile runtime tests: OK"
+ "$RUNTIME/GM8E01.ini"
+! grep -q '^CPUThread = ' "$RUNTIME/GM8E01.ini"
+! grep -q '^Overclock = ' "$RUNTIME/GM8E01.ini"
+[[ -z "$(rt_read_active_gameset "GM8E01" "$GSROOT" || true)" ]]
+grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
+
+# Invalid/traversal ActiveConfig values never resolve outside the GameID folder.
+cat > "$GSROOT/GM8E01/rtgameset_data.ini" <<'INI'
+[GameSettings]
+ActiveConfig = ../outside.ini
+INI
+! rt_read_active_gameset "GM8E01" "$GSROOT"
+! rt_write_active_gameset "GM8E01" "$GSROOT" "../outside.ini"
+
+# Disc ID extraction: raw ISO, WBFS, RVZ, CISO and filename-tagged GCZ.
+printf 'GM8E01' > "$TMP/test.iso"
+[[ "$(rt_extract_game_id "$TMP/test.iso")" == "GM8E01" ]]
+
+python3 - "$TMP/test.wbfs" "$TMP/test.rvz" "$TMP/test.ciso" <<'PY'
+from pathlib import Path
+import sys
+Path(sys.argv[1]).write_bytes(b"WBFS" + bytes(512 - 4) + b"RMCE01")
+Path(sys.argv[2]).write_bytes(b"RVZ\x01" + bytes(0x58 - 4) + b"RMCE01")
+Path(sys.argv[3]).write_bytes(b"CISO" + bytes(0x8000 - 4) + b"RMCE01")
+PY
+[[ "$(rt_extract_game_id "$TMP/test.wbfs")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.rvz")" == "RMCE01" ]]
+[[ "$(rt_extract_game_id "$TMP/test.ciso")" == "RMCE01" ]]
+touch "$TMP/packed [GM8E01].gcz"
+[[ "$(rt_extract_game_id "$TMP/packed [GM8E01].gcz")" == "GM8E01" ]]
+
+echo "Content Explorer shared-profile runtime tests: OK"
+ "$RUNTIME/GM8E01.ini"
 [[ "$(rt_read_active_gameset "GM8E01" "$GSROOT")" == "Performance.ini" ]]
 grep -q '^Enabled = yes$' "$GSROOT/GM8E01/rtgameset_data.ini"
 
