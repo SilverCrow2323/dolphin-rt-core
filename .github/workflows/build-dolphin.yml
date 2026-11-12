@@ -10,6 +10,7 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
+      - ".github/workflows/build-dolphin.yml"
   pull_request:
     branches: [main]
     paths:
@@ -19,6 +20,7 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
+      - ".github/workflows/build-dolphin.yml"
   workflow_dispatch:
 
 permissions:
