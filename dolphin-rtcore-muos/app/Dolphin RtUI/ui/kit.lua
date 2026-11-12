@@ -345,45 +345,132 @@ function K.header(title, sub, right, opts)
     local m = K.MARGIN
     local acc = opts.accent or K.acc
     local tx = m
+    local right_w = right and 154 or 0
+
+    -- A dedicated title rail keeps the subtitle and right-side status capsule
+    -- in separate lanes; long names are clipped before they can collide.
+    col(K.C.bg1, 0.92)
+    love.graphics.rectangle("fill", 0, 0, K.W, K.HEAD_H)
+    col(K.C.bg0, 0.52)
+    love.graphics.rectangle("fill", 0, K.HEAD_H - 5, K.W, 5)
+
     if opts.icon then
-        local isz = 44
-        local cx, cy = m + isz / 2 + 2, 34
-        col(acc, 0.16); love.graphics.circle("fill", cx, cy, isz / 2 + 4)
-        col(acc, 1);    love.graphics.setLineWidth(1.5)
-        love.graphics.circle("line", cx, cy, isz / 2 + 4)
+        local cx, cy = m + 20, 34
+        col(acc, 0.14); love.graphics.circle("fill", cx, cy, 20)
+        col(acc, 0.72); love.graphics.setLineWidth(1.4)
+        love.graphics.circle("line", cx, cy, 20)
         love.graphics.setLineWidth(1)
-        K.draw_tool_icon(opts.icon, cx, cy, 22, acc, 1)
-        tx = m + isz + 16
+        K.draw_tool_icon(opts.icon, cx, cy, 21, acc, 1)
+        tx = m + 48
     end
-    K.text("title", title, tx, 14, K.C.text)
+
+    local max_title = K.W - m - tx - (right_w > 0 and right_w + 14 or 0)
+    max_title = math.max(90, max_title)
+    K.text("title", K.clip("title", title, max_title), tx, 10, K.C.text)
     if sub and sub ~= "" then
-        K.text("small", K.clip("small", sub, K.W - tx - 160), tx, 46, K.C.dim)
+        K.text("small", K.clip("small", sub, math.max(80, max_title)),
+            tx, 43, K.C.dim)
     end
-    col(acc, 1); love.graphics.rectangle("fill", tx, 68, 56, 3)
-    col(K.C.line, 0.5); love.graphics.rectangle("fill", tx + 56, 69, K.W - tx - 56 - m, 1)
+
     if right then
-        love.graphics.setFont(K.font("mono"))
-        col(K.C.dim, 1)
-        love.graphics.printf(right, K.W - m - 220, 24, 220, "right")
+        local rx = K.W - m - right_w
+        col(acc, 0.11); love.graphics.rectangle("fill", rx, 23, right_w, 29, 7, 7)
+        col(acc, 0.55); love.graphics.rectangle("line", rx, 23, right_w, 29, 7, 7)
+        K.text("mono", K.clip("mono", right, right_w - 16),
+            rx + 8, 31, K.C.text, 0.95, right_w - 16, "right")
     end
+
+    col(K.C.line, 0.55)
+    love.graphics.rectangle("fill", m, K.HEAD_H - 2, K.W - m * 2, 1)
+    col(acc, 1)
+    love.graphics.rectangle("fill", m, K.HEAD_H - 3, 58, 3, 1.5, 1.5)
+end
+
+local FACE_KEYS = {
+    A = { color = { 0.91, 0.20, 0.27 }, ink = { 1, 1, 1 } },
+    B = { color = { 0.97, 0.75, 0.16 }, ink = { 0.13, 0.12, 0.08 } },
+    X = { color = { 0.20, 0.48, 0.96 }, ink = { 1, 1, 1 } },
+    Y = { color = { 0.20, 0.70, 0.39 }, ink = { 0.04, 0.10, 0.06 } },
+}
+local function footer_key_label(key)
+    return tostring(key or ""):upper():gsub("%s+", "+")
+end
+local function footer_key_width(key)
+    local face = FACE_KEYS[tostring(key or ""):upper()]
+    if face then return 19 end
+    local label = footer_key_label(key)
+    return math.max(25, math.min(52, K.width("key", label) + 10))
+end
+local function draw_footer_key(key, x, cy)
+    key = tostring(key or ""):upper()
+    local face = FACE_KEYS[key]
+    if face then
+        local r = 8.5
+        col({ 0, 0, 0 }, 0.45); love.graphics.circle("fill", x + r + 1, cy + 1, r + 1)
+        col(face.color, 1); love.graphics.circle("fill", x + r, cy, r)
+        col({ 1, 1, 1 }, 0.38); love.graphics.setLineWidth(1)
+        love.graphics.circle("line", x + r, cy, r - 0.5)
+        K.text("key", key, x, cy - 6.5, face.ink, 1, 18, "center")
+        return 19
+    end
+
+    local label = footer_key_label(key)
+    local w = footer_key_width(key)
+    local h = 18
+    local dark = (label == "START" or label == "SELECT" or label == "D-PAD")
+    local fill = dark and { 0.17, 0.20, 0.28 } or { 0.38, 0.43, 0.54 }
+    local edge = dark and { 0.35, 0.40, 0.53 } or { 0.62, 0.68, 0.79 }
+    col({ 0, 0, 0 }, 0.42); love.graphics.rectangle("fill", x + 1, cy - h / 2 + 2, w, h, 4, 4)
+    col(fill, 1); love.graphics.rectangle("fill", x, cy - h / 2, w, h, 4, 4)
+    col(edge, 0.95); love.graphics.rectangle("line", x, cy - h / 2, w, h, 4, 4)
+    if label == "D-PAD" then
+        local cx = x + w / 2
+        col({ 0.88, 0.91, 0.98 }, 0.95)
+        love.graphics.rectangle("fill", cx - 2, cy - 6, 4, 12, 1, 1)
+        love.graphics.rectangle("fill", cx - 6, cy - 2, 12, 4, 1, 1)
+    else
+        K.text("key", label, x + 2, cy - 6.5, { 0.96, 0.97, 1 },
+            1, w - 4, "center")
+    end
+    return w
 end
 
 -- items: { {key="A", label="Play"}, ... }
 function K.footer(items)
     local y = K.H - K.FOOT_H
-    col({ 0, 0, 0 }, 0.45); love.graphics.rectangle("fill", 0, y, K.W, K.FOOT_H)
-    col(K.C.line, 0.5);     love.graphics.rectangle("fill", 0, y, K.W, 1)
-    local kf, lf = K.font("key"), K.font("small")
+    col({ 0.025, 0.030, 0.055 }, 0.96)
+    love.graphics.rectangle("fill", 0, y, K.W, K.FOOT_H)
+    col(K.C.line, 0.65); love.graphics.rectangle("fill", 0, y, K.W, 1)
+    local small = K.font("small")
+    local gap = 12
+    local total = 0
+    local records = {}
+    for _, item in ipairs(items or {}) do
+        local kw = footer_key_width(item.key)
+        local label = tostring(item.label or "")
+        local lw = small:getWidth(label)
+        records[#records + 1] = { key = item.key, label = label, kw = kw, lw = lw }
+        total = total + kw + 6 + lw
+    end
+    local available = K.W - K.MARGIN * 2
+    if #records > 1 then gap = math.min(12, math.max(4, (available - total) / (#records - 1))) end
+    if total + gap * math.max(0, #records - 1) > available then
+        local each = math.max(22, (available - gap * math.max(0, #records - 1)) / #records - 28)
+        total = 0
+        for _, item in ipairs(records) do
+            item.label = K.clip("small", item.label, each)
+            item.lw = small:getWidth(item.label)
+            total = total + item.kw + 6 + item.lw
+        end
+        if #records > 1 then gap = math.max(3, (available - total) / (#records - 1)) end
+    end
     local x = K.MARGIN
-    for _, it in ipairs(items) do
-        local kw = kf:getWidth(it.key) + 12
-        col(K.acc, 0.20); love.graphics.rectangle("fill", x, y + 8, kw, 20, 5, 5)
-        col(K.acc, 0.9);  love.graphics.rectangle("line", x, y + 8, kw, 20, 5, 5)
-        love.graphics.setFont(kf); col(K.C.text, 1)
-        love.graphics.print(it.key, x + 6, y + 18 - kf:getHeight() / 2)
-        love.graphics.setFont(lf); col(K.C.dim, 1)
-        love.graphics.print(it.label, x + kw + 6, y + 18 - lf:getHeight() / 2)
-        x = x + kw + 6 + lf:getWidth(it.label) + 16
+    for i, item in ipairs(records) do
+        local cy = y + K.FOOT_H / 2
+        local used = draw_footer_key(item.key, x, cy)
+        love.graphics.setFont(small); col(K.C.dim, 1)
+        love.graphics.print(item.label, x + used + 6, cy - small:getHeight() / 2)
+        x = x + used + 6 + item.lw + gap
     end
 end
 
