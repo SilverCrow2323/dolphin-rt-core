@@ -34,7 +34,7 @@ package.preload["core.shell"] = function()
         popen = function(command)
             if command:find("find ", 1, true) then
                 find_calls = find_calls + 1
-                return tmp .. "\\n" .. tmp:upper() .. "\\n"
+                return tmp .. "\n" .. tmp:upper() .. "\n"
             end
             return ""
         end,
