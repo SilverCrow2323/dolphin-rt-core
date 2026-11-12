@@ -201,7 +201,7 @@ local function show_database_preset(row, index)
     index = ((index - 1) % #configs) + 1
     local cfg = configs[index] or {}
     local lines = {}
-    for line in tostring(cfg.raw_content or ""):gmatch("[^\\n]+") do
+    for line in tostring(cfg.raw_content or ""):gmatch("[^\n]+") do
         lines[#lines + 1] = line
     end
     S.preview = { row = row, configs = configs, index = index, cfg = cfg, lines = lines, scroll = 0 }
