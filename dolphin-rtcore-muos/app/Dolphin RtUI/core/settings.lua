@@ -43,10 +43,9 @@ end
 
 local function rom_path_key(path)
   if type(path) ~= "string" or path == "" then return "" end
-  local clean = path:gsub("/+$", "")
-  local real = Shell.first("readlink -f " .. Shell.shq(clean), 3)
-  if type(real) == "string" and real ~= "" then clean = real end
-  return clean:lower()
+  -- User-selected ROM roots are deduplicated lexically and case-insensitively.
+  -- Avoid spawning readlink during Settings.init / first-frame preparation.
+  return path:gsub("/+$", ""):gsub("/+", "/"):lower()
 end
 
 function M.normalize_rom_paths()
