@@ -197,16 +197,21 @@ function M.update(dt)
     end
 
   elseif step == "download_cheats" then
-    local ok, CD = (function() local ok,m = pcall(require, "core.cheats_downloader"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.cheats_downloader") end; return ok and m end)()
-    if ok then CD.start_for(STATE.ids) end
+    local ok, CD = pcall(require, "core.cheats_downloader")
+    if not ok then
+      Trace.write("BOOT_CHEATS", "downloader unavailable", tostring(CD))
+    elseif type(CD) == "table" and type(CD.start_for) == "function" then
+      local started, err = pcall(CD.start_for, STATE.ids)
+      if not started then Trace.write("BOOT_CHEATS", "start failed", tostring(err)) end
+    end
     STATE.step = "wait_cheats"; STATE.t = 0
 
   elseif step == "wait_cheats" then
     local ok, CD = pcall(require, "core.cheats_downloader")
     local done = true
-    if ok then
-      local d, _ = CD.poll()
-      done = d
+    if ok and type(CD) == "table" and type(CD.poll) == "function" then
+      local polled, d = pcall(CD.poll)
+      done = not polled or d
     end
     if done or STATE.t > 8 then
       STATE.step = "build_rtid"; STATE.t = 0
