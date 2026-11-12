@@ -229,9 +229,11 @@ function M.set_selection(game, items, selected)
     selected = selected or {}
     local changes = {}
     for _, item in ipairs(items or {}) do
+        local selected_value = selected[item.source .. "|" .. item.path]
+        if selected_value == nil then selected_value = selected[item.name] end
         changes[#changes + 1] = {
             source = item.source, path = item.path,
-            enabled = selected[item.name] == true,
+            enabled = selected_value == true,
         }
     end
     if #changes == 0 then return true end
