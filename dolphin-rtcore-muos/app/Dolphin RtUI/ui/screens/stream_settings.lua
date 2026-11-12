@@ -17,8 +17,8 @@ S.host_list = K.List(K.MARGIN, 104, K.W - K.MARGIN * 2 - 14, K.BOT - 104, 48)
 local function read_discovered_hosts()
   local raw = Stream.read(Stream.DIR .. "/discovery.tsv") or ""
   local hosts, seen = {}, {}
-  for line in raw:gmatch("[^\\n]+") do
-    local source, host = line:match("^([^\\t]+)\\t([^\\t]+)")
+  for line in raw:gmatch("[^\n]+") do
+    local source, host = line:match("^([^\t]+)\t([^\t]+)")
     if host and host:match("^[%d%.]+$") and not seen[host] then
       seen[host] = true
       hosts[#hosts + 1] = { host = host, source = source or "LAN" }
