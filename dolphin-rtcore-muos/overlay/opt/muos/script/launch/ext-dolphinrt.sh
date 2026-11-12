@@ -77,6 +77,20 @@ on_signal() {
 }
 trap on_signal TERM INT
 
+if [ "$HOTKEY_DEVICE" = "Keyboard" ] && [ -x "$GPTK_BIN" ] && [ -s "$GPTK_CFG" ]; then
+    sleep 0.25
+    "$GPTK_BIN" dolphin -c "$GPTK_CFG" -D states,keyboard >> "$LOG_DIR/gptokeyb2-content-explorer.log" 2>&1 &
+    GPTK_PID=$!
+    log "gptokeyb2 pid=$GPTK_PID profile=Default"
+elif [ "$HOTKEY_DEVICE" = "Keyboard" ]; then
+    log "WARN keyboard hotkeys requested but gptokeyb2/config unavailable: $GPTK_BIN / $GPTK_CFG"
+else
+    log "gptokeyb2 not started; Device is not Keyboard"
+fi
+sleep 0.25  # attach to the controller before Dolphin opens it
+
+
+
 ./dolphin --platform=fbdev --video_backend=OGL -e "$ROM" -u "$EMUDIR" >> "$LOG_DIR/dolphin_debug.log" 2>&1 &
 DOLPHIN_PID=$!
 log "Dolphin pid=$DOLPHIN_PID"
@@ -89,16 +103,6 @@ else
     log "WARN Safe Exit watcher not installed"
 fi
 
-if [ "$HOTKEY_DEVICE" = "Keyboard" ] && [ -x "$GPTK_BIN" ] && [ -s "$GPTK_CFG" ]; then
-    sleep 0.25
-    "$GPTK_BIN" dolphin -c "$GPTK_CFG" -D states,keyboard >> "$LOG_DIR/gptokeyb2-content-explorer.log" 2>&1 &
-    GPTK_PID=$!
-    log "gptokeyb2 pid=$GPTK_PID profile=Default"
-elif [ "$HOTKEY_DEVICE" = "Keyboard" ]; then
-    log "WARN keyboard hotkeys requested but gptokeyb2/config unavailable: $GPTK_BIN / $GPTK_CFG"
-else
-    log "gptokeyb2 not started; Device is not Keyboard"
-fi
 
 EXIT_CODE=0
 wait "$DOLPHIN_PID" || EXIT_CODE=$?
