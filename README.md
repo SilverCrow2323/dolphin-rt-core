@@ -72,11 +72,17 @@ The current muOS line combines the formerly separate flavours into one installat
 | Layer | Component | Role |
 |---|---|---|
 | I | **Dolphin engine** | Pinned emulator build, profiles, GameSettings and system resources. |
-| II | **RtSys / Bash Arsenal** | Launch integration, profile selection, registration, maintenance tasks and diagnostics. |
+| II | **RtSys** | Device baseline, launch integration, profile application, muOS core registration and low-level diagnostics. |
 | III | **Rt:UI / FrontendONE** | LÖVE-based library, configuration, compatibility, tools and user interface. |
 | IV | **Rt:Stream** | PC-side streaming workflow and handheld Moonlight companion; streaming is not local H700 emulation. |
 
 The active muOS frontend lives in **dolphin-rtcore-muos/app/Dolphin RtUI/**. Historical material in **Core_History/** is an archive and is not automatically the current implementation.
+
+### Rt:UI system status and Dolphin's native resources
+
+Press **M** in Rt:UI to expand the header into the scrollable **Rt:System Status Center**. It reports Wi-Fi and battery telemetry, Rt:Stream portal/Sunshine health, database download state, GameSettings deployment, library indexing, background operations and notification history. Wi-Fi link state and remote server health are deliberately reported separately.
+
+Keep Dolphin's official **Sys/GameSettings/** and **Sys/Load/GraphicMods/** resources. Rt:UI's **Mod Vault → Graphics Mods** combines that built-in catalog with user mods from **Load/GraphicMods/**. A mod marked **All Games** is eligible for every game; it is not globally enabled. Enablement is saved per Game ID in the game's **Config/GraphicMods** profile, and the launcher turns on Dolphin's Graphics Mods engine only when that profile contains an enabled entry. See [Graphics Mods](wiki/Graphics-Mods.md) and [Rt:System Status Center](wiki/Rt-System-Status-Center.md).
 
 ## 05 — Build system
 
