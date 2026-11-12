@@ -11,6 +11,21 @@ S.mode = "list"
 S.list = K.List(K.MARGIN, 86, K.W - K.MARGIN * 2 - 14, K.BOT - 86, 40)
 local t = 0
 local viewer, osk
+S.hosts = {}
+S.host_list = K.List(K.MARGIN, 104, K.W - K.MARGIN * 2 - 14, K.BOT - 104, 48)
+
+local function read_discovered_hosts()
+  local raw = Stream.read(Stream.DIR .. "/discover.sunshine") or ""
+  local hosts, seen = {}, {}
+  for line in raw:gmatch("[^\\n]+") do
+    local host = line:match("([%d%.]+)")
+    if host and host:match("^[%d%.]+$") and not seen[host] then
+      seen[host] = true
+      hosts[#hosts + 1] = { host = host, source = "LAN / Tailscale" }
+    end
+  end
+  return hosts
+end
 
 local RES = { { 640, 480 }, { 800, 600 }, { 854, 480 }, { 960, 720 }, { 1280, 720 } }
 local function res_label(s) return (s.WIDTH or "?") .. "x" .. (s.HEIGHT or "?") end
@@ -73,6 +88,7 @@ function S.leave() if viewer and viewer.pair then Stream.kill_pair() end end
 
 function S.update(dt)
   t = t + dt; S.list:update(dt)
+  if S.mode == "hosts" then S.host_list:update(dt) end
   if S.mode == "viewer" and viewer then
     viewer.t = viewer.t + dt
     local d = Stream.read(Stream.DIR .. "/" .. viewer.result)
@@ -89,7 +105,16 @@ function S.update(dt)
           S.list:set(items(), true)
           open_viewer("Pair with PC", "pair.sh", "pair.log", { pair = true })
         end
-      else Notify.show("warning", "No Sunshine host found. Check LAN, Tailscale and PC firewall.", 4) end
+      else
+        S.hosts = read_discovered_hosts()
+        if #S.hosts > 1 then
+          S.host_list:set(S.hosts, true)
+          S.mode = "hosts"
+          Notify.show("info", tostring(#S.hosts) .. " Sunshine PCs found — choose one")
+        else
+          Notify.show("warning", "No Sunshine host found. Check LAN, Tailscale and PC firewall.", 4)
+        end
+      end
     end
   end
 end
@@ -310,6 +335,20 @@ end
 
 function S.pad(b)
   if S.mode == "osk" then return osk_pad(b) end
+  if S.mode == "hosts" then
+    local row = S.host_list:cur()
+    if b == "UP" then S.host_list:move(-1)
+    elseif b == "DOWN" then S.host_list:move(1)
+    elseif b == "A" and row then
+      local ok = Stream.set("HOST", row.host)
+      if ok then
+        Notify.show("success", "Sunshine PC found: " .. row.host .. " — pairing started", 3)
+        S.list:set(items(), true)
+        open_viewer("Pair with PC", "pair.sh", "pair.log", { pair = true })
+      else Notify.show("error", "Could not save selected PC address") end
+    elseif b == "B" then S.mode = "list" end
+    return
+  end
   if S.mode == "viewer" then
     if b == "B" then if viewer.pair then Stream.kill_pair() end S.mode = "list"; Stream.check_health()
     elseif b == "DOWN" then viewer.scroll = viewer.scroll + 40
@@ -334,6 +373,18 @@ function S.draw()
   K.bg()
   if S.mode == "osk" then return draw_osk() end
   if S.mode == "viewer" then return draw_viewer() end
+  if S.mode == "hosts" then
+    K.header("SELECT SUNSHINE PC", "LAN · TAILSCALE", nil, { accent = K.ACC.wii })
+    S.host_list:draw(function(row, x, y, w, h, focused)
+      K.panel(x, y + 2, w, h - 4, { focus = focused, accent = K.ACC.wii, cut = 6 })
+      K.text("body", row.host, x + 16, y + h / 2 - 10, focused and K.C.text or K.C.dim)
+      K.text("small", row.source or "LAN / Tailscale",
+             x + w - K.width("small", row.source or "LAN / Tailscale") - 16,
+             y + h / 2 - 8, K.ACC.wii)
+    end)
+    K.footer({ { key = "A", label = "Pair with PC" }, { key = "B", label = "Back" } })
+    return
+  end
   K.header("STREAM SETTINGS", Stream.configured() and ("PC " .. Stream.s.HOST) or "set the PC address to begin", nil, { accent = K.ACC.wii })
   S.list:draw(function(it, x, y, w, h, focused)
     K.text("body", it.label, x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
