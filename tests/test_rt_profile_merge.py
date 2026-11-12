@@ -90,7 +90,25 @@ CPUCore = 99
         assert value(custom_merged, "Dolphin.ini", "Core", "CPUCore") == "5"
         assert value(custom_merged, "Dolphin.ini", "Core", "Overclock") == "1.1"
 
-    print("rt_profile_merge inheritance tests: OK")
+        workshop = root / "workshop"
+        game_dir = workshop / "gamesettings" / "GM8E01"
+        preset = game_dir / "Performance.ini"
+        write(preset, "[Core]\\nCPUThread = False\\n")
+        write(game_dir / "rtgameset_data.ini", """[Other]
+ActiveConfig = ignored.ini
+
+[GameSettings]
+GameName = Example
+ActiveConfig = Performance.ini
+""")
+        assert MODULE.find_gameset_file(workshop, "GM8E01") == preset
+
+        write(game_dir / "rtgameset_data.ini", """[GameSettings]
+ActiveConfig = ../outside.ini
+""")
+        assert MODULE.find_gameset_file(workshop, "GM8E01") is None
+
+    print("rt_profile_merge inheritance and GameSettings tests: OK")
 
 
 if __name__ == "__main__":
