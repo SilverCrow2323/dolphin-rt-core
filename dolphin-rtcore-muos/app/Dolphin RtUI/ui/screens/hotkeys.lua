@@ -47,8 +47,8 @@ local KEY_LIST = { "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", 
                    "Escape", "Space", "Return", "Tab", "Backspace" }
 
 local function to_gptk(k)
-    if k:match("^F%d+$") then return k end
-    return k:lower()
+    -- gptokeyb2 key names are lowercase (e.g. f1, enter, esc).
+    return tostring(k or ""):lower()
 end
 local function from_gptk(t)
     if t:match("^[fF]%d+$") then return t:upper() end
