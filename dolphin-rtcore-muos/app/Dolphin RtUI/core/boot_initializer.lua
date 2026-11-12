@@ -162,7 +162,7 @@ function M.update(dt)
         -- still running. Invalidate it before deploying and before the user
         -- returns to the DATABASE tab.
         local ok_gl, GL = pcall(require, "core.gameset_loader")
-        if ok_gl and GL.invalidate then pcall(GL.invalidate) end
+        if ok_gl and GL.invalidate then pcall(function() GL.invalidate() end) end
       end
       local ok_l, Library = pcall(require, "core.library")
       local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
