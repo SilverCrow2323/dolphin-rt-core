@@ -4,7 +4,7 @@
 -- pad(logical) key(k) [raw_pad(raw)] [accept_raw_input()].
 -- Logical buttons: A B X Y L1 R1 L2 R2 START SELECT MENU UP DOWN LEFT RIGHT.
 -- The D-pad auto-repeats (hold to scroll). START+MENU asks to quit.
--- SELECT is screen-local; only the main Library/Home screen opens Rt:Stream.
+-- SELECT is handled only by Home to enter Rt:Stream; all other screens own their input.
 -- A screen that fails to load never takes the app down: it is skipped and
 -- the error is logged.
 
