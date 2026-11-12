@@ -8,6 +8,7 @@ f:close()
 
 local readlink_calls, find_calls = 0, 0
 local old_execute = os.execute
+local worker_list, worker_done
 package.preload["core.settings"] = function()
     return { get = function(key)
         if key == "rom_paths" then
@@ -44,14 +45,10 @@ os.execute = function(command)
         find_calls = find_calls + 1
         local suffix = command:match("(rt_romscan_[%d_]+%.list)")
         assert(suffix, "background find must use a unique list file")
-        local list_path = "/tmp/" .. suffix
-        local done_path = list_path .. ".done"
-        local out = assert(io.open(list_path, "w"))
-        out:write(tmp, "\n", tmp:upper(), "\n")
-        out:close()
-        local marker = assert(io.open(done_path, "w"))
-        marker:write("done\n")
-        marker:close()
+        worker_list = "/tmp/" .. suffix
+        worker_done = worker_list .. ".done"
+        -- Deliberately leave output empty: find has started, but has not yet
+        -- delivered any results to the frontend.
         return 0
     end
     return old_execute(command)
@@ -63,12 +60,22 @@ assert(find_calls == 0, "scan_begin must not execute or wait for find")
 assert(readlink_calls == 0, "ROM scan root de-duplication must not spawn readlink")
 assert(Library.scanning, "scan remains active until incremental steps run")
 assert(Library.progress.total == 0, "no ROM entries are enumerated synchronously")
-local done = Library.scan_step(1)
-assert(done == true, "the fake background result file should be consumed in one slice")
+assert(Library.scan_step(1) == false, "empty but unfinished background output must yield")
+assert(Library.scanning and #Library.games == 0, "EOF before worker completion must not end the scan")
+
+-- Simulate the detached find process appending output on a later frame.
+local out = assert(io.open(worker_list, "w"))
+out:write(tmp, "\n", tmp:upper(), "\n")
+out:close()
+local marker = assert(io.open(worker_done, "w"))
+marker:write("done\n")
+marker:close()
+
+assert(Library.scan_step(1) == true, "later scan frame must resume after the first EOF")
 assert(find_calls == 1, "case-insensitive duplicate roots must be traversed once")
 assert(Library.progress.total == 1, "case-variant ROM paths must be queued once")
 assert(#Library.games == 1 and Library.games[1].id == "GZLE01",
     "duplicate case-variant paths must produce exactly one library entry")
 os.execute = old_execute
 os.remove(tmp)
-print("ROM scan background enumeration and path de-duplication: OK")
+print("ROM scan delayed background output and path de-duplication: OK")
