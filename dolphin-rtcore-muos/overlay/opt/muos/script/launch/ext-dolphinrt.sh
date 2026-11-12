@@ -58,8 +58,19 @@ log "launch | $NAME | $PROFILE | $ORIENT | $(basename "$ROM") | hotkeys=${HOTKEY
 
 export LD_LIBRARY_PATH="$EMUDIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 cd "$EMUDIR" || exit 1
-JS_DEV="$(ls /dev/input/js* 2>/dev/null | head -n 1)"
-[ -n "$JS_DEV" ] || JS_DEV="/dev/input/js0"
+# Prefer the real RG35XX H joydev node. Some muOS builds expose a
+# phantom js0 entry; only accept character devices and prefer js1.
+JS_DEV=""
+for candidate in /dev/input/js1 /dev/input/js0 /dev/input/js*; do
+    [ -c "$candidate" ] || continue
+    JS_DEV="$candidate"
+    break
+done
+if [ -n "$JS_DEV" ]; then
+    log "controller joydev device: $JS_DEV"
+else
+    log "WARN no usable /dev/input/js* character device; Safe Exit watcher disabled"
+fi
 
 WATCHER_PID=""
 GPTK_PID=""
@@ -96,12 +107,14 @@ sleep 0.25  # attach to the controller before Dolphin opens it
 DOLPHIN_PID=$!
 log "Dolphin pid=$DOLPHIN_PID"
 
-if [ -x "$RTSYS/overlay_exit.sh" ]; then
+if [ -n "$JS_DEV" ] && [ -x "$RTSYS/overlay_exit.sh" ]; then
     "$RTSYS/overlay_exit.sh" "$JS_DEV" "$DOLPHIN_PID" >/dev/null 2>&1 &
     WATCHER_PID=$!
-    log "Safe Exit watcher pid=$WATCHER_PID target=$DOLPHIN_PID config=$RT_SAFE_EXIT_CONFIG"
+    log "Safe Exit watcher pid=$WATCHER_PID target=$DOLPHIN_PID device=$JS_DEV config=$RT_SAFE_EXIT_CONFIG"
+elif [ -z "$JS_DEV" ]; then
+    log "WARN Safe Exit unavailable: no usable joydev character device"
 else
-    log "WARN Safe Exit watcher not installed"
+    log "WARN Safe Exit watcher not installed: $RTSYS/overlay_exit.sh"
 fi
 
 
