@@ -44,8 +44,8 @@ local function spawn_dl(key, url, dest)
   -- Ora: deve iniziare con "{" e finire con "}"; il vecchio file va in .bak
   -- (core/compatibility.lua lo usa come fallback se l'attuale e' corrotto).
   local body = string.format([[
-{ curl -fsSL --connect-timeout 8 --max-time 90 -o %s.tmp %s 2>/dev/null || \
-  wget -q -T 20 --tries=2 -O %s.tmp %s 2>/dev/null; }
+{ curl -fsSL --connect-timeout 3 --max-time 12 -o %s.tmp %s 2>/dev/null || \
+  wget -q -T 8 --tries=1 -O %s.tmp %s 2>/dev/null; }
 T=%s.tmp
 if [ -s "$T" ] && [ "$(head -c 1 "$T")" = "{" ] \
    && [ "$(tail -c 8 "$T" | tr -d ' \n\r\t' | tail -c 1)" = "}" ]; then
@@ -108,12 +108,6 @@ function M.update(dt)
   end
 
   STATE.t = STATE.t + dt
-  if STATE.t > 90 then
-    Trace.write("BOOT_TIMEOUT", "step=" .. tostring(STATE.step), "step_elapsed=" .. tostring(STATE.t), "roms=" .. tostring(STATE.results.roms))
-    Hub.push("warning", "Boot sequence", "Timed out")
-    STATE.step = "done"
-    return
-  end
 
   local step = STATE.step
   if step ~= _trace_step then Trace.write("BOOT_STEP", tostring(_trace_step), "->", tostring(step)); _trace_step = step end
@@ -140,7 +134,7 @@ function M.update(dt)
 
   elseif step == "download_data" then
     local all_done = is_done("games_data") and is_done("rtcheats_db")
-    if all_done or STATE.t > 40 then
+    if all_done or STATE.t > 14 then
       local ok_a = is_done("games_data")
       local ok_b = is_done("rtcheats_db")
       local n_ok = (ok_a and 1 or 0) + (ok_b and 1 or 0)
@@ -149,7 +143,7 @@ function M.update(dt)
       if n_ok == 2 then
         Hub.push("success", "Data Center", "2/2 updated", { ttl = 4 })
       else
-        Hub.push("warning", "Data Center", n_ok .. "/2 updated (some failed)", { ttl = 4 })
+        Hub.push("warning", "Data Center", n_ok .. "/2 updated · using cached data", { ttl = 4 })
       end
       STATE.step = "download_cheats"; STATE.t = 0
     end
@@ -214,21 +208,27 @@ function M.update(dt)
       local d, _ = CD.poll()
       done = d
     end
-    if done or STATE.t > 20 then
+    if done or STATE.t > 8 then
       STATE.step = "build_rtid"; STATE.t = 0
     end
 
   elseif step == "build_rtid" then
-    local ok, RB = (function() local ok,m = pcall(require, "core.rtid_builder"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.rtid_builder") end; return ok and m end)()
-    if ok then
-      local res = RB.rebuild_all()
-      STATE.results.cards = res.built or 0
-      Hub.push("success", "GamesLibrary updated",
-        string.format("%d cards · %d updated · %d orphans",
-          res.built or 0, res.updated or 0, res.orphans or 0),
-        { silent = true, ttl = 5 })
+    local ok, RB = pcall(require, "core.rtid_builder")
+    if ok and RB and type(RB.rebuild_all) == "function" then
+      local rebuilt, res = pcall(RB.rebuild_all)
+      if rebuilt and type(res) == "table" then
+        STATE.results.cards = res.built or 0
+        Hub.push("success", "GamesLibrary updated",
+          string.format("%d cards · %d updated · %d orphans",
+            res.built or 0, res.updated or 0, res.orphans or 0),
+          { silent = true, ttl = 5 })
+      else
+        Trace.write("BOOT_RTI D_REBUILD", "failed", tostring(res))
+        Hub.push("warning", "GamesLibrary", "Card refresh skipped; existing cards kept", { silent = true, ttl = 4 })
+      end
     else
-      Hub.push("warning", "GamesLibrary", "Rebuild skipped", { silent = true, ttl = 4 })
+      Trace.write("BOOT_RTID", "builder unavailable", tostring(RB))
+      Hub.push("warning", "GamesLibrary", "Card refresh skipped; existing cards kept", { silent = true, ttl = 4 })
     end
     Hub.push("success", "Boot complete",
       string.format("%d games · %d cards",
