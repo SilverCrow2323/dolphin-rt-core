@@ -168,7 +168,7 @@ function M.update(dt)
         end
         print("[RtUI] incremental ROM scan could not start: " .. tostring(err))
       else
-        -- Process a small slice each frame. A blocking Library.scan() here
+        -- Process a small slice each frame. A blocking full-library scan here
         -- froze the 2.5D intro on large SD cards and made boot look stuck.
         local scan_ok, done = pcall(Library.scan_step, 0.006)
         if scan_ok and not done then
