@@ -11,6 +11,8 @@
 
 local Hub   = require("core.notification_hub")
 local Shell = require("core.shell")
+local Trace = require("core.debug_trace")
+local _trace_step = nil
 
 local M = {}
 
@@ -77,6 +79,8 @@ local function is_done(key)
 end
 
 function M.start()
+  Trace.write("BOOT", "start")
+  _trace_step = nil
   STATE.step     = "update_check"
   STATE.t        = 0
   STATE.started  = os.time()
@@ -109,12 +113,14 @@ function M.update(dt)
 
   STATE.t = STATE.t + dt
   if STATE.t > 90 then
+    Trace.write("BOOT_TIMEOUT", "step=" .. tostring(STATE.step), "step_elapsed=" .. tostring(STATE.t), "roms=" .. tostring(STATE.results.roms), "gamesets=" .. tostring(STATE.results.gamesets))
     Hub.push("warning", "Boot sequence", "Timed out")
     STATE.step = "done"
     return
   end
 
   local step = STATE.step
+  if step ~= _trace_step then Trace.write("BOOT_STEP", tostring(_trace_step), "->", tostring(step)); _trace_step = step end
 
   if step == "update_check" then
     local skip_update = false
@@ -145,6 +151,7 @@ function M.update(dt)
       local ok_b = is_done("rtcheats_db")
       local ok_c = is_done("gamesettings_json")
       local n_ok = (ok_a and 1 or 0) + (ok_b and 1 or 0) + (ok_c and 1 or 0)
+      Trace.write("BOOT_DOWNLOADS", "games_data=" .. tostring(ok_a), "cheats=" .. tostring(ok_b), "gamesettings=" .. tostring(ok_c), "successes=" .. tostring(n_ok))
       if n_ok == 3 then
         Hub.push("success", "Data Center", "3/3 updated", { ttl = 4 })
       else
@@ -194,6 +201,7 @@ function M.update(dt)
       local Settings = require("core.settings")
       STATE.rom_setup_needed = Settings.get("rom_discovery_done") ~= true
     end)
+    Trace.write("ROM_SCAN", "complete", "count=" .. tostring(n), "setup_needed=" .. tostring(STATE.rom_setup_needed))
     Hub.push("scan", "ROM scan complete",
       string.format("%d ROM(s) indexed", n), { silent = true, ttl = 4 })
     STATE.ids = {}
