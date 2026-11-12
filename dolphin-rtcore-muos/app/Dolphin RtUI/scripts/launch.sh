@@ -222,44 +222,9 @@ else
     TMPD="$GAME_DIR/data/tmp_cfg"
     rm -rf "$TMPD"; mkdir -p "$TMPD"
     merged=0
-    # Resolve ActiveConfig through the same helper used by Content Explorer.
-    # An explicit card selection is a migration fallback and is persisted below.
-    if [ -z "$GAMESETTINGS" ] && declare -F rt_read_active_gameset >/dev/null 2>&1; then
-        GAMESETTINGS="$(rt_read_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" 2>/dev/null || true)"
-    fi
-    GS_ARGS=()
-    if [ "$GAMESETTINGS" != "Disabled" ]; then
-        # Keep paths with spaces (the app directory itself is "Dolphin RtUI")
-        # as single argv entries; never re-expand a hand-built command string.
-        GS_ARGS+=(--workshop "$WORKSHOP")
-        if [ -n "$GAMESETTINGS" ]; then
-            case "$GAMESETTINGS" in
-                */*|*..*|*[!A-Za-z0-9_.\ -]*)
-                    log "WARN: unsafe GameSettings filename rejected"
-                    GAMESETTINGS="Disabled"
-                    GS_ARGS=()
-                    ;;
-                *.ini)
-                    GS_PATH="$WORKSHOP/gamesettings/$GAME_ID/$GAMESETTINGS"
-                    if [ -f "$GS_PATH" ]; then
-                        GS_ARGS+=(--gs-file "$GS_PATH")
-                        if declare -F rt_write_active_gameset >/dev/null 2>&1; then
-                            rt_write_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" "$GAMESETTINGS" \
-                                || log "WARN: could not persist GameSettings ActiveConfig"
-                        fi
-                    fi
-                    ;;
-                *)
-                    log "WARN: GameSettings must be an .ini file; explicit selection disabled"
-                    GAMESETTINGS="Disabled"
-                    GS_ARGS=()
-                    ;;
-            esac
-        fi
-    fi
     if command -v python3 >/dev/null 2>&1 && [ -f "$MERGE" ]; then
         if python3 "$MERGE" --default-dir "$RT_PROFILES/Default" --profile-dir "$PDIR" \
-                --out-dir "$TMPD" --game-id "$GAME_ID" "${GS_ARGS[@]}" >> "$LOG" 2>&1 \
+                --out-dir "$TMPD" --game-id "$GAME_ID" >> "$LOG" 2>&1 \
            && [ -s "$TMPD/Dolphin.ini" ]; then
             merged=1
         fi
@@ -270,6 +235,20 @@ else
         fi
     done
     rm -rf "$TMPD"
+fi
+
+# ── 4b. Per-game GameSettings (native Dolphin projection) ─────
+# Only the selected Workshop preset is copied to Config/GameSettings/<ID>.ini.
+# Dolphin applies this once as a per-game override; it is never merged into
+# the global Dolphin.ini/GFX.ini profile layer.
+if declare -F rt_project_active_gameset >/dev/null 2>&1; then
+    if rt_project_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" "$CONFIG/GameSettings" "$GAMESETTINGS"; then
+        log "GameSettings projection: ${RT_ACTIVE_GAMESET:-disabled}"
+    else
+        log "WARN: GameSettings projection failed for game_id=$GAME_ID"
+    fi
+else
+    log "WARN: shared GameSettings projector unavailable"
 fi
 
 # ── 5. Controller ───────────────────────────────────────────
