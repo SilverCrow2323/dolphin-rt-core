@@ -58,6 +58,7 @@ jobs:
           luajit tests/test_compat_nexus.lua
           luajit tests/test_cheatdb_nexus.lua
           luajit tests/test_safe_exit.lua
+          luajit tests/test_gamesettings_deployer.lua
           luajit tests/test_folder_tools.lua
           luajit tests/test_rom_auto_discovery.lua
       - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
@@ -151,6 +152,8 @@ jobs:
           bash -n tests/test_muos_registration.sh tests/test_dolphin_runtime_contract.sh tests/test_dolphin_sys_packaging.sh tests/test_port_sys_packaging.sh
           bash -n dolphin-rtcore-muos/emu/dolphin/RtSys/overlay_exit.sh
           bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/overlay_exit.sh"
+          sh -n "dolphin-rtcore-muos/app/Dolphin RtUI/tools/stream/discover.sh"
+          bash tests/test_rtui_stream_contract.sh
           python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
       - name: Test AArch64 ELF validation contract
         run: bash tests/test_aarch64_elf_validator.sh
