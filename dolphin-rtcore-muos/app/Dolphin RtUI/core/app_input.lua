@@ -52,6 +52,7 @@ end
 
 function M.init()
     M.data = defaults()
+    local changed = false
     local raw = FS.read(PATH)
     if raw then
         local ok, d = pcall(JSON.decode, raw)
@@ -69,6 +70,8 @@ function M.init()
                 for k, v in pairs(d.pad) do
                     if previous_sdl[k] ~= v and mistaken_joydev[k] ~= v then
                         M.data.pad[k] = v
+                    elseif M.data.pad[k] ~= nil and M.data.pad[k] ~= v then
+                        changed = true
                     end
                 end
             end
@@ -77,6 +80,7 @@ function M.init()
             end
         end
     end
+    if changed then M.save() end
 end
 
 function M.save()
