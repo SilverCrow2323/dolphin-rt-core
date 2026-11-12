@@ -133,11 +133,11 @@ local function commit_z()
     end
 end
 
-function S.enter()
+function S.enter(params)
     S.t = 0
     S.first_run = Settings.get("rom_discovery_done") ~= true
     K.set_accent("sys")
-    show_set()
+    if params and params.zscan then start_zscan() else show_set() end
 end
 
 function S.update(dt)
