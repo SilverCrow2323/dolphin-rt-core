@@ -1,13 +1,11 @@
 -- core/boot_initializer.lua — orchestrated boot sequence, riscritto pulito.
 --
 -- Fasi:
---   update_check    → wait_update    → scan_roms
---   → download_data  → wait_gamesets  → download_cheats
---   → wait_cheats   → build_rtid     → done
+--   update_check → wait_update → scan_roms → download_data
+--   → download_cheats → wait_cheats → build_rtid → done
 --
--- Nel download_data scarichiamo 3 file JSON da GitHub (games_data,
--- gamesettings, rtcheats_db) e mostriamo una notifica aggregata: 3/3 updated
--- oppure N/3 updated (some failed).
+-- Only game metadata and the cheat database are downloaded. No GameSettings
+-- presets/catalogue are bundled, downloaded, or deployed at boot.
 
 local Hub   = require("core.notification_hub")
 local Shell = require("core.shell")
@@ -19,8 +17,6 @@ local M = {}
 local URLS = {
   games_data = os.getenv("DOLPHINUI_URL_GAMESDATA")
                or "https://github.com/SilverCrow2323/dolphin-rt-core/raw/refs/heads/main/data/games_data.json",
-  gamesettings_json = os.getenv("DOLPHINUI_URL_GAMESETTINGS")
-               or "https://github.com/SilverCrow2323/dolphin-rt-core/raw/refs/heads/main/data/gamesettings.json",
   rtcheats_db = os.getenv("DOLPHINUI_URL_RTCHEATS")
                or "https://github.com/SilverCrow2323/dolphin-rt-core/raw/refs/heads/main/data/rtcheats_db.json",
 }
@@ -30,7 +26,7 @@ local STATE = {
   t        = 0,
   started  = 0,
   ids      = {},
-  results  = { roms = 0, gamesets = 0, cards = 0 },
+  results  = { roms = 0, cards = 0 },
   _fast_done = false,
   skip_data_download = false,
   rom_setup_needed = false,
@@ -143,31 +139,19 @@ function M.update(dt)
     end
 
   elseif step == "download_data" then
-    local all_done = is_done("games_data")
-                 and is_done("rtcheats_db")
-                 and is_done("gamesettings_json")
+    local all_done = is_done("games_data") and is_done("rtcheats_db")
     if all_done or STATE.t > 40 then
       local ok_a = is_done("games_data")
       local ok_b = is_done("rtcheats_db")
-      local ok_c = is_done("gamesettings_json")
-      local n_ok = (ok_a and 1 or 0) + (ok_b and 1 or 0) + (ok_c and 1 or 0)
-      Trace.write("BOOT_DOWNLOADS", "games_data=" .. tostring(ok_a), "cheats=" .. tostring(ok_b), "gamesettings=" .. tostring(ok_c), "successes=" .. tostring(n_ok))
-      if n_ok == 3 then
-        Hub.push("success", "Data Center", "3/3 updated", { ttl = 4 })
+      local n_ok = (ok_a and 1 or 0) + (ok_b and 1 or 0)
+      Trace.write("BOOT_DOWNLOADS", "games_data=" .. tostring(ok_a),
+        "cheats=" .. tostring(ok_b), "successes=" .. tostring(n_ok))
+      if n_ok == 2 then
+        Hub.push("success", "Data Center", "2/2 updated", { ttl = 4 })
       else
-        Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
+        Hub.push("warning", "Data Center", n_ok .. "/2 updated (some failed)", { ttl = 4 })
       end
-      if ok_c then
-        -- A screen may have loaded an empty/old catalogue while downloads were
-        -- still running. Invalidate it before deploying and before the user
-        -- returns to the DATABASE tab.
-        local ok_gl, GL = pcall(require, "core.gameset_loader")
-        if ok_gl and GL.invalidate then pcall(function() GL.invalidate() end) end
-      end
-      local ok_l, Library = pcall(require, "core.library")
-      local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
-      if ok_dep and DEP then pcall(DEP.start, ok_l and Library and Library.games or {}) end
-      STATE.step = "wait_gamesets"; STATE.t = 0
+      STATE.step = "download_cheats"; STATE.t = 0
     end
 
   elseif step == "scan_roms" then
@@ -211,28 +195,11 @@ function M.update(dt)
       end
     end
     if STATE.skip_data_download then
-      local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
-      if ok_dep and DEP then pcall(DEP.start, Library and Library.games or {}) end
-      STATE.step = "wait_gamesets"; STATE.t = 0
-    else
-      spawn_dl("games_data",        URLS.games_data,        "data/games_data.json")
-      spawn_dl("gamesettings_json", URLS.gamesettings_json, "data/gamesettings.json")
-      spawn_dl("rtcheats_db",       URLS.rtcheats_db,       "data/rtcheats_db.json")
-      STATE.step = "download_data"; STATE.t = 0
-    end
-
-  elseif step == "wait_gamesets" then
-    local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
-    local done, res = true, {}
-    if ok_dep and DEP then done, res = DEP.poll() end
-    if done or STATE.t > 20 then
-      if res and res.deployed and res.deployed > 0 then
-        STATE.results.gamesets = res.deployed
-        Hub.push("success", "GameSettings deployed",
-          string.format("%d preset(s) from the Rt database", res.deployed),
-          { silent = true, ttl = 5 })
-      end
       STATE.step = "download_cheats"; STATE.t = 0
+    else
+      spawn_dl("games_data", URLS.games_data, "data/games_data.json")
+      spawn_dl("rtcheats_db", URLS.rtcheats_db, "data/rtcheats_db.json")
+      STATE.step = "download_data"; STATE.t = 0
     end
 
   elseif step == "download_cheats" then
@@ -264,9 +231,8 @@ function M.update(dt)
       Hub.push("warning", "GamesLibrary", "Rebuild skipped", { silent = true, ttl = 4 })
     end
     Hub.push("success", "Boot complete",
-      string.format("%d games · %d presets · %d cards",
+      string.format("%d games · %d cards",
         STATE.results.roms or 0,
-        STATE.results.gamesets or 0,
         STATE.results.cards or 0),
       { ttl = 4 })
     STATE.step = "done"
