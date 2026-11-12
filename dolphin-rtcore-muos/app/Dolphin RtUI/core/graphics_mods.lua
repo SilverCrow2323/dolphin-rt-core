@@ -193,7 +193,7 @@ local function save_changes(game, changes)
         if type(change) == "table" and
            (change.source == "system" or change.source == "user") and
            type(change.path) == "string" and change.path ~= "" and
-           not change.path:find("%.%.", 1, true) and not change.path:find("/", 1, true) then
+           not change.path:find("..", 1, true) and not change.path:find("/", 1, true) then
             local key = item_key(change.source, change.path)
             local entry = found[key]
             if not entry then
@@ -220,6 +220,19 @@ function M.set_all(game, items, enabled)
     local changes = {}
     for _, item in ipairs(items or {}) do
         changes[#changes + 1] = {source = item.source, path = item.path, enabled = enabled}
+    end
+    if #changes == 0 then return true end
+    return save_changes(game, changes)
+end
+
+function M.set_selection(game, items, selected)
+    selected = selected or {}
+    local changes = {}
+    for _, item in ipairs(items or {}) do
+        changes[#changes + 1] = {
+            source = item.source, path = item.path,
+            enabled = selected[item.name] == true,
+        }
     end
     if #changes == 0 then return true end
     return save_changes(game, changes)
