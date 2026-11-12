@@ -278,6 +278,18 @@ log "cheats=$CHEATS overlays fps=$SHOW_FPS vps=$SHOW_VPS speed=$SHOW_SPEED osd=$
 # Built-in Sys/Load and user Load mods are discovered by Dolphin itself.
 # Rt:UI writes Config/GraphicMods/<GameID>.json with per-game enabled flags.
 # Keep the engine off unless at least one mod is enabled for this title.
+GM_ON="$EMU/Load/GraphicMods"; GM_OFF="$EMU/Load/GraphicMods.off"
+if [ -d "$GM_OFF" ]; then
+    mkdir -p "$GM_ON"
+    for d in "$GM_OFF"/*/; do
+        [ -d "$d" ] || continue
+        n="$(basename "$d")"
+        if [ ! -e "$GM_ON/$n" ]; then
+            mv "$d" "$GM_ON/$n" 2>/dev/null || true
+        fi
+    done
+    rmdir "$GM_OFF" 2>/dev/null || true
+fi
 GM_PROFILE="$CONFIG/GraphicMods/$GAME_ID.json"
 GM_ENABLED=0
 if [ -s "$GM_PROFILE" ]; then
