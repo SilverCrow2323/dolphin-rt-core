@@ -167,21 +167,22 @@ local function create_new()
     local name = "Custom_" .. os.date("%m%d_%H%M")
     local dst = "workshop/rtcoreprofile/" .. name
     sh.mkdir_p(dst)
-    local src = "workshop/rtcoreprofile/Default"
-    if sh.is_dir(src) then
-        os.execute("cp -a " .. sh.shq(src) .. "/. " .. sh.shq(dst) .. "/ 2>/dev/null")
-    else
-        for _, f in ipairs({ "Dolphin.ini", "GFX.ini" }) do
-            local o = io.open(dst .. "/" .. f, "w"); if o then o:write(""); o:close() end
-        end
+
+    -- Custom profiles are sparse overlays. The canonical Default is merged
+    -- at launch; cloning its full INIs here would create a second copy of
+    -- hundreds of unchanged values in every user profile.
+    for _, filename in ipairs({ "Dolphin.ini", "GFX.ini" }) do
+        local out = io.open(dst .. "/" .. filename, "w")
+        if out then out:write(""); out:close() end
     end
+
     local meta = io.open(dst .. "/rtprofile_data.ini", "w")
     if meta then
         meta:write("[Profile]\nName        = " .. name .. "\nType        = Custom\n")
-        meta:write("Family      = Custom\nDescription = Created from Profile Editor\n")
+        meta:write("Family      = Custom\nDescription = Sparse custom overlay over Default\n")
         meta:write("Author      = RtUI\nVersion     = 1.0.0\n\n")
         meta:write("[UI]\nColor       = #F5A742\nIcon        = star\nOrder       = 999\n\n")
-        meta:write("[Runtime]\nLocked      = False\n")
+        meta:write("[Runtime]\nLocked      = False\nRequiresBase = Default\n")
         meta:close()
     end
     SFX.play("newupdate")
