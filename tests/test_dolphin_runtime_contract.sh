@@ -17,8 +17,13 @@ require() {
 }
 
 # The running executable and its resource tree live side by side on muOS.
-require "$BUILD" 'case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix) LOCAL_SYS=ON;; esac'
+require "$BUILD" 'case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) LOCAL_SYS=ON;; esac'
 require "$BUILD" '"-DLINUX_LOCAL_DEV=$LOCAL_SYS"'
+require "$BUILD" '[ "$TUNE_EXPLICIT" = yes ] || TUNE=none'
+require "$BUILD" 'desktop builds cannot use --tune cortex-a53'
+require "$BUILD" 'desktop builds require GCC 12+'
+require "$BUILD" 'apt-get install -y -qq --no-install-recommends gcc-12 g++-12'
+require "$BUILD" 'desktop) ENABLE_QT=ON; ENABLE_X11=ON; ENABLE_WAYLAND=ON'
 require "$BUILD" "libhidapi-hidraw.so.0"
 require "$BUILD" 'rm -rf "$OUT/Sys"'
 require "$BUILD" 'cp -a "$SRC/Data/Sys/." "$OUT/Sys/"'

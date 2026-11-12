@@ -1,0 +1,112 @@
+name: Build Dolphin Rt:Core Desktop (x86_64)
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-desktop-x86_64.yml"
+      - "dolphin-build/build-dolphin.sh"
+      - "dolphin-build/package-desktop.sh"
+      - "dolphin-build/DOLPHIN_REF"
+      - "dolphin-build/patches/local/**"
+      - "tests/test_desktop_packaging.sh"
+      - "tests/test_dolphin_runtime_contract.sh"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-desktop-x86_64.yml"
+      - "dolphin-build/build-dolphin.sh"
+      - "dolphin-build/package-desktop.sh"
+      - "dolphin-build/DOLPHIN_REF"
+      - "dolphin-build/patches/local/**"
+      - "tests/test_desktop_packaging.sh"
+      - "tests/test_dolphin_runtime_contract.sh"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dolphin-desktop-x86_64-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    name: MX XFCE desktop / x86_64 / Qt GUI + NoGUI
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Confirm x86_64 build host
+        run: |
+          uname -a
+          test "$(uname -m)" = x86_64
+          nproc
+          free -h
+          df -h
+      - name: Install Dolphin and Qt 6 build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential gcc-12 g++-12 cmake ninja-build git patch pkg-config python3 \
+            ca-certificates xz-utils binutils file \
+            libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
+            libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
+            liblzma-dev libpng-dev zlib1g-dev libbz2-dev libegl-dev \
+            libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev \
+            libxi-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxext-dev \
+            libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev \
+            qt6-base-dev qt6-base-private-dev libqt6svg6-dev qt6-qpa-plugins \
+            xvfb
+      - name: Run desktop packaging and target-contract tests
+        run: |
+          bash tests/test_desktop_packaging.sh
+          bash tests/test_dolphin_runtime_contract.sh
+      - name: Build both native desktop frontends
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-desktop-x86_64"
+          mkdir -p "$OUT"
+          CC=gcc-12 CXX=g++-12 bash dolphin-build/build-dolphin.sh \
+            --target desktop \
+            --frontend both \
+            --tune none \
+            --out "$OUT" \
+            --jobs "$(nproc)" \
+            --no-deps
+      - name: Validate x86_64 binaries and runtime dependencies
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-desktop-x86_64"
+          for binary in "$OUT/dolphin" "$OUT/dolphin-gui"; do
+            test -x "$binary"
+            file "$binary"
+            readelf -h "$binary" | grep -Eq 'Class:.*ELF64'
+            readelf -h "$binary" | grep -Eq 'Machine:.*X86-64'
+            ldd "$binary" | tee "$binary.ldd"
+            ! grep -Fq 'not found' "$binary.ldd"
+          done
+          test -s "$OUT/Sys/GC/font_western.bin"
+          test -s "$OUT/Sys/GC/font_japanese.bin"
+          test -s "$OUT/Sys/GC/dsp_rom.bin"
+          test -s "$OUT/Sys/GC/dsp_coef.bin"
+          test -s "$OUT/Sys/Resources/OSD_Font.ttf"
+          test -s "$OUT/BUILDINFO.txt"
+          test -s "$(find "$OUT" -maxdepth 1 -type f -name 'source-*.tar.xz' -print -quit)"
+          sha256sum "$OUT"/dolphin* "$OUT/BUILDINFO.txt" "$OUT"/source-*.tar.xz
+      - name: Package MX XFCE desktop bundle
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-desktop-x86_64"
+          bash dolphin-build/package-desktop.sh \
+            --input "$OUT" \
+            --out "$OUT/dist" \
+            --build-id "$GITHUB_SHA"
+          ARCHIVE="$(find "$OUT/dist" -maxdepth 1 -type f -name 'Dolphin-RtCore-Desktop-x86_64-*.tar.gz' -print -quit)"
+          test -n "$ARCHIVE"
+          test -s "$ARCHIVE.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-rtcore-desktop-x86_64-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/dolphin-desktop-x86_64/dist/*.tar.gz
+            ${{ runner.temp }}/dolphin-desktop-x86_64/dist/*.sha256
+            ${{ runner.temp }}/dolphin-desktop-x86_64/BUILDINFO.txt
+            ${{ runner.temp }}/dolphin-desktop-x86_64/source-*.tar.xz
+          if-no-files-found: error
+          retention-days: 30

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Builds the Dolphin no-GUI binary for an aarch64 handheld.  Run it ON an aarch64 Debian/Ubuntu machine (or in the CI job).
+# Builds Dolphin for H700 handhelds or a native Linux desktop. Run it on the target architecture.
 #
 #   ./build-dolphin.sh --target muos                # muOS Andromeda / H700 (FBDev + SDL/EGL, NoGUI)
 #   ./build-dolphin.sh --target muos-qt --frontend gui # EXPERIMENTAL: Qt GUI on EGLFS
 #   ./build-dolphin.sh --target knulli              # Knulli / H700 (fbdev + SDL/EGL, no Qt)
 #   ./build-dolphin.sh --target rocknix             # ROCKNIX Wayland (patches 000,011,012,013,015)
-#   ./build-dolphin.sh --target desktop --frontend both  # ARM64 Linux Qt GUI + NoGUI
+#   ./build-dolphin.sh --target desktop --frontend both  # x86_64/ARM64 Linux Qt GUI + NoGUI
 #   options: --frontend nogui|gui|both --ref SHA --out DIR --jobs N --no-lto --tune cortex-a53|none --deps --no-deps
 #
 # Output (in --out, default ./out): dolphin, BUILDINFO.txt, source-<ref>.tar.xz;
@@ -15,23 +15,33 @@
 # build/test path; output discovery expects upstream's Binaries/dolphin-emu-nogui executable.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-REF="$(tr -d '[:space:]' < "$HERE/DOLPHIN_REF")"; TARGET=""; FRONTEND=nogui; OUT="$PWD/out"; JOBS="$(nproc)"; LTO=ON; TUNE=cortex-a53; DEPS=auto
+REF="$(tr -d '[:space:]' < "$HERE/DOLPHIN_REF")"; TARGET=""; FRONTEND=nogui; OUT="$PWD/out"; JOBS="$(nproc)"; LTO=ON; TUNE=cortex-a53; TUNE_EXPLICIT=no; DEPS=auto
 while [ $# -gt 0 ]; do case "$1" in
   --target) TARGET="$2"; shift 2;; --frontend) FRONTEND="$2"; shift 2;; --ref) REF="$2"; shift 2;; --out) OUT="$2"; shift 2;; --jobs) JOBS="$2"; shift 2;;
-  --no-lto) LTO=OFF; shift;; --tune) TUNE="$2"; shift 2;; --deps) DEPS=yes; shift;; --no-deps) DEPS=no; shift;;
+  --no-lto) LTO=OFF; shift;; --tune) TUNE="$2"; TUNE_EXPLICIT=yes; shift 2;; --deps) DEPS=yes; shift;; --no-deps) DEPS=no; shift;;
   *) echo "unknown option $1"; exit 2;; esac; done
 case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) ;; *) echo "usage: $0 --target muos|knulli|rocknix|desktop [options]"; exit 2;; esac
 case "$FRONTEND" in nogui|gui|both) ;; *) echo "usage: $0 --target TARGET --frontend nogui|gui|both"; exit 2;; esac
 if [ "$TARGET" = muos-qt ] && [ "$FRONTEND" != gui ] && [ "$FRONTEND" != both ]; then echo "muos-qt requires the GUI frontend (gui or both)"; exit 2; fi
 if [ "$TARGET" != desktop ] && [ "$TARGET" != muos-qt ] && [ "$FRONTEND" != nogui ]; then echo "Qt GUI builds are supported only by desktop and experimental muos-qt"; exit 2; fi
+# Handheld tuning must never leak into a PC build. Desktop defaults to compiler-neutral flags.
+if [ "$TARGET" = desktop ]; then
+  [ "$TUNE_EXPLICIT" = yes ] || TUNE=none
+  [ "$TUNE" != cortex-a53 ] || { echo "desktop builds cannot use --tune cortex-a53; use --tune none" >&2; exit 2; }
+fi
 # Every packaged handheld target installs Sys/ beside its Dolphin executable:
 # muOS: /opt/muos/share/emulator/dolphin/Sys
 # Knulli/ROCKNIX: <release>/core/Sys
 # Make all firmware binaries resolve the colocated resources rather than the
 # host's compiled /usr/local/share/dolphin-emu/sys path.
 LOCAL_SYS=OFF
-case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix) LOCAL_SYS=ON;; esac
-[ "$(uname -m)" = aarch64 ] || echo "WARNING: this is $(uname -m), the result will not run on the handheld"
+case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) LOCAL_SYS=ON;; esac
+HOST_ARCH="$(uname -m)"
+if [ "$TARGET" = desktop ]; then
+  case "$HOST_ARCH" in x86_64|aarch64|arm64) ;; *) echo "WARNING: desktop build on unusual host architecture $HOST_ARCH" >&2 ;; esac
+else
+  [ "$HOST_ARCH" = aarch64 ] || echo "WARNING: this is $HOST_ARCH, the result will not run on the handheld" >&2
+fi
 
 if [ "$DEPS" = yes ] || { [ "$DEPS" = auto ] && [ "$(id -u)" = 0 ] && command -v apt-get >/dev/null; }; then
   export DEBIAN_FRONTEND=noninteractive
@@ -40,7 +50,22 @@ if [ "$DEPS" = yes ] || { [ "$DEPS" = auto ] && [ "$(id -u)" = 0 ] && command -v
     libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev liblzma-dev \
     libpng-dev zlib1g-dev libbz2-dev libegl-dev libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev libxi-dev \
     libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev
+  if [ "$TARGET" = desktop ]; then apt-get install -y -qq --no-install-recommends gcc-12 g++-12; fi
   if [ "$TARGET" = desktop ] || [ "$TARGET" = muos-qt ]; then apt-get install -y -qq --no-install-recommends qt6-base-dev qt6-base-private-dev libqt6svg6-dev qt6-qpa-plugins; fi
+fi
+
+# Dolphin requires GCC 12+. Prefer the distro GCC 12 toolchain on desktop
+# hosts where the default compiler is older, while allowing explicit overrides.
+if [ "$TARGET" = desktop ]; then
+  if [ -z "${CC:-}" ] && command -v gcc-12 >/dev/null 2>&1; then export CC=gcc-12; fi
+  if [ -z "${CXX:-}" ] && command -v g++-12 >/dev/null 2>&1; then export CXX=g++-12; fi
+  DESKTOP_CXX="${CXX:-c++}"
+  DESKTOP_CXX_VERSION="$("$DESKTOP_CXX" -dumpversion 2>/dev/null || echo 0)"
+  DESKTOP_CXX_MAJOR="${DESKTOP_CXX_VERSION%%.*}"
+  [ "${DESKTOP_CXX_MAJOR:-0}" -ge 12 ] || {
+    echo "desktop builds require GCC 12+; found $DESKTOP_CXX ($DESKTOP_CXX_VERSION). Install gcc-12/g++-12 or set CC/CXX." >&2
+    exit 2
+  }
 fi
 
 W="$OUT/work"; SRC="$W/dolphin"; rm -rf "$W"; mkdir -p "$SRC" "$OUT"; cd "$SRC"
@@ -55,7 +80,7 @@ for p in "$HERE"/patches/local/*.patch; do [ -f "$p" ] && PATCHES+=("$p"); done
 for p in "${PATCHES[@]}"; do patch -p1 -s < "$p" && echo "applied $(basename "$p")"; done
 
 ENABLE_QT=OFF; ENABLE_X11=OFF; ENABLE_WAYLAND=OFF
-case "$TARGET" in desktop) ENABLE_QT=ON; ENABLE_X11=ON;; muos-qt) ENABLE_QT=ON;; rocknix) ENABLE_WAYLAND=ON;; esac
+case "$TARGET" in desktop) ENABLE_QT=ON; ENABLE_X11=ON; ENABLE_WAYLAND=ON;; muos-qt) ENABLE_QT=ON;; rocknix) ENABLE_WAYLAND=ON;; esac
 FLAGS=(-DCMAKE_BUILD_TYPE=Release -DENABLE_NOGUI=ON "-DENABLE_QT=$ENABLE_QT" -DENABLE_HEADLESS=OFF -DENABLE_TESTS=OFF
   -DENABLE_ANALYTICS=OFF -DENABLE_AUTOUPDATE=OFF -DENABLE_CLI_TOOL=OFF -DENCODE_FRAMEDUMPS=OFF -DUSE_DISCORD_PRESENCE=OFF
   -DUSE_MGBA=OFF -DUSE_RETRO_ACHIEVEMENTS=OFF -DENABLE_LLVM=OFF -DENABLE_VULKAN=OFF "-DENABLE_LTO=$LTO"
@@ -129,7 +154,7 @@ fi
 {
   echo "Dolphin Rt:Core build"; echo "date:      $(date -u '+%F %T') UTC"; echo "target:    $TARGET"; echo "frontend:  $FRONTEND"
   echo "upstream:  $(git -C "$SRC" log -1 --format='%H %ad' --date=short)"
-  echo "compiler:  $(c++ --version | head -n 1)"; echo "tune/lto:  $TUNE / $LTO"; echo "host:      $(uname -srm)"; echo "relocatable Sys: $LOCAL_SYS"
+  echo "compiler:  $("${CXX:-c++}" --version | head -n 1)"; echo "tune/lto:  $TUNE / $LTO"; echo "host:      $(uname -srm)"; echo "relocatable Sys: $LOCAL_SYS"
   echo; echo "patches (sha256):"; for p in "${PATCHES[@]}"; do echo "  $(sha256sum "$p" | cut -c1-16)  $(basename "$p")"; done
   echo; echo "cmake flags:"; printf '  %s\n' "${FLAGS[@]}"
   for b in "$OUT/dolphin" "$OUT/dolphin-gui"; do [ -x "$b" ] || continue; echo; echo "binary: $(basename "$b") $(du -h "$b" | cut -f1) sha256 $(sha256sum "$b" | cut -d' ' -f1)"; echo "needed libraries:"; readelf -d "$b" | sed -n 's/.*(NEEDED).*\[\(.*\)\]/  \1/p'; echo "needs glibc >= $(strings -n 6 "$b" | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -n 1)"; done
