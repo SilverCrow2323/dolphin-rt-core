@@ -99,12 +99,14 @@ if [ -r "$SHARED_RUNTIME" ] && [ -r "$SHARED_LAUNCH" ]; then
 
     GAMESETTINGS=""
     if [ -n "$GAME_ID" ]; then
-        # Canonical GameSettings selection wins over any stale RTID mirror.
-        GAMESETTINGS="$(rt_read_active_gameset "$GAME_ID" "$APP_DIR/workshop/gamesettings" || true)"
-    fi
-    if [ -z "$GAMESETTINGS" ]; then
-        # Migration fallback for cards created before ActiveConfig was introduced.
-        GAMESETTINGS="$(rt_read_rtid_launch "$CARD" GameSettings)"
+        if rt_has_active_gameset "$GAME_ID" "$APP_DIR/workshop/gamesettings"; then
+            # An existing (possibly empty) ActiveConfig is authoritative.
+            GAMESETTINGS="$(rt_read_active_gameset "$GAME_ID" "$APP_DIR/workshop/gamesettings" || true)"
+            [ -n "$GAMESETTINGS" ] || GAMESETTINGS="Disabled"
+        else
+            # Migrate only cards whose canonical ActiveConfig key does not exist.
+            GAMESETTINGS="$(rt_read_rtid_launch "$CARD" GameSettings)"
+        fi
     fi
     if [ "$GAMESETTINGS" != "Disabled" ] && [ -n "$GAMESETTINGS" ]; then
         if ! rt_safe_leaf_name "$GAMESETTINGS" \
