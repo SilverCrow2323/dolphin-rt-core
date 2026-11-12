@@ -1,79 +1,117 @@
+# Testing and verification
 
-Testing
-1. dev.sh
-Every invocation writes a detailed log to
-.pclogs/dev_<YYYYMMDD>_<HHMMSS>_<cmd>.log. A symlink
-.pclogs/latest.log always points to the newest log.
+This guide describes the **current repository layout** and the checks used for Dolphin Rt:Core. It replaces the legacy `frontend/` and `dev.sh` instructions.
 
-Subcommands
-Command	Effect
-./dev.sh run [WxH]	Launch LOVE at the given resolution (default 640x480)
-./dev.sh check	Syntax-check every Lua file
-./dev.sh clean	Rotate dev.sh and LOVE logs
-./dev.sh shell	Open a shell in frontend/
-./dev.sh logs	Tail the latest dev.sh log
-Syntax check
-./dev.sh check uses luajit -bl if available, otherwise
-luac5.1 -p, otherwise luac -p. It walks every .lua file under
-frontend/ and reports per-file failures.
+## 1. Repository checks
 
-Expected final line:
+Run from the repository root:
 
-text
-All N Lua files OK
-If a file fails, the command prints the file path and the first
-three lines of the error message.
+```sh
+git diff --check
+git status --short
+python3 -m unittest tests/test_compat_site.py -v
+```
 
-2. Live launch
-bash
-./dev.sh run
-Runs love . 640x480 with CWD set to frontend/. Close with
-Escape or with the pad.
+The CI workflow also runs repository-tooling checks for shell syntax, Python compilation, muOS registration, Dolphin runtime contracts, packaging manifests and platform package dry-runs.
 
-3. Log files
-Path	Producer
-.pclogs/dev_*.log	dev.sh
-frontend/data/logs/launcher_*.log	launch.sh
-frontend/data/logs/dolphinrtcore_*.log	Dolphin core
-frontend/data/logs/frontend.log	LOVE restart from launch.sh
-frontend/data/logs/crash_*.log	crash_handler.lua
-4. Crash handler
-crash_handler.lua installs a global error hook. On crash:
+## 2. Rt:UI Lua checks
 
-Writes data/logs/crash_<timestamp>.log with stack trace.
+The active muOS LÖVE application is:
 
-Surfaces the previous crash on the next boot (once).
+```text
+dolphin-rtcore-muos/app/Dolphin RtUI/
+```
 
-Does NOT kill the app unless the crash is in love.load.
+Compile every Lua file with LuaJIT:
 
-5. Manual test checklist
-Before any commit touching UI or input:
+```sh
+find dolphin-rtcore-muos/app -name '*.lua' -print0 \
+  | xargs -0 -n1 luajit -bl >/dev/null
+```
 
-./dev.sh check passes.
+Run the focused NEXUS and frontend tests used by CI:
 
-./dev.sh run boots to Nexus.
+```sh
+luajit tests/test_nexus.lua
+luajit tests/test_stream_lib.lua
+luajit tests/test_stream_settings_nexus.lua
+luajit tests/test_stream_config_persistence.lua
+luajit tests/test_diagnostics_nexus.lua
+luajit tests/test_hotkeys_nexus.lua
+luajit tests/test_cheats_screen_nexus.lua
+luajit tests/test_game_nexus.lua
+luajit tests/test_keymap_nexus.lua
+luajit tests/test_controller_profiles_nexus.lua
+luajit tests/test_compat_nexus.lua
+luajit tests/test_cheatdb_nexus.lua
+bash tests/test_muos_ui.sh
+bash tests/test_ui_action_registration.sh
+```
 
-Flip theme GC ↔ Wii with SELECT.
+Some Lua tests expect the Rt:UI directory as their working directory. If a test cannot resolve its modules from the repository root, run it from the application directory using the relative path shown by the CI workflow.
 
-Open and close every top-level panel.
+## 3. LÖVE screen smoke test and screenshots
 
-Launch a ROM from the library.
+Install LÖVE and Xvfb on a Linux host, then run:
 
-Check the Live Menu opens (MENU + START).
+```sh
+cd "dolphin-rtcore-muos/app/Dolphin RtUI"
+SDL_AUDIODRIVER=dummy xvfb-run -a love . --smoke
+```
 
-Return to the frontend after exit.
+The smoke test writes `data/logs/smoke.txt`; a successful run must report `0 FAIL`.
 
-Open the Download overlay with R2.
+Capture every registered screen from the repository root:
 
-Open the Quick Guide with L2.
+```sh
+bash tools/capture-ui.sh --all --out-dir /tmp/rtcore-screens
+```
 
-Open the Dashboard with START (or F8).
+For UI changes, inspect focus, clipping, text legibility, contrast and safe areas at the logical 640×480 layout. CI additionally captures the frontend at 640×480, 720×480 and 720×720. Captures are automated evidence, not a substitute for human review.
 
-6. Data refresh check
-Delete data/games_data.json.
+## 4. Shell and package checks
 
-Launch. First boot triggers boot_downloader.
+Use the interpreter declared by each script:
 
-Verify the file reappears at data/games_data.json within 30 s.
+```sh
+bash -n path/to/bash-script.sh
+sh -n path/to/posix-script.sh
+```
 
-Verify the file is valid JSON (python3 -m json.tool).
+Build and verify a muOS Andromeda update archive:
+
+```sh
+bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
+bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
+```
+
+The verifier fetches the muOS 2606.0 Andromeda verification functions from the upstream tagged source and therefore requires network access. Do not treat a local archive build alone as proof that installation works on a device.
+
+## 5. Device verification
+
+A successful CI run, LÖVE smoke test, screenshot capture, package dry-run or archive verification does **not** prove that the package works on a physical handheld.
+
+Before marking a hardware target as verified, record at minimum:
+
+- Exact device and SoC.
+- Firmware name and version.
+- Package filename, version and SHA-256.
+- Install or upgrade path used.
+- Frontend boot, input mapping, rendering and audio results.
+- Game launch and clean exit.
+- Reboot and persistence checks.
+- Logs and known limitations.
+
+For the RG35XX H / H700, explicitly test the 640×480 panel, physical controls, Dolphin launch/return path, GameCube and Wii input, font rendering, memory behavior and clean shutdown.
+
+## 6. Reporting test results
+
+Every report must distinguish:
+
+- **Passed:** the exact command or procedure completed successfully.
+- **Failed:** the exact check failed; include the failing job/step and relevant log excerpt.
+- **Not run:** the check was not executed.
+- **Not applicable:** explain why it does not apply.
+- **Hardware unverified:** no physical-device result exists for the exact binary/package.
+
+Never convert a skipped check, CI dry-run or desktop result into a hardware pass.
