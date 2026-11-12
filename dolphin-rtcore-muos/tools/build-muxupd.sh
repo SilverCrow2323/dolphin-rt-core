@@ -13,6 +13,7 @@ ARCHIVE="$OUT/Dolphin_RtCore_v${VERSION//./_}_Andromeda.muxupd"
 DOLPHIN_BIN="${DOLPHIN_BIN:-}"
 DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}"
 DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}"
+DOLPHIN_UI_ONLY="${DOLPHIN_UI_ONLY:-0}"
 if [ -z "$DOLPHIN_LIB_DIR" ] && [ -n "$DOLPHIN_BIN" ] && [ -d "$(dirname "$DOLPHIN_BIN")/lib" ]; then
   DOLPHIN_LIB_DIR="$(dirname "$DOLPHIN_BIN")/lib"
 fi
@@ -22,10 +23,16 @@ if [ -n "$DOLPHIN_SYS_DIR" ]; then
   [ -d "$DOLPHIN_SYS_DIR" ] || { echo "ERROR: DOLPHIN_SYS_DIR is not a directory: $DOLPHIN_SYS_DIR" >&2; exit 1; }
   SYS_SOURCE="$(cd "$DOLPHIN_SYS_DIR" && pwd -P)"
 fi
-if [ -n "$DOLPHIN_BIN" ]; then
+if [ -z "$DOLPHIN_BIN" ]; then
+  [ "$DOLPHIN_UI_ONLY" = "1" ] || {
+    echo "ERROR: refusing to build an installable muOS update without Dolphin. Set DOLPHIN_BIN to a validated AArch64 executable, or explicitly set DOLPHIN_UI_ONLY=1 for CI-only UI validation." >&2
+    exit 2
+  }
+  ARCHIVE="${ARCHIVE%.muxupd}_ui-only.muxupd"
+else
+  [ -s "$DOLPHIN_BIN" ] || { echo "ERROR: DOLPHIN_BIN is missing or empty: $DOLPHIN_BIN" >&2; exit 1; }
   hdr="$(head -c 20 "$DOLPHIN_BIN" | od -An -tx1 | tr -d ' \n')"
   case "$hdr" in 7f454c46020101*b700) ;; *) echo "ERROR: DOLPHIN_BIN is not an aarch64 ELF executable" >&2; exit 1;; esac
-  ARCHIVE="${ARCHIVE%.muxupd}_with-dolphin.muxupd"
 fi
 S="$(mktemp -d)"; trap 'rm -rf "$S"' EXIT
 
@@ -48,7 +55,11 @@ if [ "$SYS_SOURCE" != "$DEFAULT_SYS_SOURCE" ]; then
   cp -a "$SYS_SOURCE/." "$S/$EMU/Sys/"
 fi
 cp -a "$ROOT/app/Dolphin RtUI/." "$S/$APP/"
+# Never distribute a developer's settings/ROM paths in an update package.
+rm -f "$S/$APP/data/settings.json"
 cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, tasks, manifest tool, update hook)
+# Keep Jacaranda legacy Content Explorer assignments alongside the Andromeda manifest.
+bash "$ROOT/tools/stage-legacy-assign.sh" "$S" 1
 
 # Rt:Core ships no per-game GameSettings presets or HD texture packs.
 # The only bundled graphics mod is the opt-in All Games Bloom Removal.
@@ -65,7 +76,14 @@ if [ -n "$DOLPHIN_LIB_DIR" ]; then
   cp -a "$DOLPHIN_LIB_DIR/." "$S/$EMU/lib/"
 fi
 if [ -n "$DOLPHIN_BIN" ] && readelf -d "$DOLPHIN_BIN" 2>/dev/null | grep -q "libhidapi-hidraw.so.0"; then
-  [ -s "$S/$EMU/lib/libhidapi-hidraw.so.0" ] || { echo "ERROR: missing bundled HIDAPI runtime; set DOLPHIN_LIB_DIR" >&2; exit 1; }
+  [ -s "$S/$EMU/lib/libhidapi-hidraw.so.0" ] || {
+    echo "ERROR: Dolphin requires libhidapi-hidraw.so.0 but the matching runtime is absent." >&2
+    exit 1
+  }
+  readelf -h "$S/$EMU/lib/libhidapi-hidraw.so.0" | grep -q 'Machine:.*AArch64' || {
+    echo "ERROR: bundled libhidapi-hidraw.so.0 is not an AArch64 ELF library" >&2
+    exit 1
+  }
 fi
 mkdir -p "$S/$APP/data/logs" "$S/$APP/data/stream/covers" "$S/$APP/data/stream/keys"
 
