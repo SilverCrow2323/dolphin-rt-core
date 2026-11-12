@@ -3,7 +3,8 @@
 -- Screens are plain tables: enter(params) leave() update(dt) draw()
 -- pad(logical) key(k) [raw_pad(raw)] [accept_raw_input()].
 -- Logical buttons: A B X Y L1 R1 L2 R2 START SELECT MENU UP DOWN LEFT RIGHT.
--- The D-pad auto-repeats (hold to scroll). START+MENU asks to quit; SELECT switches RtUI / Rt:Stream.
+-- The D-pad auto-repeats (hold to scroll). START+MENU asks to quit.
+-- SELECT is screen-local; only the main Library/Home screen opens Rt:Stream.
 -- A screen that fails to load never takes the app down: it is skipped and
 -- the error is logged.
 
@@ -361,16 +362,7 @@ local function dispatch(lg)
     if not lg then return end
     if Modal.is_open() then Modal.pad(lg); return end
 
-    -- SELECT is the global RtUI / Rt:Stream switch. It is deliberately
-    -- handled above individual screens so it works from every normal view.
-    if lg == "SELECT" then
-        local in_stream = current_name == "stream_library"
-                       or current_name == "stream_settings"
-        M.go(in_stream and "library" or "stream_library", nil, { no_push = true })
-        return
-    end
-
-    local ok_sp, SP = pcall(require, "ui.system_panel")
+    local ok_sp, SP = pcall(require, "ui.system_panel")    local ok_sp, SP = pcall(require, "ui.system_panel")
     if ok_sp and SP then
         if SP.is_open() then SP.pad(lg); return end
         if lg == "MENU" then SP.open(); return end
@@ -421,7 +413,6 @@ end
 
 function M.pad(raw)
     local logical = IM.from_raw(raw)
-    if logical == "SELECT" then press(logical, true); return end
     if current and current.raw_pad and not Modal.is_open() then
         local ok, eaten = pcall(current.raw_pad, raw)
         if ok and eaten then return end
@@ -431,7 +422,6 @@ end
 function M.pad_released(raw) release(IM.from_raw(raw)) end
 function M.gamepad(name)
     local logical = IM.from_gamepad(name)
-    if logical == "SELECT" then press(logical, true); return end
     if current and current.raw_pad and not Modal.is_open() then
         local ok, eaten = pcall(current.raw_pad, name)
         if ok and eaten then return end
