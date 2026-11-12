@@ -347,8 +347,15 @@ cd "$EMU" || fatal 1 "cd $EMU failed"
 export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 [ -x "$DOLPHIN" ] || fatal 1 "dolphin binary not found or not executable: $DOLPHIN (supply your aarch64 build)"
 
-JS_DEV=$(ls /dev/input/js* 2>/dev/null | head -1)
-[ -z "$JS_DEV" ] && JS_DEV="/dev/input/js0"
+# Select a real joydev character device. muOS may expose a phantom js0
+# handler in /proc while the usable device is /dev/input/js1.
+JS_DEV=""
+for candidate in /dev/input/js1 /dev/input/js0 /dev/input/js*; do
+    [ -c "$candidate" ] || continue
+    JS_DEV="$candidate"
+    break
+done
+[ -n "$JS_DEV" ] || log "WARN: no usable /dev/input/js* device; Safe Exit watcher will be unavailable"
 # gptokeyb2 injects keyboard events only for keyboard hotkey profiles.
 # SDL/pad profiles must not create virtual keystrokes or steal SELECT/START.
 if [ "${HOTKEYS:-}" != "Disabled" ]; then
@@ -388,7 +395,7 @@ log "dolphin pid=$DOLPHIN_PID  ( --platform=fbdev --video_backend=OGL -e <rom> -
 
 # Start the watcher only after Dolphin is alive; bind it to this process PID.
 # RT_NO_EXIT_WATCHER=1 is used by Knulli / ROCKNIX ports.
-if [ "$SAFE_EXIT" = "1" ] && [ "${RT_NO_EXIT_WATCHER:-0}" != "1" ]; then
+if [ "$SAFE_EXIT" = "1" ] && [ "${RT_NO_EXIT_WATCHER:-0}" != "1" ] && [ -n "$JS_DEV" ]; then
     for w in "$RTSYS/overlay_exit.sh" "$SCRIPT_DIR/overlay_exit.sh"; do
         if [ -x "$w" ]; then "$w" "$JS_DEV" "$DOLPHIN_PID" >/dev/null 2>&1 & WATCHER_PID=$!; log "exit watcher $w pid=$WATCHER_PID target=$DOLPHIN_PID"; break; fi
     done
