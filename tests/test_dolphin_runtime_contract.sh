@@ -17,7 +17,7 @@ require() {
 }
 
 # The running executable and its resource tree live side by side on muOS.
-require "$BUILD" 'case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix) LOCAL_SYS=ON;; esac'
+require "$BUILD" 'case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) LOCAL_SYS=ON;; esac'
 require "$BUILD" '"-DLINUX_LOCAL_DEV=$LOCAL_SYS"'
 require "$BUILD" "libhidapi-hidraw.so.0"
 require "$BUILD" 'rm -rf "$OUT/Sys"'
