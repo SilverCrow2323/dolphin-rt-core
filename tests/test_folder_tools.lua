@@ -31,6 +31,12 @@ expect(preview.target == "/mnt/sdcard/roms/RtGameCubeZ", "preview target path")
 expect(preview.alias == "rtgamecubez", "preview alias key")
 expect(preview.system == "GC", "preview platform")
 
+local double_prefix = Tools.preview({
+    path = "/mnt/sdcard/roms/RtGameCubeZ",
+    name = "RtGameCubeZ",
+}, "GC")
+expect(double_prefix == nil, "already Rt-prefixed folders must not be prefixed again")
+
 local rejected = Tools.preview({ path = "/mnt/roms/Wii" }, nil)
 expect(rejected == nil, "ambiguous folders require explicit platform selection")
 print("Registratore Z folder-tool tests: OK")
