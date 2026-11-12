@@ -56,7 +56,9 @@ The home/catalog view is read-only; per-game enablement requires a selected game
 
 Before Dolphin starts, Rt:UI checks the selected game's profile. It sets `GFX.ini → [Settings] EnableMods` to `True` only when at least one entry in that game's profile is enabled. Otherwise it leaves the Graphics Mods engine disabled.
 
-The launcher does not move or rename official system mod folders. A one-time compatibility restore moves any old user folders left in `Load/GraphicMods.off` back to `Load/GraphicMods` when the destination does not already exist.
+The launcher and catalog perform a one-time compatibility restore for folders left in `Load/GraphicMods.off`. User folders are returned to `Load/GraphicMods` only when the destination does not already exist.
+
+On first use for a game, Rt:UI also migrates old RTID `[MODS] Selected` entries into Dolphin's native per-game profile. Only matching user mods are migrated; newly available built-in `Sys` mods remain disabled. If a Dolphin per-game profile already exists, it is never overwritten by the legacy migration.
 
 ## Related data: Rt:Core GameSettings
 
