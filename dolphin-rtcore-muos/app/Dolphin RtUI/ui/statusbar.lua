@@ -31,25 +31,34 @@ local function poll_battery()
     local st = read_file(base .. "/status")
     M._bat.charging = st and st:lower():find("charging") ~= nil or false
 end
+local function interface_is_up(iface)
+    if type(iface) ~= "string" or not iface:match("^[%w_.%-]+$") then return false end
+    local op = read_file("/sys/class/net/" .. iface .. "/operstate")
+    op = op and op:gsub("^%s+", ""):gsub("%s+$", ""):lower() or ""
+    if op == "up" then return true end
+    if op == "down" or op == "dormant" or op == "lowerlayerdown" then return false end
+    local carrier = read_file("/sys/class/net/" .. iface .. "/carrier")
+    carrier = carrier and carrier:gsub("%s+", "") or ""
+    return carrier == "1"
+end
+
 local function poll_wifi()
-    local wl = read_file("/proc/net/wireless")
-    if wl then
-        for line in wl:gmatch("[^\n]+") do
-            local iface, status, qual = line:match("^%s*(%w+):%s*(%w+)%s*([%d%.]+)")
-            if iface and iface:match("^wlan") then
-                M._wifi.up = status ~= "0000"
-                M._wifi.quality = math.min(1, (tonumber(qual) or 0) / 70)
-                return
-            end
+    local wl = read_file("/proc/net/wireless") or ""
+    for line in wl:gmatch("[^\\n]+") do
+        local iface, qual = line:match("^%s*([%w_.%-]+):%s*[%x]+%s*([%d%.]+)")
+        if iface and (iface:match("^wlan") or iface:match("^wlp") or iface:match("^wl")) then
+            M._wifi.iface = iface
+            M._wifi.up = interface_is_up(iface)
+            M._wifi.quality = math.min(1, math.max(0, (tonumber(qual) or 0) / 70))
+            return
         end
     end
-    local iface = command_first("ls -1 /sys/class/net/ | grep -E '^wlan|^wlp' | head -1")
-    if iface then
-        local op = read_file("/sys/class/net/" .. iface .. "/operstate")
-        M._wifi.up = op and op:lower():find("up") ~= nil or false
-        M._wifi.quality = M._wifi.up and 0.6 or 0
-    else M._wifi.up, M._wifi.quality = false, 0 end
+    local iface = command_first("ls -1 /sys/class/net/ | grep -E '^(wlan|wlp|wl)' | head -1")
+    M._wifi.iface = iface
+    M._wifi.up = iface and interface_is_up(iface) or false
+    M._wifi.quality = M._wifi.up and 0.6 or 0
 end
+
 local function poll_network()
     local ip = command_first("ip -4 route get 1.1.1.1 | sed -n 's/.* src \\([^ ]*\\).*/\\1/p' | head -1")
     if not ip then ip = command_first("hostname -I | awk '{print $1}'") end
