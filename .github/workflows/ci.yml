@@ -61,6 +61,7 @@ jobs:
           luajit tests/test_muos_platform.lua
           luajit tests/test_app_input.lua
           luajit tests/test_gamesettings_deployer.lua
+          luajit tests/test_gameset_active_config.lua
           luajit tests/test_gameset_loader_invalidate.lua
           luajit tests/test_boot_scan_async.lua
           luajit tests/test_folder_tools.lua
