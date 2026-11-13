@@ -40,7 +40,15 @@ else
     }
   fi
 fi
-S="$(mktemp -d)"; trap 'rm -rf "$S"' EXIT
+S="$(mktemp -d)"
+ARCHIVE_TMP=""
+FILES_LIST=""
+cleanup() {
+  if [ -n "$ARCHIVE_TMP" ]; then rm -f -- "$ARCHIVE_TMP"; fi
+  if [ -n "$FILES_LIST" ]; then rm -f -- "$FILES_LIST"; fi
+  rm -rf -- "$S"
+}
+trap cleanup EXIT
 
 # GameCube IPL text rendering depends on these Dolphin system resources.
 # When a freshly built Sys tree is supplied, validate and package that exact tree.
@@ -93,9 +101,32 @@ find "$S" \( -name __pycache__ -o -name '*.rt.*' -o -name '*.tmp' -o -name '*.ba
 # Never ship personal / runtime data
 if find "$S" -path '*/data/stream/*' -type f | grep -q .; then echo "ERROR: runtime stream data in the package" >&2; exit 1; fi
 
-( cd "$S" && rm -f manifest.sha256 \
-  && find . -type f | sed 's|^\./||' | LC_ALL=C sort > /tmp/.rt_files.$$ \
-  && if grep -q -E '[][*?\\]|^/|\.\.' /tmp/.rt_files.$$; then echo "ERROR: unsafe file name" >&2; exit 1; fi \
-  && xargs -d '\n' sha256sum < /tmp/.rt_files.$$ > manifest.sha256 && rm -f /tmp/.rt_files.$$ \
-  && rm -f "$ARCHIVE" && zip -q -X -r -9 "$ARCHIVE" manifest.sha256 opt run )
-echo "built $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1), $(wc -l < <(unzip -Z1 "$ARCHIVE" | grep -v '/$')) files)"
+ARCHIVE_TMP="$(mktemp "$ARCHIVE.tmp.XXXXXX")"
+FILES_LIST="$(mktemp)"
+# Build beside the destination, but preserve the previous package until the
+# new archive is complete and independently verified.
+rm -f -- "$ARCHIVE_TMP"
+(
+  cd "$S"
+  rm -f manifest.sha256
+  find . -type f | sed 's|^\./||' | LC_ALL=C sort > "$FILES_LIST"
+  if grep -q -E '[][*?\\]|^/|\.\.' "$FILES_LIST"; then
+    echo "ERROR: unsafe file name" >&2
+    exit 1
+  fi
+  xargs -d '\n' sha256sum < "$FILES_LIST" > manifest.sha256
+  zip -q -X -r -9 "$ARCHIVE_TMP" manifest.sha256 opt run
+)
+rm -f -- "$FILES_LIST"
+FILES_LIST=""
+[ -s "$ARCHIVE_TMP" ] || { echo "ERROR: ZIP builder produced an empty archive" >&2; exit 1; }
+unzip -tq "$ARCHIVE_TMP" >/dev/null
+unzip -Z1 "$ARCHIVE_TMP" | grep -Fxq manifest.sha256 || {
+  echo "ERROR: generated MUXUPD is missing manifest.sha256" >&2
+  exit 1
+}
+mv -f -- "$ARCHIVE_TMP" "$ARCHIVE"
+ARCHIVE_TMP=""
+FILE_COUNT="$(unzip -Z1 "$ARCHIVE" | grep -v '/
+ | wc -l)"
+echo "built $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1), $FILE_COUNT files)"
