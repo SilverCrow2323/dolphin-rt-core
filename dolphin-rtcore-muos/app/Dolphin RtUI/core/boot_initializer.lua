@@ -188,9 +188,15 @@ function M.update(dt)
       if ok and Library then
         STATE.scan_library = Library
         if Library.scanning then
-          -- The Library screen may have started its own incremental scan
-          -- after the intro timed out. Never replace its active queue.
-          STATE.scan_driver = (Library.scan_owner == "boot")
+          -- Adopt any asynchronous scan rather than waiting on a UI screen
+          -- that may have been left. Mark it boot-owned so the two layers
+          -- never drive the same queue in one frame.
+          if Library.scan_owner ~= "blocking" then
+            Library.scan_owner = "boot"
+            STATE.scan_driver = true
+          else
+            STATE.scan_driver = false
+          end
         else
           local began, err = pcall(Library.scan_begin, "boot")
           if not began then
