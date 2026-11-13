@@ -1,11 +1,14 @@
 # Compatibility Data Model
 
-The Compatibility Database and the LÖVE Rt:UI frontend read the same canonical JSON file. The database stores game identities and independent community test sessions. The website and frontend must not keep private or duplicated catalogues.
+The Compatibility Database and the LÖVE Rt:UI frontend read the same schema v2 compatibility database. The website reads the bundled Rt:UI JSON; the handheld boot updater also serves a root JSON copy into the runtime data directory. These two tracked copies must remain byte-identical.
 
 ## Source files
 
-- dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json — grouped games and test reports.
+- dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json — canonical bundled database and website source.
+- data/games_data.json — runtime download endpoint used by the handheld boot initializer.
 - dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json — GameSettings and shared resources.
+
+Do not update one compatibility database copy without updating the other. tools/normalize_games_data.py verifies parity in --check mode and writes both with --write.
 
 ## Schema v2
 
@@ -39,14 +42,7 @@ Ratings range from 0 to 5. Boot is YES, NO or CRASH. Playability is YES, YES WIT
 
 ## Canonical catalogues
 
-The catalogs object contains unique arrays for:
-
-- devices
-- muos_versions
-- rtcore_versions
-- core_profiles
-
-Use the exact canonical spelling in new entries. Custom values are accepted only when the tester records an actual value not yet listed. Empty firmware is retained as not recorded; a generic Jacaranda label without a version remains muOS Jacaranda (version not specified), not 2601.1 by assumption. Unknown hardware is Unspecified, not a guessed handheld.
+The catalogs object contains unique arrays for devices, muos_versions, rtcore_versions and core_profiles. Use the exact canonical spelling in new entries. Custom values are accepted only when the tester records an actual value not yet listed. Empty firmware is retained as not recorded; a generic Jacaranda label without a version remains muOS Jacaranda (version not specified), not 2601.1 by assumption. Unknown hardware is Unspecified, not a guessed handheld.
 
 Known alias normalization includes RG35XX H spelling variants, RG34XX SP spelling variants, firmware naming variants, Rt:Core prerelease capitalization and profile capitalization. It does not combine different releases or distinct test configurations.
 
@@ -69,7 +65,7 @@ python3 tools/normalize_games_data.py --check
 python3 -m unittest tests/test_compat_site.py -v
 ~~~
 
-The normalizer is idempotent and fails when the canonical source has drifted. To intentionally migrate known aliases or repair group identity, review the diff and then run:
+The normalizer is idempotent and verifies that both tracked copies match the same canonical content. To intentionally migrate known aliases or repair group identity / copy drift, review the diff and then run:
 
 ~~~sh
 python3 tools/normalize_games_data.py --write
