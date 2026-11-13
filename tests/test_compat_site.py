@@ -209,6 +209,20 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertNotIn('data-p="Speed Hack"', self.html)
         self.assertNotIn("<option>2601.1 Funky Jacaranda</option>", self.html)
 
+    def test_submission_workflow_imports_into_the_live_canonical_sources(self):
+        workflow = (ROOT / ".github" / "workflows" / "merge-submission.yml").read_text(encoding="utf-8")
+        self.assertIn("dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json", workflow)
+        self.assertIn("dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json", workflow)
+        self.assertNotIn("pathlib.Path('data/games_data.json')", workflow)
+        self.assertIn("def normalize_device", workflow)
+        self.assertIn("def normalize_muos", workflow)
+        self.assertIn("def normalize_core", workflow)
+        self.assertIn("def normalize_profile", workflow)
+        self.assertIn("source_issue", workflow)
+        self.assertIn("if json_block:", workflow)
+        self.assertIn("form_field(label)", workflow)
+        self.assertIn("issues:", workflow)
+
     def test_pwa_cache_is_bumped_for_atlas_release(self):
         self.assertEqual(self.manifest.get("name"), "Dolphin Rt:Core Compatibility Atlas")
         sw = (ROOT / "sw.js").read_text(encoding="utf-8")
