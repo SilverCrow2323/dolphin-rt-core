@@ -146,11 +146,17 @@ def sftp_canonical_directory(cfg, value):
     return remote_path(matches[0])
 
 
-def confined_remote_directory(cfg, value):
-    """Return canonical (ROM root, requested directory), refusing symlink escapes."""
+def canonical_remote_root(cfg):
+    """Resolve and validate the configured remote ROM root."""
     root = sftp_canonical_directory(cfg, _remote_root(cfg))
     if root == "/":
         raise ValueError("The configured ROM directory resolves to the filesystem root; refusing access.")
+    return root
+
+
+def confined_remote_directory(cfg, value):
+    """Return canonical (ROM root, requested directory), refusing symlink escapes."""
+    root = canonical_remote_root(cfg)
     target = sftp_canonical_directory(cfg, value)
     if not within_remote(root, target):
         raise ValueError("The resolved remote path escapes the configured ROM directory.")
@@ -601,7 +607,7 @@ def action(body):
 
     if op == "sftp-test":
         root = _remote_root(cfg)
-        canonical_root = sftp_canonical_directory(cfg, root)
+        canonical_root = canonical_remote_root(cfg)
         return {"message": "Connected · ROM root " + canonical_root, "rom_path": canonical_root}
 
     if op == "sftp-list":
