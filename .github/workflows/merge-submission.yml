@@ -120,6 +120,8 @@ jobs:
 
           def normalize_core(value):
               raw = clean(value)
+              if raw.casefold() in {"any", "all", "any version"}:
+                  return "Any"
               if not raw or raw.casefold() in {"unknown", "not recorded"}:
                   return "Dolphin Rt:Core version not recorded"
               aliases = {
