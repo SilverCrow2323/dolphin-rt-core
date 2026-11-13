@@ -206,3 +206,14 @@ if find "$TMP/fail-dsp-dist" -maxdepth 1 -type f -name '*.muxupd' -print -quit 2
   exit 1
 fi
 echo "[OK] missing GameCube DSP data is rejected before archive creation"
+
+# Legacy muOS Task Toolkit files must not ship in the release archive.
+if unzip -Z1 "$ARCHIVE" | grep -Eq '^opt/muos/share/task/Dolphin Rt[^/]*/'; then
+  echo "[FAIL] legacy Dolphin Rt:Core Task Toolkit files are still packaged" >&2
+  exit 1
+fi
+if unzip -Z1 "$ARCHIVE" | grep -Fxq "$EMU_PATH/RtSys/bash_arsenal/scan_load.sh"; then
+  echo "[FAIL] legacy Load-folder Task Toolkit scanner is still packaged" >&2
+  exit 1
+fi
+echo "[OK] legacy Task Toolkit entries are absent from the MUXUPD"
