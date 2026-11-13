@@ -57,6 +57,19 @@ jobs:
           luajit tests/test_controller_profiles_nexus.lua
           luajit tests/test_compat_nexus.lua
           luajit tests/test_cheatdb_nexus.lua
+          luajit tests/test_app_input_andromeda.lua
+          luajit tests/test_boot_initializer_async.lua
+          luajit tests/test_gameset_loader.lua
+          luajit tests/test_gamesettings_deployer.lua
+          luajit tests/test_cheats_downloader.lua
+          luajit tests/test_boot_screen_auto_proceed.lua
+          luajit tests/test_library_boot_scan_handoff.lua
+          luajit tests/test_controller_map_input.lua
+          bash tests/test_muos_controller_profiles.sh
+          bash tests/test_hotkeys_runtime.sh
+          bash tests/test_ui_action_registration.sh
+          luajit tests/test_compat_layout.lua
+          bash tests/test_rom_paths.sh
 
       - name: Build explicitly UI-only archive for CI validation
         run: |

@@ -70,7 +70,9 @@ function S.enter()
     S.t = 0
     S.compat_memo = {}
     if ok_cp and Compat then pcall(Compat.load) end      -- ricarica solo se il file e' cambiato
-    S.need_scan = (#(Library.games or {}) == 0)
+    S.need_scan = (#(Library.games or {}) == 0 and not Library.scanning)
+    S.scanning = Library.scanning == true
+    S.scan_t, S.scan_seen = 0, #(Library.games or {})
     rebuild(S.keep_id or Settings.get("last_game"))
     S.keep_id = nil
 end
@@ -82,17 +84,27 @@ function S.update(dt)
     -- riempie man mano (prima: Library.scan() bloccava tutto per secondi).
     if S.need_scan and S.t > 0.2 then
         S.need_scan = false
-        if pcall(Library.scan_begin) then S.scanning = true; S.scan_t = 0; S.scan_seen = 0 end
+        if pcall(Library.scan_begin, "ui") then S.scanning = Library.scanning; S.scan_t = 0; S.scan_seen = #(Library.games or {}) end
     end
     if S.scanning then
         S.scan_t = S.scan_t + dt
-        local ok, fin = pcall(Library.scan_step, 0.010)
+        -- BootInitializer owns its scan queue until it finishes. The Library
+        -- screen observes progress but must not process the same queue twice.
+        if Library.scanning and Library.scan_owner ~= "boot" then
+            local ok, fin = pcall(Library.scan_step, 0.010)
+            if not ok then
+                pcall(Library.scan_finish)
+                S.scanning = false
+                Notify.show("error", "ROM scan failed: " .. tostring(fin))
+            elseif fin then
+                S.scanning = false
+            end
+        end
         local count = #(Library.games or {})
-        if (not ok) or fin then
+        if S.scanning and not Library.scanning then
             S.scanning = false
-            local c = S.list:cur()
-            rebuild(c and c.id or nil)
-        elseif count ~= S.scan_seen and S.scan_t > 0.3 then
+        end
+        if not S.scanning or (count ~= S.scan_seen and S.scan_t > 0.3) then
             S.scan_seen, S.scan_t = count, 0
             local c = S.list:cur()
             rebuild(c and c.id or nil)
@@ -147,11 +159,19 @@ function S.register_actions(ui)
         {
             id = "library.rescan", title = "Rescan ROM library", order = 10,
             run = function()
+                -- The NEXUS action registry is global and can be invoked while
+                -- another screen owns boot/UI scanning. Never replace that queue.
+                if Library.scanning then
+                    if Library.scan_owner ~= "blocking" then
+                        S.scanning = true
+                    end
+                    return false, "scan already in progress"
+                end
                 if S.scanning then return false, "scan already in progress" end
                 S.need_scan = false
-                local ok, err = pcall(Library.scan_begin)
+                local ok, err = pcall(Library.scan_begin, "ui")
                 if not ok then return false, tostring(err) end
-                S.scanning, S.scan_t, S.scan_seen = true, 0, 0
+                S.scanning, S.scan_t, S.scan_seen = true, 0, #(Library.games or {})
                 return true
             end,
         },
@@ -377,6 +397,27 @@ local function get_icon(path)
     return _icon_cache[path] or nil
 end
 
+-- Inventory scans touch the filesystem. Cache the catalog once per UI session
+-- and recompute ROM totals only when a scan publishes a new games table.
+local _rom_totals = { games = nil, scanned_at = nil, total = 0, gc = 0, wii = 0 }
+local function library_totals()
+    local games = Library.games or {}
+    if _rom_totals.games ~= games or _rom_totals.scanned_at ~= Library.scanned_at then
+        local total, gc, wii = 0, 0, 0
+        for _, game in ipairs(games) do
+            total = total + 1
+            if U.is_wii(game) then wii = wii + 1 else gc = gc + 1 end
+        end
+        _rom_totals = { games = games, scanned_at = Library.scanned_at,
+                        total = total, gc = gc, wii = wii }
+    end
+    -- U.mods_installed already memoizes the filesystem catalog for 2 seconds.
+    -- Reuse that cache here so changes made in Mod Vault appear on the Home page.
+    local ok, installed = pcall(U.mods_installed)
+    local gfx_count = (ok and type(installed) == "table") and #installed or nil
+    return _rom_totals.total, _rom_totals.gc, _rom_totals.wii, gfx_count
+end
+
 local function draw_brand_header(n_games)
     local t = love.timer.getTime()
     local acc = K.ACC.gc
@@ -406,12 +447,27 @@ local function draw_brand_header(n_games)
     K.color(acc, 0.9)
     love.graphics.rectangle("fill", 104, 42, K.W - K.MARGIN - 104 - 200, 2)
 
-    -- subtitle
-    K.text("key", "FINAL CUT", 104, 50, K.C.dim, 0.95)
+    -- Live inventory: valid native metadata entries from Sys/Load + user Load.
+    local total, gc, wii, gfx = library_totals()
+    local gfx_label = gfx and tostring(gfx) or "—"
+    local summary
+    if S.scanning or Library.scanning then
+        local p = Library.progress or { done = 0, total = 0 }
+        summary = ("SCAN %d/%d  ·  %d found  ·  GFX %s"):format(
+            p.done or 0, p.total or 0, #(Library.games or {}), gfx_label)
+    elseif S.filter == 3 then
+        summary = ("%d ROMs  ·  %d fav  ·  GFX %s"):format(total, n_games, gfx_label)
+    else
+        summary = ("%d ROMs  ·  GC %d  ·  Wii %d  ·  GFX %s"):format(
+            total, gc, wii, gfx_label)
+    end
+    K.text("key", K.clip("key", summary, K.W - K.MARGIN - 104 - 200),
+           104, 50, K.C.dim, 0.95)
 
     -- separator
     K.color(K.C.line, 0.5)
-    love.graphics.rectangle("fill", K.MARGIN, 72, K.W - K.MARGIN * 2, 1)
+    -- Start at the text column: the animated system badge occupies x=24..88.
+    love.graphics.rectangle("fill", 104, 72, K.W - K.MARGIN - 104, 1)
 
     -- tabs on the right
     local fx = K.W - K.MARGIN
@@ -446,14 +502,16 @@ function S.draw()
     local g = cur()
     local n = #S.list.items
     draw_brand_header(n)
-    if S.scanning then
+    local scanning = S.scanning or Library.scanning
+    if scanning then
         local p = Library.progress or { done = 0, total = 0 }
         local frac = (p.total > 0) and (p.done / p.total) or 0
-        K.bar(K.MARGIN, 70, K.W - K.MARGIN * 2, 3, frac, K.acc)
+        -- Header separator is y=72; keep the bar in the clear gap below it.
+        K.bar(104, 78, K.W - K.MARGIN - 104, 2, frac, K.acc)
     end
     if n == 0 then
         K.panel(LX, LY, K.W - K.MARGIN * 2, LH, { cut = 12 })
-        local msg = S.scanning and "Scanning ROMs\226\128\166"
+        local msg = scanning and "Scanning ROMs\226\128\166"
             or (#(Library.games or {}) == 0)
             and "No games found.\nPress A to add a ROM folder."
             or "Nothing matches this filter."

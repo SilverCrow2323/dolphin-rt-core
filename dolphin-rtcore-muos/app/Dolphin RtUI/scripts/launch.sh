@@ -26,6 +26,12 @@ set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GAME_DIR="$(dirname "$SCRIPT_DIR")"
+HOTKEYS_RUNTIME="$SCRIPT_DIR/hotkeys_runtime.sh"
+if [ ! -r "$HOTKEYS_RUNTIME" ]; then
+    echo "[launcher] missing hotkey runtime helper: $HOTKEYS_RUNTIME" >&2
+    exit 1
+fi
+. "$HOTKEYS_RUNTIME"
 [ -r /opt/muos/script/var/func.sh ] && . /opt/muos/script/var/func.sh >/dev/null 2>&1 || true
 
 LOOP_MODE="${DOLPHINUI_LOOP:-0}"
@@ -372,7 +378,7 @@ DOLPHIN_PID=$!
 log "dolphin pid=$DOLPHIN_PID  ( --platform=fbdev --video_backend=OGL -e <rom> -u $EMU )"
 
 # gptokeyb2 attaches to the "dolphin" process
-if [ "${HOTKEYS:-}" != "Disabled" ]; then
+if [ "${HOTKEYS:-}" != "Disabled" ] && hotkeys_uses_keyboard "$CONFIG/Hotkeys.ini"; then
     GPTK_BIN=""
     for b in "$GAME_DIR/lib/gptokeyb2" "$GAME_DIR/../lib/gptokeyb2" "/lib/gptokeyb2"; do
         [ -x "$b" ] && { GPTK_BIN="$b"; break; }
@@ -391,6 +397,9 @@ if [ "${HOTKEYS:-}" != "Disabled" ]; then
     else
         log "WARN: gptokeyb2 not started (bin='$GPTK_BIN' cfg='$GPTK_CFG')"
     fi
+elif [ "${HOTKEYS:-}" != "Disabled" ]; then
+    HOTKEY_DEVICE="$(hotkeys_device "$CONFIG/Hotkeys.ini" 2>/dev/null || true)"
+    log "gptokeyb2 skipped: Hotkeys.ini uses native/non-keyboard device (Device=${HOTKEY_DEVICE:-unset})"
 fi
 
 wait "$DOLPHIN_PID"

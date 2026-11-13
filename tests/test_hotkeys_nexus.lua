@@ -56,11 +56,12 @@ end
 
 package.preload["core.state"] = function() return { raw_input = false } end
 package.preload["core.app_input"] = function()
-    return { pad_map = function() return { A = 1, B = 2, X = 3, Y = 4 } end }
+    local map = { A=1, B=0, X=2, Y=3, L1=4, R1=5, SELECT=6, START=7, MENU=8, L2=9, L3=11, R2=12 }
+    return { pad_map = function() return map end }
 end
 package.preload["ui.input"] = function()
     return { from_raw = function(index)
-        return ({ [1] = "A", [2] = "B", [3] = "X", [4] = "Y" })[index]
+        return ({ [0]="B", [1]="A", [2]="X", [3]="Y", [4]="L1", [5]="R1", [6]="SELECT", [7]="START", [8]="MENU", [9]="L2", [11]="L3", [12]="R2" })[index]
     end }
 end
 package.preload["ui.sfx"] = function() return { play = function() end } end
@@ -176,8 +177,29 @@ assert(state.dirty == false
     and files["workshop/hotkeys/Default/Hotkeys.ini"]:match("Save State/Save State Slot 1 = F2"))
 assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("a%s+=%s+F2"))
 
+-- The Andromeda L3 event (raw button 11) must serialize in keyboard mode.
+assert(actions["hotkeys.select_action"].run(3))
+assert(actions["hotkeys.start_capture"].run())
+assert(actions["hotkeys.capture_input"].run(11))
+assert(actions["hotkeys.finish_capture"].run(true))
+assert(actions["hotkeys.save"].run())
+assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("l3%s+=%s+F%d+"),
+       "L3 keyboard hotkeys must serialize with the supported gptokeyb2 l3 token")
+
+
 assert(actions["hotkeys.set_device"].run("pad"))
 assert(actions["hotkeys.state"].run().device == "pad")
+-- The same L3 event must remain Button 11 in native SDL / Dolphin 2606 format.
+assert(actions["hotkeys.select_action"].run(2))
+assert(actions["hotkeys.start_capture"].run())
+assert(actions["hotkeys.capture_input"].run(11))
+assert(actions["hotkeys.finish_capture"].run(true))
+assert(actions["hotkeys.save"].run())
+local pad_ini = files["workshop/hotkeys/Default/Hotkeys.ini"]
+assert(pad_ini:match("Device = SDL/0/muOS%-Keys"))
+assert(pad_ini:match("Load State/Load State Slot 1 = `Button 11`"),
+       "L3 pad hotkeys must serialize to Andromeda Button 11")
+
 local wrong_device, wrong_device_err = actions["hotkeys.change_key"].run(1)
 assert(wrong_device == false and tostring(wrong_device_err):match("keyboard mode"))
 local invalid_device, invalid_device_err = actions["hotkeys.set_device"].run("touch")

@@ -7,7 +7,7 @@
 -- Storage: data/app_input.json
 --   {
 --     "active_device": null,          -- GUID o nome, null = primo connesso
---     "pad": { "A": 0, "B": 1, ... }  -- logical -> SDL button index
+--     "pad": { "A": 1, "B": 0, ... }  -- logical -> SDL button index
 --   }
 --
 -- I default riflettono ui/input.lua originale.
@@ -21,7 +21,7 @@ local PATH = "data/app_input.json"
 -- Ordine logico delle azioni App Pad.
 -- I default corrispondono alla numerazione SDL riportata da muOS su H700
 -- (RG35XX H, RG40XX H, RG CubeXX): B=0 A=1 X=2 Y=3 L=4 R=5 SELECT=6
--- START=7 MENU=8 L2=9 R2=12.
+-- START=7 MENU=8 L2=9 L3=11 R2=12.
 M.ACTIONS = {
     { id = "A",      label = "Confirm",       default = 1  },
     { id = "B",      label = "Back",          default = 0  },
@@ -31,6 +31,7 @@ M.ACTIONS = {
     { id = "R1",     label = "Page Right",    default = 5  },
     { id = "L2",     label = "L2",            default = 9  },
     { id = "R2",     label = "R2",            default = 12 },
+    { id = "L3",     label = "L3 (Stick Click)", default = 11 },
     { id = "SELECT", label = "Select",        default = 6  },
     { id = "START",  label = "Start",         default = 7  },
     { id = "MENU",   label = "Menu",          default = 8 },
@@ -102,6 +103,7 @@ M.GAMEPAD_TO_LOGICAL = {
     start = "START", back = "SELECT", guide = "MENU",
     leftshoulder = "L1", rightshoulder = "R1",
     lefttrigger = "L2", righttrigger = "R2",
+    leftstick = "L3",
     dpup = "UP", dpdown = "DOWN", dpleft = "LEFT", dpright = "RIGHT",
 }
 
