@@ -1,3 +1,5 @@
+package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;" .. package.path
+
 -- The Library screen must adopt an active boot scan without restarting it.
 package.preload["ui.kit"] = function()
     local K = { W = 640, H = 480, BOT = 460, MARGIN = 18, C = {dim = {1,1,1}}, ACC = {gc = {}, wii = {}} }
