@@ -198,16 +198,36 @@ end
 
 local function kind_col(k) return K.C[k] or K.C.dim end
 
+-- Keep long test notes inside the space left by dynamic profile/device rows and
+-- the fixed ownership footer. K.para itself wraps but does not impose a height.
+local function fit_paragraph(kind, value, width, max_height)
+    local text = tostring(value or "")
+    local font = K.font(kind)
+    local _, lines = font:getWrap(text, width)
+    if type(lines) ~= "table" or #lines == 0 then return text end
+    local line_height = math.max(1, font:getHeight())
+    local max_lines = math.max(1, math.floor((max_height or line_height) / line_height))
+    if #lines <= max_lines then return text end
+    local visible = {}
+    for i = 1, max_lines do visible[i] = lines[i] end
+    visible[max_lines] = K.clip(kind, (visible[max_lines] or "") .. "…", width)
+    return table.concat(visible, "\n")
+end
+
 local function draw_item(g, x, y, w, h, focused)
     local mine = owned[g.id]
     local sm = Compat.summary(g)
     local cx = x + 12
     if mine then K.color(K.C.ok, 1); love.graphics.circle("fill", cx, y + h / 2, 3.5) end
     local right = x + w - 8
-    local fw = K.width("small", sm.has_fps and sm.fps or "n/a")
-    K.text("small", sm.has_fps and sm.fps or "n/a", right - fw, y + h / 2 - 9,
+    local fps = K.clip("small", sm.has_fps and tostring(sm.fps or "n/a") or "n/a",
+                       math.min(68, math.max(40, w * 0.24)))
+    local fw = K.width("small", fps)
+    K.text("small", fps, right - fw, y + h / 2 - 9,
            kind_col(sm.play_kind), focused and 1 or 0.8)
-    K.text("body", K.clip("body", g.title, right - fw - x - 36), x + 24, y + h / 2 - 10,
+    local title = K.clip("body", g.title or g.id or "Unknown title",
+                         math.max(40, right - fw - x - 36))
+    K.text("body", title, x + 24, y + h / 2 - 10,
            focused and K.C.text or K.C.dim)
 end
 
@@ -219,60 +239,124 @@ local function draw_stars(x, y, rating)
 end
 
 local function draw_detail(g)
-    local px, py, pw, ph = 332, LY, K.W - 332 - K.MARGIN, K.BOT - LY
+    local px, py = 332, LY
+    local pw, ph = K.W - 332 - K.MARGIN, K.BOT - LY
     K.panel(px, py, pw, ph, { cut = 12 })
     if not g then
-        K.text("body", "Nothing matches this filter", px, py + ph / 2 - 10, K.C.faint, 1, pw, "center")
+        K.text("body", "Nothing matches this filter", px, py + ph / 2 - 10,
+               K.C.faint, 1, pw, "center")
         return
     end
-    local sm = Compat.summary(g)
-    local mine = owned[g.id]
-    K.text("h", K.clip("h", g.title, pw - 28), px + 14, py + 12, K.C.text)
-    K.pill(g.system ~= "" and g.system or "GC", px + 14 + 52, py + 52, (g.system == "Wii") and K.ACC.wii or K.ACC.gc, true)
-    if g.region ~= "" then K.pill(g.region, px + 14 + 52 + 70, py + 52, K.C.dim, false) end
-    K.text("small", g.id, px + pw - 14 - K.width("small", g.id), py + 44, K.C.faint)
 
-    K.text("body", sm.play_label, px + 14, py + 74, kind_col(sm.play_kind))
-    K.text("small", sm.boot_label .. (sm.has_fps and ("  \194\183  " .. sm.fps .. " FPS") or ""),
-           px + 14, py + 98, K.C.dim)
-    draw_stars(px + 21, py + 132, sm.stars)
-    K.text("small", sm.rating_text .. "  \194\183  " .. sm.n .. (sm.n == 1 and " test" or " tests"),
-           px + 14 + 100, py + 123, K.C.faint)
-    local y = py + 150
+    local sm = Compat.summary(g)
+    if not sm then
+        K.text("small", "Compatibility summary unavailable", px + 14, py + 48,
+               K.C.faint, 1, pw - 28)
+        return
+    end
+    local mine = owned[g.id]
+    K.text("h", K.clip("h", g.title or g.id or "Unknown title", pw - 28),
+           px + 14, py + 12, K.C.text)
+
+    -- System, region and Game ID share one measured row instead of relying on
+    -- fixed badge offsets that can collide when labels are longer.
+    local pill_y, pill_cursor = py + 58, px + 14
+    local system = K.clip("key", (g.system ~= "" and g.system) or "GC", 76)
+    local system_w = K.width("key", system) + 14
+    K.pill(system, pill_cursor + system_w, pill_y,
+            (g.system == "Wii") and K.ACC.wii or K.ACC.gc, true)
+    pill_cursor = pill_cursor + system_w + 8
+
+    local region = tostring(g.region or "")
+    if region ~= "" then
+        region = K.clip("key", region, 76)
+        local region_w = K.width("key", region) + 14
+        K.pill(region, pill_cursor + region_w, pill_y, K.C.dim, false)
+        pill_cursor = pill_cursor + region_w + 8
+    end
+
+    local id = tostring(g.id or "—")
+    local id_limit = math.max(28, px + pw - 14 - pill_cursor - 8)
+    id = K.clip("small", id, id_limit)
+    K.text("small", id, px + pw - 14 - K.width("small", id), py + 51, K.C.faint)
+
+    K.text("body", sm.play_label or "Unknown", px + 14, py + 78,
+           kind_col(sm.play_kind))
+    local boot_text = tostring(sm.boot_label or "Unknown")
+        .. (sm.has_fps and ("  ·  " .. tostring(sm.fps or "N/A") .. " FPS") or "")
+    K.text("small", K.clip("small", boot_text, pw - 28),
+           px + 14, py + 102, K.C.dim)
+
+    draw_stars(px + 21, py + 136, tonumber(sm.stars) or 0)
+    local test_count = tonumber(sm.n) or 0
+    local rating_text = tostring(sm.rating_text or "not rated")
+        .. "  ·  " .. test_count .. (test_count == 1 and " test" or " tests")
+    K.text("small", K.clip("small", rating_text, pw - 128),
+           px + 14 + 100, py + 127, K.C.faint)
+
+    local y = py + 158
     if sm.profiles ~= "" then
         K.text("small", "Profile", px + 14, y, K.C.faint)
-        K.text("small", K.clip("small", sm.profiles, pw - 100), px + 80, y, K.C.text); y = y + 20
+        K.text("small", K.clip("small", sm.profiles, pw - 100),
+               px + 80, y, K.C.text)
+        y = y + 20
     end
     if sm.devices ~= "" then
         K.text("small", "Device", px + 14, y, K.C.faint)
-        K.text("small", K.clip("small", sm.devices, pw - 100), px + 80, y, K.C.text); y = y + 20
+        K.text("small", K.clip("small", sm.devices, pw - 100),
+               px + 80, y, K.C.text)
+        y = y + 20
     end
-    -- nota della prova migliore
+
     local best
-    for _, e in ipairs(g.entries) do
-        if e.norm.note ~= "" and (not best or e.norm.rating > best.norm.rating) then best = e end
+    for _, entry in ipairs(g.entries or {}) do
+        if entry.norm and entry.norm.note ~= ""
+           and (not best or (tonumber(entry.norm.rating) or 0) > (tonumber(best.norm.rating) or 0)) then
+            best = entry
+        end
     end
     if best then
-        local note = best.norm.note:gsub("%s+", " ")
-        if #note > 170 then note = note:sub(1, 167):gsub("[\192-\255][\128-\191]*$", "") .. "..." end
-        K.color(K.C.line, 0.6); love.graphics.rectangle("fill", px + 14, y + 4, pw - 28, 1)
-        K.para("small", note, px + 14, y + 12, pw - 28, K.C.dim, 1)
+        local note = tostring(best.norm.note or ""):gsub("%s+", " ")
+        local note_y = y + 12
+        local note_bottom = py + ph - 50 -- reserve a separate ownership footer
+        local note_height = math.max(K.font("small"):getHeight(), note_bottom - note_y)
+        note = fit_paragraph("small", note, pw - 28, note_height)
+        K.color(K.C.line, 0.6)
+        love.graphics.rectangle("fill", px + 14, y + 4, pw - 28, 1)
+        K.para("small", note, px + 14, note_y, pw - 28, K.C.dim, 1)
     end
-    K.text("small", mine and "In your library" or "Not in your library", px + 14, py + ph - 24,
-           mine and K.C.ok or K.C.faint)
+
+    K.text("small", mine and "In your library" or "Not in your library",
+           px + 14, py + ph - 24, mine and K.C.ok or K.C.faint)
 end
 
 function S.draw()
     local f = FILTERS[S.filter]
     local acc = K.ACC[f.color]
-    K.header("Compatibility", f.label .. (S.mine_only and "  \194\183  my library" or ""),
-             #S.list.items .. " / " .. Compat.count, nil, { icon = "chart", accent = acc })
+    local total = tonumber(Compat.count) or #(Compat.games or {})
+    K.header("Compatibility", f.label .. (S.mine_only and "  ·  my library" or ""),
+             #S.list.items .. " / " .. total, nil, { icon = "chart", accent = acc })
+
     if Compat.error then
-        K.text("body", Compat.error, 0, 220, K.C.bad, 1, K.W, "center")
+        K.panel(K.MARGIN, LY, K.W - K.MARGIN * 2, K.BOT - LY, { cut = 12 })
+        local width = K.W - K.MARGIN * 2 - 36
+        local message = fit_paragraph("body", Compat.error, width, K.BOT - LY - 72)
+        K.para("body", message, K.MARGIN + 18, LY + 24, width, K.C.bad, 1)
+        K.text("small", "Try refreshing the compatibility database from the app tools.",
+               K.MARGIN + 18, K.BOT - 34, K.C.dim)
     else
-        S.list:draw(draw_item)
+        if #S.list.items > 0 then
+            S.list:draw(draw_item)
+        else
+            K.panel(K.MARGIN, LY, 296, K.BOT - LY, { cut = 12 })
+            local message = S.mine_only and "No owned games match this filter."
+                or "No games match this filter."
+            K.text("body", message, K.MARGIN + 12, LY + 138,
+                   K.C.faint, 1, 272, "center")
+        end
         draw_detail(S.list:cur())
     end
+
     K.footer({ { key = "A", label = "Open" }, { key = "L1 R1", label = "Filter" },
                { key = "X", label = S.mine_only and "Show all" or "Mine only" },
                { key = "L2 R2", label = "Letter" }, { key = "B", label = "Back" } })
