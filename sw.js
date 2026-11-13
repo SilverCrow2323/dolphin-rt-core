@@ -66,9 +66,12 @@ self.addEventListener('fetch', event => {
         }
         return response;
       } catch (error) {
-        return (await caches.match(request)) ||
-          (await caches.match('./index.html')) ||
-          new Response('Dolphin Rt:Core is unavailable offline.', {status:503});
+        const exact = await caches.match(request);
+        if (exact) return exact;
+        const fallback = url.pathname.endsWith('/compatibility.html')
+          ? await caches.match('./compatibility.html')
+          : await caches.match('./index.html');
+        return fallback || new Response('Dolphin Rt:Core is unavailable offline.', {status:503});
       }
     })());
     return;
