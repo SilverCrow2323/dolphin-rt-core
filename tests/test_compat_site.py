@@ -301,6 +301,7 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn('id="docs"', self.portal_html)
         self.assertIn('id="roadmap"', self.portal_html)
         self.assertIn('id="community"', self.portal_html)
+        self.assertIn("Rt:Stream Guide", self.portal_html)
         self.assertIn('href="./compatibility.html"', self.portal_html)
         self.assertIn("https://api.github.com/repos/SilverCrow2323/dolphin-rt-core/releases/latest", self.portal_html)
         self.assertIn("FALLBACK_RELEASE", self.portal_html)
