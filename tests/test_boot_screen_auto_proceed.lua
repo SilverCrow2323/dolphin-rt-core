@@ -1,3 +1,5 @@
+package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;" .. package.path
+
 -- The boot intro must advance to Library even if optional startup tasks are still running.
 package.preload["ui.kit"] = function()
     return { set_accent = function() end }
