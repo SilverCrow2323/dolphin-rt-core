@@ -87,21 +87,22 @@ local NATIVE_LBL = {
 local MUOS_COLORS = {
     a={0.35,0.90,0.45}, b={0.95,0.38,0.38}, x={0.38,0.66,1.00}, y={1.00,0.80,0.28},
     l1={0.60,0.60,0.65}, r1={0.60,0.60,0.65}, l2={0.55,0.55,0.60}, r2={0.55,0.55,0.60},
+    l3={0.80,0.60,0.95},
     select={0.55,0.55,0.60}, start={0.55,0.55,0.60}, menu={0.80,0.60,0.95},
 }
 local MUOS_LBL = {
     a="A", b="B", x="X", y="Y",
     l1="L1", r1="R1", l2="L2", r2="R2",
-    select="SEL", start="STA", menu="MEN",
+    select="SEL", start="STA", menu="MEN", l3="L3",
 }
 local RAW_TO_MUOS = {
     [0]="b", [1]="a", [2]="x", [3]="y",
     [4]="l1", [5]="r1", [6]="select", [7]="start",
-    [8]="menu", [9]="l2", [12]="r2",
+    [8]="menu", [9]="l2", [11]="l3", [12]="r2",
 }
 local STR_TO_RAW = {
     a=1, b=0, x=2, y=3, back=6, start=7, guide=8,
-    leftshoulder=4, rightshoulder=5, lefttrigger=9, righttrigger=12,
+    leftshoulder=4, rightshoulder=5, lefttrigger=9, leftstick=11, l3=11, righttrigger=12,
 }
 
 local function cache_img(path)
@@ -227,10 +228,14 @@ local function save_and_reload()
     local cfg = SYS_CFG[S.system]
     local path = S.dir .. "/" .. cfg.fname
     local lines = Ini.read_lines(path)
+    if #lines == 0 then return false, "profile file is unavailable" end
     for _, r in ipairs(S.rows) do
         Ini.set(lines, cfg.section, r.key, r.value)
     end
-    Ini.write_lines(path, lines)
+    local called, ok, err = pcall(Ini.write_lines, path, lines)
+    if not called then return false, tostring(ok) end
+    if ok ~= true then return false, tostring(err or "write failed") end
+    return true
 end
 
 function S.pad(b)
@@ -238,11 +243,17 @@ function S.pad(b)
         if S.remap.phase == "confirm" then
             if b == "A" then
                 local row = S.remap.row
+                local previous = row.value
                 row.value = S.remap.new_value
-                save_and_reload()
-                S.remap = nil
-                SFX.play("newupdate")
-                Notify.show("success", "Remapped: " .. native_label(row.key))
+                local saved, err = save_and_reload()
+                if saved then
+                    S.remap = nil
+                    SFX.play("newupdate")
+                    Notify.show("success", "Remapped: " .. native_label(row.key))
+                else
+                    row.value = previous
+                    Notify.show("error", "Could not save mapping: " .. tostring(err))
+                end
             elseif b == "B" then
                 S.remap = nil; SFX.play("menu_back")
             end
