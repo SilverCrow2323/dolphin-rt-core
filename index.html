@@ -1502,113 +1502,157 @@ function applyRatingRules(v){
   hint.innerHTML='<i class="fa-solid fa-link"></i><span>Auto-set → Boot: <b>'+rule.boot+'</b> · Playable: <b>'+rule.playable+'</b> <span style="opacity:.6;">('+rule.label+')</span></span>';
 }
 
+function fillReportCatalog(id,values,placeholder){
+  const select=$(id);if(!select)return;
+  const current=select.value;select.replaceChildren();
+  const first=document.createElement('option');first.value='';first.textContent=placeholder;select.appendChild(first);
+  (values||[]).filter(v=>String(v||'').trim()&&v!=='Unspecified').forEach(value=>{
+    const option=document.createElement('option');option.value=String(value);option.textContent=String(value);select.appendChild(option);
+  });
+  const custom=document.createElement('option');custom.value='__custom__';custom.textContent='Other / not listed…';select.appendChild(custom);
+  if([...select.options].some(o=>o.value===current))select.value=current;
+}
+function populateReportCatalogs(){
+  const c=state.catalogs||{};
+  fillReportCatalog('rptDevice',c.devices||['Anbernic RG35XX H','Anbernic RG34XX SP','Anbernic RG40XX H','Anbernic RG CubeXX'],'Select device…');
+  fillReportCatalog('rptMuos',c.muos_versions||['muOS 2606.0 Andromeda','muOS 2601.1 Jacaranda','muOS 2601.0 Jacaranda'],'Select firmware…');
+  fillReportCatalog('rptVersion',c.rtcore_versions||['12.0.0 Kanzentai','v11.5.00-III (FrontendONE)','Legacy'],'Select Rt:Core release…');
+  fillReportCatalog('rptProfile',c.core_profiles||['Default','Performance','Compatibility','SpeedHack','Black Screen Fix','Ultra'],'Select profile…');
+}
+function reportSelectValue(selectId,customId){
+  const select=$(selectId);if(!select)return '';
+  return select.value==='__custom__'?String($(customId)?.value||'').trim():String(select.value||'').trim();
+}
+function syncReportCustom(selectId,customId){
+  const select=$(selectId),custom=$(customId);if(!select||!custom)return;
+  const show=select.value==='__custom__';custom.style.display=show?'block':'none';
+  if(!show)custom.value='';
+}
 let rptSS=null;
 function openReportModal(prefill){
-  $('reportModal').classList.add('show');
-  document.body.style.overflow='hidden';
-  resetReportForm();
+  $('reportModal').classList.add('show');document.body.style.overflow='hidden';resetReportForm();
   if(!rptSS){
     rptSS=wireSmartSearch({
-      wrap:'rptSS',input:'rptSearch',res:'rptRes',clear:'rptClear',sel:'rptSel',
-      systemFn:()=>null,
-      onSelect:r=>{
-        $('rptGameId').value=r.gameId;
-        $('rptGameTitle').value=r.title;
-        $('rptSystem').value=r.system;
-        $('rptRegion').value=r.region;
-      },
-      onClear:()=>{
-        $('rptGameId').value='';
-        $('rptGameTitle').value='';
-        $('rptSystem').value='';
-        $('rptRegion').value='';
-      }
+      wrap:'rptSS',input:'rptSearch',res:'rptRes',clear:'rptClear',sel:'rptSel',systemFn:()=>null,
+      onSelect:r=>{$('rptGameId').value=r.gameId;$('rptGameTitle').value=r.title;$('rptSystem').value=r.system;$('rptRegion').value=r.region;},
+      onClear:()=>{$('rptGameId').value='';$('rptGameTitle').value='';$('rptSystem').value='';$('rptRegion').value='';}
     });
   }
   if(prefill&&prefill.gameId){
-    $('rptGameId').value=prefill.gameId;
-    $('rptGameTitle').value=prefill.title||'';
-    $('rptSystem').value=prefill.system||'';
-    $('rptRegion').value=prefill.region||'';
-    if(rptSS&&rptSS.showSel){rptSS.showSel({title:prefill.title,gameId:prefill.gameId,region:prefill.region,system:prefill.system,cover:coverUrl(prefill.gameId,prefill.region)});}
+    $('rptGameId').value=prefill.gameId;$('rptGameTitle').value=prefill.title||'';
+    $('rptSystem').value=prefill.system||'';$('rptRegion').value=prefill.region||'';
+    if(rptSS&&rptSS.showSel)rptSS.showSel({title:prefill.title,gameId:prefill.gameId,region:prefill.region,system:prefill.system,cover:coverUrl(prefill.gameId,prefill.region)});
   }
 }
 function closeReportModal(){$('reportModal').classList.remove('show');document.body.style.overflow='';}
 function resetReportForm(){
-  $('rptErrors').style.display='none';
-  $$('.input-err').forEach(el=>el.classList.remove('input-err'));
+  $('rptErrors').style.display='none';$$('#reportModal .input-err').forEach(el=>el.classList.remove('input-err'));
   ['rptGameId','rptGameTitle','rptSystem','rptRegion'].forEach(id=>$(id).value='');
-  $('rptTester').value='Anonymous';
-  $$('#rptDevices .chip-opt').forEach(c=>c.classList.remove('active'));
-  $('#rptDevices').querySelector('[data-d="RG35XX H"]').classList.add('active');
-  $('rptDevCustom').style.display='none';$('rptDevCustom').value='';
-  $('rptMuos').value='';$('rptVersion').value='';
-  $$('#rptProfiles .profile-card').forEach(c=>c.classList.remove('active'));
-  $('rptProfile').value='';
+  $('rptSearch').value='';$('rptTester').value='Anonymous';$('rptGameRevision').value='';
+  $('rptTestDate').value=new Date().toISOString().slice(0,10);populateReportCatalogs();
+  ['rptDevice','rptMuos','rptVersion','rptProfile'].forEach(id=>$(id).value='');
+  ['rptDeviceCustom','rptMuosCustom','rptVersionCustom','rptProfileCustom'].forEach(id=>{$(id).value='';$(id).style.display='none';});
+  $('rptDeviceRevision').value='';$('rptDolphinVersion').value='';
+  $('rptGraphicsBackend').value='Not recorded';$('rptDuration').value='';$('rptTestScene').value='';
   $$('#rptStars .star-btn').forEach(b=>b.classList.remove('lit'));
   $('rptStarVal').classList.remove('show');$('rptRating').value='';
-  $$('#rptBootSeg button').forEach(b=>b.classList.toggle('active',b.dataset.v==='yes'));
-  $('rptBootVal').value='YES';
-  $$('#rptPlayable button').forEach(b=>b.classList.toggle('active',b.dataset.v==='yes'));
-  $('rptPlayableVal').value='YES';
-  const h=$('rptRuleHint');h.classList.remove('active');
-  h.innerHTML='<i class="fa-solid fa-link"></i><span>Select a rating to auto-set <b>Boot</b> and <b>Playable</b></span>';
-  $('rptFpsMin').value='';$('rptFpsMax').value='';
-  $('rptCons').value='';$('rptConsCounter').textContent='0 / 1500';
+  $$('#rptBootSeg button').forEach(b=>b.classList.toggle('active',b.dataset.v==='yes'));$('rptBootVal').value='YES';
+  $$('#rptPlayable button').forEach(b=>b.classList.toggle('active',b.dataset.v==='yes'));$('rptPlayableVal').value='YES';
+  const h=$('rptRuleHint');h.classList.remove('active');h.innerHTML='<i class="fa-solid fa-link"></i><span>Select a rating to auto-set <b>Boot</b> and <b>Playable</b></span>';
+  ['rptFpsMin','rptFpsMax'].forEach(id=>$(id).value='');
+  ['rptAudio','rptGraphics','rptInput','rptStability'].forEach(id=>$(id).value='Not tested');
+  $('rptCons').value='';$('rptConsCounter').textContent='0 / 2000';
   $('rptCustomToggle').classList.remove('on');$('rptCustomBody').style.display='none';
   $$('#rptCustomTypeTabs .type-tab').forEach(t=>t.classList.toggle('active',t.dataset.t==='GameSettings'));
   $('rptCustomType').value='GameSettings';
-  $('rptCustomTitle').value='';$('rptCustomAuthor').value='';$('rptCustomDesc').value='';$('rptCustomContent').value='';$('rptCustomUrl').value='';
+  ['rptCustomTitle','rptCustomAuthor','rptCustomDesc','rptCustomContent','rptCustomUrl'].forEach(id=>$(id).value='');
   $('rptCustomGS').style.display='block';$('rptCustomURL').style.display='none';
   $('rptAttToggle').classList.remove('on');$('rptAttBody').style.display='none';$('rptAttRows').innerHTML='';
   if(rptSS)rptSS.hide();
 }
 function rptAddAttRow(){
   const row=document.createElement('div');row.className='att-row';
-  row.innerHTML='<select data-role="type"><option value="image">🖼️ Image</option><option value="video">🎬 Video</option><option value="link">🔗 Link</option></select><input type="text" data-role="title" placeholder="Title"><input type="text" data-role="url" placeholder="https://…"><button type="button" class="att-remove" data-role="del"><i class="fa-solid fa-trash"></i></button>';
-  row.querySelector('[data-role="del"]').addEventListener('click',()=>row.remove());
-  $('rptAttRows').appendChild(row);
+  row.innerHTML='<select data-role="type"><option value="image">🖼️ Image</option><option value="video">🎬 Video</option><option value="link">🔗 Link</option></select><input type="text" data-role="title" placeholder="Title" maxlength="120"><input type="url" data-role="url" placeholder="https://…"><button type="button" class="att-remove" data-role="del" aria-label="Remove evidence link"><i class="fa-solid fa-trash"></i></button>';
+  row.querySelector('[data-role="del"]').addEventListener('click',()=>row.remove());$('rptAttRows').appendChild(row);
 }
 function rptValidate(){
   const errors=[];const mark=id=>{const el=$(id);if(el)el.classList.add('input-err');};
-  if(!$('rptGameId').value&&!$('rptGameTitle').value){mark('rptSearch');errors.push('Select or identify a game.');}
-  if(!$('rptTester').value.trim()){mark('rptTester');errors.push('Tester name required.');}
-  if(!$('rptMuos').value){mark('rptMuos');errors.push('Select muOS version.');}
-  if(!$('rptVersion').value){mark('rptVersion');errors.push('Select Rt:Core version.');}
-  if(!$('rptProfile').value)errors.push('Choose a core profile.');
-  if($('rptRating').value==='')errors.push('Select a rating (0–5).');
+  if(!$('rptGameId').value&&!$('rptGameTitle').value){mark('rptSearch');errors.push('Select a game from the catalogue.');}
+  if(!reportSelectValue('rptDevice','rptDeviceCustom')){mark('rptDevice');errors.push('Select a device or enter its exact model.');}
+  if(!reportSelectValue('rptMuos','rptMuosCustom')){mark('rptMuos');errors.push('Select or enter the exact firmware version.');}
+  if(!reportSelectValue('rptVersion','rptVersionCustom')){mark('rptVersion');errors.push('Select or enter the exact Rt:Core release.');}
+  if(!reportSelectValue('rptProfile','rptProfileCustom')){mark('rptProfile');errors.push('Select or enter the exact core profile.');}
+  if($('rptRating').value==='')errors.push('Select an overall rating from 0 to 5.');
+  const minText=$('rptFpsMin').value.trim(),maxText=$('rptFpsMax').value.trim();
+  if((minText&&!maxText)||(!minText&&maxText)){errors.push('Enter both FPS values or leave both empty.');mark('rptFpsMin');mark('rptFpsMax');}
+  if(minText&&maxText){const min=Number(minText),max=Number(maxText);if(!Number.isInteger(min)||!Number.isInteger(max)||min<0||max>240||min>max){errors.push('FPS must be whole numbers from 0 to 240, with minimum no greater than maximum.');mark('rptFpsMin');mark('rptFpsMax');}}
+  const duration=$('rptDuration').value.trim();if(duration&&(!Number.isInteger(Number(duration))||Number(duration)<1||Number(duration)>600)){errors.push('Test duration must be a whole number from 1 to 600 minutes.');mark('rptDuration');}
+  const validUrl=v=>{try{const u=new URL(v);return u.protocol==='https:'||u.protocol==='http:';}catch(e){return false;}};
+  if($('rptCustomToggle').classList.contains('on')&&$('rptCustomType').value!=='GameSettings'){const url=$('rptCustomUrl').value.trim();if(url&&!validUrl(url)){errors.push('Custom resource URL must begin with http:// or https://.');mark('rptCustomUrl');}}
+  if($('rptAttToggle').classList.contains('on'))$$('#rptAttRows .att-row').forEach((row,index)=>{const url=row.querySelector('[data-role="url"]').value.trim();if(url&&!validUrl(url)){errors.push('Evidence link '+(index+1)+' must be a valid http(s) URL.');row.querySelector('[data-role="url"]').classList.add('input-err');}});
   return errors;
 }
 function rptSubmit(){
-  $('rptErrors').style.display='none';
-  $$('#reportModal .input-err').forEach(el=>el.classList.remove('input-err'));
-  const errors=rptValidate();
-  if(errors.length){$('rptErrors').innerHTML='<strong>Please fix:</strong><ul>'+errors.map(e=>'<li>'+escapeHtml(e)+'</li>').join('')+'</ul>';$('rptErrors').style.display='block';$('rptErrors').scrollIntoView({behavior:'smooth',block:'nearest'});return;}
-  const gameId=$('rptGameId').value||'UNKNOWN';const gameTitle=$('rptGameTitle').value;
-  const system=$('rptSystem').value||(state.console==='gc'?'GC':'Wii');const region=$('rptRegion').value||'NTSC';
-  const tester=$('rptTester').value.trim();
-  const device=$('rptDevCustom').style.display!=='none'&&$('rptDevCustom').value.trim()?$('rptDevCustom').value.trim():($('#rptDevices').querySelector('.chip-opt.active')?.dataset.d||'Unknown');
-  const muos=$('rptMuos').value;const version=$('rptVersion').value;const profile=$('rptProfile').value;
-  const rating=parseInt($('rptRating').value,10);
-  const boot=$('rptBootVal').value;
-  const playable=$('rptPlayableVal').value;
-  const fMin=parseInt($('rptFpsMin').value,10)||0;const fMax=parseInt($('rptFpsMax').value,10)||fMin;
-  const cons=capitalize($('rptCons').value.trim());
-  const customOn=$('rptCustomToggle').classList.contains('on');const customList=[];let iniContent=null;
+  $('rptErrors').style.display='none';$$('#reportModal .input-err').forEach(el=>el.classList.remove('input-err'));
+  const errors=rptValidate();if(errors.length){$('rptErrors').innerHTML='<strong>Please fix:</strong><ul>'+errors.map(e=>'<li>'+escapeHtml(e)+'</li>').join('')+'</ul>';$('rptErrors').style.display='block';$('rptErrors').scrollIntoView({behavior:'smooth',block:'nearest'});return;}
+  const now=new Date().toISOString(),fence=String.fromCharCode(96,96,96);
+  const gameId=$('rptGameId').value||'UNKNOWN',gameTitle=$('rptGameTitle').value.trim();
+  const system=$('rptSystem').value||(state.console==='gc'?'GC':'Wii'),region=$('rptRegion').value||'NTSC';
+  const tester=$('rptTester').value.trim()||'Anonymous',device=reportSelectValue('rptDevice','rptDeviceCustom');
+  const muos=reportSelectValue('rptMuos','rptMuosCustom'),version=reportSelectValue('rptVersion','rptVersionCustom');
+  const profile=reportSelectValue('rptProfile','rptProfileCustom'),rating=parseInt($('rptRating').value,10);
+  const minText=$('rptFpsMin').value.trim(),maxText=$('rptFpsMax').value.trim(),hasFps=Boolean(minText&&maxText);
+  const fMin=hasFps?Number(minText):0,fMax=hasFps?Number(maxText):0,cons=$('rptCons').value.trim();
+  const customOn=$('rptCustomToggle').classList.contains('on'),customList=[];let iniContent=null;
   if(customOn){
-    const type=$('rptCustomType').value;const title=$('rptCustomTitle').value.trim()||'Custom content';
-    const author=$('rptCustomAuthor').value.trim()||tester;const desc=$('rptCustomDesc').value.trim();
+    const type=$('rptCustomType').value,title=$('rptCustomTitle').value.trim()||'Custom content';
+    const author=$('rptCustomAuthor').value.trim()||tester,desc=$('rptCustomDesc').value.trim();
     if(type==='GameSettings'){const content=$('rptCustomContent').value.trim();if(content){iniContent=content;customList.push({set_type:'GameSettings',set_name:title,set_filename:gameId+'_rtmuos.ini',set_note:desc,_author:author});}}
     else{const url=$('rptCustomUrl').value.trim();if(url)customList.push({set_type:type,set_name:title,set_url:url,set_note:desc,_author:author});}
   }
   const attachments=[];
-  if($('rptAttToggle').classList.contains('on')){$$('#rptAttRows .att-row').forEach(row=>{const type=row.querySelector('[data-role="type"]').value;const title=row.querySelector('[data-role="title"]').value.trim();const url=row.querySelector('[data-role="url"]').value.trim();if(url)attachments.push({media_type:type,media_title:title||url,media_url:url});});}
-  const payload={game_info:{game_id:gameId,system,game:gameTitle,region},test_review:{rating,fps:fMin+'-'+fMax,boot,playable,fps_min:fMin,fps_max:fMax,date:new Date().toISOString()},test_details:{rtcore_version:version,core_profile:profile,considerations:cons},test_environment:{tester,device,muos_version:muos,date:new Date().toISOString()},custom_settings:customList,attachments};
-  const issueTitle='['+region+'] '+gameTitle+' — Test Report';
-  let body='## Test Report\n\n```json\n'+JSON.stringify(payload,null,2)+'\n```\n';
-  if(iniContent)body+='\n### GameSetting content\n\n**File:** `'+gameId+'_rtmuos.ini`\n**Title:** '+customList[0].set_name+'\n**Author:** '+customList[0]._author+'\n\n```ini\n'+iniContent+'\n```\n';
-  openUrl(GITHUB_ISSUE+'?title='+encodeURIComponent(issueTitle)+'&body='+encodeURIComponent(body)+'&labels=test-report');
-  closeReportModal();toast('🚀 Opening GitHub');
+  if($('rptAttToggle').classList.contains('on'))$$('#rptAttRows .att-row').forEach(row=>{const type=row.querySelector('[data-role="type"]').value,title=row.querySelector('[data-role="title"]').value.trim(),url=row.querySelector('[data-role="url"]').value.trim();if(url)attachments.push({media_type:type,media_title:title||url,media_url:url});});
+  const gameInfo={game_id:gameId,system,game:gameTitle,region},gameRevision=$('rptGameRevision').value.trim();
+  if(gameRevision)gameInfo.revision=gameRevision;
+  const testDetails={rtcore_version:version,dolphin_version:$('rptDolphinVersion').value.trim(),core_profile:profile,
+    graphics_backend:$('rptGraphicsBackend').value,test_duration_minutes:$('rptDuration').value?Number($('rptDuration').value):null,
+    test_scene:$('rptTestScene').value.trim(),audio:$('rptAudio').value,graphics:$('rptGraphics').value,input:$('rptInput').value,
+    stability:$('rptStability').value,considerations:cons};
+  Object.keys(testDetails).forEach(k=>{if(testDetails[k]===null||testDetails[k]==='')delete testDetails[k];});
+  const payload={
+    game_info:gameInfo,
+    test_review:{rating,fps:hasFps?(fMin===fMax?String(fMin):fMin+'-'+fMax):'N/A',boot:$('rptBootVal').value,playable:$('rptPlayableVal').value,fps_min:fMin,fps_max:fMax,date:now},
+    test_details:testDetails,
+    test_environment:{tester,device,device_revision:$('rptDeviceRevision').value.trim(),muos_version:muos,date:now},
+    custom_settings:customList,attachments
+  };
+  if(!payload.test_environment.device_revision)delete payload.test_environment.device_revision;
+  const dateLabel=$('rptTestDate').value||now.slice(0,10);
+  const summary=[
+    '## Compatibility test report','',
+    '> Community evidence only. This submission is a proposal for maintainer review and is not yet part of the compatibility database.','',
+    '### Game','- **Title:** '+gameTitle,'- **Game ID:** '+gameId,'- **System / region:** '+system+' / '+region,
+    '- **Game revision:** '+(gameRevision||'Not recorded'),'',
+    '### Test environment','- **Device:** '+device+(payload.test_environment.device_revision?' ('+payload.test_environment.device_revision+')':''),
+    '- **Firmware:** '+muos,'- **Rt:Core:** '+version,'- **Dolphin build:** '+(testDetails.dolphin_version||'Not recorded'),
+    '- **Core profile:** '+profile,'- **Graphics backend:** '+testDetails.graphics_backend,
+    '- **Test date:** '+dateLabel,'- **Duration / scene:** '+(testDetails.test_duration_minutes?testDetails.test_duration_minutes+' minutes':'Not recorded')+' / '+(testDetails.test_scene||'Not recorded'),'',
+    '### Observed result','- **Rating:** '+rating+'/5','- **Boot / playability:** '+payload.test_review.boot+' / '+payload.test_review.playable,
+    '- **FPS:** '+payload.test_review.fps,'- **Audio / graphics / input / stability:** '+testDetails.audio+' / '+testDetails.graphics+' / '+testDetails.input+' / '+testDetails.stability,'',
+    '### Notes',cons||'No additional notes supplied.','',
+    '### Machine-readable report','',
+    'The JSON block below mirrors the compatibility database report contract. Preserve this report as an independent observation during review.','',
+    fence+'json',JSON.stringify(payload,null,2),fence
+  ].join('\n');
+  let body=summary;
+  if(iniContent)body+='\n\n### Optional GameSettings INI\n\n**File:** '+gameId+'_rtmuos.ini\n\n'+fence+'ini\n'+iniContent+'\n'+fence+'\n';
+  if(customList.length&&customList[0].set_url)body+='\n\n### Custom resource\n\n'+customList[0].set_type+': '+customList[0].set_name+'\n'+customList[0].set_url+'\n';
+  if(attachments.length)body+='\n\n### Evidence links\n\n'+attachments.map(a=>'- ['+a.media_type+'] '+a.media_title+': '+a.media_url).join('\n')+'\n';
+  const title='[Test Report] ['+region+'] '+gameTitle+' ('+gameId+')';
+  const params=new URLSearchParams({template:'compatibility-test-report.md',title,body,labels:'test-report'});
+  const issueUrl=GITHUB_ISSUE+'?'+params.toString();
+  if(issueUrl.length>7800){$('rptErrors').innerHTML='<strong>Report too large for a pre-filled GitHub issue.</strong><p>Shorten the INI snippet or replace it with a public link, then submit again.</p>';$('rptErrors').style.display='block';$('rptErrors').scrollIntoView({behavior:'smooth',block:'nearest'});return;}
+  openUrl(issueUrl);closeReportModal();toast('Opening pre-filled GitHub issue');
 }
 
 /* ═══ GAMESETTINGS ═══ */
@@ -1902,6 +1946,8 @@ async function loadGames(){
     if(!_gamesCache){const data=await fetchJson(URL_GAMES);_gamesCache={games:data.games||[],last_update:data.last_update};}
     $('retryDataBtn').style.display='none';
     state.rawGames=_gamesCache.games||[];
+    state.catalogs=_gamesCache.catalogs||{};
+    populateReportCatalogs();
     populateEnvironmentFilters();
     state.searchIndex=null;
     buildSearchIndex();
@@ -2016,8 +2062,7 @@ function init(){
   $('rptAttToggle').addEventListener('click',()=>{const on=$('rptAttToggle').classList.toggle('on');$('rptAttBody').style.display=on?'block':'none';if(on&&!$('rptAttRows').children.length)rptAddAttRow();});
   $('rptAttAdd').addEventListener('click',rptAddAttRow);
   $('rptSubmit').addEventListener('click',rptSubmit);
-  $$('#rptProfiles .profile-card').forEach(c=>c.addEventListener('click',()=>{$$('#rptProfiles .profile-card').forEach(x=>x.classList.remove('active'));c.classList.add('active');$('rptProfile').value=c.dataset.p;}));
-  $$('#rptDevices .chip-opt').forEach(chip=>chip.addEventListener('click',()=>{$$('#rptDevices .chip-opt').forEach(c=>c.classList.remove('active'));chip.classList.add('active');if(chip.dataset.d==='__custom__'){$('rptDevCustom').style.display='block';$('rptDevCustom').focus();}else $('rptDevCustom').style.display='none';}));
+  ['rptDevice','rptMuos','rptVersion','rptProfile'].forEach(id=>$(id).addEventListener('change',()=>{const map={rptDevice:'rptDeviceCustom',rptMuos:'rptMuosCustom',rptVersion:'rptVersionCustom',rptProfile:'rptProfileCustom'};syncReportCustom(id,map[id]);if($(map[id]).style.display==='block')$(map[id]).focus();}));
   $('gsBtn').addEventListener('click',()=>openGameSettings());
   $('gsClose').addEventListener('click',closeGameSettings);
   $('gsCancel').addEventListener('click',()=>switchGsTab('browse'));
