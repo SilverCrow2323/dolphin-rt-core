@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "\${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HELPER="$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/scripts/hotkeys_runtime.sh"
 LAUNCH="$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/scripts/launch.sh"
 DEFAULT="$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/Hotkeys.ini"

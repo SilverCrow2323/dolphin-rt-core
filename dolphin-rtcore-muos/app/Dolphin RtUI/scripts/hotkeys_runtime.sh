@@ -2,7 +2,7 @@
 # Dolphin 2606 uses [Hotkeys] / SDL/0/Keyboard Mouse. Older installations
 # may still use [Hotkeys1] / Keyboard; support that as a fallback.
 hotkeys_device() {
-    local file="\${1:-}"
+    local file="${1:-}"
     [ -r "$file" ] || return 1
     awk '
         /^[[:space:]]*\[/ {
