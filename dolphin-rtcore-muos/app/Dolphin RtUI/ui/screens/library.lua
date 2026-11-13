@@ -377,14 +377,27 @@ local function get_icon(path)
     return _icon_cache[path] or nil
 end
 
+-- Inventory scans touch the filesystem. Cache the catalog once per UI session
+-- and recompute ROM totals only when a scan publishes a new games table.
+local _rom_totals = { games = nil, scanned_at = nil, total = 0, gc = 0, wii = 0 }
+local _gfx_count, _gfx_count_loaded
 local function library_totals()
-    local total, gc, wii = 0, 0, 0
-    for _, game in ipairs(Library.games or {}) do
-        total = total + 1
-        if U.is_wii(game) then wii = wii + 1 else gc = gc + 1 end
+    local games = Library.games or {}
+    if _rom_totals.games ~= games or _rom_totals.scanned_at ~= Library.scanned_at then
+        local total, gc, wii = 0, 0, 0
+        for _, game in ipairs(games) do
+            total = total + 1
+            if U.is_wii(game) then wii = wii + 1 else gc = gc + 1 end
+        end
+        _rom_totals = { games = games, scanned_at = Library.scanned_at,
+                        total = total, gc = gc, wii = wii }
     end
-    local ok, installed = pcall(U.mods_installed)
-    return total, gc, wii, (ok and type(installed) == "table") and #installed or nil
+    if not _gfx_count_loaded then
+        local ok, installed = pcall(U.mods_installed)
+        _gfx_count = (ok and type(installed) == "table") and #installed or nil
+        _gfx_count_loaded = true
+    end
+    return _rom_totals.total, _rom_totals.gc, _rom_totals.wii, _gfx_count
 end
 
 local function draw_brand_header(n_games)
@@ -423,7 +436,7 @@ local function draw_brand_header(n_games)
     if S.scanning or Library.scanning then
         local p = Library.progress or { done = 0, total = 0 }
         summary = ("SCAN %d/%d  ·  %d found  ·  GFX %s"):format(
-            p.done or 0, p.total or 0, total, gfx_label)
+            p.done or 0, p.total or 0, #(Library.games or {}), gfx_label)
     elseif S.filter == 3 then
         summary = ("%d ROMs  ·  %d fav  ·  GFX %s"):format(total, n_games, gfx_label)
     else
