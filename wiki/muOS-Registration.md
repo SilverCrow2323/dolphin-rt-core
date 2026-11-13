@@ -16,6 +16,15 @@ The helper reads the muOS version from `/opt/muos/config/system/version` (or `GE
 
 The helper also checks the generated `assign.json` on manifest-based systems. A core definition without a matching content-to-system alias may not be selectable automatically in Content Explorer.
 
+## Rt:UI controls
+
+Registration repair and profile visibility are managed inside Dolphin Rt:UI:
+
+- **Settings → System → Repair GameCube/Wii registration** runs the safe `manifest_tool.sh ensure` action.
+- **Settings → System → Core profile visibility** selects **Standard Only** or **All Tiers**.
+
+The legacy muOS Task Toolkit entries are no longer installed. The upgrade hook removes old `Dolphin Rt*Core` task directories while preserving unrelated muOS tasks.
+
 ## Commands
 
 Run on the handheld:
