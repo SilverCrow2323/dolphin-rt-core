@@ -435,7 +435,8 @@ local function draw_brand_header(n_games)
 
     -- separator
     K.color(K.C.line, 0.5)
-    love.graphics.rectangle("fill", K.MARGIN, 72, K.W - K.MARGIN * 2, 1)
+    -- Start at the text column: the animated system badge occupies x=24..88.
+    love.graphics.rectangle("fill", 104, 72, K.W - K.MARGIN - 104, 1)
 
     -- tabs on the right
     local fx = K.W - K.MARGIN
@@ -475,7 +476,7 @@ function S.draw()
         local p = Library.progress or { done = 0, total = 0 }
         local frac = (p.total > 0) and (p.done / p.total) or 0
         -- Header separator is y=72; keep the bar in the clear gap below it.
-        K.bar(K.MARGIN, 78, K.W - K.MARGIN * 2, 2, frac, K.acc)
+        K.bar(104, 78, K.W - K.MARGIN - 104, 2, frac, K.acc)
     end
     if n == 0 then
         K.panel(LX, LY, K.W - K.MARGIN * 2, LH, { cut = 12 })
