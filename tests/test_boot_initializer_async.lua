@@ -131,7 +131,7 @@ local ok, err = xpcall(function()
 
     Boot.update(0.016) -- download_cheats: downloader must load and start.
     assert(cheats.starts == 1 and Boot.step() == "wait_cheats")
-    assert(#cheats.ids == 1 and cheats.ids[1] == "GZLE01")
+    assert(cheats.ids == nil, "boot must request only the performance-boost index set")
 
     Boot.update(0.016) -- first cheats poll.
     assert(Boot.step() == "wait_cheats")
@@ -143,6 +143,9 @@ local ok, err = xpcall(function()
     assert(Boot.is_done(), "full boot pipeline must complete")
     local snap = Boot.snapshot()
     assert(snap.roms == 1 and snap.gamesets.deployed == 2 and snap.cards == 7)
+    assert(snap.update.status == "up_to_date")
+    assert(snap.gamesets.status == "complete")
+    assert(snap.cards_status == "complete")
     assert(snap.cheats.status == "complete")
     assert(library.blocking_calls == 0)
 end, debug.traceback)
