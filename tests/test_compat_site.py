@@ -287,6 +287,8 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn("rtcore-site-v1", worker)
         self.assertIn("'./compatibility.html'", worker)
         self.assertIn("'./index.html'", worker)
+        self.assertIn("url.pathname.endsWith('/compatibility.html')", worker)
+        self.assertIn("caches.match('./compatibility.html')", worker)
         self.assertNotIn("rtcore-db-v3", worker)
 
 
