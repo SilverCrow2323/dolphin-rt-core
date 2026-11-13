@@ -403,7 +403,7 @@ done
 # SDL/pad profiles must not create virtual keystrokes or steal SELECT/START.
 if [ "${HOTKEYS:-}" != "Disabled" ]; then
     HOTKEY_DEVICE="$(awk -F= 'tolower($1) ~ /^[[:space:]]*device[[:space:]]*$/ { gsub(/[[:space:]]/, "", $2); print $2; exit }' "$CONFIG/Hotkeys.ini" 2>/dev/null)"
-    if [ "$HOTKEY_DEVICE" = "Keyboard" ]; then
+    if { [ "$HOTKEY_DEVICE" = "Keyboard" ] || [ "$HOTKEY_DEVICE" = "SDL/0/Keyboard Mouse" ]; }; then
         GPTK_BIN=""
         for b in "$GAME_DIR/lib/gptokeyb2" "$GAME_DIR/../lib/gptokeyb2" "/lib/gptokeyb2"; do
             [ -x "$b" ] && { GPTK_BIN="$b"; break; }
