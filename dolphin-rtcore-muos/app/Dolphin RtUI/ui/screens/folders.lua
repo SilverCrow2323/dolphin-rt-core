@@ -96,6 +96,8 @@ local function preview(item, system)
     S.folder_waker_item = item
     S.folder_waker_system = plan.system
     S.folder_waker_plan = plan
+    S.preview_scroll = 0
+    S.preview_scroll_max = 0
     S.mode = "folder_waker_preview"
 end
 
@@ -216,7 +218,11 @@ function S.pad(b)
     end
 
     if S.mode == "folder_waker_preview" then
-        if b == "Y" then S.folder_waker_system = "GC"; SFX.play("menu_toggleoption")
+        if b == "UP" then
+            S.preview_scroll = math.max(0, (S.preview_scroll or 0) - 42)
+        elseif b == "DOWN" then
+            S.preview_scroll = math.min(S.preview_scroll_max or 0, (S.preview_scroll or 0) + 42)
+        elseif b == "Y" then S.folder_waker_system = "GC"; SFX.play("menu_toggleoption")
         elseif b == "X" then S.folder_waker_system = "Wii"; SFX.play("menu_toggleoption")
         elseif b == "A" then commit_folder_waker()
         elseif b == "B" then back_to_folder_waker_scan() end
@@ -248,35 +254,79 @@ end
 local function draw_folder_waker_preview()
     local item = S.folder_waker_item
     if not item then return end
-    local source_name = item.name
-    local target = (S.folder_waker_plan and S.folder_waker_plan.target) or ("Rt" .. source_name)
-    local alias = (S.folder_waker_plan and S.folder_waker_plan.alias) or FolderTools.normalize_alias(target)
-    local system_text = S.folder_waker_system or "not selected"
-    local status = item.is_scan_root and "This is already an Rt:UI ROM path; FolderWaker will update the saved path."
-        or item.status == "skip-match" and "Matches muOS skip.ini pattern(s): "
-        .. table.concat(item.skip_matches or {}, ", ")
-        or item.status == "unmapped" and "No matching assignment alias is present in assign.json."
-        or item.status == "mapped" and "An assignment alias already exists; this diagnostic still allows an explicit Rt-prefixed repair."
-        or "Folder contains ROM images but its system could not be inferred from the name."
 
-    K.header("FolderWaker", "Review folder name and system alias before applying changes", nil, { icon = "folder" })
-    K.panel(K.MARGIN, 105, K.W - K.MARGIN * 2, 300, { cut = 12 })
-    K.text("small", "SOURCE FOLDER", K.MARGIN + 18, 125, K.C.dim)
-    K.text("body", K.clip("body", item.path, K.W - K.MARGIN * 2 - 36), K.MARGIN + 18, 148, K.C.text)
-    K.text("small", "PROPOSED NAME", K.MARGIN + 18, 188, K.C.dim)
-    K.text("h", K.clip("h", target, K.W - K.MARGIN * 2 - 36), K.MARGIN + 18, 211, K.acc)
-    K.text("small", "SYSTEM / NEW ASSIGN ALIAS", K.MARGIN + 18, 248, K.C.dim)
-    K.text("body", system_text .. "  ·  " .. alias, K.MARGIN + 18, 270, K.C.text)
-    K.text("small", "DIAGNOSTIC", K.MARGIN + 18, 307, K.C.dim)
-    K.text("small", K.clip("small", status, K.W - K.MARGIN * 2 - 36), K.MARGIN + 18, 329,
-        item.status == "skip-match" and K.C.warn or K.C.dim)
-    K.text("small",
-        item.is_scan_root
-            and "Rt:UI will update this saved ROM path to the new folder name."
-            or "No symlink: muOS skips symbolic-link folders. Only the directory name changes.",
-        K.MARGIN + 18, 355, K.C.dim, 1, K.W - K.MARGIN * 2 - 36)
-    K.text("small", item.has_roms and "DISC CHECK: supported ROM image found" or "DISC CHECK: no supported ROM image — rename disabled",
-        K.MARGIN + 18, 382, item.has_roms and K.C.ok or K.C.warn, 1, K.W - K.MARGIN * 2 - 36)
+    local target = (S.folder_waker_plan and S.folder_waker_plan.target)
+        or ("Rt" .. tostring(item.name or ""))
+    local alias = (S.folder_waker_plan and S.folder_waker_plan.alias)
+        or FolderTools.normalize_alias(target:match("([^/]+)$") or target)
+    local system_text = S.folder_waker_system or "not selected"
+    local status = item.is_scan_root
+        and "This folder is already a saved Rt:UI ROM path."
+        or item.status == "skip-match"
+            and ("Matches muOS skip.ini rule(s): " .. table.concat(item.skip_matches or {}, ", "))
+        or item.status == "unmapped"
+            and "No matching GameCube/Wii assignment alias is present in assign.json."
+        or item.status == "mapped"
+            and "An assignment alias already exists; this is an optional explicit Rt-prefixed repair."
+        or "The folder name matches a muOS Content Explorer restriction."
+
+    local path_effect = item.is_scan_root
+        and "After the rename, Rt:UI will update this saved ROM path and any configured paths inside it."
+        or "Only the directory name changes. ROM files remain inside the folder; no game files are moved or deleted."
+
+    local rows = {
+        { label = "CURRENT FULL PATH", value = item.path, kind = "mono", color = K.C.text },
+        { label = "PROPOSED FULL PATH", value = target, kind = "mono", color = K.acc },
+        { label = "CONSOLE / MUOS ALIAS", value = system_text .. "  ·  " .. alias, kind = "body", color = K.C.text },
+        { label = "WHY THIS FOLDER WAS FLAGGED", value = status, kind = "small", color = K.C.dim },
+        { label = "WHAT THE RENAME CHANGES", value = path_effect, kind = "small", color = K.C.dim },
+        { label = "ROM CONTENT CHECK", value = item.has_roms
+            and "Supported GameCube/Wii disc image found — rename can be confirmed."
+            or "No supported disc image found — rename is disabled.",
+          kind = "small", color = item.has_roms and K.C.ok or K.C.warn },
+    }
+
+    K.header("FolderWaker", "Review both full paths before applying the rename", "UP / DOWN", { icon = "folder" })
+    K.panel(K.MARGIN, 94, K.W - K.MARGIN * 2, 320, { cut = 12 })
+
+    local x, y = K.MARGIN + 18, 110
+    local content_w = K.W - K.MARGIN * 2 - 52
+    local viewport_h = 284
+    local content_h = 0
+    local metrics = {}
+    for i, row in ipairs(rows) do
+        local f = K.font(row.kind)
+        local _, wrapped = f:getWrap(row.value, content_w)
+        local value_h = math.max(1, #wrapped) * f:getHeight()
+        metrics[i] = { label_h = K.font("small"):getHeight(), value_h = value_h }
+        content_h = content_h + metrics[i].label_h + 3 + value_h + 7
+    end
+
+    S.preview_scroll_max = math.max(0, content_h - viewport_h)
+    S.preview_scroll = math.max(0, math.min(S.preview_scroll or 0, S.preview_scroll_max))
+    love.graphics.setScissor(x, y, content_w, viewport_h)
+    local draw_y = y - S.preview_scroll
+    for i, row in ipairs(rows) do
+        K.text("small", row.label, x, draw_y, K.C.faint)
+        draw_y = draw_y + metrics[i].label_h + 3
+        draw_y = draw_y + K.para(row.kind, row.value, x, draw_y, content_w, row.color)
+        draw_y = draw_y + 7
+    end
+    love.graphics.setScissor()
+
+    if S.preview_scroll_max > 0 then
+        local track_x = K.W - K.MARGIN - 9
+        local track_y = y
+        local track_h = viewport_h
+        local thumb_h = math.max(22, track_h * viewport_h / content_h)
+        local travel = track_h - thumb_h
+        local thumb_y = track_y + (S.preview_scroll / S.preview_scroll_max) * travel
+        K.color(K.C.line, 0.75)
+        love.graphics.rectangle("fill", track_x, track_y, 3, track_h, 2, 2)
+        K.color(K.acc, 1)
+        love.graphics.rectangle("fill", track_x, thumb_y, 3, thumb_h, 2, 2)
+    end
+
     local footer = { { key = "Y", label = "GameCube" }, { key = "X", label = "Wii" } }
     if item.has_roms then
         footer[#footer + 1] = { key = "A", label = "Rename + register" }
@@ -287,15 +337,24 @@ end
 
 function S.draw()
     if S.mode == "folder_waker_warning" then
-        K.header("CONTENT EXPLORER WARNING", "muOS folder-name restriction detected", nil, { icon = "folder" })
-        K.panel(K.MARGIN, 92, K.W - K.MARGIN * 2, 322, { cut = 12, accent = K.C.warn })
-        K.text("body", "muOS Content Explorer has an explicit firmware block for folders named gc, ngc, gamecube, game cube, or wii.", K.MARGIN + 16, 108, K.C.text, 1, K.W - K.MARGIN * 2 - 32)
-        K.text("small", "This is a muOS restriction — not a damaged ROM and not a Dolphin problem. Content Explorer will not index games inside these folders, even when the files are valid.", K.MARGIN + 16, 151, K.C.dim, 1, K.W - K.MARGIN * 2 - 32)
-        K.text("small", "NO — leave every folder untouched. Games remain available in Dolphin Rt:UI.", K.MARGIN + 16, 207, K.C.ok, 1, K.W - K.MARGIN * 2 - 32)
-        K.text("small", "YES — FolderWaker can rename only the affected folder to RtGC or RtWii and register the matching muOS Content Explorer alias. You can also do this manually by changing the folder name by one character.", K.MARGIN + 16, 244, K.C.dim, 1, K.W - K.MARGIN * 2 - 32)
-        K.text("key", "FIX CONTENT EXPLORER FOLDERS?  ·  AFFECTED FOLDERS BELOW", K.MARGIN + 16, 294, K.C.warn)
-        S.warning_list:draw(draw_row)
-        K.footer({ { key = "A", label = "YES · Review fixes" }, { key = "B", label = "NO · Rt:UI only" } })
+        K.header("CONTENT EXPLORER WARNING", "why these folders are hidden in muOS", nil, { icon = "folder" })
+        K.panel(K.MARGIN, 94, K.W - K.MARGIN * 2, 320, { cut = 12, accent = K.C.warn })
+
+        local x, y = K.MARGIN + 16, 110
+        local w = K.W - K.MARGIN * 2 - 32
+        y = y + K.para("body",
+            "muOS Content Explorer deliberately skips directories named gc, ngc, gamecube, game cube or wii. This is a firmware naming rule, not a sign that your ROM files are damaged.",
+            x, y, w, K.C.text) + 9
+        y = y + K.para("small",
+            "Keeping the original name is safe: Dolphin Rt:UI can still scan and launch games from it. You do not have to rename anything.",
+            x, y, w, K.C.dim) + 9
+        y = y + K.para("small",
+            "FolderWaker is optional. It previews the complete old and new path and proposes RtGC or RtWii. Scanning is read-only; nothing changes until you confirm the exact rename.",
+            x, y, w, K.C.dim) + 10
+
+        local count = #(S.folder_waker_rows or {})
+        K.text("key", tostring(count) .. " FOLDER(S) AVAILABLE FOR REVIEW", x, y, K.C.warn)
+        K.footer({ { key = "A", label = "Review candidates" }, { key = "B", label = "Keep current names" } })
         return
     end
     if S.mode == "folder_waker_preview" then
