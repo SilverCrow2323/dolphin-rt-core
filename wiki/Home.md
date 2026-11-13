@@ -6,7 +6,7 @@
 
 **The practical handbook for the handheld core, frontend, compatibility database and Rt:Stream.**
 
-[Repository](https://github.com/SilverCrow2323/dolphin-rt-core) · [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases) · [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues) · [Compatibility site source](https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/index.html)
+[Repository](https://github.com/SilverCrow2323/dolphin-rt-core) · [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases) · [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues) · [Project Portal](https://silvercrow2323.github.io/dolphin-rt-core/) · [Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html)
 
 </div>
 
@@ -45,7 +45,7 @@ See [[Project-Map]] and [[Platform-Support]] for boundaries and supported combin
 
 ## Compatibility Database
 
-The source web application is the repository-root `index.html`; its data comes from the frontend's tracked `games_data.json` and `gamesettings.json`. The app includes GameCube/Wii themes, search, region/boot/rating filters, per-device and per-muOS filters, shareable filter URLs, report submission and offline shell support.
+The public homepage is the repository-root `index.html`; the standalone Compatibility Database lives at `compatibility.html`. The database reads the frontend's tracked `games_data.json` and `gamesettings.json`. The app includes GameCube/Wii themes, search, region/boot/rating filters, per-device and per-muOS filters, shareable filter URLs, report submission and offline shell support.
 
 **The source file is not proof that GitHub Pages is enabled.** Use a public Pages URL only after the repository owner has configured Pages. See [[Compatibility-Site]].
 
