@@ -32,7 +32,7 @@ end
 local Downloader = require("core.cheats_downloader")
 assert(Downloader.start_for())
 assert(#commands == 1)
-assert(commands[1] == "sh '/app/scripts/rtcheats_sync.sh'",
+assert(commands[1] == "cd '/app' && sh '/app/scripts/rtcheats_sync.sh'",
        "boot mode must delegate boost-only selection to the shell sync script")
 assert(not Downloader.poll(), "missing status file must remain pending while the worker starts")
 
