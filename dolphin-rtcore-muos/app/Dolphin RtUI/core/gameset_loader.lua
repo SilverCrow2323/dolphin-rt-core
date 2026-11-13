@@ -42,31 +42,62 @@ end
 -- Deploy all bundled configs of an entry into workshop/gamesettings/<ID>/.
 -- Returns the number of configs written.
 function M.deploy(entry, game_id)
-    if not entry then return 0 end
+    if type(entry) ~= "table" or type(entry.configs) ~= "table" then
+        return 0, 0
+    end
+    if type(game_id) ~= "string" or not game_id:match("^[A-Z0-9]+$") then
+        return 0, #entry.configs
+    end
+
     local dir = "workshop/gamesettings/" .. game_id
-    sh.mkdir_p(dir)
-    local n = 0
+    local made = sh.mkdir_p(dir)
+    if made == false then return 0, #entry.configs end
+
+    local n, failed = 0, 0
     for _, cfg in ipairs(entry.configs) do
-        local target = dir .. "/" .. cfg.filename
-        local f = io.open(target, "r")
-        if f then f:close()
+        local filename = type(cfg) == "table" and cfg.filename or nil
+        -- Bundled metadata can arrive from a downloaded JSON file. Restrict
+        -- filenames to one INI basename; never allow a path to escape the ID.
+        if type(filename) ~= "string"
+           or not filename:match("^[%w_.%-]+%.ini$")
+           or filename:find("..", 1, true)
+           or filename:find("/", 1, true)
+           or filename:find("\\", 1, true) then
+            failed = failed + 1
         else
-            local out = io.open(target, "w")
-            if out then out:write(cfg.raw_content or ""); out:close(); n = n + 1 end
+            local target = dir .. "/" .. filename
+            local existing = io.open(target, "r")
+            if existing then
+                existing:close()
+            else
+                local out = io.open(target, "w")
+                if out then
+                    out:write(type(cfg.raw_content) == "string" and cfg.raw_content or "")
+                    out:close()
+                    n = n + 1
+                else
+                    failed = failed + 1
+                end
+            end
         end
     end
-    -- write the metadata so the gameset_manager can see them
+
+    -- Preserve an existing selection and close the probe handle correctly.
     local meta = dir .. "/rtgameset_data.ini"
-    if not io.open(meta, "r") then
+    local existing_meta = io.open(meta, "r")
+    if existing_meta then
+        existing_meta:close()
+    else
         local m = io.open(meta, "w")
         if m then
             m:write("[GameSettings]\n")
-            m:write("GameName = " .. (entry.game or game_id) .. "\n")
-            m:write("ActiveConfig = " .. (entry.configs[1] and entry.configs[1].filename or "base.ini") .. "\n")
+            m:write("GameName = " .. tostring(entry.game or game_id) .. "\n")
+            m:write("ActiveConfig = " .. tostring(entry.configs[1] and entry.configs[1].filename or "base.ini") .. "\n")
             m:close()
+        else
+            failed = failed + 1
         end
     end
-    return n
+    return n, failed
 end
-
 return M
