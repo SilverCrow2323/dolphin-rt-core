@@ -599,107 +599,112 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 </div>
 
 <div class="modal-back" id="reportModal">
-  <div class="modal">
+  <div class="modal" style="max-width:980px;">
     <div class="hud-scanline"></div>
-    <div class="modal-head"><div class="modal-head-left"><div class="modal-icon"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="modal-title">Send Test Report</div><div class="modal-subtitle">Tell the community how this game runs</div></div></div><button class="modal-close" id="rptClose"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-head">
+      <div class="modal-head-left"><div class="modal-icon"><i class="fa-solid fa-clipboard-check"></i></div><div><div class="modal-title">Submit a Compatibility Test</div><div class="modal-subtitle">A reproducible field report for the Dolphin Rt:Core community database</div></div></div>
+      <button class="modal-close" id="rptClose" aria-label="Close report form"><i class="fa-solid fa-xmark"></i></button>
+    </div>
     <div class="modal-body">
-      <div id="rptErrors" class="error-banner" style="display:none;"></div>
-      <div class="form-section" style="position:relative;z-index:50;overflow:visible;">
-        <div class="form-section-head"><div class="form-section-num">01</div><div><div class="form-section-title"><i class="fa-solid fa-gamepad"></i> Game</div><div class="form-section-desc">Search by title or Game ID</div></div></div>
+      <div id="rptErrors" class="error-banner" style="display:none;" role="alert"></div>
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-num">01</div><div><div class="form-section-title"><i class="fa-solid fa-gamepad"></i> Game identity</div><div class="form-section-desc">Select the exact title, Game ID and region you tested</div></div></div>
         <div class="ss-wrap" id="rptSS">
-          <div class="ss-input"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="rptSearch" placeholder="e.g. Luigi's Mansion, GLME01…" autocomplete="off" spellcheck="false"><button class="ss-clear" id="rptClear">✕</button></div>
-          <div class="ss-results" id="rptRes"></div>
-          <div class="ss-selected" id="rptSel"></div>
+          <div class="ss-input"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="rptSearch" placeholder="Search title or six-character Game ID…" autocomplete="off" spellcheck="false"><button class="ss-clear" id="rptClear" type="button">✕</button></div>
+          <div class="ss-results" id="rptRes"></div><div class="ss-selected" id="rptSel"></div>
         </div>
         <input type="hidden" id="rptGameId"><input type="hidden" id="rptGameTitle"><input type="hidden" id="rptSystem"><input type="hidden" id="rptRegion">
-      </div>
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-num">02</div><div><div class="form-section-title"><i class="fa-solid fa-user-astronaut"></i> Tester</div><div class="form-section-desc">Who tested</div></div></div>
-        <div class="form-row">
-          <div class="form-group full"><label><i class="fa-solid fa-user-tag"></i> Name</label><input type="text" id="rptTester" value="Anonymous"></div>
-          <div class="form-group full"><label><i class="fa-solid fa-sd-card"></i> muOS Version</label><select id="rptMuos"><option value="" disabled selected>Select…</option><option>2601.1 Funky Jacaranda</option><option>2601.0 Jacaranda</option><option>2508.4 Loose Goose</option><option>2508.3 Golden Goose</option><option>2508.2 Silly Goose</option><option>2508.1 Canada Goose</option><option>2508.0 Goose</option><option>2502.0 Pixie</option></select></div>
+        <div class="form-row" style="margin-top:12px;">
+          <div class="form-group"><label>Game revision / disc ID (optional)</label><input type="text" id="rptGameRevision" maxlength="80" placeholder="Disc revision, serial suffix or patch"></div>
+          <div class="form-group"><label>Test date (local)</label><input type="date" id="rptTestDate"></div>
         </div>
       </div>
       <div class="form-section">
-        <div class="form-section-head"><div class="form-section-num">03</div><div><div class="form-section-title"><i class="fa-solid fa-mobile-screen"></i> Device</div><div class="form-section-desc">Your handheld</div></div></div>
-        <div class="chip-select" id="rptDevices"><div class="chip-opt active" data-d="RG35XX H">RG35XX H</div><div class="chip-opt" data-d="RG34XX SP">RG34XX SP</div><div class="chip-opt" data-d="RG40XX H">RG40XX H</div><div class="chip-opt" data-d="RG CubeXX">RG CubeXX</div><div class="chip-opt" data-d="__custom__">Custom…</div></div>
-        <input type="text" id="rptDevCustom" placeholder="Device name" style="display:none;margin-top:10px;">
-      </div>
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-num">04</div><div><div class="form-section-title"><i class="fa-solid fa-microchip"></i> Rt:Core Setup</div><div class="form-section-desc">Version &amp; profile</div></div></div>
+        <div class="form-section-head"><div class="form-section-num">02</div><div><div class="form-section-title"><i class="fa-solid fa-mobile-screen"></i> Device &amp; firmware</div><div class="form-section-desc">Record the device and firmware actually used; never guess missing details</div></div></div>
         <div class="form-row">
-          <div class="form-group full"><label><i class="fa-solid fa-tag"></i> Version</label><select id="rptVersion"><option value="" disabled selected>Select…</option><option>v11.5.00 'Triptych'</option><option>v11.0.0 'Frontendone'</option><option>v10.5.3</option><option>v10.5-124</option><option>v10.0.0 'SPDW'</option><option>v9 Goose</option><option>v8</option><option>v7 or prior</option></select></div>
-          <div class="form-group full"><label><i class="fa-solid fa-sliders"></i> Profile</label>
-            <div class="profile-grid" id="rptProfiles" style="grid-template-columns:repeat(3,1fr);">
-              <div class="profile-card" data-p="Default"><i class="fa-solid fa-compact-disc"></i><div class="pc-n">Default</div></div>
-              <div class="profile-card" data-p="Performance"><i class="fa-solid fa-rocket"></i><div class="pc-n">Perf</div></div>
-              <div class="profile-card" data-p="Compatibility"><i class="fa-solid fa-shield"></i><div class="pc-n">Compat</div></div>
-              <div class="profile-card" data-p="Speed Hack"><i class="fa-solid fa-bolt"></i><div class="pc-n">Speed</div></div>
-              <div class="profile-card" data-p="Black Screen Fix"><i class="fa-solid fa-eye-slash"></i><div class="pc-n">BlkFix</div></div>
-              <div class="profile-card" data-p="Ultra"><i class="fa-solid fa-gauge-high"></i><div class="pc-n">Ultra</div></div>
-            </div>
-            <input type="hidden" id="rptProfile">
-          </div>
+          <div class="form-group"><label>Tester / credit</label><input type="text" id="rptTester" maxlength="80" value="Anonymous" placeholder="Name or Anonymous"></div>
+          <div class="form-group"><label>Handheld model</label><select id="rptDevice"><option value="">Select device…</option></select><input type="text" id="rptDeviceCustom" maxlength="100" placeholder="Exact device name" style="display:none;margin-top:8px;"></div>
+          <div class="form-group"><label>Device / board revision (optional)</label><input type="text" id="rptDeviceRevision" maxlength="80" placeholder="Board revision / hardware variant"></div>
+          <div class="form-group"><label>muOS version</label><select id="rptMuos"><option value="">Select firmware…</option></select><input type="text" id="rptMuosCustom" maxlength="100" placeholder="Exact firmware name and version" style="display:none;margin-top:8px;"></div>
         </div>
       </div>
       <div class="form-section">
-        <div class="form-section-head"><div class="form-section-num">05</div><div><div class="form-section-title"><i class="fa-solid fa-star-half-stroke"></i> Rating</div><div class="form-section-desc">Pick a rating — Boot &amp; Playable will be set automatically</div></div></div>
+        <div class="form-section-head"><div class="form-section-num">03</div><div><div class="form-section-title"><i class="fa-solid fa-microchip"></i> Emulator configuration</div><div class="form-section-desc">Use the exact installed release and profile labels</div></div></div>
+        <div class="form-row">
+          <div class="form-group"><label>Rt:Core version</label><select id="rptVersion"><option value="">Select Rt:Core release…</option></select><input type="text" id="rptVersionCustom" maxlength="100" placeholder="Exact Rt:Core version / build" style="display:none;margin-top:8px;"></div>
+          <div class="form-group"><label>Dolphin build / revision (optional)</label><input type="text" id="rptDolphinVersion" maxlength="120" placeholder="Build tag, commit SHA or BUILDINFO version"></div>
+          <div class="form-group"><label>Core profile</label><select id="rptProfile"><option value="">Select profile…</option></select><input type="text" id="rptProfileCustom" maxlength="100" placeholder="Exact profile name" style="display:none;margin-top:8px;"></div>
+          <div class="form-group"><label>Graphics backend</label><select id="rptGraphicsBackend"><option value="Not recorded">Not recorded</option><option value="OpenGL ES">OpenGL ES</option><option value="OpenGL">OpenGL</option><option value="Vulkan">Vulkan</option><option value="Software">Software</option><option value="Other">Other (describe in notes)</option></select></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-num">04</div><div><div class="form-section-title"><i class="fa-solid fa-stopwatch"></i> Test conditions</div><div class="form-section-desc">A repeatable gameplay sample is more useful than a menu benchmark</div></div></div>
+        <div class="form-row">
+          <div class="form-group"><label>Gameplay duration (minutes)</label><input type="number" id="rptDuration" min="1" max="600" step="1" placeholder="e.g. 20"></div>
+          <div class="form-group"><label>Area / scene / test scenario</label><input type="text" id="rptTestScene" maxlength="160" placeholder="e.g. first level, 3 races, boss fight"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-head"><div class="form-section-num">05</div><div><div class="form-section-title"><i class="fa-solid fa-star-half-stroke"></i> Overall result</div><div class="form-section-desc">Boot and Playability are derived from the rating</div></div></div>
         <div class="star-widget" id="rptStars">
-          <button type="button" class="star-btn" data-v="0"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
-          <button type="button" class="star-btn" data-v="1"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
-          <button type="button" class="star-btn" data-v="2"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
-          <button type="button" class="star-btn" data-v="3"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
-          <button type="button" class="star-btn" data-v="4"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
-          <button type="button" class="star-btn" data-v="5"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
+          <button type="button" class="star-btn" data-v="0" aria-label="0 stars — does not boot"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
+          <button type="button" class="star-btn" data-v="1" aria-label="1 star — crash or unusable"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
+          <button type="button" class="star-btn" data-v="2" aria-label="2 stars — boots but unplayable"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
+          <button type="button" class="star-btn" data-v="3" aria-label="3 stars — playable with issues"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
+          <button type="button" class="star-btn" data-v="4" aria-label="4 stars — playable, minor issues"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
+          <button type="button" class="star-btn" data-v="5" aria-label="5 stars — excellent"><svg viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 10.27l-5 4.87L16.18 22 12 18.27 7.82 22 9 15.14l-5-4.87 5.91-2.01z"/></svg></button>
           <span class="star-value" id="rptStarVal"></span>
         </div>
         <input type="hidden" id="rptRating">
         <div class="rating-rule-hint" id="rptRuleHint"><i class="fa-solid fa-link"></i><span>Select a rating to auto-set <b>Boot</b> and <b>Playable</b></span></div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-num">06</div><div><div class="form-section-title"><i class="fa-solid fa-power-off"></i> Boot</div><div class="form-section-desc">Auto-set by rating</div></div></div>
-        <div class="segmented locked" id="rptBootSeg">
-          <button type="button" data-v="yes" class="active" disabled>Boots</button>
-          <button type="button" data-v="crash" disabled>Crash</button>
-          <button type="button" data-v="no" disabled>No boot</button>
+        <div class="form-row" style="margin-top:14px;max-width:520px;">
+          <div class="form-group"><label>Minimum observed FPS</label><input type="number" id="rptFpsMin" min="0" max="240" step="1" placeholder="Leave both blank if unknown"></div>
+          <div class="form-group"><label>Maximum observed FPS</label><input type="number" id="rptFpsMax" min="0" max="240" step="1" placeholder="Do not use menu peaks"></div>
         </div>
-        <input type="hidden" id="rptBootVal" value="YES">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:7px;">Enter both FPS values or leave both empty. Use a realistic range measured during actual gameplay.</div>
+        <div class="form-row" style="margin-top:14px;">
+          <div class="form-group"><label>Boot result</label><div class="segmented locked" id="rptBootSeg"><button type="button" data-v="yes" class="active" disabled>Boots</button><button type="button" data-v="crash" disabled>Crash</button><button type="button" data-v="no" disabled>No boot</button></div><input type="hidden" id="rptBootVal" value="YES"></div>
+          <div class="form-group"><label>Playability</label><div class="segmented locked" id="rptPlayable"><button type="button" data-v="yes" class="active" disabled>Playable</button><button type="button" data-v="issues" disabled>With issues</button><button type="button" data-v="no" disabled>Unplayable</button></div><input type="hidden" id="rptPlayableVal" value="YES"></div>
+        </div>
       </div>
       <div class="form-section">
-        <div class="form-section-head"><div class="form-section-num">07</div><div><div class="form-section-title"><i class="fa-solid fa-gamepad"></i> Playability</div><div class="form-section-desc">Auto-set by rating</div></div></div>
-        <div class="segmented locked" id="rptPlayable"><button type="button" data-v="yes" class="active" disabled>Playable</button><button type="button" data-v="issues" disabled>With issues</button><button type="button" data-v="no" disabled>Unplayable</button></div>
-        <input type="hidden" id="rptPlayableVal" value="YES">
+        <div class="form-section-head"><div class="form-section-num">06</div><div><div class="form-section-title"><i class="fa-solid fa-stethoscope"></i> Subsystem observations</div><div class="form-section-desc">Mark only what you actually checked</div></div></div>
+        <div class="form-row">
+          <div class="form-group"><label>Audio</label><select id="rptAudio"><option>Not tested</option><option>Clean</option><option>Minor issues</option><option>Major issues</option></select></div>
+          <div class="form-group"><label>Graphics</label><select id="rptGraphics"><option>Not tested</option><option>Clean</option><option>Minor issues</option><option>Major issues</option></select></div>
+          <div class="form-group"><label>Input / controls</label><select id="rptInput"><option>Not tested</option><option>Clean</option><option>Minor issues</option><option>Major issues</option></select></div>
+          <div class="form-group"><label>Stability</label><select id="rptStability"><option>Not tested</option><option>Clean</option><option>Minor issues</option><option>Major issues</option></select></div>
+        </div>
       </div>
       <div class="form-section">
-        <div class="form-section-head"><div class="form-section-num">08</div><div><div class="form-section-title"><i class="fa-solid fa-gauge-high"></i> FPS Range</div><div class="form-section-desc">Min and max observed</div></div></div>
-        <div class="form-row" style="max-width:440px;"><input type="number" id="rptFpsMin" min="0" max="120" placeholder="MIN"><input type="number" id="rptFpsMax" min="0" max="120" placeholder="MAX"></div>
-      </div>
-      <div class="form-section">
-        <div class="form-section-head"><div class="form-section-num">09</div><div><div class="form-section-title"><i class="fa-solid fa-pen-to-square"></i> Considerations</div><div class="form-section-desc">Bugs, audio issues, workarounds</div></div></div>
-        <textarea id="rptCons" rows="4" maxlength="1500" placeholder="Describe what you saw…"></textarea>
-        <div style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);margin-top:6px;font-weight:800;" id="rptConsCounter">0 / 1500</div>
+        <div class="form-section-head"><div class="form-section-num">07</div><div><div class="form-section-title"><i class="fa-solid fa-pen-to-square"></i> Observations &amp; reproducibility</div><div class="form-section-desc">Describe slowdowns, glitches, crashes, workarounds and exact steps</div></div></div>
+        <textarea id="rptCons" rows="5" maxlength="2000" placeholder="What happened during gameplay? Include reproducible steps, scenes, stutters, graphical/audio defects, crashes and any workaround…"></textarea>
+        <div style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);margin-top:6px;font-weight:800;" id="rptConsCounter">0 / 2000</div>
       </div>
       <div class="form-section optional">
-        <div class="form-section-head"><div class="form-section-num">10</div><div><div class="form-section-title"><i class="fa-solid fa-wrench"></i> Custom Content <span style="font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">(optional)</span></div><div class="form-section-desc">Share a config or resource</div></div></div>
-        <div class="optional-toggle" id="rptCustomToggle"><div class="optional-toggle-left"><div class="optional-toggle-icon"><i class="fa-solid fa-plus"></i></div><div><div class="optional-toggle-title">Add custom content</div><div class="optional-toggle-desc">GameSettings, texture pack, resource pack</div></div></div><div class="optional-toggle-check"><i class="fa-solid fa-check"></i></div></div>
+        <div class="form-section-head"><div class="form-section-num">08</div><div><div class="form-section-title"><i class="fa-solid fa-wrench"></i> Custom settings / resources <span style="font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">(optional)</span></div><div class="form-section-desc">Share a GameSettings snippet or a public resource link</div></div></div>
+        <div class="optional-toggle" id="rptCustomToggle"><div class="optional-toggle-left"><div class="optional-toggle-icon"><i class="fa-solid fa-plus"></i></div><div><div class="optional-toggle-title">Add custom content</div><div class="optional-toggle-desc">GameSettings, texture pack, resource pack or other link</div></div></div><div class="optional-toggle-check"><i class="fa-solid fa-check"></i></div></div>
         <div id="rptCustomBody" style="display:none;">
           <div class="form-group" style="margin-bottom:14px;"><label>Type</label><div class="type-tabs" id="rptCustomTypeTabs"><div class="type-tab active" data-t="GameSettings"><i class="fa-solid fa-sliders"></i> GameSettings</div><div class="type-tab" data-t="Texture Pack"><i class="fa-solid fa-image"></i> Texture Pack</div><div class="type-tab" data-t="Resource Pack"><i class="fa-solid fa-box"></i> Resource Pack</div><div class="type-tab" data-t="Other"><i class="fa-solid fa-asterisk"></i> Other</div></div><input type="hidden" id="rptCustomType" value="GameSettings"></div>
-          <div class="form-row" style="margin-bottom:12px;"><div class="form-group"><label>Title</label><input type="text" id="rptCustomTitle" placeholder="e.g. Rt:Core Boost"></div><div class="form-group"><label>Author</label><input type="text" id="rptCustomAuthor" placeholder="Your name"></div></div>
-          <div class="form-group" style="margin-bottom:12px;"><label>Description</label><textarea id="rptCustomDesc" rows="2" placeholder="What does it do?" style="font-family:inherit;"></textarea></div>
-          <div id="rptCustomGS"><div class="form-group"><label>Paste .ini content</label><textarea id="rptCustomContent" rows="8" placeholder="[Core]&#10;Overclock = 0.20&#10;CPUCore = 4&#10;…"></textarea></div></div>
-          <div id="rptCustomURL" style="display:none;"><div class="form-group"><label>Download URL</label><input type="text" id="rptCustomUrl" placeholder="https://…"></div></div>
+          <div class="form-row" style="margin-bottom:12px;"><div class="form-group"><label>Title</label><input type="text" id="rptCustomTitle" maxlength="100" placeholder="e.g. Rt:Core per-game settings"></div><div class="form-group"><label>Author</label><input type="text" id="rptCustomAuthor" maxlength="80" placeholder="Your name"></div></div>
+          <div class="form-group" style="margin-bottom:12px;"><label>Description</label><textarea id="rptCustomDesc" rows="2" maxlength="500" placeholder="What does it change?" style="font-family:inherit;"></textarea></div>
+          <div id="rptCustomGS"><div class="form-group"><label>GameSettings INI snippet (optional)</label><textarea id="rptCustomContent" rows="7" maxlength="5000" placeholder="[Core]&#10;CPUCore = 4&#10;…"></textarea></div></div>
+          <div id="rptCustomURL" style="display:none;"><div class="form-group"><label>Public download / project URL</label><input type="url" id="rptCustomUrl" maxlength="500" placeholder="https://…"></div></div>
         </div>
       </div>
       <div class="form-section optional">
-        <div class="form-section-head"><div class="form-section-num">11</div><div><div class="form-section-title"><i class="fa-solid fa-paperclip"></i> Attachments <span style="font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">(optional)</span></div><div class="form-section-desc">Screenshots, videos, links</div></div></div>
-        <div class="optional-toggle" id="rptAttToggle"><div class="optional-toggle-left"><div class="optional-toggle-icon"><i class="fa-solid fa-paperclip"></i></div><div><div class="optional-toggle-title">Add attachments</div><div class="optional-toggle-desc">Screenshots, videos, links</div></div></div><div class="optional-toggle-check"><i class="fa-solid fa-check"></i></div></div>
-        <div id="rptAttBody" style="display:none;"><div class="att-rows" id="rptAttRows"></div><button type="button" class="mini-btn" style="margin-top:10px;" id="rptAttAdd"><i class="fa-solid fa-plus"></i> Add row</button></div>
+        <div class="form-section-head"><div class="form-section-num">09</div><div><div class="form-section-title"><i class="fa-solid fa-paperclip"></i> Evidence links <span style="font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">(optional)</span></div><div class="form-section-desc">Link to screenshots, short videos or public evidence only</div></div></div>
+        <div class="optional-toggle" id="rptAttToggle"><div class="optional-toggle-left"><div class="optional-toggle-icon"><i class="fa-solid fa-paperclip"></i></div><div><div class="optional-toggle-title">Add evidence links</div><div class="optional-toggle-desc">The form creates links; it does not upload files</div></div></div><div class="optional-toggle-check"><i class="fa-solid fa-check"></i></div></div>
+        <div id="rptAttBody" style="display:none;"><div class="att-rows" id="rptAttRows"></div><button type="button" class="mini-btn" style="margin-top:10px;" id="rptAttAdd"><i class="fa-solid fa-plus"></i> Add link</button></div>
+      </div>
+      <div class="form-section" style="border:1px solid var(--border-2);border-radius:12px;padding:14px;">
+        <div style="font-weight:900;margin-bottom:6px;"><i class="fa-solid fa-shield-halved"></i> Before submitting</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6;">This form opens a pre-filled GitHub issue for maintainer review; it does not publish directly to the database. Never attach ROMs, BIOS, firmware, copyrighted game files, serial numbers, MAC addresses, pairing tokens or private logs. Redact personal information from all evidence.</div>
       </div>
     </div>
-    <div class="modal-foot"><button class="btn" id="rptCancel">Cancel</button><button class="btn btn-primary btn-lg" id="rptSubmit"><i class="fa-solid fa-paper-plane"></i> Submit to GitHub</button></div>
+    <div class="modal-foot"><button class="btn" id="rptCancel">Cancel</button><button class="btn btn-primary btn-lg" id="rptSubmit"><i class="fa-brands fa-github"></i> Review GitHub issue</button></div>
   </div>
 </div>
-
 <div class="modal-back" id="gsModal">
   <div class="modal" style="max-width:1120px;">
     <div class="hud-scanline"></div>
@@ -775,7 +780,7 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
     <nav class="site-footer-links" aria-label="Project resources">
       <a href="https://github.com/SilverCrow2323/dolphin-rt-core" target="_blank" rel="noopener">Source repository</a>
       <a href="https://github.com/SilverCrow2323/dolphin-rt-core/wiki" target="_blank" rel="noopener">Documentation Wiki</a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/issues/new?labels=test-report" target="_blank" rel="noopener">Submit a test</a>
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/issues/new?template=compatibility-test-report.md&amp;labels=test-report" target="_blank" rel="noopener">Submit a test</a>
       <a href="https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/docs/COMPATIBILITY_SITE.md" target="_blank" rel="noopener">How this database works</a>
     </nav>
     <p style="margin-top:12px;font-size:12px;">Results are community reports, not universal guarantees. Compare device, firmware, game region and Rt:Core version.</p>
@@ -801,7 +806,7 @@ const PLAY_OK_COLOR='#00ff66';
 const PLAY_WARN_COLOR='#ffcc00';
 const PLAY_NO_COLOR='#ff3344';
 
-const state={console:'gc',rawGames:[],groupedGames:[],filtered:[],settings:[],search:'',region:'all',boot:'all',device:'all',muos:'all',sort:'rating-desc',stars:'all',favOnly:false,searchIndex:null,gsConsole:'gc'};
+const state={console:'gc',rawGames:[],groupedGames:[],filtered:[],settings:[],catalogs:{},search:'',region:'all',boot:'all',device:'all',muos:'all',sort:'rating-desc',stars:'all',favOnly:false,searchIndex:null,gsConsole:'gc'};
 const $=id=>document.getElementById(id);
 const $$=s=>document.querySelectorAll(s);
 
