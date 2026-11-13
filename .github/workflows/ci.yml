@@ -54,6 +54,10 @@ jobs:
           luajit tests/test_cheats_screen_nexus.lua
           luajit tests/test_game_nexus.lua
           luajit tests/test_keymap_nexus.lua
+          luajit tests/test_app_input_andromeda.lua
+          luajit tests/test_controller_map_input.lua
+          bash tests/test_muos_controller_profiles.sh
+          bash tests/test_hotkeys_runtime.sh
           luajit tests/test_controller_profiles_nexus.lua
           luajit tests/test_compat_nexus.lua
           luajit tests/test_compat_layout.lua
@@ -145,7 +149,7 @@ jobs:
         run: |
           bash -n tools/capture-ui.sh tools/publish-wiki.sh tools/build-compat-site.sh
           bash -n dolphin-build/build-dolphin.sh dolphin-build/verify-patches.sh dolphin-build/validate-aarch64-elf.sh tests/test_aarch64_elf_validator.sh
-          bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/launch.sh"
+          bash -n "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/launch.sh" "dolphin-rtcore-muos/app/Dolphin RtUI/scripts/hotkeys_runtime.sh"
           bash -n dolphin-rtcore-muos/overlay/opt/muos/script/launch/ext-dolphinrt.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/muos_platform.sh
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
