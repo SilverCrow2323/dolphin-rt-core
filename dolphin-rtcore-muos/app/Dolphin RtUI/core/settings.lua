@@ -55,7 +55,26 @@ function M.save()
   FS.atomic_write(PATH, JSON.encode(M.data))
 end
 
--- Migrazione chiavi rinominate (idempotente). Chiamata da init().
+local function clean_rom_path(path)
+  local p = tostring(path or ""):gsub("\\", "/"):gsub("/+", "/")
+  if #p > 1 then p = p:gsub("/+$", "") end
+  return p
+end
+local function rom_path_key(path) return clean_rom_path(path):lower() end
+local function rom_system(value)
+  local s = tostring(value or "GC"):upper()
+  if s == "WII" then return "Wii" end
+  if s == "BOTH" or s == "GC+WII" or s == "GC + WII" then return "Both" end
+  return "GC"
+end
+local function merge_rom_system(a, b)
+  a, b = rom_system(a), rom_system(b)
+  if a == "Both" or b == "Both" then return "Both" end
+  if a ~= b then return "Both" end
+  return a
+end
+
+-- Migrate renamed settings and collapse legacy ROM root duplicates.
 local _MIGRATIONS = {
   boot_animation = function(v) return { boot_anim = v and "full" or "off" } end,
 }
@@ -68,6 +87,32 @@ function M.migrate()
       changed = true
     end
   end
+
+  local source = type(M.data.rom_paths) == "table" and M.data.rom_paths or {}
+  local normalized, by_key = {}, {}
+  for _, entry in ipairs(source) do
+    if type(entry) == "table" and type(entry.path) == "string" and entry.path ~= "" then
+      local path = clean_rom_path(entry.path)
+      local system = rom_system(entry.system)
+      local key = rom_path_key(path)
+      local existing = by_key[key]
+      if existing then
+        local merged = merge_rom_system(existing.system, system)
+        if existing.system ~= merged then existing.system = merged end
+        changed = true
+      else
+        local item = copy(entry)
+        item.path, item.system = path, system
+        normalized[#normalized + 1] = item
+        by_key[key] = item
+        if entry.path ~= path or entry.system ~= system then changed = true end
+      end
+    else
+      changed = true
+    end
+  end
+  if type(M.data.rom_paths) ~= "table" or #normalized ~= #M.data.rom_paths then changed = true end
+  M.data.rom_paths = normalized
   if changed then M.save() end
 end
 
@@ -75,13 +120,25 @@ function M.get(k)      return M.data[k] end
 function M.set(k, v)   M.data[k] = v; M.save() end
 
 function M.add_rom_path(path, system)
-  system = system or "GC"
-  for _, e in ipairs(M.data.rom_paths) do
-    if e.path == path and e.system == system then return false end
+  path = clean_rom_path(path)
+  if path == "" then return false, "invalid" end
+  system = rom_system(system)
+  M.data.rom_paths = type(M.data.rom_paths) == "table" and M.data.rom_paths or {}
+  local key = rom_path_key(path)
+  for _, entry in ipairs(M.data.rom_paths) do
+    if type(entry) == "table" and rom_path_key(entry.path) == key then
+      local merged = merge_rom_system(entry.system, system)
+      if merged ~= rom_system(entry.system) then
+        entry.system = merged
+        M.save()
+        return true, "updated"
+      end
+      return false, "exists"
+    end
   end
   table.insert(M.data.rom_paths, { path = path, system = system })
   M.save()
-  return true
+  return true, "added"
 end
 
 function M.remove_rom_path(idx)
