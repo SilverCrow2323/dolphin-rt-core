@@ -147,11 +147,14 @@ class CompatibilitySiteTests(unittest.TestCase):
         portal_parser.feed(self.portal_html)
         self.assertTrue(parser.scripts, "No inline compatibility application script found")
         self.assertTrue(portal_parser.scripts, "No inline project portal script found")
-        with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as tmp:
-            tmp.write("\n".join(parser.scripts + portal_parser.scripts))
-            tmp.flush()
-            result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
-        self.assertEqual(result.returncode, 0, result.stderr)
+        # Each HTML page is a separate browser document. Do not concatenate
+        # the compatibility page and project portal into one global lexical scope.
+        for page_name, scripts in (("compatibility", parser.scripts), ("portal", portal_parser.scripts)):
+            with self.subTest(page=page_name), tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as tmp:
+                tmp.write("\n".join(scripts))
+                tmp.flush()
+                result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_wiki_navigation_references_resolve(self):
         wiki = ROOT / "wiki"
@@ -303,7 +306,8 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn('id="community"', self.portal_html)
         self.assertIn("Rt:Stream Guide", self.portal_html)
         self.assertIn('href="./compatibility.html"', self.portal_html)
-        self.assertIn("https://api.github.com/repos/SilverCrow2323/dolphin-rt-core/releases/latest", self.portal_html)
+        self.assertIn("const REPO_API='https://api.github.com/repos/SilverCrow2323/dolphin-rt-core';", self.portal_html)
+        self.assertIn("REPO_API+'/releases/latest'", self.portal_html)
         self.assertIn("FALLBACK_RELEASE", self.portal_html)
         self.assertIn("loadCompatibilityStats()", self.portal_html)
 
