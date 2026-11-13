@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Canonicalize the shared Dolphin Rt:Core compatibility database.
 
+The bundled Rt:UI JSON is the editable source; data/games_data.json is the
+runtime download endpoint used by the handheld boot updater. Both copies are
+required and must remain byte-identical.
+
 Run with --check in CI. Use --write only when intentionally migrating the
-tracked source database. The migration is idempotent and preserves every
-individual report while regrouping by Game ID + system + region.
+tracked source data. The migration is idempotent and preserves every
+individual report while grouping by Game ID + system + region.
 """
 from __future__ import annotations
 
