@@ -89,6 +89,35 @@ class WebPortalTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.portal.remote_path("/mnt/roms/../etc/passwd")
 
+    def test_sftp_realpath_uses_server_canonical_path(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with patch.object(self.portal, "sftp_command", return_value="/mnt/roms/GC") as run:
+            self.assertEqual(self.portal.sftp_realpath(cfg, "/mnt/roms/GC"), "/mnt/roms/GC")
+        self.assertEqual(run.call_args.args[1], ['realpath "/mnt/roms/GC"'])
+
+    def test_sftp_canonical_root_allows_device_root_symlink(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with patch.object(self.portal, "sftp_command", side_effect=["/data/games", "/data/games/GC"]):
+            self.assertEqual(
+                self.portal.confined_remote_path(cfg, "/mnt/roms/GC"),
+                ("/data/games", "/data/games/GC"),
+            )
+
+    def test_sftp_rejects_symlink_escape_outside_rom_root(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with patch.object(self.portal, "sftp_command", side_effect=["/mnt/roms", "/etc"]):
+            with self.assertRaisesRegex(ValueError, "escapes the configured ROM directory"):
+                self.portal.confined_remote_path(cfg, "/mnt/roms/GC/outside")
+
+    def test_remote_rom_extension_is_checked_before_canonical_confinement(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        self.assertEqual(
+            self.portal._validate_remote_rom(cfg, "/data/games/GC/Game.iso"),
+            "/data/games/GC/Game.iso",
+        )
+        with self.assertRaises(ValueError):
+            self.portal._validate_remote_rom(cfg, "/data/games/GC/not-a-rom.txt")
+
     def test_remote_root_prefix_boundary(self):
         self.assertTrue(self.portal.within_remote("/mnt/roms", "/mnt/roms/GC/game.iso"))
         self.assertFalse(self.portal.within_remote("/mnt/roms", "/mnt/roms-backup/game.iso"))
