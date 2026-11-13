@@ -84,6 +84,76 @@ echo "[OK] binary, private HIDAPI runtime and supplied Sys tree are included at 
 echo "[OK] GameCube fonts, DSP assets, and the Sys-tree marker are present"
 echo "[OK] manifest.sha256 covers the supplied Sys-tree marker"
 
+# Publishing is atomic: a failed ZIP write must preserve the previous
+# valid archive byte-for-byte and clean up the temporary destination.
+ATOMIC_OUT="$TMP/atomic-dist"
+mkdir -p "$ATOMIC_OUT"
+ATOMIC_ARCHIVE="$ATOMIC_OUT/$(basename "$ARCHIVE")"
+cp "$ARCHIVE" "$ATOMIC_ARCHIVE"
+ATOMIC_BEFORE="$(sha256sum "$ATOMIC_ARCHIVE" | awk '{print $1}')"
+FAILING_ZIP="$TMP/failing-zip-bin"
+mkdir -p "$FAILING_ZIP"
+cat > "$FAILING_ZIP/zip" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+target=""
+for arg in "$@"; do
+  case "$arg" in *.muxupd.tmp.*) target="$arg" ;; esac
+done
+[ -n "$target" ] || { echo "test wrapper did not receive a temporary archive path" >&2; exit 97; }
+printf 'deliberately incomplete ZIP data\n' > "$target"
+exit 1
+SH
+chmod 755 "$FAILING_ZIP/zip"
+if PATH="$FAILING_ZIP:$PATH" DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" DOLPHIN_LIB_DIR="$LIBS" \
+  bash "$PACKAGER" "$ATOMIC_OUT" >"$TMP/atomic-zip-failure.log" 2>&1; then
+  echo "[FAIL] packager reported success after a failed ZIP write" >&2
+  exit 1
+fi
+ATOMIC_AFTER="$(sha256sum "$ATOMIC_ARCHIVE" | awk '{print $1}')"
+[ "$ATOMIC_BEFORE" = "$ATOMIC_AFTER" ] || {
+  echo "[FAIL] failed ZIP write changed the previously published MUXUPD" >&2
+  exit 1
+}
+unzip -tq "$ATOMIC_ARCHIVE" >/dev/null
+if find "$ATOMIC_OUT" -maxdepth 1 -type f -name "$(basename "$ATOMIC_ARCHIVE").tmp.*" -print -quit | grep -q .; then
+  echo "[FAIL] failed ZIP write left a temporary archive behind" >&2
+  exit 1
+fi
+echo "[OK] failed ZIP write preserves the prior valid MUXUPD and cleans the temporary archive"
+
+# A faulty ZIP tool can return success and still emit an invalid archive.
+CORRUPT_ZIP="$TMP/corrupt-zip-bin"
+mkdir -p "$CORRUPT_ZIP"
+cat > "$CORRUPT_ZIP/zip" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+target=""
+for arg in "$@"; do
+  case "$arg" in *.muxupd.tmp.*) target="$arg" ;; esac
+done
+[ -n "$target" ] || { echo "test wrapper did not receive a temporary archive path" >&2; exit 97; }
+printf 'not a ZIP archive, despite exit zero\n' > "$target"
+exit 0
+SH
+chmod 755 "$CORRUPT_ZIP/zip"
+if PATH="$CORRUPT_ZIP:$PATH" DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" DOLPHIN_LIB_DIR="$LIBS" \
+  bash "$PACKAGER" "$ATOMIC_OUT" >"$TMP/corrupt-zip.log" 2>&1; then
+  echo "[FAIL] packager accepted an invalid ZIP after zero exit status" >&2
+  exit 1
+fi
+[ -s "$TMP/corrupt-zip.log" ] || { echo "[FAIL] invalid ZIP rejection did not report a diagnostic" >&2; exit 1; }
+[ "$ATOMIC_BEFORE" = "$(sha256sum "$ATOMIC_ARCHIVE" | awk '{print $1}')" ] || {
+  echo "[FAIL] invalid ZIP validation changed the existing package" >&2
+  exit 1
+}
+unzip -tq "$ATOMIC_ARCHIVE" >/dev/null
+if find "$ATOMIC_OUT" -maxdepth 1 -type f -name "$(basename "$ATOMIC_ARCHIVE").tmp.*" -print -quit | grep -q .; then
+  echo "[FAIL] invalid ZIP validation left a temporary archive behind" >&2
+  exit 1
+fi
+echo "[OK] invalid ZIP is rejected even after zip exits zero; prior MUXUPD stays intact"
+
 # Missing assets must fail before an update archive is produced.
 BROKEN_SYS="$TMP/Sys-missing-font"
 cp -a "$SYS" "$BROKEN_SYS"
