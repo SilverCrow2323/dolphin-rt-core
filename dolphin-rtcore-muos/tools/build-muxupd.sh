@@ -13,6 +13,7 @@ ARCHIVE="$OUT/Dolphin_RtCore_v${VERSION//./_}_Andromeda.muxupd"
 DOLPHIN_BIN="${DOLPHIN_BIN:-}"
 DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}"
 DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}"
+DOLPHIN_UI_ONLY="${DOLPHIN_UI_ONLY:-0}"
 if [ -z "$DOLPHIN_LIB_DIR" ] && [ -n "$DOLPHIN_BIN" ] && [ -d "$(dirname "$DOLPHIN_BIN")/lib" ]; then
   DOLPHIN_LIB_DIR="$(dirname "$DOLPHIN_BIN")/lib"
 fi
@@ -22,10 +23,22 @@ if [ -n "$DOLPHIN_SYS_DIR" ]; then
   [ -d "$DOLPHIN_SYS_DIR" ] || { echo "ERROR: DOLPHIN_SYS_DIR is not a directory: $DOLPHIN_SYS_DIR" >&2; exit 1; }
   SYS_SOURCE="$(cd "$DOLPHIN_SYS_DIR" && pwd -P)"
 fi
-if [ -n "$DOLPHIN_BIN" ]; then
-  hdr="$(head -c 20 "$DOLPHIN_BIN" | od -An -tx1 | tr -d ' \n')"
+if [ -z "$DOLPHIN_BIN" ]; then
+  [ "$DOLPHIN_UI_ONLY" = "1" ] || {
+    echo "ERROR: refusing to build an installable muOS update without Dolphin. Set DOLPHIN_BIN to a validated AArch64 executable, or explicitly set DOLPHIN_UI_ONLY=1 for CI-only UI validation." >&2
+    exit 2
+  }
+  ARCHIVE="${ARCHIVE%.muxupd}_ui-only.muxupd"
+else
+  [ -s "$DOLPHIN_BIN" ] || { echo "ERROR: DOLPHIN_BIN is missing or empty: $DOLPHIN_BIN" >&2; exit 1; }
+  hdr="$(head -c 20 "$DOLPHIN_BIN" | od -An -tx1 | tr -d ' \\n')"
   case "$hdr" in 7f454c46020101*b700) ;; *) echo "ERROR: DOLPHIN_BIN is not an aarch64 ELF executable" >&2; exit 1;; esac
-  ARCHIVE="${ARCHIVE%.muxupd}_with-dolphin.muxupd"
+  if readelf -d "$DOLPHIN_BIN" 2>/dev/null | grep -q "libhidapi-hidraw.so.0"; then
+    [ -s "$DOLPHIN_LIB_DIR/libhidapi-hidraw.so.0" ] || {
+      echo "ERROR: Dolphin requires libhidapi-hidraw.so.0 but it is not present in DOLPHIN_LIB_DIR=$DOLPHIN_LIB_DIR" >&2
+      exit 1
+    }
+  fi
 fi
 S="$(mktemp -d)"; trap 'rm -rf "$S"' EXIT
 
@@ -48,7 +61,17 @@ if [ "$SYS_SOURCE" != "$DEFAULT_SYS_SOURCE" ]; then
   cp -a "$SYS_SOURCE/." "$S/$EMU/Sys/"
 fi
 cp -a "$ROOT/app/Dolphin RtUI/." "$S/$APP/"
+# User preferences belong to the installed device, not to the source checkout.
+# Omitting this seed prevents an update from replacing ROM paths, theme and
+# last-game state with a developer/test copy. core/settings.lua supplies
+# first-run defaults when no local settings.json exists.
+rm -f "$S/$APP/data/settings.json"
 cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, tasks, manifest tool, update hook)
+# Jacaranda and older muOS releases read external core choices from the legacy
+# info/assign/<System>/*.ini tree. Seed standard profiles in the update too;
+# opt/update.sh + manifest_tool.sh then replace them with the selected profile
+# mode on legacy systems. Manifest-based releases safely ignore this tree.
+bash "$ROOT/tools/stage-legacy-assign.sh" "$S" 1
 [ -n "$DOLPHIN_BIN" ] && install -m755 "$DOLPHIN_BIN" "$S/$EMU/dolphin"
 if [ -n "$DOLPHIN_LIB_DIR" ]; then
   [ -d "$DOLPHIN_LIB_DIR" ] || { echo "ERROR: DOLPHIN_LIB_DIR is not a directory: $DOLPHIN_LIB_DIR" >&2; exit 1; }
@@ -57,6 +80,9 @@ if [ -n "$DOLPHIN_LIB_DIR" ]; then
 fi
 if [ -n "$DOLPHIN_BIN" ] && readelf -d "$DOLPHIN_BIN" 2>/dev/null | grep -q "libhidapi-hidraw.so.0"; then
   [ -s "$S/$EMU/lib/libhidapi-hidraw.so.0" ] || { echo "ERROR: missing bundled HIDAPI runtime; set DOLPHIN_LIB_DIR" >&2; exit 1; }
+  readelf -h "$S/$EMU/lib/libhidapi-hidraw.so.0" | grep -q 'Machine:.*AArch64' || {
+    echo "ERROR: bundled libhidapi-hidraw.so.0 is not an AArch64 ELF library" >&2; exit 1;
+  }
 fi
 mkdir -p "$S/$APP/data/logs" "$S/$APP/data/stream/covers" "$S/$APP/data/stream/keys"
 

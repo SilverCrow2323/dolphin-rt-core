@@ -1,0 +1,74 @@
+name: Feature request
+description: Propose a focused improvement to Dolphin Rt:Core or its companion tools
+title: "[Feature] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Explain the user problem and the practical value of the proposal. Keep one main request per issue.
+  - type: input
+    id: summary
+    attributes:
+      label: Feature summary
+      placeholder: "A short, actionable title"
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Target component
+      options:
+        - Dolphin emulator / core
+        - Rt:UI frontend
+        - RtSys / launcher / muOS integration
+        - Compatibility Database website
+        - Rt:Stream desktop portal
+        - Build / packaging / release
+        - Documentation / Wiki
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What is difficult, missing or unnecessarily slow today?
+      placeholder: Describe the use case and who it affects.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behaviour you would like to see.
+      placeholder: Explain the workflow and expected result.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable conditions that would make this feature complete.
+      placeholder: |
+        - [ ] The user can…
+        - [ ] Existing configuration remains compatible…
+        - [ ] Automated regression coverage exists…
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches or workarounds you tried.
+  - type: input
+    id: platform
+    attributes:
+      label: Relevant device / OS / firmware
+      placeholder: "e.g. RG35XX H, H700, muOS 2606.0 Andromeda"
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This request describes a feature, not a reproducible defect or support question.
+          required: true
+        - label: I have checked for an existing issue or documented workaround.
+          required: true

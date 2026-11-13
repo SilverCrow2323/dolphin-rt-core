@@ -13,7 +13,7 @@ Dolphin Rt:Core is a multi-deliverable repository. Keep the root README as the c
 | `data/` | shared repository data and databases |
 | `assets/` | repository-level artwork and icon resources |
 | `Core_History/` | archived prior implementations; historical reference, not current source by default |
-| `index.html`, `manifest.json`, `sw.js` | static Compatibility Database web app and PWA shell |
+| `index.html`, `compatibility.html`, `manifest.json`, `sw.js` | Project Portal, standalone Compatibility Database and PWA shell |
 | `wiki/` | tracked Markdown source used by the Wiki publisher |
 
 ## Current muOS frontend
@@ -37,7 +37,7 @@ See [[Rt-System-Status-Center]] and [[Graphics-Mods]] for operational details.
 
 ## Data flow
 
-The frontend's compatibility service reads the bundled `data/games_data.json`. The website reads that same tracked JSON through raw GitHub / jsDelivr URLs. Update the data once, then validate the website contract and the frontend loader.
+The frontend's compatibility service reads the bundled `data/games_data.json` or the downloaded runtime copy. The website reads the bundled Rt:UI source at `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json`. The handheld boot updater downloads `data/games_data.json` from the repository root. These two tracked compatibility copies must stay byte-identical; `tools/normalize_games_data.py --check` validates parity and `--write` updates both. Update the data once, then validate the website contract and frontend loader.
 
 Rt:Stream separates handheld UI from the PC portal. The PC performs emulation; the handheld receives the stream and sends input. Do not describe Rt:Stream as local handheld emulation.
 

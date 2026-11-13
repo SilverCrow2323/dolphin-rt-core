@@ -1,0 +1,111 @@
+name: Bug report
+description: Report a reproducible Dolphin Rt:Core, Rt:UI, launcher or compatibility-site defect
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a defect. Search existing issues first and include the exact release / device context. Never attach ROMs, BIOS, firmware images, private logs or credentials.
+  - type: input
+    id: summary
+    attributes:
+      label: Short description
+      description: One defect per issue.
+      placeholder: "e.g. Library scan duplicates a ROM root"
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected component
+      options:
+        - Dolphin emulator / core
+        - Rt:UI frontend
+        - RtSys / launcher / muOS integration
+        - Compatibility Database website
+        - Rt:Stream desktop portal
+        - Build / packaging / release
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: rtcore_version
+    attributes:
+      label: Rt:Core release / build
+      placeholder: "Exact release, prerelease or commit"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and hardware revision
+      placeholder: "e.g. Anbernic RG35XX H / board revision if known"
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware and exact version
+      placeholder: "e.g. muOS 2606.0 Andromeda"
+  - type: input
+    id: dolphin_version
+    attributes:
+      label: Dolphin build / revision
+      placeholder: "Build ID, commit SHA or BUILDINFO entry"
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What should happen?
+      placeholder: Describe the expected behaviour.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What happened instead? Include the exact visible error where possible.
+      placeholder: Describe the observed behaviour.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Provide numbered steps and note whether the issue is repeatable.
+      placeholder: |
+        1. Start from a clean launch.
+        2. Open…
+        3. Select…
+        4. Observe…
+    validations:
+      required: true
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Regression status
+      options:
+        - New in this release
+        - Also present in earlier releases
+        - Intermittent / not sure
+        - Not a regression
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Safe evidence (optional)
+      description: Link to redacted screenshots, short clips or a minimal sanitized log excerpt. Do not upload private or copyrighted files.
+      placeholder: Public evidence URL or a short redacted excerpt.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Privacy and content check
+      options:
+        - label: I have removed serial numbers, MAC addresses, pairing tokens, passwords and other private identifiers.
+          required: true
+        - label: I have not attached ROMs, BIOS, firmware images, copyrighted game files or credentials.
+          required: true
+  - type: markdown
+    attributes:
+      value: |
+        A successful CI build is not a physical H700 certification. State clearly whether the behaviour was reproduced on real hardware or only in a desktop / simulated environment.

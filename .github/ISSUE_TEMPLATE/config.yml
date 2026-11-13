@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Compatibility Database — submit a test
+    url: https://silvercrow2323.github.io/dolphin-rt-core/
+    about: Use the structured test-report form to create a maintainer-review issue.
+  - name: Practical documentation and troubleshooting
+    url: https://github.com/SilverCrow2323/dolphin-rt-core/wiki
+    about: Read setup guides, FAQs, compatibility notes and troubleshooting steps.
+  - name: Repository discussions
+    url: https://github.com/SilverCrow2323/dolphin-rt-core/discussions
+    about: Ask general questions or discuss ideas that do not need a bug report.

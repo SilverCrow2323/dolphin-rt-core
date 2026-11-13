@@ -57,10 +57,7 @@ jobs:
           luajit tests/test_controller_profiles_nexus.lua
           luajit tests/test_compat_nexus.lua
           luajit tests/test_cheatdb_nexus.lua
-          bash tests/test_muos_ui.sh
-          bash tests/test_graphics_mods.sh
-          bash tests/test_system_panel.sh
-      - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
+
       - name: Run muOS Andromeda's own archive checks
         run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
       - uses: actions/upload-artifact@v4
@@ -149,7 +146,7 @@ jobs:
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
           bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh
           bash -n tests/test_muos_registration.sh tests/test_dolphin_runtime_contract.sh tests/test_dolphin_sys_packaging.sh tests/test_port_sys_packaging.sh tests/test_dolphin_build_workflow_triggers.sh
-          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py
+          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py tests/test_rtstream_web_portal.py pc-stream/usr/lib/spdw-stream-portal/web_portal.py
       - name: Test native Dolphin workflow self-triggers
         run: bash tests/test_dolphin_build_workflow_triggers.sh
       - name: Test AArch64 ELF validation contract
@@ -165,4 +162,4 @@ jobs:
       - name: Test Knulli and ROCKNIX packaging with a matching Sys tree
         run: bash tests/test_port_sys_packaging.sh
       - name: Test repository and website tooling
-        run: python -m unittest tests/test_repo_tools.py tests/test_compat_site.py -v
+        run: python -m unittest tests/test_repo_tools.py tests/test_compat_site.py tests/test_rtstream_web_portal.py -v

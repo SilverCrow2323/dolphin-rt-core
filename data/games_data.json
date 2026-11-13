@@ -32,7 +32,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -71,7 +71,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -105,12 +105,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "Slight texture issues, Frame Rate is slow . Default core seems to also give the same result"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -149,7 +149,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -188,7 +188,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -227,7 +227,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -266,7 +266,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -305,7 +305,7 @@
           },
           "test_environment": {
             "tester": "S1eepy",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -344,7 +344,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -378,12 +378,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "Can be slow with many enemies on screen. Can stutter when speaking with npcs."
           },
           "test_environment": {
             "tester": "Happy",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -422,7 +422,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -461,7 +461,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -553,7 +553,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -592,7 +592,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -631,7 +631,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -670,7 +670,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -709,7 +709,7 @@
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -748,7 +748,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -787,7 +787,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -826,7 +826,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -865,7 +865,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -904,7 +904,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -943,7 +943,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -977,13 +977,13 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "All profiles (tested multiple)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1021,7 +1021,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1060,7 +1060,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1099,7 +1099,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1138,7 +1138,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1177,7 +1177,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1216,7 +1216,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1255,7 +1255,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1294,7 +1294,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1333,7 +1333,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1372,7 +1372,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1411,7 +1411,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1450,7 +1450,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1489,7 +1489,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1528,7 +1528,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1567,7 +1567,7 @@
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2016/03/crashnitrokart_gcnbox.jpg",
@@ -1596,8 +1596,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2016/03/crashnitrokart_gcnbox.jpg",
           "custom_settings": [
@@ -1648,7 +1648,7 @@
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1687,7 +1687,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1721,12 +1721,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "Slow videos, Frame Rate can vary, playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1765,7 +1765,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1804,7 +1804,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1843,7 +1843,7 @@
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -1867,13 +1867,13 @@
           },
           "test_details": {
             "rtcore_version": "v10.5.3",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "To be honest, the platforming sections are perfectly playable and even enjoyable, would Rate 4*. However, in the central city hub and during races the lagging gets really heavy, dropping FPS down to 20-25\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [
@@ -1940,8 +1940,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS Jacaranda (version not specified)"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1973,14 +1973,14 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v10.6 (pre release)",
+            "rtcore_version": "v10.6 (prerelease)",
             "core_profile": "Default",
             "considerations": "Gameplay suffers from slowdowns during combat, but the visuals are excellent. The Standard core profile provides the best performance. The Performance core sacrifices too much graphical quality.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS Jacaranda (version not specified)"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2002,14 +2002,14 @@
             "playable": "YES WITH ISSUES"
           },
           "test_details": {
-            "rtcore_version": "v11.0.0 'Frontendone' (prerelease)",
+            "rtcore_version": "v11.0.0 (FrontendONE prerelease)",
             "core_profile": "SpeedUp 2",
             "considerations": "Combat is noticeably smoother and faster, but still not at a point where gameplay is enjoyable and worthy of the name. However, the progress is clearly visible, even if the trade-off has been the graphical quality of the game, still enjoyable but compared to the perfect visuals you get with the Default profile... It's a real shame. But we do not give up, still Sbrobbing, still Rintromping.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2037,7 +2037,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2076,7 +2076,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2115,7 +2115,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2138,14 +2138,14 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "v11.5.00-II (Bash Arsenal)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "Slight stutter in animation fluidity, otherwise runs well.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2183,7 +2183,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2206,14 +2206,14 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "v11.5.00-II (Bash Arsenal)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "Doesn't boot, Black screen.. Tried every Rt:Profile.\nROM is NKit format."
           },
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2251,7 +2251,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2284,14 +2284,14 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v10.6 (pre release)",
+            "rtcore_version": "v10.6 (prerelease)",
             "core_profile": "SpeedUp 1",
             "considerations": "Almost perfect. Some lag during intense scenes, but overall very playable. Further in-depth testing is needed to confirm full stability.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2329,7 +2329,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2368,10 +2368,39 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
+          "custom_settings": [],
+          "attachments": []
+        },
+        {
+          "game_info": {
+            "game_id": "GEDP01",
+            "system": "GC",
+            "game": "Eternal Darkness: Sanity's Requiem",
+            "region": "PAL"
+          },
+          "test_review": {
+            "rating": 0,
+            "fps": "N/A",
+            "boot": "NO",
+            "playable": "NO",
+            "fps_min": 0,
+            "fps_max": 0
+          },
+          "test_details": {
+            "rtcore_version": "v11.5.00-III (FrontendONE)",
+            "core_profile": "All profiles (multiple tested)",
+            "considerations": "Only Black Screen. Tried every Rt:Profile\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
+          },
+          "test_environment": {
+            "tester": "Sirpips",
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
+          },
+          "cover_art": "https://art.gametdb.com/wii/cover/EN/GLZP7D.png",
           "custom_settings": [],
           "attachments": []
         }
@@ -2407,7 +2436,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2446,7 +2475,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2485,7 +2514,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2524,7 +2553,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2563,7 +2592,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2602,7 +2631,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2641,7 +2670,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2680,7 +2709,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2719,7 +2748,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2758,7 +2787,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2797,7 +2826,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2836,7 +2865,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2875,7 +2904,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2914,7 +2943,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2953,7 +2982,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -2992,7 +3021,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3031,7 +3060,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3070,7 +3099,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3109,7 +3138,7 @@
           },
           "test_environment": {
             "tester": "ᴡᴏᴋᴇᴜᴘɪɴᴘᴀʀɪs",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3148,7 +3177,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3177,7 +3206,7 @@
           },
           "test_environment": {
             "tester": "WorkingGoose",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3216,7 +3245,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3255,7 +3284,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3284,8 +3313,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3323,7 +3352,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/GLME01.png",
@@ -3362,7 +3391,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3401,7 +3430,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3440,7 +3469,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3479,7 +3508,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3518,7 +3547,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3557,7 +3586,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3596,7 +3625,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3635,7 +3664,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3664,8 +3693,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3693,8 +3722,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3727,12 +3756,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "Frame Rate too slow to be playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3766,13 +3795,13 @@
           },
           "test_details": {
             "rtcore_version": "v10.5.3",
-            "core_profile": "All profiles (tested multiple)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "Perfectly playable, some minor lagging in video scenes.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3810,7 +3839,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "https://i.ibb.co/b5Ptp5qr/MXPL01.jpg",
@@ -3849,7 +3878,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3888,7 +3917,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3927,7 +3956,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -3966,7 +3995,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4005,7 +4034,7 @@
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4044,7 +4073,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4083,7 +4112,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4122,7 +4151,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4145,14 +4174,14 @@
             "fps_max": 45
           },
           "test_details": {
-            "rtcore_version": "v11.0.00 (prerelease)",
+            "rtcore_version": "v11.0.0 (prerelease)",
             "core_profile": "All profiles",
             "considerations": "Can't run properly. Only with Black screen. Fix and Commpatibility profiles is able to go past the bootanim or the menu ui.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4190,7 +4219,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4229,7 +4258,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4268,7 +4297,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GOWP69.png?1330261887",
@@ -4307,7 +4336,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4346,7 +4375,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4385,7 +4414,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4424,7 +4453,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4463,7 +4492,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4502,7 +4531,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4541,7 +4570,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4580,7 +4609,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4619,7 +4648,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4658,7 +4687,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4697,7 +4726,7 @@
           },
           "test_environment": {
             "tester": "Lucaspec72",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4736,7 +4765,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4775,7 +4804,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4814,7 +4843,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4853,7 +4882,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4892,7 +4921,7 @@
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4915,14 +4944,14 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "v11.5.00-II (Bash Arsenal)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "Boots and shows initial logos, language selection screen appears, but after selecting language only Black screen.. Tried every Rt:Profile.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4960,7 +4989,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -4999,7 +5028,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5038,7 +5067,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5077,7 +5106,7 @@
           },
           "test_environment": {
             "tester": "Speedrun [+.[🐬].%]",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5111,12 +5140,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Eleot",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5150,12 +5179,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "standard",
+            "core_profile": "Standard",
             "considerations": "Playable at relativly high Frame Rate if you use the debug mode to disable stuff. I suggest BACKGROUND, STOBJ, EFFECTS, APE, MINIMAP"
           },
           "test_environment": {
             "tester": "Row",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5194,7 +5223,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5233,7 +5262,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5272,7 +5301,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/GQPE78.png?1372222109",
@@ -5311,7 +5340,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5350,7 +5379,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5389,7 +5418,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5428,7 +5457,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5467,7 +5496,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5506,7 +5535,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5545,7 +5574,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5584,7 +5613,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5623,7 +5652,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5662,7 +5691,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/G9SP8P.png?1317735920",
@@ -5701,7 +5730,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5740,7 +5769,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5779,7 +5808,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5818,7 +5847,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5852,12 +5881,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Eleot",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5896,7 +5925,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5935,7 +5964,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -5974,7 +6003,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6013,7 +6042,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6052,7 +6081,7 @@
           },
           "test_environment": {
             "tester": "Speedrun [+.[🐬].%]",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/GGVE78.png?1752723822",
@@ -6091,7 +6120,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/FR/G4IP52.png?1317735978",
@@ -6130,7 +6159,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6169,7 +6198,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6208,7 +6237,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6247,7 +6276,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6286,7 +6315,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6325,7 +6354,7 @@
           },
           "test_environment": {
             "tester": "DeadPlant, Sexy_Shrek, SEIRO",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6364,7 +6393,7 @@
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6403,7 +6432,7 @@
           },
           "test_environment": {
             "tester": "Mercquick",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6442,7 +6471,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6481,7 +6510,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6520,7 +6549,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6559,7 +6588,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6598,7 +6627,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6637,7 +6666,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6676,7 +6705,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6715,7 +6744,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6754,7 +6783,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6793,7 +6822,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6832,7 +6861,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6871,7 +6900,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6910,7 +6939,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6949,7 +6978,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -6988,7 +7017,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7027,7 +7056,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7066,7 +7095,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7105,7 +7134,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7144,7 +7173,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7183,7 +7212,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7222,7 +7251,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7245,14 +7274,14 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v11.0.00 (prerelease)",
+            "rtcore_version": "v11.0.0 (prerelease)",
             "core_profile": "Compatibility",
             "considerations": "[Disc 1] Only with the Compatibility profile does the game manage to boot past the \"Licensed by Nintendo\" screen shortly after startup.\nUnfortunately, this doesn't resolve the low frame Rate, which stays locked at around 30 FPS during gameplay. This causes lag that, while not extreme, is still quite annoying. Ultimately, a game like this is unplayable with an issue like this.[Disc 1] Only with the Compatibility profile the game can go past the \"Licensed by Nintendo\" screen shortly after the boot.\nHowever the average FPS during the gaming session is stable on 20-30 and way too laggy to be enjoyable.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2021/06/17752_front.jpg",
           "custom_settings": [],
@@ -7290,7 +7319,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7329,7 +7358,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7368,7 +7397,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7407,7 +7436,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7441,12 +7470,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "Gameplay needs a bit of patience"
           },
           "test_environment": {
             "tester": "Eleot",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7469,14 +7498,14 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.0.00 (prerelease)",
+            "rtcore_version": "v11.0.0 (prerelease)",
             "core_profile": "All profiles",
             "considerations": "Doesn't boot.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7514,7 +7543,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7553,7 +7582,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7592,7 +7621,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7631,7 +7660,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7670,7 +7699,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7709,7 +7738,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7748,7 +7777,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7787,7 +7816,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7826,7 +7855,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek, Speedrun [+.[🐬].%]",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7865,7 +7894,7 @@
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7904,7 +7933,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7943,7 +7972,7 @@
           },
           "test_environment": {
             "tester": "S1eepy",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -7982,7 +8011,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -8021,7 +8050,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -8060,7 +8089,7 @@
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -8099,7 +8128,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -8138,7 +8167,7 @@
           },
           "test_environment": {
             "tester": "Speedrun [+.[🐬].%]",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -8177,8 +8206,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG 35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8216,8 +8245,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8250,13 +8279,13 @@
           },
           "test_details": {
             "rtcore_version": "v10.5.300",
-            "core_profile": "SpeedHack / Default (both tested)",
+            "core_profile": "SpeedHack + Default (both tested)",
             "considerations": "It is technically playable if you are fine with 9 fps but i wouldnt say its a fun experience"
           },
           "test_environment": {
             "tester": "TekkraGMD",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jakaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8294,7 +8323,7 @@
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -8328,12 +8357,12 @@
           },
           "test_details": {
             "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "core_profile": "SpeedHack + Default (multiple profiles)",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
+            "device": "Unspecified",
             "muos_version": ""
           },
           "cover_art": "",
@@ -8367,13 +8396,13 @@
           },
           "test_details": {
             "rtcore_version": "v10.5.3",
-            "core_profile": "All profiles (tested multiple)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "Profiles tested: Speedhack,Performance, Speedup1, Default\nSadly the game won't go past the first option selection window\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2021/03/61171_front.jpg",
           "custom_settings": [
@@ -8417,8 +8446,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8456,8 +8485,8 @@
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2023/01/66108_front.jpg",
           "custom_settings": [
@@ -8495,14 +8524,14 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v11.0.0 (current)",
+            "rtcore_version": "v11.0.0",
             "core_profile": "Ultra",
             "considerations": "The game actually runs much more smoothly than its predecessor Budokai. The fights still suffer from frame Rate drops, which are noticeable, but I managed to complete several battles without major issues. However, heavy lag persists during cutscenes, and the experimental Ultra profile significantly sacrifices graphical quality for smoother gameplay. I will run further tests with more stable profiles as soon as possible.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2016/04/143049-dragon-ball-z-budokai-2-gamecube-front-cover.jpg",
           "custom_settings": [
@@ -8543,13 +8572,13 @@
           },
           "test_details": {
             "rtcore_version": "v10.5.3",
-            "core_profile": "All profiles (tested multiple)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "I was surprised how well i got it to run how ever i will note it dipped heavily when i selected tails which would be an issue if i tried to 100% the game"
           },
           "test_environment": {
             "tester": "TekkraGMD",
-            "device": "RG35XXH",
-            "muos_version": "2601.0 Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.0 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [
@@ -8589,13 +8618,13 @@
           },
           "test_details": {
             "rtcore_version": "v11.0.0 (prerelease)",
-            "core_profile": "All profiles (tested multiple)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "Unfortunately, even with the Black screen. Fix profile, the game does not boot.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2022/06/43979_front.jpg",
           "custom_settings": [
@@ -8647,13 +8676,13 @@
           },
           "test_details": {
             "rtcore_version": "v11.0.0 (prerelease)",
-            "core_profile": "Black Screen Fix, Compatibility, Default",
+            "core_profile": "Black Screen Fix + Compatibility + Default",
             "considerations": "Unfortunately, even with various profiles, the game fails to boot.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2025/11/rgt_featured_1_1764354821395.jpg",
           "custom_settings": [
@@ -8702,14 +8731,14 @@
             "fps_max": 45
           },
           "test_details": {
-            "rtcore_version": "v11.0.0-dev",
-            "core_profile": "SpeedHacks, Performance, Ultra",
+            "rtcore_version": "v11.0.0 (development)",
+            "core_profile": "SpeedHack + Performance + Ultra",
             "considerations": "UI graphics run smoothly at around 45 FPS, sometimes even higher. However, gameplay sessions and cutscenes lag heavily, making it currently unplayable.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8748,7 +8777,7 @@
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GBTP70.png?1317735940",
           "custom_settings": [],
@@ -8780,14 +8809,14 @@
             "fps_max": 59
           },
           "test_details": {
-            "rtcore_version": "v11.0.00-dev",
+            "rtcore_version": "v11.0.0 (development)",
             "core_profile": "All profiles",
             "considerations": "Unplayable, battle sessions runs down to 10FPS.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8819,14 +8848,14 @@
             "fps_max": 59
           },
           "test_details": {
-            "rtcore_version": "v11.0.00-dev",
+            "rtcore_version": "v11.0.0 (development)",
             "core_profile": "SpeedHack",
             "considerations": "Simply PERFECT\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [
@@ -8850,7 +8879,7 @@
     },
     {
       "game_info": {
-        "game_id": "SEKJ99",
+        "game_id": "SEKE99",
         "system": "Wii",
         "game": "Ikenie no Yoru",
         "region": "NTSC-J"
@@ -8872,14 +8901,14 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.0.00 (prerelease)",
+            "rtcore_version": "v11.0.0 (prerelease)",
             "core_profile": "All profiles",
             "considerations": "[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2025/12/rgt_featured_1_1764982026658.jpg",
           "custom_settings": [
@@ -8931,8 +8960,8 @@
           },
           "test_environment": {
             "tester": "XSpalter",
-            "device": "RG-34XX SP",
-            "muos_version": "Jacaranda"
+            "device": "Anbernic RG34XX SP",
+            "muos_version": "muOS Jacaranda (version not specified)"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GOWP69.png?1330261887",
           "custom_settings": [],
@@ -8942,7 +8971,7 @@
           "game_info": {
             "game_id": "GOWP69",
             "system": "GC",
-            "game": "Need for Speed - Most Wanted",
+            "game": "Need for Speed: Most Wanted",
             "region": "PAL"
           },
           "test_review": {
@@ -8954,14 +8983,14 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
+            "rtcore_version": "v11.5.00-II (Bash Arsenal)",
             "core_profile": "Performance",
             "considerations": "Need for Speed: Most Wanted – game-specific Performance profile\nFor Need for Speed: Most Wanted (GameCube PAL / Game ID GOWP69), the existing Rt:Core Performance profile works well with one important game-specific adjustment and a Potato Patched Rom:\n[Core]\nOverclock = 0.20\n\nThe regular Performance GFX.ini can be used unchanged. Its existing performance-oriented graphics/EFB/XFB settings already work well for this title.\nSuggested implementation:\n\nDetect Need for Speed: Most Wanted by Game ID GOWP69.\nStart from the normal Rt:Core Performance profile.\nOverride only the CPU emulation overclock value to 0.20.\nKeep the regular Performance GFX.ini.\nDo not modify the global Performance profile for other games.\nOn the H700 / RG34XX SP this setting was tested to perform significantly better for Need for Speed: Most Wanted than the Default Performance CPU clock.\nPotato Edition / prepared RVZ *\nFor additional performance improvements, I also created Need for Speed Most Wanted Potato Edition, a small Windows patcher that prepares a clean PAL GOWP69 GameCube image and creates a verified RVZ optimized for this use case.\nThe patcher applies several game-side rendering reductions, including reduced scenery geometry/LOD paths, disabled car shadows and reflections, disabled sky rendering and other visual reductions, as well as forcing the reduced 2-player asset/geometry path in single-player.\nRepository and patcher:\n[GITHUB-LINK]\nThis is optional—the proposed Dolphin profile should still work with the original game—but the Potato Edition RVZ is intended specifically for low-power H700 handhelds and provides additional performance headroom."
           },
           "test_environment": {
             "tester": "Lazz",
-            "device": "RG34XX SP",
-            "muos_version": "2508.3 Golden Goose"
+            "device": "Anbernic RG34XX SP",
+            "muos_version": "muOS 2508.3 Golden Goose"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GOWP69.png?1330261887",
           "custom_settings": [
@@ -9012,14 +9041,14 @@
             "fps_max": 22
           },
           "test_details": {
-            "rtcore_version": "v11.5.00 'Comfort Zone' (prerelease)",
+            "rtcore_version": "v11.5.00 (Comfort Zone prerelease)",
             "core_profile": "All profiles",
             "considerations": "Boots and runs without crashing. Unfortunately it's impossible to play with it, too heavy stuttering.\nBetter in the UIs\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/RDBE70.png?1634775241",
           "custom_settings": [],
@@ -9051,14 +9080,14 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Unknown",
+            "rtcore_version": "Unspecified",
             "core_profile": "All profiles",
             "considerations": "Profiles tested: Speedhack,Performance, Speedup1, Default\nSadly the game won't go past the first option selection window\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H",
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -9090,55 +9119,16 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-III FrontendONE",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "v11.5.00-III (FrontendONE)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "Only Black Screen. Tried every Rt:Profile\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GREP08.png?1331477838",
-          "custom_settings": [],
-          "attachments": []
-        }
-      ]
-    },
-    {
-      "game_info": {
-        "game_id": "GEDP01",
-        "system": "GC",
-        "game": "Geist",
-        "region": "PAL"
-      },
-      "entries": [
-        {
-          "game_info": {
-            "game_id": "GEDP01",
-            "system": "GC",
-            "game": "Geist",
-            "region": "PAL"
-          },
-          "test_review": {
-            "rating": 0,
-            "fps": "N/A",
-            "boot": "NO",
-            "playable": "NO",
-            "fps_min": 0,
-            "fps_max": 0
-          },
-          "test_details": {
-            "rtcore_version": "v11.5.00-III FrontendONE",
-            "core_profile": "All profiles (tested multiple)",
-            "considerations": "Only Black Screen. Tried every Rt:Profile\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
-          },
-          "test_environment": {
-            "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
-          },
-          "cover_art": "https://art.gametdb.com/wii/cover/EN/GLZP7D.png",
           "custom_settings": [],
           "attachments": []
         }
@@ -9168,14 +9158,14 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "v11.5.00-II (Bash Arsenal)",
+            "core_profile": "All profiles (multiple tested)",
             "considerations": "Game boots and runs without crashes or major bugs, but the lagging is far too heavy to appreciate the gameplay. Especially for a title like Muramasa, where the beauty of its sophisticated and unique aesthetic is heavily compromised by such gameplay, it's almost painful to \"play\".\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "muos_version": "muOS 2601.1 Jacaranda"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/RMUP8P.png",
           "custom_settings": [],
@@ -9183,5 +9173,60 @@
         }
       ]
     }
-  ]
+  ],
+  "schema_version": 2,
+  "catalogs": {
+    "devices": [
+      "Anbernic RG35XX H",
+      "Anbernic RG34XX SP",
+      "Anbernic RG40XX H",
+      "Anbernic RG CubeXX",
+      "RG4xxxx",
+      "Unspecified"
+    ],
+    "muos_versions": [
+      "muOS 2606.0 Andromeda",
+      "muOS Jacaranda (version not specified)",
+      "muOS 2601.1 Jacaranda",
+      "muOS 2601.0 Jacaranda",
+      "muOS 2508.3 Golden Goose",
+      "muOS 2508.2 Silly Goose",
+      "muOS 2508.1 Canada Goose",
+      "muOS 2508.0 Goose",
+      "muOS 2502.0 Pixie"
+    ],
+    "rtcore_versions": [
+      "12.0.0 Kanzentai",
+      "v11.5.00-III (FrontendONE)",
+      "v11.5.00-II (Bash Arsenal)",
+      "v11.5.00 (Comfort Zone prerelease)",
+      "v11.0.0",
+      "v11.0.0 (prerelease)",
+      "v11.0.0 (FrontendONE prerelease)",
+      "v11.0.0 (development)",
+      "v10.6 (prerelease)",
+      "v10.5.300",
+      "v10.5.3",
+      "v10.5-124",
+      "Legacy",
+      "Unspecified"
+    ],
+    "core_profiles": [
+      "Default",
+      "Performance",
+      "Compatibility",
+      "SpeedHack",
+      "Black Screen Fix",
+      "Ultra",
+      "SpeedUp 1",
+      "SpeedUp 2",
+      "All profiles",
+      "All profiles (multiple tested)",
+      "SpeedHack + Default (multiple profiles)",
+      "SpeedHack + Default (both tested)",
+      "Black Screen Fix + Compatibility + Default",
+      "SpeedHack + Performance + Ultra",
+      "Various profiles"
+    ]
+  }
 }
