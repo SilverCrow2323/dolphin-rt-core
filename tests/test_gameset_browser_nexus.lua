@@ -32,10 +32,15 @@ end
 package.preload["core.gameset_manager"] = function() return { list_for = function() return {} end } end
 package.preload["core.library"] = function() return { games = { { id = "GZLE01", title = "Game" } } } end
 package.preload["core.gamesettings_deployer"] = function()
-    return { start = function(games)
-        deployments = deployments + #games
-        return { deployed = 2, matched = 1, skipped = 0 }
-    end }
+    return {
+        start = function(games)
+            deployments = deployments + #games
+            return #games
+        end,
+        poll = function()
+            return true, { deployed = 2, matched = 1, processed = 1 }
+        end,
+    }
 end
 
 local Screen = require("ui.screens.gameset_browser")
@@ -66,8 +71,13 @@ assert(state.tab == "database", "database tab should be active")
 assert(actions["gamesettings.refresh_database"].run())
 assert(invalidations == 1, "refresh should invalidate database cache")
 local synced, result = actions["gamesettings.sync_library"].run()
-assert(synced and result.deployed == 2 and deployments == 1, "library presets should deploy")
+assert(synced and result.queued == 1 and deployments == 1, "library presets should enter the incremental queue")
+Screen.update(0)
+local deployment_state = actions["gamesettings.state"].run()
+assert(deployment_state.deployment.deployed == 2 and not deployment_state.deployment_pending,
+       "the incremental queue should publish its completed deployment result")
 assert(actions["gamesettings.open_storage"].run())
 assert(actions["gamesettings.state"].run().tab == "storage")
 assert(actions["gamesettings.select_row"].run(999) == false, "invalid row must be rejected")
+assert(actions["gamesettings.preview_selected"].run() == false, "only database presets can be previewed")
 print("GameSettings NEXUS actions: OK")
