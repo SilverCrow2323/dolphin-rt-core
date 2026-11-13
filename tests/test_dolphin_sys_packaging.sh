@@ -98,6 +98,45 @@ done
 echo "[OK] official GameSettings, texture packs, graphics mods and Rt:UI game profiles are retained"
 echo "[OK] manifest.sha256 covers the supplied Sys-tree marker"
 
+# Publishing is atomic: an interrupted ZIP write must preserve the previous
+# valid package byte-for-byte and remove the incomplete temporary file.
+ATOMIC_OUT="$TMP/atomic-dist"
+mkdir -p "$ATOMIC_OUT"
+ATOMIC_ARCHIVE="$ATOMIC_OUT/$(basename "$ARCHIVE")"
+cp "$ARCHIVE" "$ATOMIC_ARCHIVE"
+ATOMIC_BEFORE="$(sha256sum "$ATOMIC_ARCHIVE" | awk '{print $1}')"
+FAILING_ZIP="$TMP/failing-zip-bin"
+mkdir -p "$FAILING_ZIP"
+cat > "$FAILING_ZIP/zip" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+target=""
+for arg in "$@"; do
+  case "$arg" in *.muxupd.tmp.*) target="$arg" ;; esac
+done
+[ -n "$target" ] || { echo "test wrapper did not receive a temporary archive path" >&2; exit 97; }
+printf 'deliberately incomplete ZIP data\n' > "$target"
+exit 1
+SH
+chmod 755 "$FAILING_ZIP/zip"
+if PATH="$FAILING_ZIP:$PATH" DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" DOLPHIN_LIB_DIR="$LIBS" \
+  bash "$PACKAGER" "$ATOMIC_OUT" >"$TMP/atomic-zip-failure.log" 2>&1; then
+  echo "[FAIL] packager reported success after a failed ZIP write" >&2
+  exit 1
+fi
+ATOMIC_AFTER="$(sha256sum "$ATOMIC_ARCHIVE" | awk '{print $1}')"
+[ "$ATOMIC_BEFORE" = "$ATOMIC_AFTER" ] || {
+  echo "[FAIL] failed ZIP write changed the previously published MUXUPD" >&2
+  exit 1
+}
+unzip -tq "$ATOMIC_ARCHIVE" >/dev/null
+if find "$ATOMIC_OUT" -maxdepth 1 -type f -name "$(basename "$ATOMIC_ARCHIVE").tmp.*" -print -quit | grep -q .; then
+  echo "[FAIL] failed ZIP write left a temporary archive behind" >&2
+  exit 1
+fi
+echo "[OK] failed ZIP write preserves the prior valid MUXUPD and cleans the temporary archive"
+
+
 # Missing assets must fail before an update archive is produced.
 BROKEN_SYS="$TMP/Sys-missing-font"
 cp -a "$SYS" "$BROKEN_SYS"
