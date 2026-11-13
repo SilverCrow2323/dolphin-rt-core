@@ -23,7 +23,7 @@ STAGE="$TMP/stage"
 mkdir -p "$BASE" "$STAGE"
 DOLPHIN_BIN="$DOLPHIN_NO_GUI_BIN" DOLPHIN_LIB_DIR="${DOLPHIN_LIB_DIR:-}" DOLPHIN_SYS_DIR="${DOLPHIN_SYS_DIR:-}" \
   bash "$ROOT/tools/build-muxupd.sh" "$BASE"
-BASE_ARCHIVE="$BASE/Dolphin_RtCore_v${VERSION//./_}_Andromeda_with-dolphin.muxupd"
+BASE_ARCHIVE="$BASE/Dolphin_RtCore_v${VERSION//./_}_Andromeda.muxupd"
 [ -s "$BASE_ARCHIVE" ] || { echo "base muOS archive was not created" >&2; exit 1; }
 unzip -q "$BASE_ARCHIVE" -d "$STAGE"
 EMU="$STAGE/opt/muos/share/emulator/dolphin"

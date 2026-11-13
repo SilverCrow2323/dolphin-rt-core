@@ -3,7 +3,7 @@ package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;" .. package.path
 
 local files = {
     ["workshop/hotkeys/Default/Hotkeys.ini"] =
-        "[Hotkeys1]\nDevice = Keyboard\nKeys/Save State Slot 1 = \x60F1\x60\n",
+        "[Hotkeys]\nDevice = SDL/0/Keyboard Mouse\nSave State/Save State Slot 1 = F1\n",
     ["workshop/hotkeys/Default/ext-dolphin.gptk"] = "a = f1\n",
 }
 local modal, fail_write_path
@@ -170,7 +170,10 @@ assert(actions["hotkeys.change_key"].run(1))
 assert(actions["hotkeys.state"].run().emitted_key == "F2")
 assert(actions["hotkeys.save"].run())
 state = actions["hotkeys.state"].run()
-assert(state.dirty == false and files["workshop/hotkeys/Default/Hotkeys.ini"]:match("\x60F2\x60"))
+assert(state.dirty == false
+    and files["workshop/hotkeys/Default/Hotkeys.ini"]:match("%[Hotkeys%]")
+    and files["workshop/hotkeys/Default/Hotkeys.ini"]:match("Device = SDL/0/Keyboard Mouse")
+    and files["workshop/hotkeys/Default/Hotkeys.ini"]:match("Save State/Save State Slot 1 = F2"))
 assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("a%s+=%s+F2"))
 
 assert(actions["hotkeys.set_device"].run("pad"))

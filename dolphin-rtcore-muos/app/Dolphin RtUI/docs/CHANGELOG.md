@@ -1,5 +1,25 @@
 # Changelog
 
+## 3.6.1 "Jacaranda Bridge" — Rt:Core v12.0.1 maintenance candidate
+
+### muOS legacy assignment compatibility
+- MUXUPD now seeds `opt/muos/share/info/assign/Nintendo GameCube` and `Nintendo Wii` directly from the canonical RtSys profile INIs.
+- Preserve the historical `GameCube` directory casing while the INI system identifier remains `Nintendo Gamecube`.
+- Jacaranda's legacy registration path replaces only Rt:Core's own INIs and leaves unrelated files in the assignment directories intact.
+- The standard profile payload is included before the post-install hook runs, so a legacy device has a safe fallback even if registration needs a retry.
+
+### Content Explorer and controls
+- Add Task Toolkit → **Diagnose ROM folders** to report SD1/SD2 mount points, `ROMS` versus `roms` folder casing, GameCube/Wii image counts, legacy assignment files and input devices without listing game names or changing storage.
+- The external muOS core launcher now starts `gptokeyb2` with the same `ext-dolphin.gptk` mapping as Rt:UI and cleans it up after Dolphin exits.
+- Keep the raw START+SELECT watcher as an independent emergency exit path.
+
+### Build and packaging
+- Build on an Ubuntu 22.04 ARM64 userland hosted by the current Ubuntu 24.04 ARM64 runner, retaining the GLIBC 2.35 ceiling for muOS.
+- Refuse a full update unless a validated AArch64 Dolphin executable is supplied; UI-only validation requires the explicit `DOLPHIN_UI_ONLY=1` opt-in.
+- Refuse packaging when Dolphin needs `libhidapi-hidraw.so.0` but the matching AArch64 runtime is absent.
+- Preserve the ELF, private HIDAPI, system resource, MUXUPD integrity and archive-layout checks.
+- If the Actions artifact service is unavailable, publish the verified files to a SHA-specific draft GitHub Release instead of losing the completed package.
+
 ## 3.6.0 "Kanzentai" — Rt:Core v12.0.00 for muOS 2606.0 Andromeda
 
 ### muOS Andromeda compatibility (checked against the 2606.0_Andromeda sources)

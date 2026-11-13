@@ -57,7 +57,10 @@ jobs:
           luajit tests/test_controller_profiles_nexus.lua
           luajit tests/test_compat_nexus.lua
           luajit tests/test_cheatdb_nexus.lua
-      - run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
+      - name: Build explicitly UI-only muOS package for CI validation
+        env:
+          DOLPHIN_UI_ONLY: "1"
+        run: bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
         run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
       - uses: actions/upload-artifact@v4
