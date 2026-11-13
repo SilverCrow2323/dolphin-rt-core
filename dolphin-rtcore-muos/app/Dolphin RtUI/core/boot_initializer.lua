@@ -33,6 +33,8 @@ local STATE = {
     gamesets_status = "waiting", cheats_status = "waiting",
   },
   _fast_done = false,
+  scan_library = nil,
+  scan_driver = false,
 }
 
 local function marker(name) return "/tmp/rt_boot_" .. name .. ".done" end
@@ -85,6 +87,8 @@ function M.start()
     gamesets_status = "waiting", cheats_status = "waiting",
   }
   STATE._fast_done = false
+  STATE.scan_library = nil
+  STATE.scan_driver = false
   Hub.push("info", "Boot sequence", "Starting up…", { silent = true, ttl = 2 })
 end
 
@@ -109,6 +113,15 @@ function M.update(dt)
 
   STATE.t = STATE.t + dt
   if STATE.t > 90 then
+    -- If boot owns an incremental ROM scan, close it cleanly and keep the
+    -- partial index rather than leaving Library.scanning stuck forever.
+    if STATE.scan_driver and STATE.scan_library
+       and STATE.scan_library.scanning then
+      pcall(STATE.scan_library.scan_finish)
+      STATE.results.roms = #(STATE.scan_library.games or {})
+    end
+    STATE.scan_library = nil
+    STATE.scan_driver = false
     Hub.push("warning", "Boot sequence", "Timed out")
     STATE.step = "done"
     return
@@ -170,22 +183,56 @@ function M.update(dt)
     end
 
   elseif step == "scan_roms" then
-    local ok, Library = pcall(require, "core.library")
-    local n = 0
-    if ok and Library then
-      pcall(function() Library.scan() end)
-      n = #(Library.games or {})
+    if not STATE.scan_library then
+      local ok, Library = pcall(require, "core.library")
+      if ok and Library then
+        STATE.scan_library = Library
+        if Library.scanning then
+          -- The Library screen may have started its own incremental scan
+          -- after the intro timed out. Never replace its active queue.
+          STATE.scan_driver = (Library.scan_owner == "boot")
+        else
+          local began, err = pcall(Library.scan_begin, "boot")
+          if not began then
+            Hub.push("warning", "ROM scan", tostring(err))
+            STATE.scan_library = nil
+          else
+            STATE.scan_driver = true
+          end
+        end
+      else
+        Hub.push("warning", "ROM scan", "Library scanner unavailable")
+      end
     end
-    STATE.results.roms = n
-    Hub.push("scan", "ROM scan complete",
-      string.format("%d ROM(s) indexed", n), { silent = true, ttl = 4 })
-    STATE.ids = {}
-    if ok and Library then
+
+    local Library = STATE.scan_library
+    if not Library then
+      STATE.results.roms = 0
+      STATE.ids = {}
+      STATE.step = "wait_gamesets"; STATE.t = 0
+      return
+    end
+
+    -- One small slice per frame. Library.scan() is intentionally not used
+    -- here: it drains the complete queue synchronously and freezes the intro.
+    if STATE.scan_driver and Library.scanning then
+      local ok, finished = pcall(Library.scan_step, 0.008)
+      if not ok then
+        Hub.push("warning", "ROM scan", tostring(finished))
+        pcall(Library.scan_finish)
+      end
+    end
+
+    if not Library.scanning then
+      STATE.results.roms = #(Library.games or {})
+      STATE.ids = {}
       for _, g in ipairs(Library.games or {}) do
         if g.id and g.id ~= "" then STATE.ids[#STATE.ids+1] = g.id end
       end
+      STATE.scan_library = nil
+      STATE.scan_driver = false
+      STATE.step = "wait_gamesets"; STATE.t = 0
     end
-    STATE.step = "wait_gamesets"; STATE.t = 0
 
   elseif step == "wait_gamesets" then
     local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
