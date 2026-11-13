@@ -134,6 +134,8 @@ The test rejects wrong ELF class/architecture, malformed headers, unreadable or 
 
 Use the binary and **Sys/** directory from the **same build output**:
 
+The builder assembles the `.muxupd` into a fresh temporary file beside the destination, checks the ZIP and integrity manifest, then atomically replaces the final package. A failed archive build preserves any previously published package.
+
 ~~~bash
 DOLPHIN_BIN="$PWD/out/muos/dolphin" DOLPHIN_SYS_DIR="$PWD/out/muos/Sys" DOLPHIN_LIB_DIR="$PWD/out/muos/lib" bash dolphin-rtcore-muos/tools/build-muxupd.sh ./dist
 ~~~
