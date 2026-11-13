@@ -3,7 +3,7 @@ local M = {}
 local JSON = require("core.json")
 local sh   = require("core.sh")
 
-local PATH = "data/gamesettings.json"
+local PATH = sh.abs("data/gamesettings.json")
 local _cache
 
 function M.load()
@@ -49,9 +49,9 @@ function M.deploy(entry, game_id)
         return 0, #entry.configs
     end
 
-    local dir = "workshop/gamesettings/" .. game_id
+    local dir = sh.workshop("gamesettings/" .. game_id)
     local made = sh.mkdir_p(dir)
-    if made == false then return 0, #entry.configs end
+    if made ~= true and made ~= 0 then return 0, #entry.configs end
 
     local n, failed = 0, 0
     for _, cfg in ipairs(entry.configs) do
@@ -90,9 +90,16 @@ function M.deploy(entry, game_id)
     else
         local m = io.open(meta, "w")
         if m then
+            local game_name = tostring(entry.game or game_id):gsub("[\\r\\n]", " ")
+            local first_name = entry.configs[1] and entry.configs[1].filename or "base.ini"
+            if type(first_name) ~= "string" or not first_name:match("^[%w_.%-]+%.ini$")
+               or first_name:find("..", 1, true) or first_name:find("/", 1, true)
+               or first_name:find("\\\\", 1, true) then
+                first_name = "base.ini"
+            end
             m:write("[GameSettings]\n")
-            m:write("GameName = " .. tostring(entry.game or game_id) .. "\n")
-            m:write("ActiveConfig = " .. tostring(entry.configs[1] and entry.configs[1].filename or "base.ini") .. "\n")
+            m:write("GameName = " .. game_name .. "\n")
+            m:write("ActiveConfig = " .. first_name .. "\n")
             m:close()
         else
             failed = failed + 1
