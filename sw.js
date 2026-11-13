@@ -1,4 +1,4 @@
-const CACHE = 'rtcore-db-v2';
+const CACHE = 'rtcore-db-v3';
 const SHELL = ['./','./index.html','./manifest.json','./assets/spdw_symbol.png','./assets/gamecube.svg','./assets/wii.svg'];
 
 self.addEventListener('install', event => {
