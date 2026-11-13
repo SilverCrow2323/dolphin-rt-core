@@ -307,7 +307,7 @@ function M.update(dt)
   elseif step == "download_cheats" then
     local ok, CD = require_optional("core.cheats_downloader")
     if ok and CD and CD.start_for then
-      local called, accepted = pcall(CD.start_for, STATE.ids)
+      local called, accepted = pcall(CD.start_for)
       STATE.results.cheats_status = (called and accepted ~= false) and "running" or "failed"
     else
       STATE.results.cheats_status = "unavailable"
