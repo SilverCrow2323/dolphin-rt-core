@@ -13,7 +13,7 @@ Dolphin Rt:Core is a multi-deliverable repository. Keep the root README as the c
 | `data/` | shared repository data and databases |
 | `assets/` | repository-level artwork and icon resources |
 | `Core_History/` | archived prior implementations; historical reference, not current source by default |
-| `index.html`, `manifest.json`, `sw.js` | static Compatibility Database web app and PWA shell |
+| `index.html`, `compatibility.html`, `manifest.json`, `sw.js` | Project Portal, standalone Compatibility Database and PWA shell |
 | `wiki/` | tracked Markdown source used by the Wiki publisher |
 
 ## Current muOS frontend
