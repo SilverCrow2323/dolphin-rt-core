@@ -510,6 +510,66 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
 }
+
+/* Rt:Core Arcade Portal — expanded information architecture */
+:root{scroll-padding-top:22px;}
+.portal-nav-wrap{max-width:1280px;margin:0 auto;padding:0 22px 14px;}
+.portal-nav{display:flex;gap:8px;overflow-x:auto;padding:8px 2px 12px;scrollbar-width:thin;}
+.portal-nav a{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-muted);font-size:13px;font-weight:800;text-decoration:none;transition:all .18s;}
+.portal-nav a:hover,.portal-nav a:focus-visible{border-color:var(--accent);color:var(--text);background:var(--surface-2);transform:translateY(-1px);}
+.portal-nav a:first-child{border-color:var(--accent);color:var(--accent-2);}
+.portal-section{max-width:1280px;margin:34px auto 0;padding:0 22px;scroll-margin-top:24px;}
+.portal-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:17px;}
+.portal-eyebrow{font:800 11px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-2);margin-bottom:7px;}
+.portal-title{font-family:'Audiowide',sans-serif;font-size:clamp(22px,2.8vw,32px);line-height:1.15;letter-spacing:-.02em;}
+.portal-lead{max-width:740px;color:var(--text-muted);font-size:15px;line-height:1.7;font-weight:500;margin-top:9px;}
+.portal-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0 26px;}
+.portal-kpi{padding:18px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(145deg,var(--surface),var(--bg-2));min-width:0;}
+.portal-kpi strong{display:block;font:800 clamp(24px,3vw,34px) 'JetBrains Mono',monospace;color:var(--accent-2);line-height:1.1;}
+.portal-kpi span{display:block;margin-top:7px;color:var(--text-muted);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+.portal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.portal-grid.two{grid-template-columns:repeat(2,minmax(0,1fr));}
+.portal-card{padding:17px 18px;border:1px solid var(--border);border-radius:14px;background:var(--surface);min-width:0;transition:border-color .18s,transform .18s;}
+.portal-card:hover{border-color:var(--border-2);transform:translateY(-2px);}
+.portal-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.portal-card h3{font-size:15px;line-height:1.35;font-weight:900;color:var(--text);}
+.portal-card p{font-size:13px;line-height:1.65;color:var(--text-muted);font-weight:500;margin-top:8px;}
+.portal-count{flex:0 0 auto;min-width:34px;text-align:center;padding:5px 8px;border:1px solid var(--border-2);border-radius:8px;background:var(--surface-2);font:800 12px 'JetBrains Mono',monospace;color:var(--accent-2);}
+.portal-empty{padding:17px;border:1px dashed var(--border-2);border-radius:12px;color:var(--text-dim);font-size:13px;line-height:1.6;}
+.portal-banner{display:flex;gap:14px;align-items:flex-start;padding:17px 19px;border:1px solid var(--border-2);border-left:4px solid var(--accent);background:var(--surface);border-radius:12px;color:var(--text-muted);font-size:14px;line-height:1.7;font-weight:500;margin:18px 0;}
+.portal-banner i{font-size:19px;color:var(--accent-2);margin-top:2px;flex:0 0 auto;}
+.portal-columns{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;}
+.portal-panel{padding:20px;border:1px solid var(--border);border-radius:15px;background:var(--surface);}
+.portal-panel h3{font-size:16px;font-weight:900;margin-bottom:10px;}
+.portal-panel p,.portal-panel li{font-size:14px;color:var(--text-muted);line-height:1.75;font-weight:500;}
+.portal-panel ul{padding-left:19px;margin-top:9px;}
+.portal-rating-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px;}
+.portal-rating-table th,.portal-rating-table td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top;}
+.portal-rating-table th{font:800 10px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);}
+.portal-rating-table td:first-child{font-weight:900;white-space:nowrap;color:var(--text);}
+.portal-steps{counter-reset:portal-step;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+.portal-step{counter-increment:portal-step;padding:17px;border:1px solid var(--border);border-radius:13px;background:var(--surface);}
+.portal-step:before{content:"0" counter(portal-step);display:block;font:800 13px 'JetBrains Mono',monospace;color:var(--accent-2);margin-bottom:12px;}
+.portal-step h3{font-size:14px;margin-bottom:7px;}
+.portal-step p{font-size:13px;color:var(--text-muted);line-height:1.65;font-weight:500;}
+.portal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;}
+.portal-actions .btn{text-decoration:none;}
+.portal-faq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.portal-faq details{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:14px 16px;}
+.portal-faq summary{cursor:pointer;font-size:14px;font-weight:900;color:var(--text);list-style:none;display:flex;gap:10px;align-items:center;}
+.portal-faq summary::-webkit-details-marker{display:none;}
+.portal-faq summary:after{content:"＋";margin-left:auto;color:var(--accent-2);font:800 17px 'JetBrains Mono',monospace;}
+.portal-faq details[open] summary:after{content:"－";}
+.portal-faq details p{padding-top:10px;color:var(--text-muted);font-size:13px;line-height:1.7;font-weight:500;}
+.catalog-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding:4px 0 6px;}
+.catalog-intro h2{font-family:'Audiowide',sans-serif;font-size:clamp(20px,2.5vw,28px);}
+.catalog-intro p{max-width:720px;color:var(--text-muted);font-size:14px;line-height:1.65;font-weight:500;margin-top:8px;}
+.catalog-live{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-muted);font:700 11px 'JetBrains Mono',monospace;}
+.catalog-live:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok);}
+.portal-subhead{font:800 11px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin:24px 0 10px;}
+@media(max-width:900px){.portal-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.portal-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.portal-steps{grid-template-columns:repeat(2,minmax(0,1fr));}.portal-columns{grid-template-columns:1fr;}}
+@media(max-width:580px){.portal-section{padding:0 15px;margin-top:27px;}.portal-nav-wrap{padding:0 15px 10px;}.portal-grid,.portal-grid.two,.portal-faq{grid-template-columns:1fr;}.portal-kpis{gap:8px;}.portal-kpi{padding:14px;}.portal-kpi strong{font-size:25px;}.portal-steps{grid-template-columns:1fr 1fr;}.portal-card{padding:15px;}.portal-rating-table th,.portal-rating-table td{padding:9px 6px;font-size:12px;}}
+
 </style>
 </head>
 <body class="theme-gc">
@@ -559,6 +619,17 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
   </div>
 </section>
 
+<nav class="portal-nav-wrap" aria-label="Compatibility database sections">
+  <div class="portal-nav">
+    <a href="#catalog"><i class="fa-solid fa-magnifying-glass"></i> Browse database</a>
+    <a href="#environment"><i class="fa-solid fa-gamepad"></i> Devices &amp; firmware</a>
+    <a href="#core-reference"><i class="fa-solid fa-microchip"></i> Core &amp; profiles</a>
+    <a href="#methodology"><i class="fa-solid fa-chart-simple"></i> Test methodology</a>
+    <a href="#contribute"><i class="fa-solid fa-flask"></i> Contribute</a>
+    <a href="#faq"><i class="fa-regular fa-circle-question"></i> FAQ</a>
+  </div>
+</nav>
+
 <div class="filter-bar">
   <div class="filter-inner">
     <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="searchInput" placeholder="Search game title or Game ID…" autocomplete="off" aria-label="Search game title, Game ID or test notes"><button class="clear" id="clearSearch">✕</button></div>
@@ -584,10 +655,97 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 </div>
 
 <main class="main-wrap" id="main-content" tabindex="-1">
+  <section class="catalog-intro" id="catalog" aria-labelledby="catalog-title"><div><div class="portal-eyebrow">Live community index</div><h2 id="catalog-title">Find your next playable game</h2><p>Browse individual GameCube and Wii reports, compare real test environments, and open a game to inspect its history. Results are grouped by title; each report remains an independent observation.</p></div><div class="catalog-live">SOURCE: COMMUNITY REPORTS</div></section>
   <div id="loading" style="text-align:center;padding:60px 0;margin-top:20px;"><div class="spinner" style="margin:0 auto 14px;"></div><p style="color:var(--text-muted);font-size:15px;">Loading database…</p></div>
   <div id="gamesGrid" class="games-grid" style="display:none;margin-top:20px;"></div>
   <div id="empty" class="empty" style="display:none;margin-top:20px;"><i class="fa-solid fa-folder-open"></i><h3>No games found</h3><p id="emptyMsg">Try changing your filters or search query.</p><button class="btn btn-primary" type="button" id="retryDataBtn" style="display:none;">Retry database load</button></div>
 </main>
+
+
+<section class="portal-section" id="environment" aria-labelledby="environment-title">
+  <div class="portal-section-head"><div><div class="portal-eyebrow">Test environment index</div><h2 class="portal-title" id="environment-title">Devices &amp; muOS firmware</h2><p class="portal-lead">A compatibility result is meaningful only when its handheld and firmware are known. These panels are generated directly from the reports currently in the database.</p></div></div>
+  <div class="portal-kpis">
+    <div class="portal-kpi"><strong id="portalReports">—</strong><span>Individual reports</span></div>
+    <div class="portal-kpi"><strong id="portalDeviceKnown">—</strong><span>Reports with device recorded</span></div>
+    <div class="portal-kpi"><strong id="portalFirmwareKnown">—</strong><span>Reports with muOS recorded</span></div>
+    <div class="portal-kpi"><strong id="portalCoreKnown">—</strong><span>Exact Rt:Core builds identified</span></div>
+  </div>
+  <div class="portal-columns">
+    <div class="portal-panel"><h3><i class="fa-solid fa-gamepad"></i> Tested handhelds</h3><p>Device spellings are canonicalized for comparison. An empty or unrecorded field is not assigned to a device by guesswork.</p><div class="portal-subhead">Report distribution</div><div class="portal-grid two" id="portalDeviceGrid"><div class="portal-empty">Loading device data…</div></div></div>
+    <div class="portal-panel"><h3><i class="fa-solid fa-sd-card"></i> muOS versions</h3><p>Firmware codenames are shown with their numeric version whenever the source report provided it. Codename-only records remain explicitly approximate.</p><div class="portal-subhead">Firmware distribution</div><div class="portal-grid two" id="portalFirmwareGrid"><div class="portal-empty">Loading firmware data…</div></div></div>
+  </div>
+  <div class="portal-banner"><i class="fa-solid fa-circle-info"></i><div><strong>Missing environment data stays missing.</strong> Some historical reports did not include a device or exact firmware build. Those records remain searchable, but they are excluded from device-specific conclusions until a tester supplies the missing information.</div></div>
+</section>
+
+<section class="portal-section" id="core-reference" aria-labelledby="core-title">
+  <div class="portal-section-head"><div><div class="portal-eyebrow">Runtime and configuration reference</div><h2 class="portal-title" id="core-title">Rt:Core builds &amp; profiles</h2><p class="portal-lead">The version and profile labels below reflect the test reports themselves. Legacy reports are preserved as legacy; a release name is never inferred from an unknown build.</p></div></div>
+  <div class="portal-kpis">
+    <div class="portal-kpi"><strong id="portalProfileKnown">—</strong><span>Reports with profile recorded</span></div>
+    <div class="portal-kpi"><strong id="portalCoreVersions">—</strong><span>Distinct build labels</span></div>
+    <div class="portal-kpi"><strong id="portalProfiles">—</strong><span>Distinct profile labels</span></div>
+    <div class="portal-kpi"><strong>12.5.00</strong><span>Next planned Rt:Core line · Arcade</span></div>
+  </div>
+  <div class="portal-grid two">
+    <div class="portal-panel"><h3><i class="fa-solid fa-microchip"></i> Reported Rt:Core builds</h3><p>Counts represent reports, not installations or unique users.</p><div class="portal-subhead">Build history in the database</div><div class="portal-grid two" id="portalCoreGrid"><div class="portal-empty">Loading core versions…</div></div></div>
+    <div class="portal-panel"><h3><i class="fa-solid fa-sliders"></i> Reported profiles</h3><p>Profile labels are kept consistent across submissions. Multi-profile tests are shown as multi-profile records rather than being reduced to one setting.</p><div class="portal-subhead">Profile distribution</div><div class="portal-grid two" id="portalProfileGrid"><div class="portal-empty">Loading profiles…</div></div></div>
+  </div>
+  <div class="portal-banner"><i class="fa-solid fa-code-branch"></i><div><strong>Release status:</strong> Rt:Core 12.5.00 · Arcade is the next planned release candidate line. It is not represented here as a published stable build. Rt:UI remains on 3.7.0 Arcade.</div></div>
+</section>
+
+<section class="portal-section" id="methodology" aria-labelledby="method-title">
+  <div class="portal-section-head"><div><div class="portal-eyebrow">Read the evidence correctly</div><h2 class="portal-title" id="method-title">How compatibility is measured</h2><p class="portal-lead">The database records observations, not universal promises. A game can boot and still be unplayable; FPS alone cannot describe whether a title is enjoyable or stable.</p></div></div>
+  <div class="portal-columns">
+    <div class="portal-panel"><h3>Rating guide</h3><p>Ratings range from zero to five. The report also stores boot and playability as separate fields so a high-level score does not hide the actual outcome.</p>
+      <table class="portal-rating-table"><thead><tr><th>Score</th><th>Interpretation</th></tr></thead><tbody>
+        <tr><td>0 · No boot</td><td>Game does not start or the emulator fails immediately.</td></tr>
+        <tr><td>1 · Broken</td><td>It starts, but quickly crashes or is severely corrupted.</td></tr>
+        <tr><td>2 · Poor</td><td>Major issues make normal play impractical.</td></tr>
+        <tr><td>3 · Playable with issues</td><td>Playable in parts, with noticeable slowdowns or defects.</td></tr>
+        <tr><td>4 · Good</td><td>Generally playable; secondary issues remain.</td></tr>
+        <tr><td>5 · Excellent</td><td>Near-perfect experience in the reported test conditions.</td></tr>
+      </tbody></table>
+    </div>
+    <div class="portal-panel"><h3>What to compare</h3><ul>
+      <li><strong>Game ID and region:</strong> regional builds can behave differently.</li>
+      <li><strong>Handheld:</strong> SoC, memory and thermal behavior matter.</li>
+      <li><strong>muOS version:</strong> firmware updates can change libraries and drivers.</li>
+      <li><strong>Rt:Core build:</strong> runtime changes can alter performance and compatibility.</li>
+      <li><strong>Profile and notes:</strong> settings and workarounds can be decisive.</li>
+      <li><strong>FPS range:</strong> a range is not a frame-time graph or proof of full-speed emulation.</li>
+    </ul></div>
+  </div>
+  <div class="portal-subhead">A useful report in four steps</div>
+  <div class="portal-steps">
+    <article class="portal-step"><h3>Identify the exact game</h3><p>Choose the GameCube or Wii release and record its Game ID and region.</p></article>
+    <article class="portal-step"><h3>Record the environment</h3><p>Enter the exact handheld model, muOS version and Dolphin Rt:Core build.</p></article>
+    <article class="portal-step"><h3>Test more than boot</h3><p>Play beyond the title screen; check gameplay, audio, graphics, speed and stability.</p></article>
+    <article class="portal-step"><h3>Explain the result</h3><p>Record profile, FPS range, reproducible issues and any relevant workaround.</p></article>
+  </div>
+</section>
+
+<section class="portal-section" id="contribute" aria-labelledby="contribute-title">
+  <div class="portal-section-head"><div><div class="portal-eyebrow">Community-powered database</div><h2 class="portal-title" id="contribute-title">Help make the compatibility map better</h2><p class="portal-lead">One high-quality report is more useful than several vague ratings. Share the configuration and the conditions alongside the result.</p></div></div>
+  <div class="portal-grid">
+    <article class="portal-card"><div class="portal-card-top"><h3><i class="fa-solid fa-clipboard-check"></i> Submit a test report</h3><span class="portal-count">01</span></div><p>Send a structured report with game identity, ratings, performance, firmware, handheld, Rt:Core build and profile.</p><div class="portal-actions"><button class="btn btn-primary btn-sm" type="button" id="portalReportBtn">Open report form</button></div></article>
+    <article class="portal-card"><div class="portal-card-top"><h3><i class="fa-solid fa-sliders"></i> Share GameSettings</h3><span class="portal-count">02</span></div><p>Browse community INI configurations and resources, or prepare a new GameSettings contribution for review.</p><div class="portal-actions"><button class="btn btn-sm" type="button" id="portalSettingsBtn">Browse GameSettings</button></div></article>
+    <article class="portal-card"><div class="portal-card-top"><h3><i class="fa-brands fa-github"></i> Improve the project</h3><span class="portal-count">03</span></div><p>Read the source, report a data issue, review documentation or contribute code and testing evidence.</p><div class="portal-actions"><a class="btn btn-sm" href="https://github.com/SilverCrow2323/dolphin-rt-core" target="_blank" rel="noopener">Open repository</a><a class="btn btn-sm" href="https://github.com/SilverCrow2323/dolphin-rt-core/wiki" target="_blank" rel="noopener">Read the Wiki</a></div></article>
+  </div>
+  <div class="portal-banner"><i class="fa-solid fa-shield-halved"></i><div><strong>Submission safety:</strong> never upload ROMs, BIOS files, firmware images, copyrighted game data or private account information. Share only configuration text and evidence that you are allowed to distribute.</div></div>
+</section>
+
+<section class="portal-section" id="faq" aria-labelledby="faq-title">
+  <div class="portal-section-head"><div><div class="portal-eyebrow">Quick answers</div><h2 class="portal-title" id="faq-title">Frequently asked questions</h2><p class="portal-lead">A few rules that help prevent misleading comparisons.</p></div></div>
+  <div class="portal-faq">
+    <details><summary>Does a playable result guarantee the game will run on my device?</summary><p>No. It is a community observation tied to a specific game revision, device, firmware, core build and profile. Different conditions can produce different results.</p></details>
+    <details><summary>Why are some device or firmware values missing?</summary><p>Some older reports never recorded that information. The site does not guess. A report with missing metadata remains visible but cannot support a device- or firmware-specific conclusion.</p></details>
+    <details><summary>What does “Legacy” mean?</summary><p>The original report identified an older Rt:Core line but did not provide a reliable exact version. It is not an alias for the current release.</p></details>
+    <details><summary>What does “All profiles tested” mean?</summary><p>The tester reported checking multiple profiles. It is an aggregate test description, not a selectable profile configuration.</p></details>
+    <details><summary>Can I install a GameSettings file directly?</summary><p>Review the notes, target game, author and configuration content first. Community settings can affect compatibility; keep backups and understand a setting before applying it.</p></details>
+    <details><summary>Does the website upload my ROMs?</summary><p>No. This is a static client-side site. It fetches the public JSON data and artwork; report submission opens a GitHub issue that you review before sending.</p></details>
+    <details><summary>Can I use the site offline?</summary><p>After an online visit, the PWA service worker caches the site shell and the most recently fetched data. Offline availability depends on what was cached successfully.</p></details>
+    <details><summary>How are duplicate reports handled?</summary><p>Each report remains an independent observation. The game card groups reports for navigation, while the detail view preserves their separate conditions and history.</p></details>
+  </div>
+</section>
 
 <div class="modal-back" id="gameModal">
   <div class="modal" style="max-width:1080px;">
@@ -617,26 +775,37 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
         <div class="form-section-head"><div class="form-section-num">02</div><div><div class="form-section-title"><i class="fa-solid fa-user-astronaut"></i> Tester</div><div class="form-section-desc">Who tested</div></div></div>
         <div class="form-row">
           <div class="form-group full"><label><i class="fa-solid fa-user-tag"></i> Name</label><input type="text" id="rptTester" value="Anonymous"></div>
-          <div class="form-group full"><label><i class="fa-solid fa-sd-card"></i> muOS Version</label><select id="rptMuos"><option value="" disabled selected>Select…</option><option>2601.1 Funky Jacaranda</option><option>2601.0 Jacaranda</option><option>2508.4 Loose Goose</option><option>2508.3 Golden Goose</option><option>2508.2 Silly Goose</option><option>2508.1 Canada Goose</option><option>2508.0 Goose</option><option>2502.0 Pixie</option></select></div>
+          <div class="form-group full"><label><i class="fa-solid fa-sd-card"></i> muOS Version</label><select id="rptMuos"><option value="" disabled selected>Select exact muOS version…</option><option>muOS 2606.0 · Andromeda</option><option>muOS 2601.1 · Funky Jacaranda</option><option>muOS 2601.0 · Jacaranda</option><option>muOS 2508.4 · Loose Goose</option><option>muOS 2508.3 · Golden Goose</option><option>muOS 2508.2 · Silly Goose</option><option>muOS 2508.1 · Canada Goose</option><option>muOS 2508.0 · Goose</option><option>muOS 2502.0 · Pixie</option><option value="__unknown__">Not recorded / exact version unknown</option></select></div>
         </div>
       </div>
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-num">03</div><div><div class="form-section-title"><i class="fa-solid fa-mobile-screen"></i> Device</div><div class="form-section-desc">Your handheld</div></div></div>
-        <div class="chip-select" id="rptDevices"><div class="chip-opt active" data-d="RG35XX H">RG35XX H</div><div class="chip-opt" data-d="RG34XX SP">RG34XX SP</div><div class="chip-opt" data-d="RG40XX H">RG40XX H</div><div class="chip-opt" data-d="RG CubeXX">RG CubeXX</div><div class="chip-opt" data-d="__custom__">Custom…</div></div>
+        <div class="chip-select" id="rptDevices"><div class="chip-opt active" data-d="Anbernic RG35XX H">Anbernic RG35XX H</div><div class="chip-opt" data-d="Anbernic RG34XX SP">Anbernic RG34XX SP</div><div class="chip-opt" data-d="Anbernic RG40XX H">Anbernic RG40XX H</div><div class="chip-opt" data-d="Anbernic RG CubeXX">Anbernic RG CubeXX</div><div class="chip-opt" data-d="__custom__">Other device…</div></div>
         <input type="text" id="rptDevCustom" placeholder="Device name" style="display:none;margin-top:10px;">
       </div>
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-num">04</div><div><div class="form-section-title"><i class="fa-solid fa-microchip"></i> Rt:Core Setup</div><div class="form-section-desc">Version &amp; profile</div></div></div>
         <div class="form-row">
-          <div class="form-group full"><label><i class="fa-solid fa-tag"></i> Version</label><select id="rptVersion"><option value="" disabled selected>Select…</option><option>v11.5.00 'Triptych'</option><option>v11.0.0 'Frontendone'</option><option>v10.5.3</option><option>v10.5-124</option><option>v10.0.0 'SPDW'</option><option>v9 Goose</option><option>v8</option><option>v7 or prior</option></select></div>
+          <div class="form-group full"><label><i class="fa-solid fa-tag"></i> Version</label><select id="rptVersion"><option value="" disabled selected>Select exact Rt:Core build…</option><option>Dolphin Rt:Core 12.5.00 · Arcade (release candidate)</option><option>Dolphin Rt:Core 12.0.0 · Kanzentai</option><option>Dolphin Rt:Core 11.5.00-III · FrontendONE</option><option>Dolphin Rt:Core 11.5.00-II · Bash Arsenal</option><option>Dolphin Rt:Core 11.5.00-I · Comfort Zone · Prerelease</option><option>Dolphin Rt:Core 11.0.00 · Development</option><option>Dolphin Rt:Core 11.0.00 · Prerelease</option><option>Dolphin Rt:Core 10.6 · Prerelease</option><option>Dolphin Rt:Core 10.5.3</option><option>Dolphin Rt:Core 10.5.300</option><option>Dolphin Rt:Core 10.5.124</option><option>Dolphin Rt:Core 10.0.0 · SPDW</option><option>Dolphin Rt:Core 9 · Goose</option><option>Dolphin Rt:Core 8</option><option>Dolphin Rt:Core 7</option><option>Dolphin Rt:Core 6 or earlier</option><option>Dolphin Rt:Core Legacy (exact version not recorded)</option><option>Dolphin Rt:Core version not recorded</option></select></div>
           <div class="form-group full"><label><i class="fa-solid fa-sliders"></i> Profile</label>
-            <div class="profile-grid" id="rptProfiles" style="grid-template-columns:repeat(3,1fr);">
+            <div class="profile-grid" id="rptProfiles" style="grid-template-columns:repeat(3,minmax(0,1fr));">
               <div class="profile-card" data-p="Default"><i class="fa-solid fa-compact-disc"></i><div class="pc-n">Default</div></div>
-              <div class="profile-card" data-p="Performance"><i class="fa-solid fa-rocket"></i><div class="pc-n">Perf</div></div>
-              <div class="profile-card" data-p="Compatibility"><i class="fa-solid fa-shield"></i><div class="pc-n">Compat</div></div>
-              <div class="profile-card" data-p="Speed Hack"><i class="fa-solid fa-bolt"></i><div class="pc-n">Speed</div></div>
-              <div class="profile-card" data-p="Black Screen Fix"><i class="fa-solid fa-eye-slash"></i><div class="pc-n">BlkFix</div></div>
+              <div class="profile-card" data-p="Speedhacks"><i class="fa-solid fa-bolt"></i><div class="pc-n">Speedhacks</div></div>
+              <div class="profile-card" data-p="Performance"><i class="fa-solid fa-rocket"></i><div class="pc-n">Performance</div></div>
+              <div class="profile-card" data-p="Compatibility"><i class="fa-solid fa-shield"></i><div class="pc-n">Compatibility</div></div>
+              <div class="profile-card" data-p="Black Screen Fix"><i class="fa-solid fa-eye-slash"></i><div class="pc-n">Black Screen Fix</div></div>
+              <div class="profile-card" data-p="Safe"><i class="fa-solid fa-shield-halved"></i><div class="pc-n">Safe</div></div>
+              <div class="profile-card" data-p="Lite"><i class="fa-solid fa-feather"></i><div class="pc-n">Lite</div></div>
+              <div class="profile-card" data-p="Troubleshooting"><i class="fa-solid fa-wrench"></i><div class="pc-n">Troubleshooting</div></div>
               <div class="profile-card" data-p="Ultra"><i class="fa-solid fa-gauge-high"></i><div class="pc-n">Ultra</div></div>
+              <div class="profile-card" data-p="Speedup 1"><i class="fa-solid fa-forward"></i><div class="pc-n">Speedup 1</div></div>
+              <div class="profile-card" data-p="Speedup 2"><i class="fa-solid fa-forward-fast"></i><div class="pc-n">Speedup 2</div></div>
+              <div class="profile-card" data-p="Wii"><i class="fa-solid fa-gamepad"></i><div class="pc-n">Wii</div></div>
+              <div class="profile-card" data-p="Wii Performance"><i class="fa-solid fa-gauge"></i><div class="pc-n">Wii Performance</div></div>
+              <div class="profile-card" data-p="Wii Compatibility"><i class="fa-solid fa-shield"></i><div class="pc-n">Wii Compatibility</div></div>
+              <div class="profile-card" data-p="Wii Safe"><i class="fa-solid fa-lock"></i><div class="pc-n">Wii Safe</div></div>
+              <div class="profile-card" data-p="All profiles tested"><i class="fa-solid fa-layer-group"></i><div class="pc-n">All profiles tested</div></div>
+              <div class="profile-card" data-p="Multiple profiles (details in notes)"><i class="fa-solid fa-list-check"></i><div class="pc-n">Multiple profiles</div></div>
             </div>
             <input type="hidden" id="rptProfile">
           </div>
@@ -823,6 +992,18 @@ function highlightMatch(text,query){
   }
   return result;
 }
+
+function canonicalDeviceName(value){
+  const raw=String(value||'').trim().replace(/\s+/g,' ');
+  if(!raw||/^unknown(?: device)?$/i.test(raw)||/^not recorded$/i.test(raw))return '';
+  const key=raw.toUpperCase().replace(/[\s_-]+/g,'');
+  if(key==='RG35XXH'||key==='ANBERNICRG35XXH')return 'Anbernic RG35XX H';
+  if(key==='RG34XXSP'||key==='ANBERNICRG34XXSP')return 'Anbernic RG34XX SP';
+  if(key==='RG40XXH'||key==='ANBERNICRG40XXH')return 'Anbernic RG40XX H';
+  if(key==='RGCUBEXX'||key==='ANBERNICRGCUBEXX')return 'Anbernic RG CubeXX';
+  return raw;
+}
+
 function ratingColor(r){return RATING_COLORS[Math.min(5,Math.max(0,Math.round(r)))];}
 function flagUrl(r){return 'https://flagcdn.com/w40/'+(FLAGS[r]||'un')+'.png';}
 function coverUrl(id,region){if(!id||id==='UNKNOWN')return null;const rc=REGION_COVER[region]||'US';return 'https://art.gametdb.com/wii/cover/'+rc+'/'+id+'.png';}
@@ -1535,7 +1716,7 @@ function resetReportForm(){
   ['rptGameId','rptGameTitle','rptSystem','rptRegion'].forEach(id=>$(id).value='');
   $('rptTester').value='Anonymous';
   $$('#rptDevices .chip-opt').forEach(c=>c.classList.remove('active'));
-  $('#rptDevices').querySelector('[data-d="RG35XX H"]').classList.add('active');
+  $('#rptDevices').querySelector('[data-d="Anbernic RG35XX H"]').classList.add('active');
   $('rptDevCustom').style.display='none';$('rptDevCustom').value='';
   $('rptMuos').value='';$('rptVersion').value='';
   $$('#rptProfiles .profile-card').forEach(c=>c.classList.remove('active'));
@@ -1582,8 +1763,9 @@ function rptSubmit(){
   const gameId=$('rptGameId').value||'UNKNOWN';const gameTitle=$('rptGameTitle').value;
   const system=$('rptSystem').value||(state.console==='gc'?'GC':'Wii');const region=$('rptRegion').value||'NTSC';
   const tester=$('rptTester').value.trim();
-  const device=$('rptDevCustom').style.display!=='none'&&$('rptDevCustom').value.trim()?$('rptDevCustom').value.trim():($('#rptDevices').querySelector('.chip-opt.active')?.dataset.d||'Unknown');
-  const muos=$('rptMuos').value;const version=$('rptVersion').value;const profile=$('rptProfile').value;
+  const rawDevice=$('rptDevCustom').style.display!=='none'&&$('rptDevCustom').value.trim()?$('rptDevCustom').value.trim():($('#rptDevices').querySelector('.chip-opt.active')?.dataset.d||'');
+  const device=canonicalDeviceName(rawDevice);
+  const muos=$('rptMuos').value==='__unknown__'?'':$('rptMuos').value;const version=$('rptVersion').value;const profile=$('rptProfile').value;
   const rating=parseInt($('rptRating').value,10);
   const boot=$('rptBootVal').value;
   const playable=$('rptPlayableVal').value;
@@ -1892,11 +2074,44 @@ function injectJsonLd(){
   script.textContent=JSON.stringify({'@context':'https://schema.org','@graph':items});
   document.head.appendChild(script);
 }
+
+function renderPortalSummary(){
+  const entries=(state.rawGames||[]).flatMap(group=>(group.entries||[]).map(entry=>entry||{}));
+  const countField=(getter)=>{const map=new Map();for(const entry of entries){const value=String(getter(entry)||'').trim();if(value)map.set(value,(map.get(value)||0)+1);}return [...map.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],undefined,{numeric:true,sensitivity:'base'}));};
+  const env=e=>e.test_environment||{},details=e=>e.test_details||{};
+  const devices=countField(e=>env(e).device);
+  const muos=countField(e=>env(e).muos_version);
+  const cores=countField(e=>details(e).rtcore_version);
+  const profiles=countField(e=>details(e).core_profile);
+  const set=(id,value)=>{const el=$(id);if(el)el.textContent=String(value);};
+  const knownDevice=entries.filter(e=>String(env(e).device||'').trim()).length;
+  const knownMuos=entries.filter(e=>String(env(e).muos_version||'').trim()).length;
+  const knownCore=entries.filter(e=>{const v=String(details(e).rtcore_version||'').trim();return v&&!/exact version not recorded|version not recorded/i.test(v);}).length;
+  const knownProfile=entries.filter(e=>String(details(e).core_profile||'').trim()).length;
+  set('portalReports',entries.length);
+  set('portalDeviceKnown',knownDevice+'/'+entries.length);
+  set('portalFirmwareKnown',knownMuos+'/'+entries.length);
+  set('portalCoreKnown',knownCore+'/'+entries.length);
+  set('portalProfileKnown',knownProfile+'/'+entries.length);
+  set('portalCoreVersions',cores.length);
+  set('portalProfiles',profiles.length);
+  const render=(id,items,emptyLabel)=>{
+    const host=$(id);if(!host)return;
+    if(!items.length){host.innerHTML='<div class="portal-empty">'+escapeHtml(emptyLabel)+'</div>';return;}
+    host.innerHTML=items.map(([label,n])=>'<article class="portal-card"><div class="portal-card-top"><h3>'+escapeHtml(label)+'</h3><span class="portal-count">'+n+'</span></div><p>'+n+' report'+(n===1?'':'s')+'</p></article>').join('');
+  };
+  render('portalDeviceGrid',devices,'No device has been recorded yet.');
+  render('portalFirmwareGrid',muos,'No muOS firmware has been recorded yet.');
+  render('portalCoreGrid',cores,'No Rt:Core version labels are available.');
+  render('portalProfileGrid',profiles,'No profile labels are available.');
+}
+
 async function loadGames(){
   try{
     if(!_gamesCache){const data=await fetchJson(URL_GAMES);_gamesCache={games:data.games||[],last_update:data.last_update};}
     $('retryDataBtn').style.display='none';
     state.rawGames=_gamesCache.games||[];
+    renderPortalSummary();
     populateEnvironmentFilters();
     state.searchIndex=null;
     buildSearchIndex();
@@ -1921,7 +2136,7 @@ async function loadSettings(){
 }
 function updateStats(){
   $('statGames').textContent=state.groupedGames.length;
-  $('statTests').textContent=state.rawGames.length;
+  $('statTests').textContent=state.groupedGames.reduce((sum,g)=>sum+(g.agg?.totalEntries||g.entries?.length||0),0);
   const c={5:0,4:0,3:0,2:0,1:0,0:0};
   state.groupedGames.forEach(g=>{const r=g.agg.bestRating;if(r>=5)c[5]++;else if(r>=4)c[4]++;else if(r>=3)c[3]++;else if(r>=2)c[2]++;else if(r>=1)c[1]++;else c[0]++;});
   Object.keys(c).forEach(k=>{const el=$('c'+k);if(el)el.textContent=c[k];});
@@ -1959,6 +2174,8 @@ function init(){
     document.body.appendChild(warn);
   }
   const toggle=$('consoleToggle');
+  const portalReport=$('portalReportBtn');if(portalReport)portalReport.addEventListener('click',()=>openReportModal());
+  const portalSettings=$('portalSettingsBtn');if(portalSettings)portalSettings.addEventListener('click',()=>openGameSettings());
   toggle.addEventListener('click',e=>{const opt=e.target.closest('.opt');const target=opt?opt.dataset.c:(state.console==='gc'?'wii':'gc');if(target!==state.console)setConsole(target);});
   toggle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setConsole(state.console==='gc'?'wii':'gc');}});
   // Keyboard arrow nav on grid
