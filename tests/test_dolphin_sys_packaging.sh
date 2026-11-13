@@ -217,3 +217,8 @@ if unzip -Z1 "$ARCHIVE" | grep -Fxq "$EMU_PATH/RtSys/bash_arsenal/scan_load.sh";
   exit 1
 fi
 echo "[OK] legacy Task Toolkit entries are absent from the MUXUPD"
+if ! unzip -Z1 "$ARCHIVE" | grep -Fxq "$EMU_PATH/RtSys/cleanup_legacy_tasks.sh"; then
+  echo "[FAIL] upgrade cleanup helper is missing from the MUXUPD" >&2
+  exit 1
+fi
+echo "[OK] upgrade cleanup helper is included in the MUXUPD"
