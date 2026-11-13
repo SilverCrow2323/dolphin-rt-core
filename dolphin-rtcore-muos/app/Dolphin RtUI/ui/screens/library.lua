@@ -159,11 +159,19 @@ function S.register_actions(ui)
         {
             id = "library.rescan", title = "Rescan ROM library", order = 10,
             run = function()
+                -- The NEXUS action registry is global and can be invoked while
+                -- another screen owns boot/UI scanning. Never replace that queue.
+                if Library.scanning then
+                    if Library.scan_owner ~= "blocking" then
+                        S.scanning = true
+                    end
+                    return false, "scan already in progress"
+                end
                 if S.scanning then return false, "scan already in progress" end
                 S.need_scan = false
-                local ok, err = pcall(Library.scan_begin)
+                local ok, err = pcall(Library.scan_begin, "ui")
                 if not ok then return false, tostring(err) end
-                S.scanning, S.scan_t, S.scan_seen = true, 0, 0
+                S.scanning, S.scan_t, S.scan_seen = true, 0, #(Library.games or {})
                 return true
             end,
         },
