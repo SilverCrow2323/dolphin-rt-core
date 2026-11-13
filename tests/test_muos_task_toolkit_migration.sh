@@ -7,7 +7,8 @@ TASK_SOURCE="$ROOT/dolphin-rtcore-muos/overlay/opt/muos/share/task/Dolphin Rt-Co
 SCAN_LOAD="$ROOT/dolphin-rtcore-muos/emu/dolphin/RtSys/bash_arsenal/scan_load.sh"
 
 [[ -s "$HELPER" ]]
-sh -n "$HELPER" "$UPDATE"
+sh -n "$HELPER"
+sh -n "$UPDATE"
 [[ ! -e "$TASK_SOURCE" ]] || { echo "[FAIL] legacy Task Toolkit source still exists" >&2; exit 1; }
 [[ ! -e "$SCAN_LOAD" ]] || { echo "[FAIL] legacy Task Toolkit Load scanner still exists" >&2; exit 1; }
 grep -Fq 'cleanup_legacy_tasks.sh' "$UPDATE"
