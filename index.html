@@ -775,7 +775,7 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
         <div class="form-section-head"><div class="form-section-num">02</div><div><div class="form-section-title"><i class="fa-solid fa-user-astronaut"></i> Tester</div><div class="form-section-desc">Who tested</div></div></div>
         <div class="form-row">
           <div class="form-group full"><label><i class="fa-solid fa-user-tag"></i> Name</label><input type="text" id="rptTester" value="Anonymous"></div>
-          <div class="form-group full"><label><i class="fa-solid fa-sd-card"></i> muOS Version</label><select id="rptMuos"><option value="" disabled selected>Select exact muOS version…</option><option>muOS 2606.0 · Andromeda</option><option>muOS 2601.1 · Funky Jacaranda</option><option>muOS 2601.0 · Jacaranda</option><option>muOS 2508.4 · Loose Goose</option><option>muOS 2508.3 · Golden Goose</option><option>muOS 2508.2 · Silly Goose</option><option>muOS 2508.1 · Canada Goose</option><option>muOS 2508.0 · Goose</option><option>muOS 2502.0 · Pixie</option><option value="__unknown__">Not recorded / exact version unknown</option></select></div>
+          <div class="form-group full"><label><i class="fa-solid fa-sd-card"></i> muOS Version</label><select id="rptMuos"><option value="" disabled selected>Select exact muOS version…</option><option>muOS 2606.0 · Andromeda</option><option>muOS 2601.1 · Funky Jacaranda</option><option>muOS 2601.0 · Jacaranda</option><option>muOS 2508.4 · Loose Goose</option><option>muOS 2508.3 · Golden Goose</option><option>muOS 2508.2 · Silly Goose</option><option>muOS 2508.1 · Canada Goose</option><option>muOS 2508.0 · Goose</option><option>muOS 2502.0 · Pixie</option><option value="__custom__">Other / newer muOS version…</option><option value="__unknown__">Not recorded / exact version unknown</option></select><input type="text" id="rptMuosCustom" placeholder="e.g. muOS 2607.0 · Codename" style="display:none;margin-top:10px;" autocomplete="off"></div>
         </div>
       </div>
       <div class="form-section">
@@ -786,7 +786,7 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-num">04</div><div><div class="form-section-title"><i class="fa-solid fa-microchip"></i> Rt:Core Setup</div><div class="form-section-desc">Version &amp; profile</div></div></div>
         <div class="form-row">
-          <div class="form-group full"><label><i class="fa-solid fa-tag"></i> Version</label><select id="rptVersion"><option value="" disabled selected>Select exact Rt:Core build…</option><option value="Dolphin Rt:Core 12.5.00 · Arcade">Dolphin Rt:Core 12.5.00 · Arcade (release candidate)</option><option>Dolphin Rt:Core 12.0.0 · Kanzentai</option><option>Dolphin Rt:Core 11.5.00-III · FrontendONE</option><option>Dolphin Rt:Core 11.5.00-II · Bash Arsenal</option><option>Dolphin Rt:Core 11.5.00-I · Comfort Zone · Prerelease</option><option>Dolphin Rt:Core 11.0.00 · Development</option><option>Dolphin Rt:Core 11.0.00 · Prerelease</option><option>Dolphin Rt:Core 10.6 · Prerelease</option><option>Dolphin Rt:Core 10.5.3</option><option>Dolphin Rt:Core 10.5.300</option><option>Dolphin Rt:Core 10.5.124</option><option>Dolphin Rt:Core 10.0.0 · SPDW</option><option>Dolphin Rt:Core 9 · Goose</option><option>Dolphin Rt:Core 8</option><option>Dolphin Rt:Core 7</option><option>Dolphin Rt:Core 6 or earlier</option><option>Dolphin Rt:Core Legacy (exact version not recorded)</option><option>Dolphin Rt:Core version not recorded</option></select></div>
+          <div class="form-group full"><label><i class="fa-solid fa-tag"></i> Version</label><select id="rptVersion"><option value="" disabled selected>Select exact Rt:Core build…</option><option value="Dolphin Rt:Core 12.5.00 · Arcade">Dolphin Rt:Core 12.5.00 · Arcade (release candidate)</option><option>Dolphin Rt:Core 12.0.0 · Kanzentai</option><option>Dolphin Rt:Core 11.5.00-III · FrontendONE</option><option>Dolphin Rt:Core 11.5.00-II · Bash Arsenal</option><option>Dolphin Rt:Core 11.5.00-I · Comfort Zone · Prerelease</option><option>Dolphin Rt:Core 11.0.00 · Development</option><option>Dolphin Rt:Core 11.0.00 · Prerelease</option><option>Dolphin Rt:Core 10.6 · Prerelease</option><option>Dolphin Rt:Core 10.5.3</option><option>Dolphin Rt:Core 10.5.300</option><option>Dolphin Rt:Core 10.5.124</option><option>Dolphin Rt:Core 10.0.0 · SPDW</option><option>Dolphin Rt:Core 9 · Goose</option><option>Dolphin Rt:Core 8</option><option>Dolphin Rt:Core 7</option><option>Dolphin Rt:Core 6 or earlier</option><option>Dolphin Rt:Core Legacy (exact version not recorded)</option><option>Dolphin Rt:Core version not recorded</option><option value="__custom__">Other / newer Rt:Core build…</option></select><input type="text" id="rptVersionCustom" placeholder="e.g. Dolphin Rt:Core 12.6.00 · Build name" style="display:none;margin-top:10px;" autocomplete="off"></div>
           <div class="form-group full"><label><i class="fa-solid fa-sliders"></i> Profile</label>
             <div class="profile-grid" id="rptProfiles" style="grid-template-columns:repeat(3,minmax(0,1fr));">
               <div class="profile-card" data-p="Default"><i class="fa-solid fa-compact-disc"></i><div class="pc-n">Default</div></div>
@@ -1002,6 +1002,30 @@ function canonicalDeviceName(value){
   if(key==='RG40XXH'||key==='ANBERNICRG40XXH')return 'Anbernic RG40XX H';
   if(key==='RGCUBEXX'||key==='ANBERNICRGCUBEXX')return 'Anbernic RG CubeXX';
   return raw;
+}
+
+
+function canonicalMuosName(value){
+  const raw=String(value||'').trim().replace(/\s+/g,' ');
+  if(!raw||/^not recorded$/i.test(raw))return '';
+  const withoutPrefix=raw.replace(/^muOS\s+/i,'');
+  const match=withoutPrefix.match(/^(\d+(?:\.\d+)+)\s*(?:[·:—-]\s*|\s+)?(.*)$/);
+  if(match){
+    const codename=match[2].trim();
+    return 'muOS '+match[1]+(codename?' · '+codename:'');
+  }
+  return 'muOS '+withoutPrefix;
+}
+function canonicalCoreName(value){
+  const raw=String(value||'').trim().replace(/\s+/g,' ');
+  if(!raw)return 'Dolphin Rt:Core version not recorded';
+  const stripped=raw.replace(/^Dolphin Rt:Core\s*/i,'').replace(/^v/i,'');
+  const match=stripped.match(/^(\d+(?:\.\d+)*(?:-[IVX]+)?)\s*(?:[·:—-]\s*|\s+)?(.*)$/);
+  if(match){
+    const suffix=match[2].trim();
+    return 'Dolphin Rt:Core '+match[1]+(suffix?' · '+suffix:'');
+  }
+  return raw.startsWith('Dolphin Rt:Core ')?raw:'Dolphin Rt:Core '+stripped;
 }
 
 function ratingColor(r){return RATING_COLORS[Math.min(5,Math.max(0,Math.round(r)))];}
@@ -1718,7 +1742,7 @@ function resetReportForm(){
   $$('#rptDevices .chip-opt').forEach(c=>c.classList.remove('active'));
   $('#rptDevices').querySelector('[data-d="__unknown__"]').classList.add('active');
   $('rptDevCustom').style.display='none';$('rptDevCustom').value='';
-  $('rptMuos').value='';$('rptVersion').value='';
+  $('rptMuos').value='';$('rptMuosCustom').value='';$('rptMuosCustom').style.display='none';$('rptVersion').value='';$('rptVersionCustom').value='';$('rptVersionCustom').style.display='none';
   $$('#rptProfiles .profile-card').forEach(c=>c.classList.remove('active'));
   $('rptProfile').value='';
   $$('#rptStars .star-btn').forEach(b=>b.classList.remove('lit'));
@@ -1749,8 +1773,8 @@ function rptValidate(){
   const errors=[];const mark=id=>{const el=$(id);if(el)el.classList.add('input-err');};
   if(!$('rptGameId').value&&!$('rptGameTitle').value){mark('rptSearch');errors.push('Select or identify a game.');}
   if(!$('rptTester').value.trim()){mark('rptTester');errors.push('Tester name required.');}
-  if(!$('rptMuos').value){mark('rptMuos');errors.push('Select muOS version.');}
-  if(!$('rptVersion').value){mark('rptVersion');errors.push('Select Rt:Core version.');}
+  if(!$('rptMuos').value){mark('rptMuos');errors.push('Select muOS version.');}else if($('rptMuos').value==='__custom__'&&!$('rptMuosCustom').value.trim()){mark('rptMuosCustom');errors.push('Enter the exact muOS version and codename.');}
+  if(!$('rptVersion').value){mark('rptVersion');errors.push('Select Rt:Core version.');}else if($('rptVersion').value==='__custom__'&&!$('rptVersionCustom').value.trim()){mark('rptVersionCustom');errors.push('Enter the exact Dolphin Rt:Core build.');}
   if(!$('rptProfile').value)errors.push('Choose a core profile.');
   if($('rptRating').value==='')errors.push('Select a rating (0–5).');
   return errors;
@@ -1765,7 +1789,7 @@ function rptSubmit(){
   const tester=$('rptTester').value.trim();
   const rawDevice=$('rptDevCustom').style.display!=='none'&&$('rptDevCustom').value.trim()?$('rptDevCustom').value.trim():($('#rptDevices').querySelector('.chip-opt.active')?.dataset.d||'');
   const device=canonicalDeviceName(rawDevice);
-  const muos=$('rptMuos').value==='__unknown__'?'':$('rptMuos').value;const version=$('rptVersion').value;const profile=$('rptProfile').value;
+  const muos=$('rptMuos').value==='__unknown__'?'':$('rptMuos').value==='__custom__'?canonicalMuosName($('rptMuosCustom').value):$('rptMuos').value;const version=$('rptVersion').value==='__custom__'?canonicalCoreName($('rptVersionCustom').value):$('rptVersion').value;const profile=$('rptProfile').value;
   const rating=parseInt($('rptRating').value,10);
   const boot=$('rptBootVal').value;
   const playable=$('rptPlayableVal').value;
@@ -2175,6 +2199,8 @@ function init(){
   }
   const toggle=$('consoleToggle');
   const portalReport=$('portalReportBtn');if(portalReport)portalReport.addEventListener('click',()=>openReportModal());
+  $('rptMuos').addEventListener('change',()=>{$('rptMuosCustom').style.display=$('rptMuos').value==='__custom__'?'block':'none';});
+  $('rptVersion').addEventListener('change',()=>{$('rptVersionCustom').style.display=$('rptVersion').value==='__custom__'?'block':'none';});
   const portalSettings=$('portalSettingsBtn');if(portalSettings)portalSettings.addEventListener('click',()=>openGameSettings());
   toggle.addEventListener('click',e=>{const opt=e.target.closest('.opt');const target=opt?opt.dataset.c:(state.console==='gc'?'wii':'gc');if(target!==state.console)setConsole(target);});
   toggle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setConsole(state.console==='gc'?'wii':'gc');}});
