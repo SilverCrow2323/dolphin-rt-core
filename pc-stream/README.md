@@ -4,55 +4,53 @@ Dolphin Rt:Stream is the PC-side companion for streaming GameCube and Wii games 
 
 ## Architecture
 
-The PC application has three deliberately separate channels:
+The PC application uses three independent channels:
 
-1. **Game streaming — Sunshine / Moonlight.** Sunshine runs on the PC and streams the Dolphin game plus controller input.
-2. **Library sync — existing Rt:Stream HTTP service.** The handheld downloads the generated \`library.tsv\` manifest and cover art from the PC sync server.
-3. **Remote files — optional SFTP.** The new PC Companion can connect to a handheld's SSH/SFTP service to inspect a configured directory and explicitly upload a ROM.
+1. **Game streaming — Sunshine / Moonlight.** Sunshine runs on the PC and streams Dolphin video plus controller input.
+2. **Library sync — Rt:Stream HTTP service.** The handheld downloads \`library.tsv\` and cover art from the PC sync server. ROM images are not exposed by this service.
+3. **Remote files — optional SFTP.** The Companion can inspect the device's configured ROM directory, upload PC ROMs and download/delete remote ROMs with explicit confirmation.
 
-The web control panel is a local PC interface. It binds to \`127.0.0.1\`; it is not exposed to the LAN. The existing library sync service remains the separately configured endpoint used by the handheld.
+The browser control panel is a local PC interface bound to \`127.0.0.1\`; it is not exposed to the LAN. The handheld library-sync server remains a separate service and port.
 
-## Launch
+## Launch and first setup
 
-The package command \`spdw-stream-portal\` opens the browser-based PC Companion. The previous Tkinter interface remains available as:
+The package command \`spdw-stream-portal\` opens the browser Companion. The previous Tkinter interface remains available with \`spdw-stream-portal --legacy\`.
 
-\`\`\`sh
-spdw-stream-portal --legacy
-\`\`\`
+1. In **Game Library**, add absolute GameCube and Wii ROM source directories, one per line, then scan.
+2. In **Streaming**, start Sunshine and the separate library-sync server as needed. Pair Moonlight through the existing handheld Rt:Stream flow.
+3. The library sync server defaults to port 8765. The local browser control panel defaults to port 8766.
+4. Optionally refresh the canonical Rt:Core compatibility dataset in Game Library. Reports are matched by Game ID and system; the Companion never creates synthetic ratings.
 
-The CLI \`spdw-stream\` continues to provide library building, sync-server management, Sunshine helpers, controller profiles and diagnostics.
+## Device discovery and optional SFTP
 
-## First setup
+Discovery only checks devices already visible in the operating system's neighbor table and online Tailscale peers. It does not sweep IP subnets. A listed peer is only a candidate; **Test SFTP** must still succeed.
 
-1. Open **Game Library** and configure one or more existing GameCube and Wii ROM directories (one absolute path per line).
-2. Save the source folders and scan the library. The existing scanner, Game ID detection, cover pipeline and Sunshine app registration are reused.
-3. Open **Streaming** and start Sunshine. Pair Moonlight from the handheld using the existing Rt:Stream flow.
-4. The handheld library sync server remains on the configured sync port (8765 by default); this is not the web control panel port (8766 by default).
+SFTP requires a working SSH/SFTP server on the handheld. Configure its actual host, SSH port, username and ROM destination path in **Device & SFTP**.
 
-## Optional device SFTP
+- Authentication uses OpenSSH keys or an existing SSH agent. Passwords and private keys are never stored by Rt:Stream.
+- The device SSH host key must already be trusted in the system \`known_hosts\`.
+- Host-key verification is strict and is never disabled.
+- Browsing and destructive actions are restricted to the configured remote ROM directory.
+- Upload is limited to supported ROM files within configured PC library roots.
+- Remote downloads are placed in the PC library's \`received/\` folder.
+- Existing files require an explicit Resume, Restart or Overwrite choice. Interrupted uploads/downloads keep a partial file for OpenSSH SFTP's resume mode.
 
-SFTP is optional and requires a working SSH/SFTP server on the handheld. Configure its actual host, port, SSH username and remote ROM directory in **Device & SFTP**.
+The actual device path, SSH account and SFTP service state must be verified on the target firmware. Do not assume an SSH server is enabled by default.
 
-- Authentication uses OpenSSH keys or an existing SSH agent. Rt:Stream does not store passwords or private keys.
-- The device SSH host key must already be trusted in the system \`known_hosts\` file.
-- Host-key verification is strict and is never disabled by the portal.
-- Remote paths must be absolute and cannot contain parent-directory traversal.
-- Upload is limited to ROM files inside the configured PC library roots.
-- Existing remote files require a second explicit overwrite confirmation.
+## Dolphin profiles and display settings
 
-Do not assume a remote ROM path or enable an SSH service without checking the actual firmware/device configuration. A failed SFTP test may mean that SSH/SFTP is not enabled on the handheld, the username/port is different, the host key is not trusted, or the device is not reachable.
+The Companion exposes the existing GCPad, Wiimote and Hotkeys Dolphin profiles. Selecting a profile changes the active profile used by the existing game launcher. **Apply now** writes the active profiles to Dolphin configuration only when Dolphin is closed and creates backups.
+
+Display options update the existing Rt:Stream launch entries in Sunshine. Bitrate, codec and FPS remain Moonlight/handheld streaming preferences.
 
 ## Security boundary
 
-- Web control API listens on loopback only.
-- Mutating API requests require a random per-process session token.
-- Cross-origin mutation requests are rejected.
-- Static file routes are allowlisted.
-- SFTP is invoked with OpenSSH strict host-key checking and batch mode.
-- No password, private key, arbitrary local file browser or unrestricted remote shell is exposed.
+- Web control API listens on loopback only and uses a random per-process session token.
+- Cross-origin mutations are rejected; static routes are allowlisted.
+- SFTP uses OpenSSH BatchMode and strict known-host verification.
+- Remote path traversal is rejected; browsing/deletion remain under the configured ROM root.
+- No unrestricted local filesystem browser, arbitrary remote shell, saved password or saved private key is exposed.
 
 ## Validation
 
-Repository CI runs static contract tests for the local-only bind, session token, SFTP host-key policy, safe ROM-root restriction, overwrite confirmation, editable source directories and responsive UI.
-
-CI cannot validate a real handheld connection. SFTP, Moonlight pairing, Sunshine streaming and ROM transfer still require end-to-end tests against the actual muOS device and its enabled services.
+CI tests the web API security contract, discovery paths, remote path boundaries, parsed SFTP listings, resume endpoints, responsive UI and compatibility integration. CI cannot certify a real handheld SFTP connection, Moonlight pairing, Sunshine stream or physical muOS storage layout; those still need an end-to-end device test.

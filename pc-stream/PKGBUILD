@@ -12,7 +12,8 @@ optdepends=('polkit: admin actions (LightDM autologin)'
             'xorg-xrandr: 4:3 display mode while streaming'
             'dolphin-emu: the emulator that runs your games'
             'sunshine: game-stream host (AUR or LizardByte releases)'
-            'tailscale: remote play')
+            'openssh: encrypted SFTP transfers to the handheld'
+            'tailscale: remote play'
 install=$pkgname.install
 source=("$pkgname-$pkgver.tar.gz")
 sha256sums=('9f0177341020f58f30883175c70661201a8f1c33cb1d8db76cffbc877c3fc44a')
