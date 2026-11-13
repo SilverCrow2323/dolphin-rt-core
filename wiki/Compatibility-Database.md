@@ -4,12 +4,13 @@ The Compatibility Database is the community report browser for Nintendo GameCube
 
 ## Source of truth
 
-The static website is the repository-root index.html. The LÖVE Rt:UI frontend and website read the same canonical data:
+The static website is the repository-root index.html. The LÖVE Rt:UI frontend and website use the schema v2 compatibility database.
 
-- dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json — test reports and shared catalogs.
+- dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json — canonical bundled source and website input.
+- data/games_data.json — root endpoint downloaded by the handheld boot initializer into the runtime data directory.
 - dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json — GameSettings and shared resources.
 
-The data contract is schema_version 2. The canonical group identity is Game ID + system + region. Each report entry is one independent test session; reports from other devices, firmware releases, profiles or Dolphin builds must remain separate.
+The two games_data.json copies must remain byte-identical. The normalizer checks both and writes both in a single operation. The canonical group identity is Game ID + system + region. Each report entry is one independent test session; reports from other devices, firmware releases, profiles or Dolphin builds must remain separate.
 
 ## Search and filters
 
