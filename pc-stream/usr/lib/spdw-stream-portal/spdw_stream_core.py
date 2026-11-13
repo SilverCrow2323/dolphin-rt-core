@@ -66,7 +66,7 @@ AUTOSTART = {
                "spdw-stream serve --refresh"),
     "portal": ("spdw-stream-portal.desktop", "SPDW Stream Portal",
                "Dolphin Stream Portal window",
-               "spdw-stream-portal --minimized"),
+               "spdw-stream-portal"),
 }
 
 

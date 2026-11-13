@@ -37,6 +37,9 @@ class WebPortalTests(unittest.TestCase):
     def test_upload_is_limited_to_configured_rom_folders(self):
         self.assertIn('ROM must be inside a configured library folder.', self.backend)
 
+    def test_existing_remote_rom_requires_explicit_overwrite(self):
+        self.assertIn("Target already exists. Confirm overwrite to replace it.", self.backend)
+
     def test_sftp_does_not_store_passwords(self):
         self.assertNotIn('password', self.backend.lower())
 

@@ -48,7 +48,13 @@ def action(b):
   if not src.is_file() or src.suffix.lower() not in EXTS: raise ValueError("Choose a valid GameCube/Wii ROM.")
   roots=[Path(x).expanduser().resolve() for x in c.get("gc",[])+c.get("wii",[])]
   if not any(src==r or r in src.parents for r in roots): raise ValueError("ROM must be inside a configured library folder.")
-  dst=remote_path(b.get("remote") or device(c)["rom_path"]); cmd="put "+quote_path(str(src))+" "+quote_path(dst.rstrip("/")+"/"+src.name)
+  dst=remote_path(b.get("remote") or device(c)["rom_path"]); target=dst.rstrip("/")+"/"+src.name
+  try: sftp(c,["ls "+quote_path(target)])
+  except RuntimeError as e:
+   if "No such file" not in str(e) and "not found" not in str(e).lower(): raise
+  else:
+   if not b.get("overwrite"): raise ValueError("Target already exists. Confirm overwrite to replace it.")
+  cmd="put "+quote_path(str(src))+" "+quote_path(target)
   return {"message":sftp(c,[cmd],3600)}
  if op=="scan":
   with LOCK: g=core.build(c,refresh_covers=bool(b.get("refresh")))
