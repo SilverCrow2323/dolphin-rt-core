@@ -1,4 +1,4 @@
-name: Deploy Compatibility Database
+name: Deploy Dolphin Rt:Core Project Portal
 
 on:
   push:
@@ -53,6 +53,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy Compatibility Database
+      - name: Deploy Project Portal and Compatibility Database
         id: deployment
         uses: actions/deploy-pages@v4
