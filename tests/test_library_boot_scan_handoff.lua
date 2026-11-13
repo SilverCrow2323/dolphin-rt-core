@@ -59,4 +59,28 @@ assert(Screen.scanning == false)
 assert(#Screen.list.items == 1 and Screen.list.items[1].id == "GZLE01")
 assert(library.begin_calls == 0 and library.step_calls == 0)
 
-print("Library boot-scan handoff: all tests passed")
+-- The globally registered NEXUS rescan action must not replace a scan owned by
+-- boot, even when its local screen state is stale.
+local actions = {}
+local ui = {
+    register_action = function(_, id, run)
+        actions[id] = run
+        return true
+    end,
+}
+assert(Screen.register_actions(ui))
+Screen.scanning = false
+library.scanning, library.scan_owner = true, "boot"
+local accepted, reason = actions["library.rescan"]()
+assert(accepted == false and reason == "scan already in progress")
+assert(library.begin_calls == 0 and library.scan_owner == "boot")
+assert(Screen.scanning == true, "NEXUS rescan must synchronize local scan state")
+
+-- With no other scan active, NEXUS may start its own UI-owned scan.
+library.scanning, library.scan_owner = false, nil
+Screen.scanning = false
+accepted = actions["library.rescan"]()
+assert(accepted == true)
+assert(library.begin_calls == 1 and library.scan_owner == "ui")
+
+print("Library boot-scan handoff and NEXUS rescan ownership: all tests passed")
