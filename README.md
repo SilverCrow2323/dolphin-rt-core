@@ -217,7 +217,8 @@ Development should happen on short-lived branches and be merged through pull req
 
 - [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases)
 - [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues)
-- [Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/)
+- [Official Project Portal](https://silvercrow2323.github.io/dolphin-rt-core/)
+- [Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html)
 - [Engineering guide](docs/REPO_GUIDE.md)
 - [Build guide](dolphin-build/README.md)
 - [muOS registration](docs/MUOS_REGISTRATION.md)
