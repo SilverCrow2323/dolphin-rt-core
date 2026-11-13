@@ -4,6 +4,7 @@ import ast
 import importlib.util
 import pathlib
 import sys
+import tempfile
 import types
 import unittest
 from unittest.mock import patch
@@ -110,6 +111,46 @@ class WebPortalTests(unittest.TestCase):
                 "/mnt/roms/GC",
             )
         self.assertEqual(run.call_args.args[1], ['cd "/mnt/roms/GC"', "pwd"])
+
+    def test_sftp_rejects_rom_root_symlink_to_filesystem_root(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with patch.object(self.portal, "sftp_canonical_directory", return_value="/"):
+            with self.assertRaisesRegex(ValueError, "resolves to the filesystem root"):
+                self.portal.confined_remote_directory(cfg, "/mnt/roms")
+
+    def test_sftp_rejects_symlinked_pc_receive_directory(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with tempfile.TemporaryDirectory() as temp:
+            base = pathlib.Path(temp) / "library"
+            outside = pathlib.Path(temp) / "outside"
+            base.mkdir()
+            outside.mkdir()
+            (base / "received").symlink_to(outside, target_is_directory=True)
+            with patch.object(self.portal, "_validate_remote_rom", return_value="/mnt/roms/Game.iso"):
+                with patch.object(self.portal, "confined_remote_file", return_value=("/mnt/roms", "/mnt/roms/Game.iso", {})):
+                    with patch.object(self.portal.core, "lib_dir", return_value=base):
+                        with self.assertRaisesRegex(ValueError, "PC receive directory must not be a symbolic link"):
+                            self.portal.queue_download(cfg, {"remote": "/mnt/roms/Game.iso"})
+
+    def test_sftp_rejects_symlinked_local_download_and_partial_targets(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with tempfile.TemporaryDirectory() as temp:
+            base = pathlib.Path(temp) / "library"
+            root = base / "received"
+            outside = pathlib.Path(temp) / "outside"
+            base.mkdir()
+            root.mkdir()
+            outside.mkdir()
+            with patch.object(self.portal, "_validate_remote_rom", return_value="/mnt/roms/Game.iso"):
+                with patch.object(self.portal, "confined_remote_file", return_value=("/mnt/roms", "/mnt/roms/Game.iso", {})):
+                    with patch.object(self.portal.core, "lib_dir", return_value=base):
+                        for name in ("Game.iso", "Game.iso.part"):
+                            with self.subTest(name=name):
+                                link = root / name
+                                link.symlink_to(outside / name)
+                                with self.assertRaisesRegex(ValueError, "Symbolic links are not allowed in the PC receive folder"):
+                                    self.portal.queue_download(cfg, {"remote": "/mnt/roms/Game.iso"})
+                                link.unlink()
 
     def test_sftp_canonical_root_allows_device_root_symlink(self):
         cfg = {"device": {"rom_path": "/mnt/roms"}}
