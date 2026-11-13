@@ -1,6 +1,14 @@
 -- Draw-contract regression for Compatibility List dynamic content.
 package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;" .. package.path
 
+local function utf8_chars(value)
+    local out = {}
+    for char in tostring(value or ""):gmatch("[^\128-\191][\128-\191]*") do
+        out[#out + 1] = char
+    end
+    return out
+end
+
 local function wrap(text, width)
     local max_chars = math.max(1, math.floor(width / 8))
     local lines, current = {}, ""
@@ -19,7 +27,7 @@ local function wrap(text, width)
 end
 
 local font = {
-    getWidth = function(_, value) return #tostring(value or "") * 8 end,
+    getWidth = function(_, value) return #utf8_chars(value) * 8 end,
     getHeight = function() return 16 end,
     getWrap = function(_, value, width) return wrap(value, width) end,
 }
@@ -29,12 +37,15 @@ local K = {
     C = {sys={},lime={},boost={},hot={},ok={},dim={},faint={},text={},warn={},line={},bad={}},
     ACC = {gc={},wii={},sys={},lime={},boost={},hot={}},
     font = function() return font end,
-    width = function(_, value) return #tostring(value or "") * 8 end,
+    width = function(_, value) return #utf8_chars(value) * 8 end,
     clip = function(_, value, max_width)
         value = tostring(value or "")
+        local chars = utf8_chars(value)
         local max_chars = math.max(1, math.floor(max_width / 8))
-        if #value <= max_chars then return value end
-        return value:sub(1, math.max(1, max_chars - 1)) .. "…"
+        if #chars <= max_chars then return value end
+        local visible = {}
+        for i = 1, math.max(1, max_chars - 1) do visible[#visible + 1] = chars[i] end
+        return table.concat(visible) .. "…"
     end,
     color = function() end,
     panel = function() end,
@@ -152,7 +163,7 @@ local boot
 for _, item in ipairs(calls.texts) do
     if item.value:find("Boots", 1, true) then boot = item end
 end
-assert(boot and boot.x + K.width("small", boot.value) <= 332 + (640 - 332 - 24) - 14,
+assert(boot and boot.x + K.width("small", boot.value) <= 336 + (640 - 336 - 24) - 14,
        "boot/FPS line must remain inside the detail panel")
 
 print("Compatibility List dynamic layout tests passed")
