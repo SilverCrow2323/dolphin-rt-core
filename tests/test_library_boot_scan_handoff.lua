@@ -63,7 +63,7 @@ assert(library.begin_calls == 0 and library.step_calls == 0)
 -- boot, even when its local screen state is stale.
 local actions = {}
 local ui = {
-    register_action = function(_, id, run)
+    register_action = function(id, run)
         actions[id] = run
         return true
     end,
