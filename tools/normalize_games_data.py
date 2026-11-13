@@ -15,6 +15,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "dolphin-rtcore-muos" / "app" / "Dolphin RtUI" / "data" / "games_data.json"
+RUNTIME_PATH = ROOT / "data" / "games_data.json"
 
 DEVICE_ALIASES = {
     "unknown device": "Unspecified",
@@ -198,17 +199,24 @@ def main() -> int:
     args = parser.parse_args()
 
     original = DATA_PATH.read_text(encoding="utf-8")
+    runtime_original = RUNTIME_PATH.read_text(encoding="utf-8")
     document = json.loads(original)
     normalized = render(normalize_document(document))
     if args.write:
         DATA_PATH.write_text(normalized, encoding="utf-8")
-        print(f"Normalized {DATA_PATH.relative_to(ROOT)}")
+        RUNTIME_PATH.write_text(normalized, encoding="utf-8")
+        print("Normalized both canonical and runtime-served games_data.json copies")
         return 0
+    errors = []
     if original != normalized:
-        print("games_data.json is not canonical; run: python3 tools/normalize_games_data.py --write")
+        errors.append("canonical Rt:UI data is not normalized")
+    if runtime_original != normalized:
+        errors.append("runtime-served data/games_data.json is stale or differs from Rt:UI data")
+    if errors:
+        print("; ".join(errors) + "; run: python3 tools/normalize_games_data.py --write")
         return 1
     reports = sum(len(group.get("entries", [])) for group in document["games"])
-    print(f"Canonical compatibility data: {len(document['games'])} games / {reports} reports")
+    print(f"Canonical compatibility data: {len(document['games'])} games / {reports} reports (both copies match)")
     return 0
 
 
