@@ -1231,6 +1231,7 @@ function renderTestEntry(e,i){
   const attachHtml=attachments.length?'<div style="margin-top:10px;display:flex;flex-direction:column;gap:5px;">'+attachments.map(a=>'<div class="attach-row"><i class="fa-solid fa-'+(a.media_type==='video'?'film':a.media_type==='image'?'image':'link')+'"></i><a href="'+escapeHtml(a.media_url)+'" target="_blank" rel="noopener">'+escapeHtml(a.media_title||a.media_url)+'</a></div>').join('')+'</div>':'';
   const envHtml='<div class="te-env">'
     +(env.device?'<div class="env-line"><i class="fa-solid fa-mobile-screen"></i> '+escapeHtml(env.device)+'</div>':'')
+    +(env.device_revision?'<div class="env-line"><i class="fa-solid fa-microchip"></i> '+escapeHtml(env.device_revision)+'</div>':'')
     +(env.muos_version?'<div class="env-line"><i class="fa-solid fa-sd-card"></i> '+escapeHtml(env.muos_version)+'</div>':'')
     +(env.date?'<div class="env-time"><i class="fa-regular fa-clock"></i> '+timeAgo(env.date)+'</div>':'')
     +'</div>';
@@ -1252,7 +1253,12 @@ function renderTestEntry(e,i){
     +'<div class="te-data">'
     +'<div class="data-cell"><div class="lbl">Rt:Core</div><div class="val">'+escapeHtml(d.rtcore_version||'Unknown')+'</div></div>'
     +'<div class="data-cell"><div class="lbl">Profile</div><div class="val">'+escapeHtml(d.core_profile||'Default')+'</div></div>'
+    +(d.dolphin_version?'<div class="data-cell"><div class="lbl">Dolphin build</div><div class="val">'+escapeHtml(d.dolphin_version)+'</div></div>':'')
+    +(d.graphics_backend&&d.graphics_backend!=='Not recorded'?'<div class="data-cell"><div class="lbl">Graphics backend</div><div class="val">'+escapeHtml(d.graphics_backend)+'</div></div>':'')
+    +(d.test_duration_minutes?'<div class="data-cell"><div class="lbl">Test duration</div><div class="val">'+escapeHtml(d.test_duration_minutes)+' min</div></div>':'')
+    +(d.test_scene?'<div class="data-cell"><div class="lbl">Test scene</div><div class="val">'+escapeHtml(d.test_scene)+'</div></div>':'')
     +'</div>'
+    +((d.audio||d.graphics||d.input||d.stability)?'<div class="te-cons"><strong>Subsystems:</strong> Audio '+escapeHtml(d.audio||'Not recorded')+' · Graphics '+escapeHtml(d.graphics||'Not recorded')+' · Input '+escapeHtml(d.input||'Not recorded')+' · Stability '+escapeHtml(d.stability||'Not recorded')+'</div>':'')
     +(cons?'<div class="te-cons">'+escapeHtml(cons)+'</div>':'')
     +attachHtml
     +'</div></div></div>';
@@ -1595,7 +1601,7 @@ function rptValidate(){
 function rptSubmit(){
   $('rptErrors').style.display='none';$$('#reportModal .input-err').forEach(el=>el.classList.remove('input-err'));
   const errors=rptValidate();if(errors.length){$('rptErrors').innerHTML='<strong>Please fix:</strong><ul>'+errors.map(e=>'<li>'+escapeHtml(e)+'</li>').join('')+'</ul>';$('rptErrors').style.display='block';$('rptErrors').scrollIntoView({behavior:'smooth',block:'nearest'});return;}
-  const now=new Date().toISOString(),fence=String.fromCharCode(96,96,96);
+  const now=new Date().toISOString(),testDate=$('rptTestDate').value?new Date($('rptTestDate').value+'T12:00:00').toISOString():now,fence=String.fromCharCode(96,96,96);
   const gameId=$('rptGameId').value||'UNKNOWN',gameTitle=$('rptGameTitle').value.trim();
   const system=$('rptSystem').value||(state.console==='gc'?'GC':'Wii'),region=$('rptRegion').value||'NTSC';
   const tester=$('rptTester').value.trim()||'Anonymous',device=reportSelectValue('rptDevice','rptDeviceCustom');
@@ -1621,9 +1627,9 @@ function rptSubmit(){
   Object.keys(testDetails).forEach(k=>{if(testDetails[k]===null||testDetails[k]==='')delete testDetails[k];});
   const payload={
     game_info:gameInfo,
-    test_review:{rating,fps:hasFps?(fMin===fMax?String(fMin):fMin+'-'+fMax):'N/A',boot:$('rptBootVal').value,playable:$('rptPlayableVal').value,fps_min:fMin,fps_max:fMax,date:now},
+    test_review:{rating,fps:hasFps?(fMin===fMax?String(fMin):fMin+'-'+fMax):'N/A',boot:$('rptBootVal').value,playable:$('rptPlayableVal').value,fps_min:fMin,fps_max:fMax,date:testDate},
     test_details:testDetails,
-    test_environment:{tester,device,device_revision:$('rptDeviceRevision').value.trim(),muos_version:muos,date:now},
+    test_environment:{tester,device,device_revision:$('rptDeviceRevision').value.trim(),muos_version:muos,date:testDate},
     custom_settings:customList,attachments
   };
   if(!payload.test_environment.device_revision)delete payload.test_environment.device_revision;
@@ -1943,7 +1949,7 @@ function injectJsonLd(){
 }
 async function loadGames(){
   try{
-    if(!_gamesCache){const data=await fetchJson(URL_GAMES);_gamesCache={games:data.games||[],last_update:data.last_update};}
+    if(!_gamesCache){const data=await fetchJson(URL_GAMES);_gamesCache={games:data.games||[],last_update:data.last_update,catalogs:data.catalogs||{}};}
     $('retryDataBtn').style.display='none';
     state.rawGames=_gamesCache.games||[];
     state.catalogs=_gamesCache.catalogs||{};
@@ -2056,7 +2062,7 @@ function init(){
     $('rptRating').value=v;$('rptStarVal').textContent=v+'★';$('rptStarVal').dataset.v=v;$('rptStarVal').classList.add('show');
     applyRatingRules(v);
   }));
-  $('rptCons').addEventListener('input',e=>{$('rptConsCounter').textContent=e.target.value.length+' / 1500';});
+  $('rptCons').addEventListener('input',e=>{$('rptConsCounter').textContent=e.target.value.length+' / 2000';});
   $('rptCustomToggle').addEventListener('click',()=>{const on=$('rptCustomToggle').classList.toggle('on');$('rptCustomBody').style.display=on?'block':'none';});
   $$('#rptCustomTypeTabs .type-tab').forEach(t=>t.addEventListener('click',()=>{$$('#rptCustomTypeTabs .type-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');const type=t.dataset.t;$('rptCustomType').value=type;$('rptCustomGS').style.display=type==='GameSettings'?'block':'none';$('rptCustomURL').style.display=type==='GameSettings'?'none':'block';}));
   $('rptAttToggle').addEventListener('click',()=>{const on=$('rptAttToggle').classList.toggle('on');$('rptAttBody').style.display=on?'block':'none';if(on&&!$('rptAttRows').children.length)rptAddAttRow();});
