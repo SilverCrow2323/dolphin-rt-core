@@ -380,7 +380,6 @@ end
 -- Inventory scans touch the filesystem. Cache the catalog once per UI session
 -- and recompute ROM totals only when a scan publishes a new games table.
 local _rom_totals = { games = nil, scanned_at = nil, total = 0, gc = 0, wii = 0 }
-local _gfx_count, _gfx_count_loaded
 local function library_totals()
     local games = Library.games or {}
     if _rom_totals.games ~= games or _rom_totals.scanned_at ~= Library.scanned_at then
@@ -392,12 +391,11 @@ local function library_totals()
         _rom_totals = { games = games, scanned_at = Library.scanned_at,
                         total = total, gc = gc, wii = wii }
     end
-    if not _gfx_count_loaded then
-        local ok, installed = pcall(U.mods_installed)
-        _gfx_count = (ok and type(installed) == "table") and #installed or nil
-        _gfx_count_loaded = true
-    end
-    return _rom_totals.total, _rom_totals.gc, _rom_totals.wii, _gfx_count
+    -- U.mods_installed already memoizes the filesystem catalog for 2 seconds.
+    -- Reuse that cache here so changes made in Mod Vault appear on the Home page.
+    local ok, installed = pcall(U.mods_installed)
+    local gfx_count = (ok and type(installed) == "table") and #installed or nil
+    return _rom_totals.total, _rom_totals.gc, _rom_totals.wii, gfx_count
 end
 
 local function draw_brand_header(n_games)
