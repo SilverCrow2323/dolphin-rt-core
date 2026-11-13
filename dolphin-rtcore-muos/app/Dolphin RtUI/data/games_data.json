@@ -1941,7 +1941,7 @@
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "muOS 2601.1 Jacaranda"
+            "muos_version": "muOS Jacaranda (version not specified)"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1980,7 +1980,7 @@
           "test_environment": {
             "tester": "Sirpips",
             "device": "Anbernic RG35XX H",
-            "muos_version": "muOS 2601.1 Jacaranda"
+            "muos_version": "muOS Jacaranda (version not specified)"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8961,7 +8961,7 @@
           "test_environment": {
             "tester": "XSpalter",
             "device": "Anbernic RG34XX SP",
-            "muos_version": "muOS 2601.1 Jacaranda"
+            "muos_version": "muOS Jacaranda (version not specified)"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GOWP69.png?1330261887",
           "custom_settings": [],
