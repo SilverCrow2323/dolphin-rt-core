@@ -1,3 +1,42 @@
+## 3.7.0 "Arcade" — Rt:Core v12.5.00 for muOS 2606.0 Andromeda
+**Release candidate · 2026-11-12**
+
+### Boot and library
+- Boot intro now exits autonomously on its final frame or a strict wall-clock ceiling (5.5 s Full, 2.8 s Quick, 0.35 s Off/no mascot); it never waits for network tasks.
+- ROM enumeration runs in a detached background worker and is consumed incrementally from a regular file. Boot and Settings rescan no longer wait for a full recursive find.
+- The frame budget uses monotonic wall time. File-size reads no longer spawn stat / wc for every ROM.
+- ROM roots and discovered paths are deduplicated case-insensitively. Automatic root registration remains disabled: the user explicitly selects a folder with **Add GC** or **Add Wii**.
+
+### FolderWaker and muOS
+- Exact FolderWaker names are gc, ngc, gamecube, game cube, and wii, matched case-insensitively only. Prefixes, suffixes, punctuation and extra whitespace are not accepted.
+- The warning explains the muOS Content Explorer firmware restriction in English and presents an explicit YES / NO choice. YES previews the reversible RtGC / RtWii rename and alias; NO leaves the folders untouched.
+
+### Editors and Mod Vault
+- GameSettings Editor, Hotkeys and Safe Exit are grouped under **Settings → Editors**, without duplicate rows in Tools.
+- Mod Vault supports global enable / disable, bulk enable-all / disable-all and per-game selection. Global disable parks a mod under Load/<Category>.off; it can be restored without deleting its files.
+- A globally parked mod cannot be silently re-enabled by a per-game launch plan. Native GraphicMods remain globally toggleable from a per-game Mod Vault view.
+
+### Visual refresh
+- Home is the actual post-boot landing screen (first-run ROM setup still takes priority), rebuilt as a controller-first two-column hub with an adventure banner, last-played game, Library, Compatibility and compact tiles tuned to the 640×480 handheld canvas.
+- Compatibility uses compact filter chips, game covers (with a fallback tile), large FPS/status, community score, test count and field notes.
+- Select opens Rt:Stream from Home only.
+- Shared header chrome now reserves separate title, subtitle and status lanes; Settings section tabs no longer collide with section labels or navigation hints.
+- Footer hints use controller-shaped keycaps: A red, B yellow, X blue, Y green; shoulder and system controls use grey / charcoal caps.
+- Rt:Stream receives a vaporwave refresh with a neon sunset and perspective grid, dedicated connection/status lanes, visible filter and sort state, and three selectable layouts: **Flow**, **Grid** and **List**.
+
+### Package contents
+- The full Andromeda release bundle includes the native AArch64 Dolphin executable, its matching Sys resources and required private runtime libraries.
+- Official Dolphin GameSettings, Sys/Load resources, stock textures, GraphicMods and Rt:UI per-game presets are retained. Mod Vault manages activation/deactivation without deleting their source payload.
+- A fresh build Sys tree is merged over the curated Sys payload; it does not erase official resources that are absent from the build output.
+- Developer-local settings, generated app-local caches, backups and temporary files are excluded.
+- CI's UI-only package is separately labelled and is not a substitute for the full engine update.
+
+### Release gate
+- CI and Xvfb checks are required for this candidate; a green CI result is not a physical-device certification.
+- RG35XX H install, boot, input, game launch, frame pacing and Safe Exit still require a test on the target firmware before publishing a final release.
+
+---
+
 # Changelog
 
 ## 3.6.0 "Kanzentai" — Rt:Core v12.0.00 for muOS 2606.0 Andromeda

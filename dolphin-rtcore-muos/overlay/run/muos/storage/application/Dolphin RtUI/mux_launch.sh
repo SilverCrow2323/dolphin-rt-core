@@ -40,6 +40,10 @@ APP_MOUNT="${MUOS_STORE_DIR:-/run/muos/storage}/application/$APP_NAME"
 export XDG_DATA_HOME="$APP_DIR/data"
 export HOME="$APP_DIR/data"
 export LD_LIBRARY_PATH="$LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+# Heavy-debug build: keep RTUI diagnostics enabled for field testing.
+# Users can override with DOLPHINUI_HEAVY_DEBUG=0 when troubleshooting storage/performance.
+export DOLPHINUI_HEAVY_DEBUG="${DOLPHINUI_HEAVY_DEBUG:-1}"
+export DOLPHINUI_DEBUG_LOG="${DOLPHINUI_DEBUG_LOG:-$APP_DIR/data/logs/heavy_debug.log}"
 # NOTE: SDL_GAMECONTROLLERCONFIG* is set by SETUP_APP / SETUP_SDL_ENVIRONMENT
 #       (retro or modern layout, chosen by the user's remap setting): never override it.
 

@@ -286,9 +286,24 @@ function U.launch(g)
         controller = card("Controller", "Default"),
         hotkeys    = card("Hotkeys", "Default"),
         gamesettings = (function()
+            local ok, GM = pcall(require, "core.gameset_manager")
+            if ok and GM.has_active_record and GM.has_active_record(g.id) then
+                -- Empty ActiveConfig is an explicit Disabled choice; never
+                -- reactivate an older value from the RTID compatibility card.
+                return GM.active_for(g.id) or "Disabled"
+            end
+
+            -- One-time compatibility import only when canonical metadata is absent.
             local v = card("GameSettings", "")
-            if v == "" or v == "Disabled" then return nil end
-            return v
+            if v == "Disabled" then
+                if ok then GM.clear_active(g.id) end
+                return "Disabled"
+            end
+            if v ~= "" then
+                if ok then GM.set_active(g.id, v) end
+                return v
+            end
+            return nil
         end)(),
         cheats     = U.cheats_active(g),
         mods       = nil,                               -- set below
@@ -308,7 +323,8 @@ function U.launch(g)
     if opts.gamesettings and opts.gamesettings ~= "" then
         pcall(function()
             local GM = require("core.gameset_manager")
-            GM.set_active(g.id, opts.gamesettings)
+            if opts.gamesettings == "Disabled" then GM.clear_active(g.id)
+            else GM.set_active(g.id, opts.gamesettings) end
         end)
     end
     -- write enabled Boost/cheat codes into Dolphin only when there are any

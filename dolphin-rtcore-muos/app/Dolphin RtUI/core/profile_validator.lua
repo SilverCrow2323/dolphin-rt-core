@@ -44,9 +44,14 @@ function V.validate(kind, name, base_workshop)
         table.insert(res.warnings, "Missing metadata file: " .. meta_path)
     end
 
-    local base_path = base_workshop .. "/base/Dolphin.ini"
+    local base_path
+    if kind == "rtcoreprofile" then
+        base_path = base_workshop .. "/rtcoreprofile/Default/Dolphin.ini"
+    else
+        base_path = base_workshop .. "/base/Dolphin.ini"
+    end
     if not exists(base_path) then
-        table.insert(res.errors, "Base Dolphin.ini missing")
+        table.insert(res.errors, "Base Dolphin.ini missing: " .. base_path)
         res.ok = false
     end
 

@@ -1,61 +1,26 @@
-# ============================================================
-#  DolphinUI — ext-dolphin.gptk
-#  gptokeyb2 mapping for Dolphin Rt:Core hotkeys
-# ============================================================
-#  How it works:
-#    - SELECT acts as a modifier (emits LEFT SHIFT).
-#    - SELECT + <button> emits an F-key.
-#    - Dolphin listens to that F-key through Hotkeys.ini.
-#    - The gamepad keeps working through SDL for gameplay:
-#      gptokeyb2 only adds keyboard events, it does not replace
-#      the gamepad.
-#
-#  Format:
-#    button            = key
-#    button1+button2   = key
-#
-#  Button names (SDL GameController, short form):
-#    a, b, x, y
-#    start, select, guide
-#    l1, r1, l2, r2
-#    up, down, left, right
-#    l3, r3
-#
-#  Key names (evdev):
-#    letters:       a .. z
-#    digits:        0 .. 9
-#    function:      F1 .. F12
-#    special:       escape, return, space, tab, backspace,
-#                   delete, insert, home, end, pageup,
-#                   pagedown, up, down, left, right
-#    modifiers:     leftshift, rightshift, leftctrl,
-#                   rightctrl, leftalt, rightalt
-# ============================================================
+# Dolphin Rt:Core — gptokeyb2 native state-machine configuration.
+# No global START+SELECT kill binding: Safe Exit is handled separately by
+# overlay_exit.sh on MENU / M (default), or the user-configured combo.
 
-# ── Modifier: SELECT ────────────────────────────────────────
-select = leftshift
+[config]
+deadzone_triggers = 3000
 
-# ── SELECT + <button> → F-key ───────────────────────────────
-# Save / Load states
+[controls]
+# Do not translate ordinary gameplay buttons into keyboard events.
+overlay = clear
+# Hold L2 to enter the Rt hotkey layer. Other buttons remain normal game input.
+l2 = hold_state rt_hotkeys
 
-# Game flow
-
-# Utility
-
-# Exit (graceful — overlay_exit.sh stays as a safety net)
-
-# >>> HOTKEY DESIGNER (managed block, edit with the Hotkey Designer)
-select+l1      = F1    # Save State 1
-select+r1      = F2    # Load State 1
-select+l2      = F3    # Save State 2
-select+r2      = F4    # Load State 2
-select+a       = F5    # Save State 3
-select+b       = F6    # Load State 3
-select+up      = F7    # Toggle Pause
-select+down    = F8    # Fast Forward
-select+left    = F9    # Frame Limit -
-select+right   = F10    # Frame Limit +
-select+x       = F11    # Screenshot
-select+y       = F12    # Reset
-select+m	   = escape    # Exit
-# <<< HOTKEY DESIGNER
+[controls:rt_hotkeys]
+overlay = parent
+a = f1       # Save State 1
+b = f2       # Load State 1
+x = f3       # Save State 2
+y = f4       # Load State 2
+l1 = f5      # Save State 3
+r1 = f6      # Load State 3
+up = f7      # Toggle Pause
+down = f8    # Fast Forward
+left = f9    # Frame Limit -
+right = f10  # Frame Limit +
+r2 = f11     # Screenshot

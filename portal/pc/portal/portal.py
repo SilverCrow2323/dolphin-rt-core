@@ -661,6 +661,11 @@ class Portal(tk.Tk):
         self.hh_txt = tk.Text(hi, height=8, bg=FACE_DK, fg=CYAN, font=self.fs, relief="flat", wrap="none",
                               highlightthickness=0)
         self.hh_txt.pack(fill="x")
+        host_actions = tk.Frame(hi, bg=FACE)
+        host_actions.pack(fill="x", pady=(6, 0))
+        self.button(host_actions, "COPY LAN IP", lambda: self.copy_handheld_host("lan"), CYAN).pack(side="left", padx=(0, 6))
+        self.button(host_actions, "COPY TAILSCALE IP", lambda: self.copy_handheld_host("tailscale"), VIOLET).pack(side="left", padx=(0, 6))
+        self.button(host_actions, "COPY RECOMMENDED", lambda: self.copy_handheld_host("auto"), RT).pack(side="left")
 
         dp, di = self.panel(fr, "DISPLAY  (fullscreen on the PC while streaming)", VIOLET)
         dp.pack(fill="x", pady=(14, 0))
@@ -838,15 +843,36 @@ class Portal(tk.Tk):
         self.prof_lbl.config(text=("● installed in " if pi else "○ not installed - target: ") + str(core.dolphin_cfg_dir(self.cfg) / "Profiles"),
                              fg=CYAN if pi else WARN)
         ts, lan = core.tailscale_ip(), core.lan_ip()
-        lines = [f'HOST="{ts or lan or "<pc-ip>"}"   # Tailscale' if ts else f'HOST="{lan or "<pc-ip>"}"   # LAN',
-                 f'SYNC_PORT="{self.cfg["port"]}"']
+        recommended = ts or lan or "<pc-ip>"
+        lines = [
+            "PC NETWORK ADDRESSES",
+            f"LAN:       {lan or 'not detected'}",
+            f"Tailscale: {ts or 'not installed / not connected'}",
+            "",
+            f'HOST="{recommended}"   # recommended',
+            f'SYNC_PORT="{self.cfg["port"]}"',
+        ]
         if ts and lan:
-            lines.append(f'# LAN alternative: HOST="{lan}"')
-        lines += ["", "On the handheld (Dolphin Stream):", "START > Streaming > Host PC,", "then SELECT in the library to sync."]
+            lines.append(f'HOST="{lan}"   # LAN alternative')
+        lines += ["", "On the handheld (Dolphin Rt:Stream):", "TOOLS > Scan LAN + Tailscale,", "or enter the HOST above, then Pair with PC."]
         self.hh_txt.config(state="normal")
         self.hh_txt.delete("1.0", "end")
         self.hh_txt.insert("end", "\n".join(lines))
         self.hh_txt.config(state="disabled")
+
+    def copy_handheld_host(self, mode="auto"):
+        lan, ts = core.lan_ip(), core.tailscale_ip()
+        host = ts if mode == "tailscale" else lan if mode == "lan" else (ts or lan)
+        if not host:
+            messagebox.showwarning("Network address", "No address is available for that network.")
+            return
+        try:
+            self.clipboard_clear()
+            self.clipboard_append(host)
+            self.log(f"copied {mode} host address: {host}")
+            self.sb.config(text=f"Copied HOST={host} for the handheld")
+        except Exception as e:
+            messagebox.showerror("Clipboard", str(e))
 
     # -------------------------------------------------- LOG tab
     def _log_tab(self, fr):
@@ -1009,8 +1035,13 @@ class Portal(tk.Tk):
                 fg=RT if srv else WARN)
         except AttributeError:
             pass  # header LEDs not yet created (first call before _statusbar)
-        self._sb_parts = (("SUNSHINE " + ("ON" if run else "OFF")), (f"SYNC :{self.cfg['port']} " + ("ON" if srv else "OFF")),
-                          self.counts)
+        lan_ip, ts_ip = core.lan_ip(), core.tailscale_ip()
+        network = "LAN " + lan_ip if lan_ip else "LAN unavailable"
+        if ts_ip:
+            network += "  ·  TS " + ts_ip
+        self._sb_parts = (("SUNSHINE " + ("ON" if run else "OFF")),
+                          (f"SYNC :{self.cfg['port']} " + ("ON" if srv else "OFF")),
+                          network, self.counts)
         self.after(2000, self.refresh_status)
 
     def animate(self):

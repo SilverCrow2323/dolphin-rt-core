@@ -4,6 +4,9 @@ local K = require("ui.kit")
 local M = {}
 M._bat = { level = nil, charging = false, present = false }
 M._wifi = { up = false, quality = 0, ssid = nil }
+M._net = { ip = nil, tailscale = nil }
+M._sunshine = "unknown"
+M._stream_poll = 0
 M._last_poll = 0
 M.POLL_INTERVAL = 1.0
 
@@ -30,31 +33,71 @@ local function poll_battery()
     M._bat.charging = st and (st:lower():find("charging") ~= nil) or false
 end
 
+local function interface_is_up(iface)
+    if type(iface) ~= "string" or not iface:match("^[%w_.%-]+$") then return false end
+    -- /proc/net/wireless status 0000 is normal; operstate is authoritative.
+    local op = read_file("/sys/class/net/" .. iface .. "/operstate")
+    op = op and op:gsub("^%s+", ""):gsub("%s+$", ""):lower() or ""
+    if op == "up" then return true end
+    if op == "down" or op == "dormant" or op == "lowerlayerdown" then return false end
+    -- Some embedded drivers report operstate=unknown; carrier is the fallback.
+    local carrier = read_file("/sys/class/net/" .. iface .. "/carrier")
+    carrier = carrier and carrier:gsub("%s+", "") or ""
+    return carrier == "1"
+end
+
 local function poll_wifi()
-    local wl = read_file("/proc/net/wireless")
-    if not wl then M._wifi.up = false; return end
-    -- cerca la prima riga con wlanX:
+    local wl = read_file("/proc/net/wireless") or ""
     for line in wl:gmatch("[^\n]+") do
-        local iface, status, qual = line:match("^%s*(%w+):%s*(%w+)%s*([%d%.]+)")
-        if iface and iface:match("^wlan") then
-            M._wifi.up = (status ~= "0000")
-            -- quality può essere "56." (su 70) o "56/70"
+        local iface, qual = line:match("^%s*([%w_.%-]+):%s*[%x]+%s*([%d%.]+)")
+        if iface and (iface:match("^wlan") or iface:match("^wlp") or iface:match("^wl")) then
+            M._wifi.iface = iface
+            M._wifi.up = interface_is_up(iface)
             local q = tonumber(qual) or 0
-            M._wifi.quality = math.min(1, q / 70)
+            M._wifi.quality = math.min(1, math.max(0, q / 70))
             return
         end
     end
-    -- fallback: cerca una interfaccia con operstate=up
-    local h = io.popen("ls -1 /sys/class/net/ 2>/dev/null | grep -E '^wlan|^wlp' | head -1")
+    local h = io.popen("ls -1 /sys/class/net/ 2>/dev/null | grep -E '^(wlan|wlp|wl)' | head -1")
+    local iface = h and (h:read("*a") or ""):gsub("%s+", "") or ""
+    if h then h:close() end
+    M._wifi.iface = iface ~= "" and iface or nil
+    M._wifi.up = iface ~= "" and interface_is_up(iface) or false
+    M._wifi.quality = M._wifi.up and 0.6 or 0
+end
+local function poll_network()
+    local h = io.popen("ip -4 -o addr show scope global 2>/dev/null")
+    local chosen
     if h then
-        local iface = (h:read("*a") or ""):gsub("%s+", "")
-        h:close()
-        if iface ~= "" then
-            local op = read_file("/sys/class/net/" .. iface .. "/operstate")
-            M._wifi.up = op and op:lower():find("up") ~= nil or false
-            M._wifi.quality = M._wifi.up and 0.6 or 0
+        for line in h:lines() do
+            local iface, addr = line:match("%d+:%s+([%w_.%-]+)%s+inet%s+([%d%.]+)/")
+            if iface and addr and iface ~= "lo" and not iface:match("^tailscale") then
+                chosen = addr
+                if iface:match("^wlan") then break end
+            end
         end
+        h:close()
     end
+    M._net.ip = chosen
+    local ts = io.popen("command -v tailscale >/dev/null 2>&1 && tailscale ip -4 2>/dev/null | head -1")
+    if ts then
+        local value = (ts:read("*a") or ""):gsub("%s+", "")
+        ts:close()
+        M._net.tailscale = value ~= "" and value or nil
+    else
+        M._net.tailscale = nil
+    end
+end
+
+local function poll_stream()
+    local ok, Stream = pcall(require, "core.stream")
+    if not ok or not Stream then M._sunshine = "unknown"; return end
+    if not Stream._statusbar_initialized then
+        Stream._statusbar_initialized = pcall(Stream.init)
+    end
+    pcall(Stream.poll_health)
+    if Stream.configured() and not Stream.health.pending then Stream.check_health() end
+    M._sunshine = Stream.health.sunshine or "unknown"
 end
 
 function M.update(dt)
@@ -63,6 +106,12 @@ function M.update(dt)
     M._last_poll = 0
     pcall(poll_battery)
     pcall(poll_wifi)
+    pcall(poll_network)
+    M._stream_poll = M._stream_poll + 1
+    if M._stream_poll >= 5 then
+        M._stream_poll = 0
+        pcall(poll_stream)
+    end
 end
 
 -- ── icone ─────────────────────────────────────────────────
@@ -151,6 +200,18 @@ function M.draw(W, H)
     local wifi_y = y0 + 1
     local wifi_w = 14
     local wifi_h = 12
+    local ip = M._net.ip or "NO IP"
+    K.text("mono", "IP " .. ip, W - 310, y0 + 2, M._net.ip and K.C.dim or K.C.bad)
+    local tx = W - 160
+    K.color(M._net.tailscale and K.C.ok or K.C.faint, 1)
+    love.graphics.circle("fill", tx, y0 + 8, 3)
+    K.text("key", "TS", tx + 7, y0 + 1, M._net.tailscale and K.C.ok or K.C.faint)
+    local sx = W - 112
+    local sun_ok = M._sunshine == "ok"
+    local sun_fail = M._sunshine == "fail"
+    K.color(sun_ok and K.C.ok or (sun_fail and K.C.bad or K.C.warn), 1)
+    love.graphics.circle("fill", sx, y0 + 8, 3)
+    K.text("key", "SUN", sx + 7, y0 + 1, sun_ok and K.C.ok or (sun_fail and K.C.bad or K.C.dim))
     draw_wifi(wifi_x, wifi_y, wifi_w, wifi_h)
     draw_battery(bat_x, bat_y, bat_w, bat_h)
 end

@@ -1,9 +1,9 @@
 -- Dolphin Rt:UI — FrontendONE Final Cut
--- Part of Dolphin Rt:Core for muOS - v12.0.00 Andromeda "Kanzentai"
+-- Part of Dolphin Rt:Core for muOS - v12.5.00 Andromeda "Arcade"
 return {
-  string   = "3.6.0",
-  codename = "Kanzentai",
-  build    = "20261105a",
-  frontend = "Dolphin Rt:UI Kanzentai v3.6.0",
-  core     = "Dolphin Rt:Core for muOS - v12.0.00 Andromeda 'Kanzentai' (FrontendONE Final Cut + Rt:Stream)",
+  string   = "3.7.0",
+  codename = "Arcade",
+  build    = "20261112a",
+  frontend = "Dolphin Rt:UI Arcade v3.7.0",
+  core     = "Dolphin Rt:Core for muOS - v12.5.00 Andromeda 'Arcade' (FrontendONE Final Cut + Rt:Stream)",
 }

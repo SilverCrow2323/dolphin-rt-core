@@ -120,10 +120,29 @@ function M.count_for(game_id)
 end
 
 function M.active_for(game_id)
+    if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return nil end
     local dir = BASE .. "/" .. game_id
     if not dir_exists(dir) then return nil end
     local meta = read_meta(dir .. "/rtgameset_data.ini")
-    return meta.GameSettings and meta.GameSettings.ActiveConfig or nil
+    local active = meta.GameSettings and meta.GameSettings.ActiveConfig or nil
+    if type(active) ~= "string" or active == "" or active:find("/", 1, true)
+       or active:find("..", 1, true) or active:match("^%.") or not active:match("%.ini$") then
+        return nil
+    end
+    local f = io.open(dir .. "/" .. active, "r")
+    if not f then return nil end
+    f:close()
+    return active
+end
+
+-- Distinguish an explicitly empty ActiveConfig (Disabled) from a legacy
+-- metadata file that has no canonical selector yet and may import its RTID card.
+function M.has_active_record(game_id)
+    if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return false end
+    local dir = BASE .. "/" .. game_id
+    if not dir_exists(dir) then return false end
+    local meta = read_meta(dir .. "/rtgameset_data.ini")
+    return meta.GameSettings ~= nil and meta.GameSettings.ActiveConfig ~= nil
 end
 
 -- ── Public: mutations ──────────────────────────────────────
@@ -134,22 +153,30 @@ function M.ensure_dir(game_id)
 end
 
 function M.set_active(game_id, filename)
-    local dir = M.ensure_dir(game_id)
+    if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return false end
+    if type(filename) ~= "string" or filename == "" or filename:find("/", 1, true)
+       or filename:find("..", 1, true) or filename:match("^%.") or not filename:match("%.ini$") then
+        return false
+    end
+    local dir = BASE .. "/" .. game_id
+    local source = io.open(dir .. "/" .. filename, "r")
+    if not source then return false end
+    source:close()
     local meta = read_meta(dir .. "/rtgameset_data.ini")
     meta.GameSettings = meta.GameSettings or {}
-    meta.GameSettings.ActiveConfig = filename or ""
-    write_meta(dir .. "/rtgameset_data.ini", meta)
-    return true
+    meta.GameSettings.ActiveConfig = filename
+    return write_meta(dir .. "/rtgameset_data.ini", meta)
 end
 
 function M.clear_active(game_id)
-    local dir = BASE .. "/" .. game_id
-    if not dir_exists(dir) then return true end
+    if type(game_id) ~= "string" or not game_id:match("^[%w_%-]+$") then return false end
+    -- Even a game with no prior GameSettings folder needs an explicit empty
+    -- ActiveConfig record, otherwise a stale RTID value can be re-imported.
+    local dir = M.ensure_dir(game_id)
     local meta = read_meta(dir .. "/rtgameset_data.ini")
     meta.GameSettings = meta.GameSettings or {}
     meta.GameSettings.ActiveConfig = ""
-    write_meta(dir .. "/rtgameset_data.ini", meta)
-    return true
+    return write_meta(dir .. "/rtgameset_data.ini", meta)
 end
 
 function M.add(game_id, filename)

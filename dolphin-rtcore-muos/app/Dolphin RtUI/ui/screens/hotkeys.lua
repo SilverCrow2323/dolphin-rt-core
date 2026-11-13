@@ -37,7 +37,6 @@ local ACTIONS = {
     { key = "Keys/Increase Frame Limit", label = "Frame Limit +",  icon = "zap" },
     { key = "Keys/Take Screenshot",      label = "Screenshot",     icon = "star" },
     { key = "Keys/Reset",                label = "Reset",          icon = "wrench" },
-    { key = "Keys/Exit",                 label = "Exit",           icon = "off" },
     { key = "Keys/Set State Slot to 1",  label = "State Slot 1",   icon = "save" },
     { key = "Keys/Set State Slot to 2",  label = "State Slot 2",   icon = "save" },
     { key = "Keys/Set State Slot to 3",  label = "State Slot 3",   icon = "save" },
@@ -48,8 +47,8 @@ local KEY_LIST = { "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", 
                    "Escape", "Space", "Return", "Tab", "Backspace" }
 
 local function to_gptk(k)
-    if k:match("^F%d+$") then return k end
-    return k:lower()
+    -- gptokeyb2 key names are lowercase (e.g. f1, enter, esc).
+    return tostring(k or ""):lower()
 end
 local function from_gptk(t)
     if t:match("^[fF]%d+$") then return t:upper() end
@@ -65,7 +64,7 @@ local PAD_NAMES = { dpup = "UP", dpdown = "DOWN", dpleft = "LEFT", dpright = "RI
 local DPAD = { UP = true, DOWN = true, LEFT = true, RIGHT = true }
 
 -- gptk button token <-> logical name. The MENU token is whatever the file
--- already uses ("m" or "guide") so an existing Exit binding keeps working.
+-- already uses ("m" or "guide") so existing MENU mappings remain stable.
 S.menu_tok = "guide"
 local function btn_to_gptk(n) if n == "MENU" then return S.menu_tok end return n:lower() end
 local function btn_from_gptk(t)
@@ -125,16 +124,28 @@ end
 local function trim(s) return (s:gsub("^%s+", ""):gsub("%s+$", "")) end
 
 local function load_gptk(profile)
-    local map = {}
+    local map, section = {}, ""
     S.menu_tok = "guide"
     for _, l in ipairs(read_lines(gptk_path(profile))) do
         local t = trim(l)
-        if t ~= "" and t:sub(1, 1) ~= "#" and t:sub(1, 1) ~= ";" then
+        local sec = t:match("^%[([^%]]+)%]$")
+        if sec then
+            section = sec:lower()
+        elseif t ~= "" and t:sub(1, 1) ~= "#" and t:sub(1, 1) ~= ";" then
             local lhs, rhs = t:match("^([%w%+_]+)%s*=%s*(%S+)")
             if lhs then
-                map[lhs:lower()] = rhs
-                for part in lhs:gmatch("[^%+]+") do
-                    if part:lower() == "m" then S.menu_tok = "m" end
+                lhs = lhs:lower()
+                if section == "controls:rt_hotkeys" then
+                    -- Native gptokeyb2 FSM: L2 enters this state, the
+                    -- selected button emits the configured keyboard key.
+                    map["l2+" .. lhs] = rhs
+                elseif section == "" then
+                    -- Read older flat files for migration; new saves are
+                    -- always emitted in native gptokeyb2 section syntax.
+                    map[lhs] = rhs
+                    for part in lhs:gmatch("[^%+]+") do
+                        if part == "m" then S.menu_tok = "m" end
+                    end
                 end
             end
         end
@@ -143,8 +154,12 @@ local function load_gptk(profile)
 end
 
 local function combo_str(combo)
-    local p = {}
-    for _, b in ipairs(combo) do p[#p + 1] = btn_to_gptk(b) end
+    local p, rest, has_l2 = {}, {}, false
+    for _, b in ipairs(combo) do
+        if b == "L2" then has_l2 = true else rest[#rest + 1] = btn_to_gptk(b) end
+    end
+    if has_l2 then p[#p + 1] = "l2" end
+    for _, b in ipairs(rest) do p[#p + 1] = b end
     return table.concat(p, "+")
 end
 local function combo_from_str(s)
@@ -255,9 +270,24 @@ end
 
 local function switch_device(d)
     if d == S.device then return end
+    local dropped = 0
     if d == "keyboard" then
         for _, a in ipairs(ACTIONS) do
             local m = S.model[a.key]
+            if #m.combo > 0 then
+                local rest, has_l2 = {}, false
+                for _, name in ipairs(m.combo) do
+                    if name == "L2" then has_l2 = true else rest[#rest + 1] = name end
+                end
+                if not has_l2 and #rest == 1 then
+                    m.combo = { "L2", rest[1] }
+                elseif not has_l2 or #rest ~= 1 then
+                    -- gptokeyb2 FSM supports one hold-state modifier plus one
+                    -- target button. Do not silently emit invalid pseudo-combos.
+                    m.combo = {}
+                    dropped = dropped + 1
+                end
+            end
             if #m.combo > 0 and not m.key then
                 local mapped = S.gptk_map[combo_str(m.combo)]
                 m.key = mapped and from_gptk(mapped) or auto_key()
@@ -266,6 +296,10 @@ local function switch_device(d)
     end
     S.device = d
     S.dirty = true
+    recompute_conflicts()
+    if dropped > 0 then
+        Notify.show("warning", dropped .. " multi-button PAD combo(s) cleared: keyboard mode supports L2 + one button.")
+    end
     SFX.play("menu_pagescroll")
     rebuild_rows()
 end
@@ -297,43 +331,47 @@ local function set_kv(lines, section, key, value)
 end
 
 local function write_gptk()
-    local lines = read_lines(gptk_path(S.profile))
-    local out, skipping = {}, false
-    for _, l in ipairs(lines) do
-        if l == BLOCK_A then skipping = true
-        elseif l == BLOCK_B then skipping = false
-        elseif not skipping then out[#out + 1] = l end
-    end
-    local managed, block = {}, {}
+    local block = {}
+    local used = {}
     for _, a in ipairs(ACTIONS) do
         local m = S.model[a.key]
         if m and #m.combo > 0 and m.key then
-            local lhs = combo_str(m.combo)
-            if managed[lhs] then
-                block[#block + 1] = ("# CONFLICT %-14s = %s    # %s"):format(lhs, to_gptk(m.key), a.label)
-            else
-                managed[lhs] = true
-                block[#block + 1] = ("%-14s = %s    # %s"):format(lhs, to_gptk(m.key), a.label)
+            local combo = combo_str(m.combo)
+            local target = combo:match("^l2%+([%w_]+)$")
+            if target and not used[target] then
+                used[target] = true
+                block[#block + 1] = (("%-8s = %-5s # %s"):format(target, to_gptk(m.key), a.label))
+            elseif target and used[target] then
+                block[#block + 1] = ("# CONFLICT %s = %s # %s"):format(combo, to_gptk(m.key), a.label)
             end
         end
     end
-    -- hand-written lines that clash with a managed combo go away
-    local kept = {}
-    for _, l in ipairs(out) do
-        local t = trim(l)
-        local lhs = t:match("^([%w%+_]+)%s*=")
-        if not (lhs and t:sub(1, 1) ~= "#" and managed[lhs:lower()]) then kept[#kept + 1] = l end
-    end
-    while #kept > 0 and kept[#kept] == "" do kept[#kept] = nil end
-    kept[#kept + 1] = ""
-    kept[#kept + 1] = BLOCK_A
-    for _, b in ipairs(block) do kept[#kept + 1] = b end
-    kept[#kept + 1] = BLOCK_B
-    local ok = write_lines(gptk_path(S.profile), kept)
+
+    -- Emit the documented gptokeyb2 FSM format. The old "l2+a = F1"
+    -- pseudo-syntax is not understood by gptokeyb2 and silently disables
+    -- every hotkey. Ordinary controls are cleared; only the L2 state layer
+    -- emits keyboard events.
+    local lines = {
+        "# Dolphin Rt:Core — native gptokeyb2 state-machine configuration.",
+        "# L2 enters the Rt hotkey layer; all other gameplay input is untouched.",
+        "",
+        "[config]",
+        "deadzone_triggers = 3000",
+        "",
+        "[controls]",
+        "overlay = clear",
+        "l2 = hold_state rt_hotkeys",
+        "",
+        "[controls:rt_hotkeys]",
+        "overlay = parent",
+        "# >>> HOTKEY DESIGNER (managed block, edit with the Hotkey Designer)",
+    }
+    for _, line in ipairs(block) do lines[#lines + 1] = line end
+    lines[#lines + 1] = "# <<< HOTKEY DESIGNER"
+    local ok = write_lines(gptk_path(S.profile), lines)
     if ok then S.gptk_map = load_gptk(S.profile) end
     return ok
 end
-
 local function save()
     os.execute("mkdir -p " .. sh.shq(HK_DIR .. S.profile))
     local path = ini_path(S.profile)
@@ -400,6 +438,15 @@ local function end_capture(commit)
         if #filtered ~= #names then Notify.show("warning", "D-pad cannot be used in pad expressions") end
         names = filtered
         if #names == 0 then return end
+    else
+        local has_l2, other = false, 0
+        for _, n in ipairs(names) do
+            if n == "L2" then has_l2 = true else other = other + 1 end
+        end
+        if not has_l2 or other ~= 1 or #names ~= 2 then
+            Notify.show("warning", "Keyboard hotkeys require L2 + one button. Use PAD (SDL) for other combinations.")
+            return
+        end
     end
     table.sort(names, function(a, b)
         local wa = (a == "SELECT" or a == "MENU") and 0 or 1
@@ -652,13 +699,14 @@ end
 
 function S.draw()
     if S.mode == "profiles" then
-        K.header("Hotkeys", "Choose a profile to design", nil, nil, { icon = "hotkeys" })
+        K.header("Hotkeys", "Choose a profile to design", nil, { icon = "hotkeys" })
         if #S.plist.items == 0 then K.text("body", "No hotkey profiles found in workshop/hotkeys.", 0, 200, K.C.dim, 1, K.W, "center")
         else S.plist:draw(draw_profile) end
         K.footer({ { key = "A", label = "Design" }, { key = "B", label = "Back" } })
         return
     end
-    K.header("Hotkeys", "profile · " .. S.profile .. (S.dirty and "   ● unsaved" or ""), nil)
+    local mode_hint = S.device == "keyboard" and "keyboard · hold L2 + one button" or "PAD (SDL) · direct controller input"
+    K.header("Hotkeys", "profile · " .. S.profile .. " · " .. mode_hint .. (S.dirty and "   ● unsaved" or ""), nil)
     local tw = (K.W - K.MARGIN * 2 - 8) / 2
     for i, it in ipairs({ { id = "keyboard", label = "KEYBOARD", sub = "gptokeyb2 F-keys" },
                           { id = "pad", label = "PAD (SDL)", sub = S.pad_device } }) do

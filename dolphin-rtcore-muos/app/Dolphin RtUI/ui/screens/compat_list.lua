@@ -7,10 +7,13 @@ local SFX     = require("ui.sfx")
 local U       = require("ui.util")
 local Compat  = require("core.compatibility")
 local Library = require("core.library")
+local ok_cover, Cover = pcall(require, "core.cover_loader")
 
 local S = {}
-local LY = 100
-S.list = K.List(K.MARGIN, LY, 296, K.BOT - LY, 36)
+local LY = 120
+local LIST_W = 276
+local DETAIL_X = 316
+S.list = K.List(K.MARGIN, LY, LIST_W, K.BOT - LY, 38)
 S.t, S.filter, S.mine_only = 0, 1, false
 
 local FILTERS = {
@@ -196,84 +199,145 @@ function S.pad(b)
     elseif b == "B" then require("ui").back() end
 end
 
-local function kind_col(k) return K.C[k] or K.C.dim end
+local function kind_col(k)
+    return K.C[k] or K.C.dim
+end
+
+local function filtered_count(index)
+    local filter = FILTERS[index]
+    local count = 0
+    for _, game in ipairs(Compat.games or {}) do
+        if filter.test(game) then count = count + 1 end
+    end
+    return count
+end
+
+local function draw_filter_bar()
+    local gap = 6
+    local w = (K.W - K.MARGIN * 2 - gap * 3) / 4
+    for i, filter in ipairs(FILTERS) do
+        local x = K.MARGIN + (i - 1) * (w + gap)
+        local active = i == S.filter
+        local c = K.ACC[filter.color] or K.C.dim
+        K.panel(x, 80, w, 30, { cut = 7, focus = active, accent = c })
+        K.text("key", filter.label, x + 9, 88, active and K.C.text or K.C.dim)
+        local n = tostring(filtered_count(i))
+        K.text("small", n, x + w - K.width("small", n) - 9, 89, active and c or K.C.faint)
+    end
+end
 
 local function draw_item(g, x, y, w, h, focused)
     local mine = owned[g.id]
     local sm = Compat.summary(g)
-    local cx = x + 12
-    if mine then K.color(K.C.ok, 1); love.graphics.circle("fill", cx, y + h / 2, 3.5) end
-    local right = x + w - 8
-    local fw = K.width("small", sm.has_fps and sm.fps or "n/a")
-    K.text("small", sm.has_fps and sm.fps or "n/a", right - fw, y + h / 2 - 9,
-           kind_col(sm.play_kind), focused and 1 or 0.8)
-    K.text("body", K.clip("body", g.title, right - fw - x - 36), x + 24, y + h / 2 - 10,
-           focused and K.C.text or K.C.dim)
+    local c = kind_col(sm.play_kind)
+    K.panel(x, y + 2, w, h - 4, { focus = focused, accent = c, cut = 6 })
+    K.color(c, focused and 1 or 0.72)
+    love.graphics.rectangle("fill", x + 8, y + 10, 3, h - 20, 1.5, 1.5)
+    if mine then
+        K.color(K.C.ok, 1)
+        love.graphics.circle("fill", x + 20, y + h / 2, 3)
+    end
+    local title_x = mine and (x + 30) or (x + 20)
+    local fps = sm.has_fps and (sm.fps .. " FPS") or "N/A"
+    local fw = K.width("small", fps)
+    K.text("body", K.clip("body", g.title, w - (title_x - x) - fw - 20),
+        title_x, y + h / 2 - 9, focused and K.C.text or K.C.dim)
+    K.text("small", fps, x + w - fw - 10, y + h / 2 - 8, c, focused and 1 or 0.8)
 end
 
 local function draw_stars(x, y, rating)
     for i = 1, 5 do
         local on = rating >= i - 0.25
-        K.star(x + (i - 1) * 18, y, 7, on and K.C.warn or K.C.line, on and 1 or 0.6)
+        K.star(x + (i - 1) * 15, y, 6.3, on and K.C.warn or K.C.line, on and 1 or 0.6)
+    end
+end
+
+local function draw_cover(g, x, y, w, h)
+    K.panel(x, y, w, h, { cut = 7, accent = (g.system == "Wii") and K.ACC.wii or K.ACC.gc })
+    local image = ok_cover and Cover.get and Cover.get(g)
+    if image then
+        local iw, ih = image:getDimensions()
+        local scale = math.min((w - 8) / iw, (h - 8) / ih)
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.draw(image, x + (w - iw * scale) / 2, y + (h - ih * scale) / 2,
+            0, scale, scale)
+    else
+        local initials = (g.title or g.id or "?"):gsub("[^%w]", ""):sub(1, 2):upper()
+        K.text("title", initials, x, y + h / 2 - 16, K.acc, 0.85, w, "center")
+        K.text("key", "COVER", x, y + h - 20, K.C.faint, 1, w, "center")
     end
 end
 
 local function draw_detail(g)
-    local px, py, pw, ph = 332, LY, K.W - 332 - K.MARGIN, K.BOT - LY
-    K.panel(px, py, pw, ph, { cut = 12 })
+    local px, py = DETAIL_X, LY
+    local pw, ph = K.W - DETAIL_X - K.MARGIN, K.BOT - LY
+    K.panel(px, py, pw, ph, { cut = 12, accent = K.acc })
     if not g then
-        K.text("body", "Nothing matches this filter", px, py + ph / 2 - 10, K.C.faint, 1, pw, "center")
+        K.cube(px + pw / 2, py + 88, 28, S.t * 0.35, 0.55, K.acc, 0.5)
+        K.text("body", "Select a game to inspect its reports", px + 14, py + 156,
+            K.C.faint, 1, pw - 28, "center")
         return
     end
+
     local sm = Compat.summary(g)
     local mine = owned[g.id]
-    K.text("h", K.clip("h", g.title, pw - 28), px + 14, py + 12, K.C.text)
-    K.pill(g.system ~= "" and g.system or "GC", px + 14 + 52, py + 52, (g.system == "Wii") and K.ACC.wii or K.ACC.gc, true)
-    if g.region ~= "" then K.pill(g.region, px + 14 + 52 + 70, py + 52, K.C.dim, false) end
-    K.text("small", g.id, px + pw - 14 - K.width("small", g.id), py + 44, K.C.faint)
+    draw_cover(g, px + 12, py + 14, 88, 112)
+    local tx = px + 112
+    local tw = pw - 124
+    K.text("h", K.clip("h", g.title, tw), tx, py + 14, K.C.text)
+    local system_color = (g.system == "Wii") and K.ACC.wii or K.ACC.gc
+    K.pill(g.system ~= "" and g.system or "GC", tx + 52, py + 46, system_color, true)
+    if g.region ~= "" then K.pill(g.region, tx + 118, py + 46, K.C.dim, false) end
+    K.id_plate(g.id or "------", tx, py + 65, math.min(126, tw), 20)
 
-    K.text("body", sm.play_label, px + 14, py + 74, kind_col(sm.play_kind))
-    K.text("small", sm.boot_label .. (sm.has_fps and ("  \194\183  " .. sm.fps .. " FPS") or ""),
-           px + 14, py + 98, K.C.dim)
-    draw_stars(px + 21, py + 132, sm.stars)
-    K.text("small", sm.rating_text .. "  \194\183  " .. sm.n .. (sm.n == 1 and " test" or " tests"),
-           px + 14 + 100, py + 123, K.C.faint)
-    local y = py + 150
-    if sm.profiles ~= "" then
-        K.text("small", "Profile", px + 14, y, K.C.faint)
-        K.text("small", K.clip("small", sm.profiles, pw - 100), px + 80, y, K.C.text); y = y + 20
-    end
-    if sm.devices ~= "" then
-        K.text("small", "Device", px + 14, y, K.C.faint)
-        K.text("small", K.clip("small", sm.devices, pw - 100), px + 80, y, K.C.text); y = y + 20
-    end
-    -- nota della prova migliore
+    local status_color = kind_col(sm.play_kind)
+    K.text("xl", sm.has_fps and sm.fps or "—", tx, py + 91, status_color)
+    K.text("key", sm.has_fps and "FPS REPORTED" or "NO FPS DATA", tx, py + 116, K.C.faint)
+    K.text("small", sm.play_label, px + 14, py + 138, status_color)
+    K.text("small", sm.boot_label, px + pw - 14 - K.width("small", sm.boot_label),
+        py + 138, kind_col(sm.boot_kind))
+
+    K.color(K.C.line, 0.7)
+    love.graphics.rectangle("fill", px + 14, py + 160, pw - 28, 1)
+    K.text("key", "COMMUNITY SCORE", px + 14, py + 172, K.C.faint)
+    draw_stars(px + 18, py + 204, sm.stars)
+    K.text("small", sm.rating_text, px + 100, py + 196, K.C.text)
+    local tests = tostring(sm.n) .. (sm.n == 1 and " TEST" or " TESTS")
+    K.text("small", tests, px + pw - 14 - K.width("small", tests), py + 196, K.C.faint)
+
     local best
-    for _, e in ipairs(g.entries) do
-        if e.norm.note ~= "" and (not best or e.norm.rating > best.norm.rating) then best = e end
+    for _, entry in ipairs(g.entries or {}) do
+        if entry.norm and entry.norm.note ~= "" and
+           (not best or entry.norm.rating > best.norm.rating) then best = entry end
     end
     if best then
+        K.color(K.C.line, 0.55)
+        love.graphics.rectangle("fill", px + 14, py + 222, pw - 28, 1)
+        K.text("key", "FIELD NOTES", px + 14, py + 234, K.C.faint)
         local note = best.norm.note:gsub("%s+", " ")
-        if #note > 170 then note = note:sub(1, 167):gsub("[\192-\255][\128-\191]*$", "") .. "..." end
-        K.color(K.C.line, 0.6); love.graphics.rectangle("fill", px + 14, y + 4, pw - 28, 1)
-        K.para("small", note, px + 14, y + 12, pw - 28, K.C.dim, 1)
+        if #note > 125 then note = note:sub(1, 122):gsub("[\192-\255][\128-\191]*$", "") .. "..." end
+        K.para("small", note, px + 14, py + 252, pw - 28, K.C.dim)
     end
-    K.text("small", mine and "In your library" or "Not in your library", px + 14, py + ph - 24,
-           mine and K.C.ok or K.C.faint)
+
+    local footer = mine and "IN YOUR LIBRARY  ·  A TO OPEN" or "COMMUNITY REPORT  ·  NOT INSTALLED"
+    K.text("key", footer, px + 14, py + ph - 20, mine and K.C.ok or K.C.faint)
 end
 
 function S.draw()
-    local f = FILTERS[S.filter]
-    local acc = K.ACC[f.color]
-    K.header("Compatibility", f.label .. (S.mine_only and "  \194\183  my library" or ""),
-             #S.list.items .. " / " .. Compat.count, nil, { icon = "chart", accent = acc })
+    local filter = FILTERS[S.filter]
+    local accent = K.ACC[filter.color]
+    K.header("Compatibility", "REAL-WORLD REPORTS  ·  GAMECUBE + WII" .. (S.mine_only and "  ·  MY LIBRARY" or ""),
+        #S.list.items .. " / " .. Compat.count, nil, { icon = "chart", accent = accent })
+    draw_filter_bar()
     if Compat.error then
-        K.text("body", Compat.error, 0, 220, K.C.bad, 1, K.W, "center")
+        K.panel(K.MARGIN, LY, K.W - K.MARGIN * 2, K.BOT - LY, { cut = 12 })
+        K.text("body", "Compatibility data unavailable", 0, 205, K.C.bad, 1, K.W, "center")
+        K.text("small", Compat.error, K.MARGIN + 20, 246, K.C.dim, 1, K.W - K.MARGIN * 2 - 40, "center")
     else
         S.list:draw(draw_item)
         draw_detail(S.list:cur())
     end
-    K.footer({ { key = "A", label = "Open" }, { key = "L1 R1", label = "Filter" },
+    K.footer({ { key = "A", label = "Open owned" }, { key = "L1 R1", label = "Filter" },
                { key = "X", label = S.mine_only and "Show all" or "Mine only" },
                { key = "L2 R2", label = "Letter" }, { key = "B", label = "Back" } })
 end

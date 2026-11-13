@@ -1,6 +1,6 @@
-# Compatibility Site Operations
+# Compatibility Atlas — Site Operations
 
-The Compatibility Database is a static single-page application rooted at `index.html`. The repository also tracks its service worker (`sw.js`) and web app manifest (`manifest.json`).
+The **Dolphin Rt:Core Compatibility Atlas** is a static single-page application rooted at `index.html`. It runs on GitHub Pages and locally, and is installable as a PWA. Its data source is the same JSON consumed by Rt:UI.
 
 ## Local preview
 
@@ -10,31 +10,45 @@ From the repository root:
 python3 -m http.server 8000
 ```
 
-Open `http://localhost:8000`. Do not use `file://`: fetch, service workers and browser storage behave differently.
+Open `http://localhost:8000`. Do not open the HTML file with `file://`: browser fetch, service-worker and storage behavior differ.
 
 ## Publish
 
-The app needs no Node build step. The repository includes `.github/workflows/deploy-compatibility.yml`, which builds a minimal publication folder and deploys it whenever site files reach `main`. One-time setup is required: **Settings → Pages → Build and deployment → Source → GitHub Actions**. Pull requests never publish. The expected URL after the first successful deployment is `https://silvercrow2323.github.io/dolphin-rt-core/`. The build publishes only `index.html`, `manifest.json`, `sw.js`, `.nojekyll` and the three local UI assets; it does not upload the project source tree.
+The app needs no Node build step. `.github/workflows/deploy-compatibility.yml` builds a deliberately minimal publication directory and deploys it whenever website or data files reach `main`. One-time setup: **Settings → Pages → Build and deployment → Source → GitHub Actions**. Pull requests do not publish. The project URL is:
 
-## Data sources
+`https://silvercrow2323.github.io/dolphin-rt-core/`
 
-The app loads:
+Only `index.html`, `manifest.json`, `sw.js`, `.nojekyll` and the three local UI assets are published. The emulator source tree, package archives and ROM data are not included.
+
+## Atlas sections
+
+- **Browse database:** GameCube and Wii modes, title and Game ID search, filters, ratings, sorting, favourites, deep links and shareable filter URLs.
+- **Devices & muOS firmware:** live counts from reports, canonical device names, exact firmware labels and explicit missing-data counts.
+- **Rt:Core builds & profiles:** reported core build distribution and normalized profile names, with prereleases and legacy reports kept distinct.
+- **Methodology:** rating scale, boot/playability distinction, environment comparison and a repeatable test procedure.
+- **Contribute:** structured test reports, GameSettings and repository/Wiki links.
+- **FAQ:** limitations, missing metadata, legacy labels, PWA behavior and submission privacy.
+
+The game detail modal keeps each tester's report separate. GameSettings still supports browsing, filters, INI inspection/download and the contribution hand-off.
+
+## Data endpoints
 
 - `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json`
 - `dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json`
 
-Raw GitHub is the primary endpoint; jsDelivr is the fallback. Same-origin artwork is used for site icons so the PWA shell can cache it locally.
+Raw GitHub is the primary endpoint; jsDelivr is the fallback. The website and Rt:UI must use these exact same source files.
 
-## Features
+## Submission intake
 
-- GameCube and Wii views and themes.
-- Text search over title, Game ID, notes, tester, device, firmware and profile.
-- Filters for region, boot result, exact rating, device and muOS version; device/firmware options follow the currently selected console.
-- Sort by rating, recency, title or report count.
-- Favourites stored locally in the browser.
-- Shareable URLs for console and active filters.
-- Test-report hand-off to a pre-filled GitHub issue.
-- Service-worker shell caching and last-known JSON fallback.
+Website test reports open a prefilled GitHub issue with a JSON payload. The native GitHub issue form is accepted as well. `.github/workflows/merge-submission.yml` validates, canonicalizes and imports approved report content into the nested source JSON. GameSettings/resource issues are parsed and added to the matching nested GameSettings file.
+
+The intake workflow serializes issue imports and records the source issue number, so the `opened`, `labeled` and `edited` events do not create duplicate entries. It must never write a second copy under root `data/`.
+
+## Canonical naming
+
+Use manufacturer + exact model for devices, `muOS <version> · <codename>` for firmware, `Dolphin Rt:Core <version> · <codename>` for core builds, and stable profile labels such as `Speedhacks` and `Black Screen Fix`. Leave unknown data blank. See [[Compatibility-Data-Model]] for the complete rules.
+
+The 12.5.00 Arcade line is the planned next release candidate; do not display it as a published stable version until the release has actually been published. Rt:UI remains 3.7.0 Arcade.
 
 ## Quality checks
 
@@ -42,8 +56,6 @@ Raw GitHub is the primary endpoint; jsDelivr is the fallback. Same-origin artwor
 python3 -m unittest tests/test_compat_site.py -v
 ```
 
-The check validates source JSON contracts, local manifest icons, repository URLs, shareable filter parameters, data-driven device/firmware filters, Wiki references and inline JavaScript syntax when Node.js is installed.
+The suite validates JSON contracts and canonical metadata, website sections, report vocabulary, source links, the minimal Pages build and inline JavaScript syntax when Node.js is installed. Before publication, inspect desktop and mobile widths, keyboard navigation, browser console errors, report submission, GameSettings, favourites, shareable filters and offline fallback.
 
-Before a release, inspect wide desktop and narrow mobile layouts, verify keyboard focus, check browser console errors, and test the offline fallback after one successful online load.
-
-See [[Compatibility-Database]] and [[Compatibility-Data-Model]].
+See [[Compatibility-Database]], [[Compatibility-Data-Model]] and [[Reporting-a-Test]].

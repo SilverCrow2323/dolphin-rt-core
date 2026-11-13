@@ -19,11 +19,6 @@ require() {
 # The running executable and its resource tree live side by side on muOS.
 require "$BUILD" 'case "$TARGET" in muos|muos-qt|knulli|fbdev|rocknix|desktop) LOCAL_SYS=ON;; esac'
 require "$BUILD" '"-DLINUX_LOCAL_DEV=$LOCAL_SYS"'
-require "$BUILD" '[ "$TUNE_EXPLICIT" = yes ] || TUNE=none'
-require "$BUILD" 'desktop builds cannot use --tune cortex-a53'
-require "$BUILD" 'desktop builds require GCC 12+'
-require "$BUILD" 'apt-get install -y -qq --no-install-recommends gcc-12 g++-12'
-require "$BUILD" 'desktop) ENABLE_QT=ON; ENABLE_X11=ON; ENABLE_WAYLAND=ON'
 require "$BUILD" "libhidapi-hidraw.so.0"
 require "$BUILD" 'rm -rf "$OUT/Sys"'
 require "$BUILD" 'cp -a "$SRC/Data/Sys/." "$OUT/Sys/"'
@@ -33,6 +28,33 @@ require "$BUILD" 'GC/font_western.bin GC/font_japanese.bin GC/dsp_rom.bin GC/dsp
 require "$APP_LAUNCH" '--platform=fbdev --video_backend=OGL'
 require "$APP_LAUNCH" 'LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"'
 require "$EXT_LAUNCH" '--platform=fbdev --video_backend=OGL'
+require "$EXT_LAUNCH" 'for candidate in /dev/input/js1 /dev/input/js0 /dev/input/js*; do'
+require "$EXT_LAUNCH" '[ -c "$candidate" ] || continue'
+require "$EXT_LAUNCH" 'if [ -n "$JS_DEV" ] && [ -x "$RTSYS/overlay_exit.sh" ]; then'
+
+# gptokeyb2 uses its native FSM syntax. Never enable its built-in
+# START+SELECT kill binding; Rt:Core Safe Exit owns the M / combo watcher.
+require "$APP_LAUNCH" '"$GPTK_BIN" -c "$GPTK_CFG" -D states,keyboard'
+require "$EXT_LAUNCH" '"$GPTK_BIN" -c "$GPTK_CFG" -D states,keyboard'
+if grep -Eq '"\$GPTK_BIN"[[:space:]]+dolphin|-[1k][[:space:]]+dolphin' "$APP_LAUNCH" "$EXT_LAUNCH"; then
+    echo "FAIL: gptokeyb2 must not receive a process name or START+SELECT kill mode" >&2
+    exit 1
+fi
+require "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/ext-dolphin.gptk" '[controls:rt_hotkeys]'
+require "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/ext-dolphin.gptk" 'l2 = hold_state rt_hotkeys'
+require "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/base/ext-dolphin.gptk" '[controls:rt_hotkeys]'
+if grep -Eq '^[[:space:]]*start[[:space:]]*=' "$ROOT/dolphin-rtcore-muos/app/Dolphin RtUI/workshop/hotkeys/Default/ext-dolphin.gptk"; then
+    echo "FAIL: default hotkey layer must leave START unbound" >&2
+    exit 1
+fi
+for launcher in "$APP_LAUNCH" "$EXT_LAUNCH"; do
+    gptk_line="$(grep -nF '"$GPTK_BIN" -c "$GPTK_CFG"' "$launcher" | head -1 | cut -d: -f1)"
+    dolphin_line="$(grep -nE '(^|[[:space:]])(\./dolphin|"?\$DOLPHIN"?) --platform=fbdev' "$launcher" | head -1 | cut -d: -f1)"
+    [ -n "$gptk_line" ] && [ -n "$dolphin_line" ] && [ "$gptk_line" -lt "$dolphin_line" ] || {
+        echo "FAIL: gptokeyb2 must attach before Dolphin starts in $launcher" >&2
+        exit 1
+    }
+done
 
 # The updater must reject an incomplete resource payload before packaging.
 require "$PKG" 'font_western.bin'

@@ -8,6 +8,10 @@ permissions:
   contents: write
   issues: write
 
+concurrency:
+  group: compatibility-submissions-\${{ github.repository }}
+  cancel-in-progress: false
+
 jobs:
   merge:
     if: >
@@ -21,61 +25,424 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: \${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Extract + merge
+      - name: Extract, validate and merge submission
         env:
-          ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_BODY: \${{ github.event.issue.body }}
+          ISSUE_LABELS: \${{ join(github.event.issue.labels.*.name, ',') }}
+          ISSUE_NUMBER: \${{ github.event.issue.number }}
+          ISSUE_URL: \${{ github.event.issue.html_url }}
+          ISSUE_TITLE: \${{ github.event.issue.title }}
         run: |
           python - <<'PY'
-          import os, re, json, pathlib, sys, time, datetime
+          import datetime
+          import json
+          import os
+          import pathlib
+          import re
+          import subprocess
+          import sys
+          from urllib.parse import urlparse
 
-          body = os.environ.get('ISSUE_BODY', '') or ''
-          labels = os.environ.get('ISSUE_LABELS', '') or ''
-          issue_num = os.environ.get('ISSUE_NUMBER', '0')
+          body = os.environ.get("ISSUE_BODY", "") or ""
+          labels = {x.strip() for x in (os.environ.get("ISSUE_LABELS", "") or "").split(",") if x.strip()}
+          issue_number = str(os.environ.get("ISSUE_NUMBER", "0"))
+          issue_url = os.environ.get("ISSUE_URL", "")
+          issue_title = os.environ.get("ISSUE_TITLE", "")
+          is_test = "test-report" in labels
+          is_setting = "gamesetting" in labels
 
-          # Extract all fenced code blocks (json or ini)
-          blocks = re.findall(r'```(?:json|ini)\s*\n(.*?)\n```', body, re.DOTALL)
-          if not blocks:
-              print("::error::No code blocks found in issue body")
-              sys.exit(1)
+          if not (is_test or is_setting):
+              print("No supported submission label; nothing to do.")
+              sys.exit(0)
 
-          is_test = 'test-report' in labels
-          is_setting = 'gamesetting' in labels
+          tick = chr(96)
+          fence = tick * 3
 
-          # helper to ensure data dir exists before writing files
-          def ensure_parent(path):
+          def read_json(path, default):
               p = pathlib.Path(path)
-              if not p.parent.exists():
-                  p.parent.mkdir(parents=True, exist_ok=True)
+              if not p.exists() or not p.read_text(encoding="utf-8").strip():
+                  return default
+              return json.loads(p.read_text(encoding="utf-8"))
 
-          # ---------- TEST REPORT ----------
+          def write_json(path, value):
+              p = pathlib.Path(path)
+              p.parent.mkdir(parents=True, exist_ok=True)
+              p.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          def clean(value):
+              return re.sub(r"\s+", " ", str(value or "").strip())
+
+          def normalize_device(value):
+              raw = clean(value)
+              key = re.sub(r"[\s_-]+", "", raw).upper()
+              if not raw or key in {"UNKNOWN", "UNKNOWNDEVICE", "NOTRECORDED", "__UNKNOWN__"}:
+                  return ""
+              aliases = {
+                  "RG35XXH": "Anbernic RG35XX H",
+                  "ANBERNICRG35XXH": "Anbernic RG35XX H",
+                  "RG34XXSP": "Anbernic RG34XX SP",
+                  "ANBERNICRG34XXSP": "Anbernic RG34XX SP",
+                  "RG40XXH": "Anbernic RG40XX H",
+                  "ANBERNICRG40XXH": "Anbernic RG40XX H",
+                  "RGCUBEXX": "Anbernic RG CubeXX",
+                  "ANBERNICRGCUBEXX": "Anbernic RG CubeXX",
+                  "RG4XXXX": "RG4-series (exact model not recorded)",
+              }
+              return aliases.get(key, raw)
+
+          def normalize_muos(value):
+              raw = clean(value)
+              if not raw or raw.casefold() in {"unknown", "not recorded", "not recorded / exact version unknown"}:
+                  return ""
+              aliases = {
+                  "2601.1 Funky Jacaranda": "muOS 2601.1 · Funky Jacaranda",
+                  "2601.0 Jacaranda": "muOS 2601.0 · Jacaranda",
+                  "2508.4 Loose Goose": "muOS 2508.4 · Loose Goose",
+                  "2508.3 Golden Goose": "muOS 2508.3 · Golden Goose",
+                  "2508.2 Silly Goose": "muOS 2508.2 · Silly Goose",
+                  "2508.1 Canada Goose": "muOS 2508.1 · Canada Goose",
+                  "2508.0 Goose": "muOS 2508.0 · Goose",
+                  "2502.0 Pixie": "muOS 2502.0 · Pixie",
+                  "Funky Jacaranda": "muOS Funky Jacaranda · version not recorded",
+                  "Funky Jakaranda": "muOS Funky Jacaranda · version not recorded",
+                  "Jacaranda": "muOS Jacaranda · version not recorded",
+              }
+              if raw in aliases:
+                  return aliases[raw]
+              return raw if raw.startswith("muOS ") else "muOS " + raw
+
+          def normalize_core(value):
+              raw = clean(value)
+              if raw.casefold() in {"any", "all", "any version"}:
+                  return "Any"
+              if not raw or raw.casefold() in {"unknown", "not recorded"}:
+                  return "Dolphin Rt:Core version not recorded"
+              aliases = {
+                  "Legacy": "Dolphin Rt:Core Legacy (exact version not recorded)",
+                  "v10.5-124": "Dolphin Rt:Core 10.5.124",
+                  "v10.5.3": "Dolphin Rt:Core 10.5.3",
+                  "v10.5.300": "Dolphin Rt:Core 10.5.300",
+                  "v10.6 (pre release)": "Dolphin Rt:Core 10.6 · Prerelease",
+                  "v11.0.0 'Frontendone' (prerelease)": "Dolphin Rt:Core 11.0.00 · FrontendONE · Prerelease",
+                  "v11.0.0 (current)": "Dolphin Rt:Core 11.0.00",
+                  "v11.0.0 (prerelease)": "Dolphin Rt:Core 11.0.00 · Prerelease",
+                  "v11.0.00 (prerelease)": "Dolphin Rt:Core 11.0.00 · Prerelease",
+                  "v11.0.0-dev": "Dolphin Rt:Core 11.0.00 · Development",
+                  "v11.0.00-dev": "Dolphin Rt:Core 11.0.00 · Development",
+                  "v11.5.00 'Comfort Zone' (prerelease)": "Dolphin Rt:Core 11.5.00-I · Comfort Zone · Prerelease",
+                  "v11.5.00 'Triptych'": "Dolphin Rt:Core 11.5.00 · Triptych",
+                  "v11.5.00-II 'Bash Arsenal'": "Dolphin Rt:Core 11.5.00-II · Bash Arsenal",
+                  "v10.0.0 'SPDW'": "Dolphin Rt:Core 10.0.0 · SPDW",
+                  "v9 Goose": "Dolphin Rt:Core 9 · Goose",
+                  "v8": "Dolphin Rt:Core 8",
+                  "v7 or prior": "Dolphin Rt:Core 7 or earlier",
+                  "v11.5.00-III FrontendONE": "Dolphin Rt:Core 11.5.00-III · FrontendONE",
+              }
+              if raw in aliases:
+                  return aliases[raw]
+              if raw.startswith("Dolphin Rt:Core "):
+                  return re.sub(r"\s*\(release candidate\)$", "", raw, flags=re.IGNORECASE)
+              return "Dolphin Rt:Core " + raw.removeprefix("v")
+
+          def normalize_profile(value):
+              raw = clean(value)
+              if not raw:
+                  return ""
+              key = re.sub(r"\s+", " ", raw).casefold()
+              aliases = {
+                  "speedhack": "Speedhacks",
+                  "speedhacks": "Speedhacks",
+                  "blackscreenfix": "Black Screen Fix",
+                  "black screen fix": "Black Screen Fix",
+                  "standard": "Standard",
+                  "speedup 1": "Speedup 1",
+                  "speedup 2": "Speedup 2",
+                  "all profiles": "All profiles tested",
+                  "all profiles (tested multiple)": "All profiles tested",
+                  "various / all profiles tested": "All profiles tested",
+                  "various profiles": "Multiple profiles (details not recorded)",
+                  "multiple profiles (details in notes)": "Multiple profiles (details in notes)",
+                  "speedhack / default": "Multiple profiles: Default + Speedhacks",
+                  "speedhack / default (both tested)": "Multiple profiles: Default + Speedhacks",
+                  "black screen fix, compatibility, default": "Multiple profiles: Black Screen Fix + Compatibility + Default",
+                  "speedhacks, performance, ultra": "Multiple profiles: Performance + Speedhacks + Ultra",
+              }
+              return aliases.get(key, raw)
+
+          def issue_already_present(items):
+              for item in items:
+                  source = item.get("source_issue", {})
+                  if str(source.get("number", "")) == issue_number:
+                      return True
+              return False
+
+          changed_paths = []
+
           if is_test:
-              json_block = next((b for b in blocks if b.strip().startswith('{')), None)
-              if not json_block:
-                  print("::error::No JSON payload in test report")
-                  sys.exit(1)
-              payload = json.loads(json_block)
-              path = pathlib.Path('data/games_data.json')
-              ensure_parent(path)
-              data = json.loads(path.read_text()) if path.exists() and path.read_text().strip() else {'version': 1, 'last_update': '', 'games': []}
-              games = data.get('games', [])
-              gid = payload.get('game_info', {}).get('game_id', 'UNKNOWN')
-              # find existing game entry
-              target = None
-              for g in games:
-                  if g.get('game_info', {}).get('game_id') == gid:
-                      target = g; break
-              entry = {k: payload[k] for k in ('game_info','test_review','test_details','test_environment') if k in payload}
-              if target:
-                  target.setdefault('entries', []).append(entry)
+              pattern = re.escape(fence) + r"json\s*\n(.*?)\n" + re.escape(fence)
+              blocks = re.findall(pattern, body, re.DOTALL | re.IGNORECASE)
+              json_block = next((block for block in blocks if block.strip().startswith("{")), None)
+              if json_block:
+                  payload = json.loads(json_block)
               else:
-                  games.append({'game_info': payload.get('game_info', {}), 'entries': [entry]})
-            });
+                  # Also accept the native GitHub Issue Form for contributors who do not
+                  # use the website. Field headings are parsed as data, never evaluated.
+                  def form_field(label):
+                      pattern = r"^###\s+" + re.escape(label) + r"\s*\*?\s*\n([\s\S]*?)(?=\n###\s|\Z)"
+                      match = re.search(pattern, body, re.MULTILINE)
+                      if not match:
+                          return ""
+                      value = match.group(1).strip()
+                      if value in {"_No response_", "No response"}:
+                          return ""
+                      return value
+
+                  platform = form_field("Platform")
+                  system = {"GameCube": "GC", "GC": "GC", "Wii": "Wii"}.get(platform, "")
+                  game_title = clean(form_field("Game Title"))
+                  region = clean(form_field("Region")).upper()
+                  game_id = clean(form_field("Game ID (optional)")).upper() or "UNKNOWN"
+                  rating_text = form_field("Performance Rating")
+                  rating_match = re.search(r"(?<!\d)([0-5])\s*★", rating_text)
+                  fps_min_match = re.search(r"\d+", form_field("FPS Range - Minimum"))
+                  fps_max_match = re.search(r"\d+", form_field("FPS Range - Maximum"))
+                  if not rating_match or not fps_min_match or not fps_max_match:
+                      print("::error::The GitHub Issue Form is missing a valid rating or FPS range.")
+                      sys.exit(1)
+                  rating = int(rating_match.group(1))
+                  fps_min = int(fps_min_match.group())
+                  fps_max = int(fps_max_match.group())
+                  boot = "NO" if rating == 0 else ("CRASH" if rating == 1 else "YES")
+                  playable = "NO" if rating <= 2 else ("YES" if rating == 5 else "YES WITH ISSUES")
+                  now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                  attachment_values = []
+                  for url in re.findall(r"https?://\S+", form_field("Attachments (URLs of screenshots / videos)")):
+                      url = url.rstrip(").,")
+                      media = "video" if any(token in url.lower() for token in ("youtube.com", "youtu.be", ".mp4", ".webm")) else "image"
+                      attachment_values.append({"media_type": media, "media_title": url, "media_url": url})
+                  custom_values = []
+                  if form_field("Do you want to recommend Custom Settings?").casefold() == "yes":
+                      custom_type = clean(form_field("Custom Settings - Type"))
+                      custom_name = clean(form_field("Custom Settings - Name / Title")) or "Community recommendation"
+                      custom_url = clean(form_field("Custom Settings - URL (optional)"))
+                      custom_details = clean(form_field("Custom Settings - Details"))
+                      if custom_type:
+                          custom_values.append({
+                              "set_type": custom_type, "set_name": custom_name,
+                              "set_url": custom_url, "set_note": custom_details,
+                              "_author": clean(form_field("Tester Username")) or "Anonymous",
+                          })
+                  payload = {
+                      "game_info": {
+                          "game_id": game_id, "system": system, "game": game_title, "region": region,
+                      },
+                      "test_review": {
+                          "rating": rating, "fps": f"{fps_min}-{fps_max}",
+                          "boot": boot, "playable": playable,
+                          "fps_min": fps_min, "fps_max": fps_max, "date": now,
+                      },
+                      "test_details": {
+                          "rtcore_version": form_field("Dolphin Rt:Core Version"),
+                          "core_profile": form_field("Core Profile Used"),
+                          "considerations": form_field("Considerations & Gameplay Experience"),
+                      },
+                      "test_environment": {
+                          "tester": form_field("Tester Username"),
+                          "device": form_field("Device Used"),
+                          "muos_version": form_field("muOS Version"), "date": now,
+                      },
+                      "cover_art": form_field("Cover Art URL (optional)"),
+                      "custom_settings": custom_values,
+                      "attachments": attachment_values,
+                  }
+
+              game = payload.get("game_info") or {}
+              review = payload.get("test_review") or {}
+              details = payload.get("test_details") or {}
+              environment = payload.get("test_environment") or {}
+              game_id = clean(game.get("game_id", "UNKNOWN")).upper() or "UNKNOWN"
+              game_title = clean(game.get("game"))
+              system = clean(game.get("system"))
+              region = clean(game.get("region")).upper()
+              if not game_title or system not in {"GC", "Wii"} or region not in {"PAL", "NTSC", "NTSC-J", "JPN"}:
+                  print("::error::The report must contain a game title, GC/Wii system and supported region.")
+                  sys.exit(1)
+              if not re.fullmatch(r"[A-Z0-9]{4,8}|UNKNOWN", game_id):
+                  print("::error::Invalid Game ID.")
+                  sys.exit(1)
+              try:
+                  rating = int(review.get("rating"))
+              except (TypeError, ValueError):
+                  print("::error::Rating must be an integer from 0 to 5.")
+                  sys.exit(1)
+              if rating < 0 or rating > 5:
+                  print("::error::Rating must be an integer from 0 to 5.")
+                  sys.exit(1)
+              boot = clean(review.get("boot")).upper()
+              playable = clean(review.get("playable")).upper()
+              if boot not in {"YES", "NO", "CRASH"} or playable not in {"YES", "YES WITH ISSUES", "NO"}:
+                  print("::error::Invalid boot or playable status.")
+                  sys.exit(1)
+
+              data_path = pathlib.Path("dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json")
+              data = read_json(data_path, {"version": 1, "last_update": "", "games": []})
+              games = data.setdefault("games", [])
+              all_entries = [entry for group in games for entry in group.get("entries", [])]
+              if issue_already_present(all_entries):
+                  print(f"Report from issue #{issue_number} was already imported.")
+              else:
+                  canonical_game = {"game_id": game_id, "system": system, "game": game_title, "region": region}
+                  fps_min = int(review.get("fps_min") or 0)
+                  fps_max = int(review.get("fps_max") or fps_min)
+                  if fps_min < 0 or fps_max < 0:
+                      print("::error::FPS values cannot be negative.")
+                      sys.exit(1)
+                  if fps_max < fps_min:
+                      fps_min, fps_max = fps_max, fps_min
+                  now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                  entry = {
+                      "game_info": canonical_game,
+                      "test_review": {
+                          "rating": rating, "fps": f"{fps_min}-{fps_max}",
+                          "boot": boot, "playable": playable,
+                          "fps_min": fps_min, "fps_max": fps_max,
+                          "date": review.get("date") or now,
+                      },
+                      "test_details": {
+                          "rtcore_version": normalize_core(details.get("rtcore_version")),
+                          "core_profile": normalize_profile(details.get("core_profile")),
+                          "considerations": clean(details.get("considerations")),
+                      },
+                      "test_environment": {
+                          "tester": clean(environment.get("tester")) or "Anonymous",
+                          "device": normalize_device(environment.get("device")),
+                          "muos_version": normalize_muos(environment.get("muos_version")),
+                          "date": environment.get("date") or now,
+                      },
+                      "custom_settings": payload.get("custom_settings") or [],
+                      "attachments": payload.get("attachments") or [],
+                      "cover_art": clean(payload.get("cover_art")),
+                      "source_issue": {"number": int(issue_number), "url": issue_url},
+                  }
+                  target = next((group for group in games
+                      if str((group.get("game_info") or {}).get("game_id", "")).upper() == game_id
+                      and str((group.get("game_info") or {}).get("system", "")) == system
+                      and clean((group.get("game_info") or {}).get("game")).casefold() == game_title.casefold()), None)
+                  if target is None:
+                      target = {"game_info": canonical_game, "entries": []}
+                      games.append(target)
+                  target.setdefault("entries", []).append(entry)
+                  data["version"] = data.get("version", 1)
+                  data["last_update"] = datetime.date.today().isoformat()
+                  write_json(data_path, data)
+                  changed_paths.append(str(data_path))
+                  print(f"Imported test report from issue #{issue_number} into {data_path}.")
+
+          if is_setting:
+              settings_path = pathlib.Path("dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json")
+              settings_data = read_json(settings_path, {"version": 2, "last_update": "", "settings": []})
+              settings = settings_data.setdefault("settings", [])
+              existing_configs = [config for group in settings for config in group.get("configs", [])]
+              if issue_already_present(existing_configs):
+                  print(f"GameSettings from issue #{issue_number} was already imported.")
+              else:
+                  plain_body = body.replace(tick, "")
+                  type_match = re.search(r"^\*\*Type:\*\*\s*(.+)$", plain_body, re.MULTILINE)
+                  game_match = re.search(r"^\*\*Game:\*\*\s*(.*?)\s*\(([A-Za-z0-9]{4,8})\)\s*$", plain_body, re.MULTILINE)
+                  system_match = re.search(r"^\*\*System:\*\*\s*(GC|Wii)\s*$", plain_body, re.MULTILINE)
+                  version_match = re.search(r"^\*\*Target Rt:Core:\*\*\s*(.+)$", plain_body, re.MULTILINE)
+                  author_match = re.search(r"^\*\*Author:\*\*\s*(.+)$", plain_body, re.MULTILINE)
+                  tags_match = re.search(r"^\*\*Tags:\*\*\s*(.*)$", plain_body, re.MULTILINE)
+                  desc_match = re.search(r"### Description\s*\n([\s\S]*?)(?=\n### |\Z)", plain_body)
+                  game_name = clean(game_match.group(1)) if game_match else ""
+                  primary_id = game_match.group(2).upper() if game_match else ""
+                  system = system_match.group(1) if system_match else "GC"
+                  target_version = normalize_core(version_match.group(1)) if version_match else ""
+                  author = clean(author_match.group(1)) if author_match else "Anonymous"
+                  description = clean(desc_match.group(1)) if desc_match else ""
+                  resource_type = clean(type_match.group(1)) if type_match else "GameSettings"
+                  tags = re.findall(re.escape(tick) + r"([^" + tick + r"]+)" + re.escape(tick), tags_match.group(1)) if tags_match else []
+
+                  fence_pattern = re.escape(fence) + r"ini\s*\n(.*?)\n" + re.escape(fence)
+                  ini_matches = list(re.finditer(fence_pattern, body, re.DOTALL | re.IGNORECASE))
+                  heading_pattern = r"#### Region \d+:\s*([A-Za-z-]+)\s*[—-]\s*" + re.escape(tick) + r"([A-Za-z0-9]{4,8})_rtmuos\.ini" + re.escape(tick)
+                  config_blocks = []
+                  for match in ini_matches:
+                      prefix = body[:match.start()]
+                      headings = list(re.finditer(heading_pattern, prefix))
+                      if headings:
+                          header = headings[-1]
+                          config_blocks.append((header.group(1), header.group(2).upper(), match.group(1)))
+
+                  if not game_name or not primary_id or (not config_blocks and resource_type == "GameSettings"):
+                      print("::error::GameSettings issue is missing a game identity or a valid INI block.")
+                      sys.exit(1)
+
+                  configs_to_add = []
+                  if resource_type == "GameSettings":
+                      for region, game_id, raw_content in config_blocks:
+                          configs_to_add.append({
+                              "id": f"issue-{issue_number}-{game_id.lower()}",
+                              "filename": f"{game_id}_rtmuos.ini",
+                              "universal_filename": f"{game_id[:3]}_rtmuos.ini",
+                              "title": clean(issue_title.split(" — ", 1)[-1]) or "Community GameSettings",
+                              "author": author, "description": description, "tags": tags,
+                              "raw_content": raw_content.strip() + "\n", "content_url": "",
+                              "target_version": target_version,
+                              "source_issue": {"number": int(issue_number), "url": issue_url},
+                          })
+                  else:
+                      url_match = re.search(r"### Download URL\s*\n(https?://\S+)", plain_body)
+                      url = url_match.group(1).rstrip(").,") if url_match else ""
+                      parsed = urlparse(url)
+                      if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+                          print("::error::Resource submission requires a valid HTTP(S) download URL.")
+                          sys.exit(1)
+                      configs_to_add.append({
+                          "id": f"issue-{issue_number}-{primary_id.lower()}",
+                          "type": resource_type,
+                          "title": clean(issue_title.split(" — ", 1)[-1]) or resource_type,
+                          "author": author, "description": description, "tags": tags,
+                          "url": url, "target_version": target_version,
+                          "source_issue": {"number": int(issue_number), "url": issue_url},
+                      })
+
+                  for config in configs_to_add:
+                      game_id = config["filename"].split("_", 1)[0] if config.get("filename") else primary_id
+                      region = next((r for r, gid, _ in config_blocks if gid.upper() == game_id.upper()), "NTSC")
+                      group = next((g for g in settings
+                          if clean(g.get("game")).casefold() == game_name.casefold()
+                          and clean(g.get("system")) == system), None)
+                      if group is None:
+                          group = {"game": game_name, "game_ids": [], "system": system, "configs": []}
+                          settings.append(group)
+                      if not any(str(x.get("id", "")).upper() == game_id.upper() for x in group.get("game_ids", [])):
+                          group.setdefault("game_ids", []).append({"id": game_id.upper(), "region": region})
+                      group.setdefault("configs", []).append(config)
+
+                  settings_data["version"] = settings_data.get("version", 2)
+                  settings_data["last_update"] = datetime.date.today().isoformat()
+                  write_json(settings_path, settings_data)
+                  changed_paths.append(str(settings_path))
+                  print(f"Imported GameSettings/resource submission from issue #{issue_number}.")
+
+          if changed_paths:
+              subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+              subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+              subprocess.run(["git", "add", *changed_paths], check=True)
+              result = subprocess.run(["git", "diff", "--cached", "--quiet"])
+              if result.returncode == 1:
+                  subprocess.run(["git", "commit", "-m", f"data: import community submission #{issue_number}"], check=True)
+                  subprocess.run(["git", "push"], check=True)
+              else:
+                  print("No file changes to commit.")
+          else:
+              print("No new submission data to import.")
+          PY

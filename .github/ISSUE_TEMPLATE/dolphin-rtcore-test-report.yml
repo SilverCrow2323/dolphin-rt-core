@@ -135,19 +135,21 @@ body:
       options:
         - "Default"
         - "Speedhacks"
-        - "Blackscreenfix"
         - "Performance"
         - "Compatibility"
+        - "Black Screen Fix"
+        - "Safe"
         - "Lite"
         - "Troubleshooting"
-        - "Safe"
+        - "Ultra"
         - "Speedup 1"
         - "Speedup 2"
         - "Wii"
         - "Wii Performance"
         - "Wii Compatibility"
         - "Wii Safe"
-        - "Various / All profiles tested"
+        - "All profiles tested"
+        - "Multiple profiles (details in notes)"
     validations:
       required: true
 
@@ -258,7 +260,7 @@ body:
     id: device
     attributes:
       label: "Device Used *"
-      placeholder: "e.g., RG35XX H, RG40XX H, RG CubeXX"
+      placeholder: "e.g., Anbernic RG35XX H, Anbernic RG34XX SP, Anbernic RG40XX H"
     validations:
       required: true
 
@@ -267,14 +269,16 @@ body:
     attributes:
       label: "muOS Version *"
       options:
-        - "2601.1 Funky Jacaranda (current)"
-        - "2601.0 Jacaranda"
-        - "2508.4 Loose Goose"
-        - "2508.3 Golden Goose"
-        - "2508.2 Silly Goose"
-        - "2508.1 Canada Goose"
-        - "2508.0 Goose"
-        - "2502.0 Pixie"
+        - "muOS 2606.0 · Andromeda"
+        - "muOS 2601.1 · Funky Jacaranda"
+        - "muOS 2601.0 · Jacaranda"
+        - "muOS 2508.4 · Loose Goose"
+        - "muOS 2508.3 · Golden Goose"
+        - "muOS 2508.2 · Silly Goose"
+        - "muOS 2508.1 · Canada Goose"
+        - "muOS 2508.0 · Goose"
+        - "muOS 2502.0 · Pixie"
+        - "Not recorded / exact version unknown"
     validations:
       required: true
 
@@ -283,18 +287,24 @@ body:
     attributes:
       label: "Dolphin Rt:Core Version *"
       options:
-        - "v11.5.00-III FrontendONE"
-        - "v11.5.00-II Bash Arsenal"
-        - "v11.5.00-I Comfort Zone"
-        - "v11.0.00-dev"
-        - "v10.5.3"
-        - "v10.5.124"
-        - "v10.0.0 SPDW"
-        - "v9 Goose"
-        - "v8"
-        - "v7"
-        - "v6 or prior"
-        - "Other (specify in considerations)"
+        - "Dolphin Rt:Core 12.5.00 · Arcade (release candidate)"
+        - "Dolphin Rt:Core 12.0.0 · Kanzentai"
+        - "Dolphin Rt:Core 11.5.00-III · FrontendONE"
+        - "Dolphin Rt:Core 11.5.00-II · Bash Arsenal"
+        - "Dolphin Rt:Core 11.5.00-I · Comfort Zone · Prerelease"
+        - "Dolphin Rt:Core 11.0.00 · Development"
+        - "Dolphin Rt:Core 11.0.00 · Prerelease"
+        - "Dolphin Rt:Core 10.6 · Prerelease"
+        - "Dolphin Rt:Core 10.5.3"
+        - "Dolphin Rt:Core 10.5.300"
+        - "Dolphin Rt:Core 10.5.124"
+        - "Dolphin Rt:Core 10.0.0 · SPDW"
+        - "Dolphin Rt:Core 9 · Goose"
+        - "Dolphin Rt:Core 8"
+        - "Dolphin Rt:Core 7"
+        - "Dolphin Rt:Core 6 or earlier"
+        - "Dolphin Rt:Core Legacy (exact version not recorded)"
+        - "Dolphin Rt:Core version not recorded"
     validations:
       required: true
 

@@ -12,10 +12,12 @@ local ok_bi, BI = pcall(require, "core.boot_initializer")
 local S = {}
 local LABEL = { update_check = "Checking for updates", scan_roms = "Scanning ROM folders",
                 build_rtid = "Building game cards", done = "Ready", idle = "Starting" }
-local END_FRAME = 98                       -- a beat after the lightning
+local END_FRAME = (Mascot.FRAMES or 120) - 1 -- final frame of the 2.5D sequence
+local INTRO_LIMIT = { full = 5.5, quick = 2.8, off = 0.35 }
 
 function S.enter()
     S.t, S.going, S.flash = 0, false, 0
+    S.started_at = love.timer.getTime()
     S.mode = Settings.get("boot_anim") or "full"
     S.speed = (S.mode == "quick") and 2 or 1
     S.have = (S.mode ~= "off") and Mascot.load()
@@ -27,21 +29,35 @@ function S.leave() Mascot.release() end
 local function proceed()
     if S.going then return end
     S.going = true
-    require("ui").go("library", nil, { no_push = true })
+    local target = "home"
+    local needs_setup = ok_bi and BI.needs_rom_setup and BI.needs_rom_setup()
+    if not needs_setup then
+        pcall(function()
+            local Settings = require("core.settings")
+            needs_setup = Settings.get("rom_discovery_done") ~= true
+                       and #(Settings.get("rom_paths") or {}) == 0
+        end)
+    end
+    if needs_setup then target = "folders" end
+    require("ui").go(target, nil, { no_push = true })
 end
 
 function S.update(dt)
-    S.t = S.t + dt
+    -- Use the monotonic wall clock rather than accumulated dt. A slow ROM
+    -- enumeration or a delayed frame must never extend the boot intro.
+    local elapsed = love.timer.getTime() - (S.started_at or love.timer.getTime())
+    S.t = math.max(S.t + dt, elapsed)
     local frame = S.t * Mascot.FPS * S.speed
-    local ready = (not ok_bi) or (BI.is_done and BI.is_done())
     if S.mode == "off" or not S.have then
-        if ready or S.t > 5 then proceed() end
+        if S.t >= (INTRO_LIMIT.off or 0.35) then proceed() end
         return
     end
     -- lightning flash around the hit frame
     local d = math.abs(frame - Mascot.HIT)
     S.flash = d < 5 and (1 - d / 5) or 0
-    if (ready and frame >= END_FRAME) or S.t > 9 then proceed() end
+    -- The animation is autonomous: its final frame OR a strict wall-clock
+    -- ceiling exits to the library. Data refreshes continue in the background.
+    if frame >= END_FRAME or S.t >= (INTRO_LIMIT[S.mode] or INTRO_LIMIT.full) then proceed() end
 end
 
 function S.pad(b) if b == "A" and S.t > 0.5 then proceed() end end

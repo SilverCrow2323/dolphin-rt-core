@@ -88,20 +88,22 @@ local MUOS_COLORS = {
     a={0.35,0.90,0.45}, b={0.95,0.38,0.38}, x={0.38,0.66,1.00}, y={1.00,0.80,0.28},
     l1={0.60,0.60,0.65}, r1={0.60,0.60,0.65}, l2={0.55,0.55,0.60}, r2={0.55,0.55,0.60},
     select={0.55,0.55,0.60}, start={0.55,0.55,0.60}, menu={0.80,0.60,0.95},
+    l3={0.55,0.55,0.60},
 }
 local MUOS_LBL = {
     a="A", b="B", x="X", y="Y",
     l1="L1", r1="R1", l2="L2", r2="R2",
-    select="SEL", start="STA", menu="MEN",
+    select="SEL", start="STA", menu="MEN", l3="L3",
 }
 local RAW_TO_MUOS = {
     [0]="b", [1]="a", [2]="x", [3]="y",
     [4]="l1", [5]="r1", [6]="select", [7]="start",
-    [8]="menu", [9]="l2", [12]="r2",
+    [8]="menu", [9]="l2", [11]="l3", [12]="r2",
 }
 local STR_TO_RAW = {
     a=1, b=0, x=2, y=3, back=6, start=7, guide=8,
     leftshoulder=4, rightshoulder=5, lefttrigger=9, righttrigger=12,
+    leftstick=11,
 }
 
 local function cache_img(path)

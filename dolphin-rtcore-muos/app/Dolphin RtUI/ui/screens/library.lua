@@ -239,7 +239,6 @@ function S.pad(b)
         if g then S.keep_id = g.id; SFX.play("menu_select"); require("ui").go("game", { game = g }) end
     elseif b == "Y" then toggle_fav(g)
     elseif b == "START" then require("ui").go("settings")
-    elseif b == "SELECT" then SFX.play("menu_select"); require("ui").go("stream_library")
     elseif b == "B" then
         local ui = require("ui")
         if ui.is_root and ui.is_root() then
@@ -467,7 +466,7 @@ function S.draw()
         S.list:draw(draw_item)
         draw_detail(g)
     end
-    K.footer({ { key = "A", label = "Play" }, { key = "X", label = "Options" }, { key = "Y", label = "Favourite" }, { key = "SELECT", label = "Stream" },
+    K.footer({ { key = "A", label = "Play" }, { key = "X", label = "Options" }, { key = "Y", label = "Favourite" },
                { key = "L1 R1", label = "Filter" }, { key = "START", label = "Settings" } })
 end
 

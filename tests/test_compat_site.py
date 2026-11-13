@@ -154,5 +154,80 @@ class CompatibilitySiteTests(unittest.TestCase):
                 self.assertIn(target, pages, f"{path.name} links to missing Wiki page {target}")
 
 
+
+    def test_metadata_labels_are_canonical_without_inventing_missing_values(self):
+        reports = [
+            report
+            for group in self.games["games"]
+            for report in group["entries"]
+        ]
+        self.assertGreater(len(reports), 0)
+        for report in reports:
+            env = report["test_environment"]
+            details = report["test_details"]
+            device = env.get("device", "")
+            muos = env.get("muos_version", "")
+            core = details.get("rtcore_version", "")
+            profile = details.get("core_profile", "")
+            self.assertNotEqual(device, "Unknown Device")
+            self.assertNotIn(device, {"RG35XX H", "RG 35XX H", "RG35XXH", "RG34XX SP", "RG-34XX SP"})
+            self.assertNotIn(muos, {"Funky Jacaranda", "Funky Jakaranda", "Jacaranda", "2601.1 Funky Jacaranda", "2601.0 Jacaranda"})
+            self.assertFalse(muos and not muos.startswith("muOS "))
+            self.assertFalse(core and not core.startswith("Dolphin Rt:Core "))
+            self.assertNotIn(profile, {"SpeedHack", "standard", "SpeedHack / Default", "All profiles", "All profiles (tested multiple)"})
+        # Historic placeholders are empty, not assigned to a guessed device or firmware.
+        unknown_devices = sum(not r["test_environment"].get("device") for r in reports)
+        unknown_firmware = sum(not r["test_environment"].get("muos_version") for r in reports)
+        self.assertGreater(unknown_devices, 0)
+        self.assertGreater(unknown_firmware, 0)
+
+    def test_atlas_sections_and_dynamic_catalogs_are_present(self):
+        for section in ("catalog", "environment", "core-reference", "methodology", "contribute", "faq"):
+            self.assertIn('id="' + section + '"', self.html)
+        for element in (
+            "portalReports", "portalDeviceKnown", "portalFirmwareKnown",
+            "portalCoreKnown", "portalProfileKnown", "portalDeviceGrid",
+            "portalFirmwareGrid", "portalCoreGrid", "portalProfileGrid",
+        ):
+            self.assertIn('id="' + element + '"', self.html)
+        self.assertIn("function renderPortalSummary()", self.html)
+        self.assertIn("renderPortalSummary();", self.html)
+        self.assertIn("Compatibility Atlas", self.html)
+
+    def test_report_form_uses_canonical_metadata_vocabulary(self):
+        for value in (
+            "muOS 2606.0 · Andromeda",
+            "muOS 2601.1 · Funky Jacaranda",
+            "Anbernic RG35XX H",
+            "Anbernic RG34XX SP",
+            "Dolphin Rt:Core 12.5.00 · Arcade",
+            "Dolphin Rt:Core 12.0.0 · Kanzentai",
+            'data-p="Speedhacks"',
+            'data-p="All profiles tested"',
+        ):
+            self.assertIn(value, self.html)
+        self.assertNotIn('data-p="Speed Hack"', self.html)
+        self.assertNotIn("<option>2601.1 Funky Jacaranda</option>", self.html)
+
+    def test_submission_workflow_imports_into_the_live_canonical_sources(self):
+        workflow = (ROOT / ".github" / "workflows" / "merge-submission.yml").read_text(encoding="utf-8")
+        self.assertIn("dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json", workflow)
+        self.assertIn("dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json", workflow)
+        self.assertNotIn("pathlib.Path('data/games_data.json')", workflow)
+        self.assertIn("def normalize_device", workflow)
+        self.assertIn("def normalize_muos", workflow)
+        self.assertIn("def normalize_core", workflow)
+        self.assertIn("def normalize_profile", workflow)
+        self.assertIn("source_issue", workflow)
+        self.assertIn("if json_block:", workflow)
+        self.assertIn("form_field(label)", workflow)
+        self.assertIn("issues:", workflow)
+
+    def test_pwa_cache_is_bumped_for_atlas_release(self):
+        self.assertEqual(self.manifest.get("name"), "Dolphin Rt:Core Compatibility Atlas")
+        sw = (ROOT / "sw.js").read_text(encoding="utf-8")
+        self.assertIn("rtcore-atlas-v3", sw)
+        self.assertNotIn("rtcore-db-v2", sw)
+
 if __name__ == "__main__":
     unittest.main()

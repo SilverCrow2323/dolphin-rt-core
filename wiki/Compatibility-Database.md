@@ -1,40 +1,43 @@
-# Compatibility Database
+# Compatibility Atlas
 
-The Compatibility Database is the community report browser for Nintendo GameCube and Nintendo Wii titles. It helps compare observed results on specific handheld and firmware combinations.
+The **Dolphin Rt:Core Compatibility Atlas** is the community's GameCube and Wii test browser. It combines the live compatibility catalogue with device/firmware distribution, core/profile references, testing guidance and contribution tools.
 
-## Source of truth
-
-The static web app is the root `index.html`. It reads the tracked files:
-
-- `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json` — test reports.
-- `dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json` — community settings.
-
-The frontend and website should read the same source data. Do not maintain an untracked duplicate.
-
-## Search and filters
+## Browse games
 
 1. Select **GameCube** or **Wii**.
-2. Search by title, Game ID, test notes, tester, handheld, firmware or core profile.
-3. Filter by region, boot result, rating, tested device or muOS version.
-4. Sort by rating, recent report, title or number of tests.
-5. Open a game to inspect individual reports before applying settings.
+2. Search by title, Game ID, notes, tester, device, firmware or profile.
+3. Filter by region, boot result, exact rating, handheld or muOS release.
+4. Sort by rating, recency, title or test count.
+5. Open a title to inspect its individual report history before applying settings.
 
-The **Share** action preserves the console and supported filters in the URL. Favourites remain local to the browser and are not shared.
+The Share action preserves console and supported filters in the URL. Favourites are stored locally in the browser and are not uploaded.
 
-## Interpreting results
+## Environment explorer
 
-An aggregated game card summarizes multiple report entries. Open the details to compare each tester's device, muOS version, Rt:Core and Dolphin versions, profile, GameSettings, game ID, region, observed FPS, stability, audio, graphics and input notes.
+The **Devices & muOS firmware** section counts actual reports by normalized handheld and firmware label. Missing environment information is counted separately and never assigned to a likely device or firmware.
 
-A result is not portable automatically across regions, firmware revisions, devices or Dolphin builds.
+The **Rt:Core builds & profiles** section reports the observed build and profile vocabulary. Legacy, prerelease and development builds are not interchangeable with published releases. A combined profile test remains a multi-profile result.
 
-## Submitting a report
+## Understanding compatibility
 
-Use the site's Report form. It prepares a GitHub issue; it does not write directly to the JSON database. Maintainers review the report before updating the source. Follow [[Reporting-a-Test]] and [[Rating-Guide]].
+A card summarizes multiple observations. Open the details to compare each tester's device, muOS version, Rt:Core build, profile, Game ID, region, FPS range, boot state, playability and notes.
 
-## Privacy and licensing
+The score is not a universal guarantee. A result is tied to the hardware, firmware, game region/revision, core build and profile that were tested. Boot and playability are separate fields.
 
-Do not upload ROMs, BIOS files, firmware, copyrighted game images, serial numbers, pairing tokens or private logs. Screenshots should contain only the evidence needed to reproduce or understand the report.
+## Submit a test
 
-## Site deployment
+Use the Atlas **Submit a test report** form. It prepares a GitHub issue for review; the browser does not write to the data file. The report records game identity, rating, FPS, device, firmware, Rt:Core version, profile and observations. You can explicitly mark unknown environment data instead of guessing.
 
-See [[Compatibility-Site]] for local preview, GitHub Pages configuration, the PWA cache and automated checks. A committed `index.html` does not by itself mean that GitHub Pages is enabled.
+Maintainers validate and merge accepted reports into `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json`. The same importer also accepts the structured GitHub issue form.
+
+## GameSettings and resources
+
+The GameSettings browser reads `dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json`. Inspect the target game, region, author, notes and INI content before using a community file. Back up your own configuration first.
+
+## Privacy and safety
+
+Do not submit ROMs, BIOS files, firmware images, copyrighted game files, serial numbers, pairing tokens or private logs. Share only configuration text and evidence you are entitled to distribute.
+
+## Site operations
+
+Local preview, Pages deployment, offline/PWA behavior, source endpoints and automated checks are documented in [[Compatibility-Site]]. Data field names and naming conventions are documented in [[Compatibility-Data-Model]].
