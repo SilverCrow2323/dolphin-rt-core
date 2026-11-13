@@ -149,6 +149,8 @@ def sftp_canonical_directory(cfg, value):
 def confined_remote_directory(cfg, value):
     """Return canonical (ROM root, requested directory), refusing symlink escapes."""
     root = sftp_canonical_directory(cfg, _remote_root(cfg))
+    if root == "/":
+        raise ValueError("The configured ROM directory resolves to the filesystem root; refusing access.")
     target = sftp_canonical_directory(cfg, value)
     if not within_remote(root, target):
         raise ValueError("The resolved remote path escapes the configured ROM directory.")
@@ -484,15 +486,22 @@ def queue_upload(cfg, body):
 def queue_download(cfg, body):
     remote = _validate_remote_rom(cfg, body.get("remote"))
     _resolved_root, remote, _entry = confined_remote_file(cfg, remote)
-    root = core.lib_dir(cfg).resolve() / "received"
+    library_root = core.lib_dir(cfg).resolve()
+    root = library_root / "received"
     root.mkdir(parents=True, exist_ok=True)
+    if root.is_symlink() or root.resolve() != root:
+        raise ValueError("The PC receive directory must not be a symbolic link.")
     name = Path(remote).name
     if name in ("", ".", ".."):
         raise ValueError("Remote ROM filename is invalid.")
-    target = (root / name).resolve()
-    if root.resolve() not in target.parents:
-        raise ValueError("Download destination escaped the receive folder.")
+    target = root / name
     partial = target.with_name(target.name + ".part")
+    for candidate in (target, partial):
+        if candidate.is_symlink():
+            raise ValueError("Symbolic links are not allowed in the PC receive folder.")
+        resolved = candidate.resolve()
+        if root.resolve() not in resolved.parents:
+            raise ValueError("Download destination escaped the receive folder.")
     resume = bool(body.get("resume"))
     overwrite = bool(body.get("overwrite"))
     if target.exists() and not (resume or overwrite):
@@ -503,8 +512,6 @@ def queue_download(cfg, body):
         raise ValueError("A partial download exists. Choose Resume or restart it.")
     if partial.exists() and overwrite:
         partial.unlink()
-    if not remote_exists(cfg, remote):
-        raise ValueError("Remote ROM does not exist.")
     command = "get " + ("-a " if resume else "") + quote_path(remote) + " " + quote_path(partial)
 
     def worker(job_id):
