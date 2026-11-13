@@ -10,7 +10,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SITE = ROOT / "index.html"
+SITE = ROOT / "compatibility.html"
+PORTAL_SITE = ROOT / "index.html"
 APP_DATA = ROOT / "dolphin-rtcore-muos" / "app" / "Dolphin RtUI" / "data"
 
 
@@ -43,6 +44,7 @@ class CompatibilitySiteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.html = SITE.read_text(encoding="utf-8")
+        cls.portal_html = PORTAL_SITE.read_text(encoding="utf-8")
         cls.manifest = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
         cls.games = json.loads((APP_DATA / "games_data.json").read_text(encoding="utf-8"))
         cls.runtime_games_path = ROOT / "data" / "games_data.json"
@@ -72,6 +74,7 @@ class CompatibilitySiteTests(unittest.TestCase):
     def test_manifest_icons_are_local_and_present(self):
         self.assertEqual(self.manifest.get("start_url"), "./")
         self.assertEqual(self.manifest.get("scope"), "./")
+        self.assertEqual(self.manifest.get("name"), "Dolphin Rt:Core — Project Portal")
         for icon in self.manifest.get("icons", []):
             path = icon["src"]
             self.assertTrue(path.startswith("./assets/"), path)
@@ -112,6 +115,7 @@ class CompatibilitySiteTests(unittest.TestCase):
             expected = {
                 ".nojekyll",
                 "index.html",
+                "compatibility.html",
                 "manifest.json",
                 "sw.js",
                 "assets/spdw_symbol.png",
@@ -126,6 +130,10 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertEqual(actual, expected)
             deployed_html = (output / "index.html").read_text(encoding="utf-8")
             self.assertIn('href="./"', deployed_html)
+            self.assertIn('href="./compatibility.html"', deployed_html)
+            deployed_compatibility = (output / "compatibility.html").read_text(encoding="utf-8")
+            self.assertIn("Compatibility Database", deployed_compatibility)
+            self.assertIn('id="reportBtn"', deployed_compatibility)
             self.assertNotIn("README.md", actual)
             self.assertFalse((output / "dolphin-rtcore-muos").exists())
 
@@ -135,9 +143,12 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.skipTest("Node.js is not installed on this host")
         parser = ScriptCollector()
         parser.feed(self.html)
-        self.assertTrue(parser.scripts, "No inline application script found")
+        portal_parser = ScriptCollector()
+        portal_parser.feed(self.portal_html)
+        self.assertTrue(parser.scripts, "No inline compatibility application script found")
+        self.assertTrue(portal_parser.scripts, "No inline project portal script found")
         with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as tmp:
-            tmp.write("\n".join(parser.scripts))
+            tmp.write("\n".join(parser.scripts + portal_parser.scripts))
             tmp.flush()
             result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -273,9 +284,37 @@ class CompatibilitySiteTests(unittest.TestCase):
 
     def test_pwa_cache_is_bumped_for_new_website_shell(self):
         worker = (ROOT / "sw.js").read_text(encoding="utf-8")
-        self.assertIn("rtcore-db-v3", worker)
-        self.assertNotIn("rtcore-db-v2", worker)
+        self.assertIn("rtcore-site-v1", worker)
+        self.assertIn("'./compatibility.html'", worker)
+        self.assertIn("'./index.html'", worker)
+        self.assertNotIn("rtcore-db-v3", worker)
 
+
+
+    def test_project_portal_is_the_public_homepage(self):
+        self.assertIn("Dolphin Rt:Core — Handheld GameCube", self.portal_html)
+        self.assertIn('id="ecosystem"', self.portal_html)
+        self.assertIn('id="platforms"', self.portal_html)
+        self.assertIn('id="downloads"', self.portal_html)
+        self.assertIn('id="docs"', self.portal_html)
+        self.assertIn('id="roadmap"', self.portal_html)
+        self.assertIn('id="community"', self.portal_html)
+        self.assertIn('href="./compatibility.html"', self.portal_html)
+        self.assertIn("https://api.github.com/repos/SilverCrow2323/dolphin-rt-core/releases/latest", self.portal_html)
+        self.assertIn("FALLBACK_RELEASE", self.portal_html)
+        self.assertIn("loadCompatibilityStats()", self.portal_html)
+
+    def test_portal_uses_real_release_assets_and_explains_package_boundary(self):
+        self.assertIn("Dolphin_RtCore_v12_0_0_Andromeda.muxupd", self.portal_html)
+        self.assertIn("SPDW_Stream_Portal-4.2.1-x86_64.AppImage", self.portal_html)
+        self.assertIn("spdw-stream-portal-4.2.1-1.noarch.rpm", self.portal_html)
+        self.assertIn("does not include the Dolphin emulator executable", self.portal_html)
+        self.assertIn("release.draft||release.prerelease", self.portal_html)
+
+    def test_compatibility_page_returns_to_project_portal(self):
+        self.assertIn('href="./"', self.html)
+        self.assertIn("Project Portal", self.html)
+        self.assertIn("Compatibility Database", self.html)
 
 
 if __name__ == "__main__":
