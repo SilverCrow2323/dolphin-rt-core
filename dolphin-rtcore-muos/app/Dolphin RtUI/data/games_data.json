@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_update": "2026-10-16",
+  "last_update": "2026-11-13",
   "games": [
     {
       "game_info": {
@@ -26,14 +26,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -65,14 +64,13 @@
             "fps_max": 11
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -104,14 +102,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "Slight texture issues, Frame Rate is slow . Default core seems to also give the same result"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -143,14 +140,13 @@
             "fps_max": 9
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is unplayably low."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -182,14 +178,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Standard",
             "considerations": "It runs ok, but stutters quite a bit, its preferable to either use a PAL rom-speedhack core or play the OG N64 version."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -221,14 +216,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Videos run slow, Frame Rate varies, but playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -260,14 +254,13 @@
             "fps_max": 23
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Few slowdowns here and there but playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -299,14 +292,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Fps drops are common, but its still very playable"
           },
           "test_environment": {
             "tester": "S1eepy",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -338,14 +330,13 @@
             "fps_max": 10
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is unplayably slow. Using the Diet Melee mods might make it playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -377,14 +368,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "Can be slow with many enemies on screen. Can stutter when speaking with npcs."
           },
           "test_environment": {
             "tester": "Happy",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -416,14 +406,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Stutters quite a bit at the start of a race, but still playable with some patiance"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -455,14 +444,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Does not start."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -494,14 +482,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
             "core_profile": "Default",
             "considerations": "In older versions, simply changing the CPU overclock was enough to achieve a considerable FPS gain in the game. In these newer versions, this has been fixed; however, other settings have been added that significantly slow down the system. The configuration I'm using gives me around 15 FPS in the game and much more fluidity."
           },
           "test_environment": {
             "tester": "Luis Torrão",
-            "device": "RG4xxxx",
-            "muos_version": ""
+            "device": "RG4-series (exact model not recorded)"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/GLME01.png",
           "custom_settings": [
@@ -547,14 +534,13 @@
             "fps_max": 10
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Graphical glitches all over, Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -586,14 +572,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -625,14 +610,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is unplayably low."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -664,14 +648,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Gameplay runs at half speed"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -703,14 +686,13 @@
             "fps_max": 11
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -742,14 +724,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate varies, but very much playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -781,14 +762,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -820,14 +800,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Starts, but freezes immediately."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -859,14 +838,13 @@
             "fps_max": 24
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Game runs in slow motion, the DS version is preferable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -898,14 +876,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate varies, but very much playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -937,14 +914,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Crashes immediately."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -976,14 +952,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1015,14 +990,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable if a bit slow"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1054,14 +1028,13 @@
             "fps_max": 21
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1093,14 +1066,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Crashes the entire emulator."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1132,14 +1104,13 @@
             "fps_max": 24
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1171,14 +1142,13 @@
             "fps_max": 10
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1210,14 +1180,13 @@
             "fps_max": 11
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1249,14 +1218,13 @@
             "fps_max": 8
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1288,14 +1256,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable. And stutters a lot"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1327,14 +1294,13 @@
             "fps_max": 7
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1366,14 +1332,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Black Screen Fix",
             "considerations": "Crashes on the main menu."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1405,14 +1370,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Game runs in slow motion, unplayable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1444,14 +1408,13 @@
             "fps_max": 5
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is unplayably slow. Don't even bother."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1483,14 +1446,13 @@
             "fps_max": 34
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "A few stutters but otherwise playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1522,14 +1484,13 @@
             "fps_max": 9
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1561,14 +1522,13 @@
             "fps_max": 22
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Runs alright Frame Rate is not tied to game speed. Loading each map takes about 30 seconds."
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2016/03/crashnitrokart_gcnbox.jpg",
           "custom_settings": [],
@@ -1590,14 +1550,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v11.0.0 (prerelease)",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Prerelease",
+            "core_profile": "Speedhacks",
             "considerations": "Simply perfect, applying a light HD texture pack makes it look even better visually. No lag, no FPS drops, simply perfect.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2016/03/crashnitrokart_gcnbox.jpg",
           "custom_settings": [
@@ -1642,14 +1601,13 @@
             "fps_max": 6
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Default",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1681,14 +1639,13 @@
             "fps_max": 37
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate slowdown in large, cutscenes are slow"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1720,14 +1677,13 @@
             "fps_max": 20
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "Slow videos, Frame Rate can vary, playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1759,14 +1715,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Almost Perfect"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1798,14 +1753,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Perfectly playable, the Dreamcast version is still more stable and preferable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1837,14 +1791,13 @@
             "fps_max": 6
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate but it's too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1866,14 +1819,13 @@
             "fps_max": 48
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "To be honest, the platforming sections are perfectly playable and even enjoyable, would Rate 4*. However, in the central city hub and during races the lagging gets really heavy, dropping FPS down to 20-25\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [
@@ -1934,14 +1886,13 @@
             "fps_max": 45
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
+            "core_profile": "Speedhacks",
             "considerations": "Playable but has noticeable frame drops during combat. With further optimizations and tweaking, performance could improve significantly.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -1973,14 +1924,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v10.6 (pre release)",
+            "rtcore_version": "Dolphin Rt:Core 10.6 · Prerelease",
             "core_profile": "Default",
             "considerations": "Gameplay suffers from slowdowns during combat, but the visuals are excellent. The Standard core profile provides the best performance. The Performance core sacrifices too much graphical quality.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2002,14 +1952,13 @@
             "playable": "YES WITH ISSUES"
           },
           "test_details": {
-            "rtcore_version": "v11.0.0 'Frontendone' (prerelease)",
-            "core_profile": "SpeedUp 2",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · FrontendONE · Prerelease",
+            "core_profile": "Speedup 2",
             "considerations": "Combat is noticeably smoother and faster, but still not at a point where gameplay is enjoyable and worthy of the name. However, the progress is clearly visible, even if the trade-off has been the graphical quality of the game, still enjoyable but compared to the perfect visuals you get with the Default profile... It's a real shame. But we do not give up, still Sbrobbing, still Rintromping.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2031,14 +1980,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2070,14 +2018,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Runs almost perfectly"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2109,14 +2056,13 @@
             "fps_max": 20
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Performance varies. Playable but can be laggy."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2138,14 +2084,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 11.5.00-II · Bash Arsenal",
+            "core_profile": "All profiles tested",
             "considerations": "Slight stutter in animation fluidity, otherwise runs well.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2177,14 +2122,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Does not start."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2206,14 +2150,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 11.5.00-II · Bash Arsenal",
+            "core_profile": "All profiles tested",
             "considerations": "Doesn't boot, Black screen.. Tried every Rt:Profile.\nROM is NKit format."
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2245,14 +2188,13 @@
             "fps_max": 43
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate varies, too much stuttering to playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2284,14 +2226,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v10.6 (pre release)",
-            "core_profile": "SpeedUp 1",
+            "rtcore_version": "Dolphin Rt:Core 10.6 · Prerelease",
+            "core_profile": "Speedup 1",
             "considerations": "Almost perfect. Some lag during intense scenes, but overall very playable. Further in-depth testing is needed to confirm full stability.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2323,14 +2264,13 @@
             "fps_max": 14
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable but Frame Rate can vary"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2362,14 +2302,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Crashes immediately."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2401,14 +2340,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Freezes at the start"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2440,14 +2378,13 @@
             "fps_max": 3
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "One of the worst Frame Rate ever tested"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2479,14 +2416,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2518,14 +2454,13 @@
             "fps_max": 42
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Really slow cutscenes, but in-game runs fine"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2557,14 +2492,13 @@
             "fps_max": 60
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Runs really well, very playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2596,14 +2530,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Some slowdown, NEEDS NTSC ISO!"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2635,14 +2568,13 @@
             "fps_max": 11
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2674,14 +2606,13 @@
             "fps_max": 8
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2713,14 +2644,13 @@
             "fps_max": 9
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2752,14 +2682,13 @@
             "fps_max": 9
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2791,14 +2720,13 @@
             "fps_max": 3
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "One of the worst Frame Rate ever tested"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2830,14 +2758,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "The game starts, but it does not get past the developer logos; it crashes and resets on its own."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2869,14 +2796,13 @@
             "fps_max": 4
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "The text-boxes in the menus dont render the text, Frame Rate is too low to be playable., the free-run mode is kinda playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2908,14 +2834,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Crashes immediately., PSP version is playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2947,14 +2872,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -2986,14 +2910,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Crashes in the menu."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3025,14 +2948,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Freezes at the WB logo."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3064,14 +2986,13 @@
             "fps_max": 10
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3103,14 +3024,13 @@
             "fps_max": 20
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Pretty playable"
           },
           "test_environment": {
             "tester": "ᴡᴏᴋᴇᴜᴘɪɴᴘᴀʀɪs",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3142,14 +3062,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "[FREE RUN MODE] very much playable, Frame Rate not perfect tho"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3171,14 +3090,13 @@
             "fps_max": 6
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is unplayably low."
           },
           "test_environment": {
             "tester": "WorkingGoose",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3210,14 +3128,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate varies, but playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3249,14 +3166,13 @@
             "fps_max": 27
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable but very slow in large areas"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3278,14 +3194,13 @@
             "fps_max": 45
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
+            "core_profile": "Speedhacks",
             "considerations": "Runs smoothly at 40 FPS. Gets a bit laggy in large / crowded spaces.\nVideo sequences are perfect.\nPlayable, with issues\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3317,14 +3232,13 @@
             "fps_max": 10
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "The game runs, but performance is too low for me to consider it playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/GLME01.png",
           "custom_settings": [],
@@ -3356,14 +3270,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3395,14 +3308,13 @@
             "fps_max": 23
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is unplayably slow. Just play the DS or PSP versions."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3434,14 +3346,13 @@
             "fps_max": 47
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Music glitch-loops rarely, few stutters, playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3473,14 +3384,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Few slowdowns, but mostly playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3512,14 +3422,13 @@
             "fps_max": 20
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "The game runs, but performance is too low for me to consider it playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3551,14 +3460,13 @@
             "fps_max": 14
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3590,14 +3498,13 @@
             "fps_max": 16
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3629,14 +3536,13 @@
             "fps_max": 8
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3658,14 +3564,13 @@
             "playable": "NO"
           },
           "test_details": {
-            "rtcore_version": "v10.5-124",
+            "rtcore_version": "Dolphin Rt:Core 10.5.124",
             "core_profile": "Performance",
             "considerations": "The game boots but runs at its worst. Also used speedhacks and other performance settings but the result is basically the same.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3687,14 +3592,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "v10.5-124",
+            "rtcore_version": "Dolphin Rt:Core 10.5.124",
             "core_profile": "Performance",
             "considerations": "The game boots but runs at its worst. Also used sppedhacks and other performance settings but the result is basically the same.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3726,14 +3630,13 @@
             "fps_max": 7
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "Frame Rate too slow to be playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3765,14 +3668,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
+            "core_profile": "All profiles tested",
             "considerations": "Perfectly playable, some minor lagging in video scenes.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3804,14 +3706,13 @@
             "fps_max": 6
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "https://i.ibb.co/b5Ptp5qr/MXPL01.jpg",
           "custom_settings": [],
@@ -3843,14 +3744,13 @@
             "fps_max": 8
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Menus and videos run hella slow, audio cuts in and out, Frame Rate make it unplayable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3882,14 +3782,13 @@
             "fps_max": 6
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3921,14 +3820,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Video calls do not render, preventing the game from starting. Play the original PlayStation version instead."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3960,14 +3858,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -3999,14 +3896,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Default",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4038,14 +3934,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "The game runs, but performance is too low for me to consider it playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4077,14 +3972,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "A bit slow, but playable with patience"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4116,14 +4010,13 @@
             "fps_max": 10
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4145,14 +4038,13 @@
             "fps_max": 45
           },
           "test_details": {
-            "rtcore_version": "v11.0.00 (prerelease)",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Prerelease",
+            "core_profile": "All profiles tested",
             "considerations": "Can't run properly. Only with Black screen. Fix and Commpatibility profiles is able to go past the bootanim or the menu ui.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4184,14 +4076,13 @@
             "fps_max": 8
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4223,14 +4114,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4262,14 +4152,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GOWP69.png?1330261887",
           "custom_settings": [],
@@ -4301,14 +4190,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4340,14 +4228,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4379,14 +4266,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Text does not render, making gameplay impossible; the controls also do not seem to work."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4418,14 +4304,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Unplayable; blocked on a green screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4457,14 +4342,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4496,14 +4380,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Menus are slow, gameplay is almost perfect"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4535,14 +4418,13 @@
             "fps_max": 13
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable with a LOT of patience, its better to just play the PSP version"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4574,14 +4456,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Crashes"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4613,14 +4494,13 @@
             "fps_max": 45
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Runs almost perfectly"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4652,14 +4532,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4691,14 +4570,13 @@
             "fps_max": 18
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Default",
             "considerations": "A bit slow but playable, the date setup at the start crashes the emulator so youre going to need to import a save from an external source to bypass that. Online doesnt work, solo does."
           },
           "test_environment": {
             "tester": "Lucaspec72",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4730,14 +4608,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable but Frame Rate can vary"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4769,14 +4646,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4808,14 +4684,13 @@
             "fps_max": 28
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Performance varies but it's playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4847,14 +4722,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate varies but it's perfectly playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4886,14 +4760,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Default",
             "considerations": "Playable with Frame Rate dips in larger areas"
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4915,14 +4788,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 11.5.00-II · Bash Arsenal",
+            "core_profile": "All profiles tested",
             "considerations": "Boots and shows initial logos, language selection screen appears, but after selecting language only Black screen.. Tried every Rt:Profile.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4954,14 +4826,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Crashes immediately."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -4993,14 +4864,13 @@
             "fps_max": 17
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Broken cutscenes but in-game runs fine"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5032,14 +4902,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5071,14 +4940,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable, but can be laggy"
           },
           "test_environment": {
             "tester": "Speedrun [+.[🐬].%]",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5110,14 +4978,13 @@
             "fps_max": 6
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Eleot",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5149,14 +5016,13 @@
             "fps_max": 60
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "standard",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Standard",
             "considerations": "Playable at relativly high Frame Rate if you use the debug mode to disable stuff. I suggest BACKGROUND, STOBJ, EFFECTS, APE, MINIMAP"
           },
           "test_environment": {
             "tester": "Row",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5188,14 +5054,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Black Screen Fix",
             "considerations": "Does not start."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5227,14 +5092,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5266,14 +5130,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate varies, but playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/GQPE78.png?1372222109",
           "custom_settings": [],
@@ -5305,14 +5168,13 @@
             "fps_max": 24
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5344,14 +5206,13 @@
             "fps_max": 13
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable., play the dreamcast version instead"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5383,14 +5244,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Black Screen Fix",
             "considerations": "It boots, but freezes almost immediately."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5422,14 +5282,13 @@
             "fps_max": 9
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5461,14 +5320,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Videos runs Slow, it can struggle a bit, especialy during battles and larger levels but its still decently playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5500,14 +5358,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable, Frame Rate can sometimes vary"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5539,14 +5396,13 @@
             "fps_max": 23
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Text doesnt render in the menu making the game almost unplayable, apart from that its very much playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5578,14 +5434,13 @@
             "fps_max": 13
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5617,14 +5472,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5656,14 +5510,13 @@
             "fps_max": 18
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/G9SP8P.png?1317735920",
           "custom_settings": [],
@@ -5695,14 +5548,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Slow cutscenes, can be quite unstable with the Default underclock. In Dolphin.ini set Overlock = 0.23000000 to resolve crashing and other issues."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5734,14 +5586,13 @@
             "fps_max": 11
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5773,14 +5624,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Standard",
             "considerations": "Playable, if a bit slow. Surprisingly the SpeedHack core makes the game run slower"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5812,14 +5662,13 @@
             "fps_max": 20
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Stutters quite a lot especialy at the start of the game, playable, but only if you can handle low Frame Rates"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5851,14 +5700,13 @@
             "fps_max": 6
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "Eleot",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5890,14 +5738,13 @@
             "fps_max": 23
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable but with lot of patience"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5929,14 +5776,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Crashes sometimes and has graphical glitches in the ui, low Frame Rate makes it unplayable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -5968,14 +5814,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Bit slow, but perfectly playable, the dreamcast version is still more stable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6007,14 +5852,13 @@
             "fps_max": 18
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": ""
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6046,14 +5890,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Few stutters here and there, but playable. Might need higher cpu clock to avoid crashing."
           },
           "test_environment": {
             "tester": "Speedrun [+.[🐬].%]",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/GGVE78.png?1752723822",
           "custom_settings": [],
@@ -6085,14 +5928,13 @@
             "fps_max": 18
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Playable, but playing either the DS or PSP version is preferable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "https://art.gametdb.com/wii/cover/FR/G4IP52.png?1317735978",
           "custom_settings": [],
@@ -6124,14 +5966,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Crashes immediately."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6163,14 +6004,13 @@
             "fps_max": 24
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Few stutters here and there but playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6202,14 +6042,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6241,14 +6080,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Freezes at the starting credits screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6280,14 +6118,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Starts, but crashes shortly after"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6319,14 +6156,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "It requires files from this link to work. Https://github.com/libretro/dolphin/archive/master.zip only workswith NTSC iso. Try the DS game."
           },
           "test_environment": {
             "tester": "DeadPlant, Sexy_Shrek, SEIRO",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6358,14 +6194,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate flactuations make the game unplayable"
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6397,14 +6232,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Overclock = .4 Resolution = .33 playable"
           },
           "test_environment": {
             "tester": "Mercquick",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6436,14 +6270,13 @@
             "fps_max": 7
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Stutters a lot, completly unplayable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6475,14 +6308,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Gets stuck during character creation; unplayable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6514,14 +6346,13 @@
             "fps_max": 3
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Unplayably slow"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6553,14 +6384,13 @@
             "fps_max": 8
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Black Screen Fix",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6592,14 +6422,13 @@
             "fps_max": 13
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6631,14 +6460,13 @@
             "fps_max": 32
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "The game runs, but performance is too low for me to consider it playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6670,14 +6498,13 @@
             "fps_max": 10
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6709,14 +6536,13 @@
             "fps_max": 31
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6748,14 +6574,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Only shows a Black screen.."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6787,14 +6612,13 @@
             "fps_max": 24
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Severe slowdowns on large areas, barely playable but not really enjoyable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6826,14 +6650,13 @@
             "fps_max": 14
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6865,14 +6688,13 @@
             "fps_max": 10
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6904,14 +6726,13 @@
             "fps_max": 16
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6943,14 +6764,13 @@
             "fps_max": 21
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -6982,14 +6802,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "All profiles tested",
             "considerations": "Black screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7021,14 +6840,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Crashes at the starting logo."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7060,14 +6878,13 @@
             "fps_max": 27
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Performance varies, playable but not enjoyable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7099,14 +6916,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Freezes at the starting screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7138,14 +6954,13 @@
             "fps_max": 9
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7177,14 +6992,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Freezes at the loading screen."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7216,14 +7030,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "The unskippable prologue is unbearably slow, but after that, in-game its completly playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7245,14 +7058,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v11.0.00 (prerelease)",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Prerelease",
             "core_profile": "Compatibility",
             "considerations": "[Disc 1] Only with the Compatibility profile does the game manage to boot past the \"Licensed by Nintendo\" screen shortly after startup.\nUnfortunately, this doesn't resolve the low frame Rate, which stays locked at around 30 FPS during gameplay. This causes lag that, while not extreme, is still quite annoying. Ultimately, a game like this is unplayable with an issue like this.[Disc 1] Only with the Compatibility profile the game can go past the \"Licensed by Nintendo\" screen shortly after the boot.\nHowever the average FPS during the gaming session is stable on 20-30 and way too laggy to be enjoyable.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2021/06/17752_front.jpg",
           "custom_settings": [],
@@ -7284,14 +7096,13 @@
             "fps_max": 16
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7323,14 +7134,13 @@
             "fps_max": 9
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7362,14 +7172,13 @@
             "fps_max": 6
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7401,14 +7210,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Videos runs Slow, it can struggle a bit, running most of the time around 15 fps but its still decently playable"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7440,14 +7248,13 @@
             "fps_max": 28
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "Gameplay needs a bit of patience"
           },
           "test_environment": {
             "tester": "Eleot",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7469,14 +7276,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.0.00 (prerelease)",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Prerelease",
+            "core_profile": "All profiles tested",
             "considerations": "Doesn't boot.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7508,14 +7314,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Crashes immediately."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7547,14 +7352,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Audio desynchs during the intro which takes a very long time, Frame Rate seems high, but the game essentialy runs in slow motion."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7586,14 +7390,13 @@
             "fps_max": 30
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Audio desynchs during the intro which takes a very long time, Frame Rate seems high, but the game essentialy runs in slow motion."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7625,14 +7428,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7664,14 +7466,13 @@
             "fps_max": 23
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Few stutters but otherwise playable"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7703,14 +7504,13 @@
             "fps_max": 18
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Performance varies, but its pretty static game so i'd say it's playable, with lots patience."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7742,14 +7542,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Stuck on a Black screen. After the main menu."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7781,14 +7580,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Almost Perfect"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7820,14 +7618,13 @@
             "fps_max": 45
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Texture problems with the ui make it difficult to start a new game, performance is low in the start lobby, but gets better in levels."
           },
           "test_environment": {
             "tester": "Sexy_Shrek, Speedrun [+.[🐬].%]",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7859,14 +7656,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Runs nearly flawlessly. 40fps inbetween the minigames, tho minigames run fullspeed. Can run on the Default core but is 20% slower and slightly its less playable."
           },
           "test_environment": {
             "tester": "Danster21",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7898,14 +7694,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Black Screen Fix",
             "considerations": "It boots, but freezes almost immediately."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7937,14 +7732,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Some Frame drops can happen, still very playable"
           },
           "test_environment": {
             "tester": "S1eepy",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -7976,14 +7770,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Glitchy text, playable with a few frame drops"
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8015,14 +7808,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Overworld runs good, battles not as good"
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8054,14 +7846,13 @@
             "fps_max": 13
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is too low to be playable."
           },
           "test_environment": {
             "tester": "SkullXavier",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8093,14 +7884,13 @@
             "fps_max": 5
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Frame Rate is unplayably slow. Dont even bother."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8132,14 +7922,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Speedhacks",
             "considerations": "Choose 50hz mode at the start"
           },
           "test_environment": {
             "tester": "Speedrun [+.[🐬].%]",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8171,14 +7960,13 @@
             "fps_max": 35
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
             "core_profile": "Default",
             "considerations": "Still running in slowmotion, the graphics look good but like this is absolutely not playable\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG 35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8210,14 +7998,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "v10.5.300",
+            "rtcore_version": "Dolphin Rt:Core 10.5.300",
             "core_profile": "Default",
             "considerations": "Boots but is heavily lagging all the time\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8249,14 +8036,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "v10.5.300",
-            "core_profile": "SpeedHack / Default (both tested)",
+            "rtcore_version": "Dolphin Rt:Core 10.5.300",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "It is technically playable if you are fine with 9 fps but i wouldnt say its a fun experience"
           },
           "test_environment": {
             "tester": "TekkraGMD",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jakaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8288,14 +8074,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "Legacy",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
             "core_profile": "Black Screen Fix",
             "considerations": "Frame Rate is unplayably slow. Dont even bother."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8327,14 +8112,13 @@
             "fps_max": 13
           },
           "test_details": {
-            "rtcore_version": "Legacy",
-            "core_profile": "SpeedHack / Default",
+            "rtcore_version": "Dolphin Rt:Core Legacy (exact version not recorded)",
+            "core_profile": "Multiple profiles: Default + Speedhacks",
             "considerations": "Too slow to be enjoyable."
           },
           "test_environment": {
             "tester": "Sexy_Shrek",
-            "device": "Unknown Device",
-            "muos_version": ""
+            "device": ""
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8366,14 +8150,13 @@
             "fps_max": 40
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
+            "core_profile": "All profiles tested",
             "considerations": "Profiles tested: Speedhack,Performance, Speedup1, Default\nSadly the game won't go past the first option selection window\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2021/03/61171_front.jpg",
           "custom_settings": [
@@ -8411,14 +8194,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
             "core_profile": "Performance",
             "considerations": "Perfect , only during the cutscenes there may be some minor lagging.\nEverything else is awesome.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8450,14 +8232,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
             "core_profile": "Default",
             "considerations": "Not booting\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2023/01/66108_front.jpg",
           "custom_settings": [
@@ -8495,14 +8276,13 @@
             "fps_max": 50
           },
           "test_details": {
-            "rtcore_version": "v11.0.0 (current)",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00",
             "core_profile": "Ultra",
             "considerations": "The game actually runs much more smoothly than its predecessor Budokai. The fights still suffer from frame Rate drops, which are noticeable, but I managed to complete several battles without major issues. However, heavy lag persists during cutscenes, and the experimental Ultra profile significantly sacrifices graphical quality for smoother gameplay. I will run further tests with more stable profiles as soon as possible.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2016/04/143049-dragon-ball-z-budokai-2-gamecube-front-cover.jpg",
           "custom_settings": [
@@ -8542,14 +8322,13 @@
             "fps_max": 25
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
+            "core_profile": "All profiles tested",
             "considerations": "I was surprised how well i got it to run how ever i will note it dipped heavily when i selected tails which would be an issue if i tried to 100% the game"
           },
           "test_environment": {
             "tester": "TekkraGMD",
-            "device": "RG35XXH",
-            "muos_version": "2601.0 Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [
@@ -8588,14 +8367,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.0.0 (prerelease)",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Prerelease",
+            "core_profile": "All profiles tested",
             "considerations": "Unfortunately, even with the Black screen. Fix profile, the game does not boot.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2022/06/43979_front.jpg",
           "custom_settings": [
@@ -8646,14 +8424,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.0.0 (prerelease)",
-            "core_profile": "Black Screen Fix, Compatibility, Default",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Prerelease",
+            "core_profile": "Multiple profiles: Black Screen Fix + Compatibility + Default",
             "considerations": "Unfortunately, even with various profiles, the game fails to boot.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2025/11/rgt_featured_1_1764354821395.jpg",
           "custom_settings": [
@@ -8702,14 +8479,13 @@
             "fps_max": 45
           },
           "test_details": {
-            "rtcore_version": "v11.0.0-dev",
-            "core_profile": "SpeedHacks, Performance, Ultra",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Development",
+            "core_profile": "Multiple profiles: Performance + Speedhacks + Ultra",
             "considerations": "UI graphics run smoothly at around 45 FPS, sometimes even higher. However, gameplay sessions and cutscenes lag heavily, making it currently unplayable.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8741,14 +8517,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
+            "core_profile": "Speedhacks",
             "considerations": "Does not boot, exactly like its NTSC counterpart.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GBTP70.png?1317735940",
           "custom_settings": [],
@@ -8780,14 +8555,13 @@
             "fps_max": 59
           },
           "test_details": {
-            "rtcore_version": "v11.0.00-dev",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Development",
+            "core_profile": "All profiles tested",
             "considerations": "Unplayable, battle sessions runs down to 10FPS.\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -8819,14 +8593,13 @@
             "fps_max": 59
           },
           "test_details": {
-            "rtcore_version": "v11.0.00-dev",
-            "core_profile": "SpeedHack",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Development",
+            "core_profile": "Speedhacks",
             "considerations": "Simply PERFECT\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [
@@ -8872,14 +8645,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.0.00 (prerelease)",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core 11.0.00 · Prerelease",
+            "core_profile": "All profiles tested",
             "considerations": "[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://retrogametalk.com/repo/wp-content/uploads/2025/12/rgt_featured_1_1764982026658.jpg",
           "custom_settings": [
@@ -8925,14 +8697,13 @@
             "fps_max": 5
           },
           "test_details": {
-            "rtcore_version": "v10.5.3",
-            "core_profile": "Various profiles",
+            "rtcore_version": "Dolphin Rt:Core 10.5.3",
+            "core_profile": "Multiple profiles (details not recorded)",
             "considerations": "I found the cause of the persistent Black screen. In Need for Speed: Most Wanted (GameCube, PAL / GOWP69) on the H700 build.\nDolphin itself boots the game correctly, but the package is missing the GameCube system font files:\nFont_western.bin\nFont_japanese.bin\nDolphin expects them in:\n/usr/local/share/dolphin-emu/sys/GC/\nWith debug logging enabled, the game stopped exactly at:\nError: Trying to access Windows-1252 fonts but they are not loaded.\nFollowed by an NFS Most Wanted stack trace from EcstasyE.cpp.\nAfter copying the official Dolphin 2412 font files into the directory above, NFS Most Wanted boots and runs stable at around 5fps without any further optimisation on Performance core.\nIt would be great if these two files could be included in the next Rt:Core release / install package so games that depend on the GameCube ROM fonts work out of the box.\nTested on:\nAnbernic RG34XX SP\nAllwinner H700\nMuOS\nDolphin 2412-81-dirty\nRt:Core v11\nNFS Most Wanted Europe (GOWP69, RVZ)\n(Fix and GitHub comment created by ChatGPT, testet and prompted by XSpalter)"
           },
           "test_environment": {
             "tester": "XSpalter",
-            "device": "RG-34XX SP",
-            "muos_version": "Jacaranda"
+            "device": "Anbernic RG34XX SP"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GOWP69.png?1330261887",
           "custom_settings": [],
@@ -8954,14 +8725,13 @@
             "fps_max": 12
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
+            "rtcore_version": "Dolphin Rt:Core 11.5.00-II · Bash Arsenal",
             "core_profile": "Performance",
             "considerations": "Need for Speed: Most Wanted – game-specific Performance profile\nFor Need for Speed: Most Wanted (GameCube PAL / Game ID GOWP69), the existing Rt:Core Performance profile works well with one important game-specific adjustment and a Potato Patched Rom:\n[Core]\nOverclock = 0.20\n\nThe regular Performance GFX.ini can be used unchanged. Its existing performance-oriented graphics/EFB/XFB settings already work well for this title.\nSuggested implementation:\n\nDetect Need for Speed: Most Wanted by Game ID GOWP69.\nStart from the normal Rt:Core Performance profile.\nOverride only the CPU emulation overclock value to 0.20.\nKeep the regular Performance GFX.ini.\nDo not modify the global Performance profile for other games.\nOn the H700 / RG34XX SP this setting was tested to perform significantly better for Need for Speed: Most Wanted than the Default Performance CPU clock.\nPotato Edition / prepared RVZ *\nFor additional performance improvements, I also created Need for Speed Most Wanted Potato Edition, a small Windows patcher that prepares a clean PAL GOWP69 GameCube image and creates a verified RVZ optimized for this use case.\nThe patcher applies several game-side rendering reductions, including reduced scenery geometry/LOD paths, disabled car shadows and reflections, disabled sky rendering and other visual reductions, as well as forcing the reduced 2-player asset/geometry path in single-player.\nRepository and patcher:\n[GITHUB-LINK]\nThis is optional—the proposed Dolphin profile should still work with the original game—but the Potato Edition RVZ is intended specifically for low-power H700 handhelds and provides additional performance headroom."
           },
           "test_environment": {
             "tester": "Lazz",
-            "device": "RG34XX SP",
-            "muos_version": "2508.3 Golden Goose"
+            "device": "Anbernic RG34XX SP"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GOWP69.png?1330261887",
           "custom_settings": [
@@ -9012,14 +8782,13 @@
             "fps_max": 22
           },
           "test_details": {
-            "rtcore_version": "v11.5.00 'Comfort Zone' (prerelease)",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core 11.5.00-I · Comfort Zone · Prerelease",
+            "core_profile": "All profiles tested",
             "considerations": "Boots and runs without crashing. Unfortunately it's impossible to play with it, too heavy stuttering.\nBetter in the UIs\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/US/RDBE70.png?1634775241",
           "custom_settings": [],
@@ -9051,14 +8820,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "Unknown",
-            "core_profile": "All profiles",
+            "rtcore_version": "Dolphin Rt:Core version not recorded",
+            "core_profile": "All profiles tested",
             "considerations": "Profiles tested: Speedhack,Performance, Speedup1, Default\nSadly the game won't go past the first option selection window\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "",
           "custom_settings": [],
@@ -9090,14 +8858,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-III FrontendONE",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 11.5.00-III · FrontendONE",
+            "core_profile": "All profiles tested",
             "considerations": "Only Black Screen. Tried every Rt:Profile\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GREP08.png?1331477838",
           "custom_settings": [],
@@ -9129,14 +8896,13 @@
             "fps_max": 0
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-III FrontendONE",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 11.5.00-III · FrontendONE",
+            "core_profile": "All profiles tested",
             "considerations": "Only Black Screen. Tried every Rt:Profile\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/GLZP7D.png",
           "custom_settings": [],
@@ -9168,14 +8934,13 @@
             "fps_max": 15
           },
           "test_details": {
-            "rtcore_version": "v11.5.00-II 'Bash Arsenal'",
-            "core_profile": "All profiles (tested multiple)",
+            "rtcore_version": "Dolphin Rt:Core 11.5.00-II · Bash Arsenal",
+            "core_profile": "All profiles tested",
             "considerations": "Game boots and runs without crashes or major bugs, but the lagging is far too heavy to appreciate the gameplay. Especially for a title like Muramasa, where the beauty of its sophisticated and unique aesthetic is heavily compromised by such gameplay, it's almost painful to \"play\".\n[Game used in RVZ format, converted from ISO with: 128 kb Block Size, Zstandard Compression, Compression Level 5]"
           },
           "test_environment": {
             "tester": "Sirpips",
-            "device": "Anbernic RG35XX H",
-            "muos_version": "2601.1 Funky Jacaranda"
+            "device": "Anbernic RG35XX H"
           },
           "cover_art": "https://art.gametdb.com/wii/cover/EN/RMUP8P.png",
           "custom_settings": [],
