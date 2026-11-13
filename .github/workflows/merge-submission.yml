@@ -187,7 +187,7 @@ jobs:
                   # Also accept the native GitHub Issue Form for contributors who do not
                   # use the website. Field headings are parsed as data, never evaluated.
                   def form_field(label):
-                      pattern = r"^###\s+" + re.escape(label) + r"\s*\n([\s\S]*?)(?=\n###\s|\Z)"
+                      pattern = r"^###\s+" + re.escape(label) + r"\s*\*?\s*\n([\s\S]*?)(?=\n###\s|\Z)"
                       match = re.search(pattern, body, re.MULTILINE)
                       if not match:
                           return ""
