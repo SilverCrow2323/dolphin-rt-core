@@ -195,6 +195,20 @@ class CompatibilitySiteTests(unittest.TestCase):
                 self.assertIn(review.get("playable"), ("YES", "YES WITH ISSUES", "NO"))
         self.assertEqual(report_count, 235)
         self.assertEqual(len(identities), len(self.games["games"]))
+        all_reports = [entry for group in self.games["games"] for entry in group["entries"]]
+        devices = {entry["test_environment"].get("device", "") for entry in all_reports}
+        muos = {entry["test_environment"].get("muos_version", "") for entry in all_reports}
+        releases = {entry["test_details"].get("rtcore_version", "") for entry in all_reports}
+        profiles = {entry["test_details"].get("core_profile", "") for entry in all_reports}
+        self.assertNotIn("RG 35XX H", devices)
+        self.assertNotIn("RG35XXH", devices)
+        self.assertNotIn("Funky Jacaranda", muos)
+        self.assertNotIn("Funky Jakaranda", muos)
+        self.assertIn("muOS Jacaranda (version not specified)", muos)
+        self.assertNotIn("v11.0.00 (prerelease)", releases)
+        self.assertNotIn("v10.6 (pre release)", releases)
+        self.assertNotIn("standard", profiles)
+        self.assertNotIn("SpeedHack / Default", profiles)
 
     def test_canonical_database_normalizer_is_idempotent(self):
         normalizer = ROOT / "tools" / "normalize_games_data.py"
