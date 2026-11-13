@@ -1,3 +1,5 @@
+package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;" .. package.path
+
 -- Boot initializer must advance ROM scanning incrementally, never via Library.scan().
 local notifications = {}
 package.preload["core.notification_hub"] = function()
