@@ -1,6 +1,6 @@
 # Compatibility Site Operations
 
-The Compatibility Database is a static single-page application rooted at index.html. The repository also tracks its service worker (sw.js) and web app manifest (manifest.json).
+The public site has two entry points: the Project Portal at index.html and the standalone Compatibility Database at compatibility.html. The database retains GameCube/Wii search, filters, game details, GameSettings and test-report submission. The repository also tracks the shared service worker (sw.js) and web app manifest (manifest.json).
 
 ## Local preview
 
@@ -10,11 +10,11 @@ From the repository root:
 python3 -m http.server 8000
 ~~~
 
-Open http://localhost:8000. Do not use file://: fetch, service workers and browser storage behave differently.
+Open http://localhost:8000 for the portal and http://localhost:8000/compatibility.html for the database. Do not use file://: fetch, service workers and browser storage behave differently.
 
 ## Publish
 
-The app needs no Node build step. The repository includes .github/workflows/deploy-compatibility.yml, which builds a minimal publication folder and deploys it whenever site files reach main. One-time setup is required: Settings → Pages → Build and deployment → Source → GitHub Actions. Pull requests never publish. The expected URL after the first successful deployment is https://silvercrow2323.github.io/dolphin-rt-core/. The build publishes only index.html, manifest.json, sw.js, .nojekyll and the three local UI assets; it does not upload the project source tree.
+The app needs no Node build step. The repository includes .github/workflows/deploy-compatibility.yml, which builds a minimal publication folder and deploys it whenever site files reach main. One-time setup is required: Settings → Pages → Build and deployment → Source → GitHub Actions. Pull requests never publish. The expected URL after the first successful deployment is https://silvercrow2323.github.io/dolphin-rt-core/. The build publishes index.html, compatibility.html, manifest.json, sw.js, .nojekyll and the three local UI assets; it does not upload the project source tree.
 
 ## Data sources
 
