@@ -780,7 +780,7 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
       </div>
       <div class="form-section">
         <div class="form-section-head"><div class="form-section-num">03</div><div><div class="form-section-title"><i class="fa-solid fa-mobile-screen"></i> Device</div><div class="form-section-desc">Your handheld</div></div></div>
-        <div class="chip-select" id="rptDevices"><div class="chip-opt active" data-d="Anbernic RG35XX H">Anbernic RG35XX H</div><div class="chip-opt" data-d="Anbernic RG34XX SP">Anbernic RG34XX SP</div><div class="chip-opt" data-d="Anbernic RG40XX H">Anbernic RG40XX H</div><div class="chip-opt" data-d="Anbernic RG CubeXX">Anbernic RG CubeXX</div><div class="chip-opt" data-d="__custom__">Other device…</div></div>
+        <div class="chip-select" id="rptDevices"><div class="chip-opt active" data-d="__unknown__">Not recorded</div><div class="chip-opt" data-d="Anbernic RG35XX H">Anbernic RG35XX H</div><div class="chip-opt" data-d="Anbernic RG34XX SP">Anbernic RG34XX SP</div><div class="chip-opt" data-d="Anbernic RG40XX H">Anbernic RG40XX H</div><div class="chip-opt" data-d="Anbernic RG CubeXX">Anbernic RG CubeXX</div><div class="chip-opt" data-d="__custom__">Other device…</div></div>
         <input type="text" id="rptDevCustom" placeholder="Device name" style="display:none;margin-top:10px;">
       </div>
       <div class="form-section">
@@ -995,7 +995,7 @@ function highlightMatch(text,query){
 
 function canonicalDeviceName(value){
   const raw=String(value||'').trim().replace(/\s+/g,' ');
-  if(!raw||/^unknown(?: device)?$/i.test(raw)||/^not recorded$/i.test(raw))return '';
+  if(!raw||raw==='__unknown__'||/^unknown(?: device)?$/i.test(raw)||/^not recorded$/i.test(raw))return '';
   const key=raw.toUpperCase().replace(/[\s_-]+/g,'');
   if(key==='RG35XXH'||key==='ANBERNICRG35XXH')return 'Anbernic RG35XX H';
   if(key==='RG34XXSP'||key==='ANBERNICRG34XXSP')return 'Anbernic RG34XX SP';
@@ -1716,7 +1716,7 @@ function resetReportForm(){
   ['rptGameId','rptGameTitle','rptSystem','rptRegion'].forEach(id=>$(id).value='');
   $('rptTester').value='Anonymous';
   $$('#rptDevices .chip-opt').forEach(c=>c.classList.remove('active'));
-  $('#rptDevices').querySelector('[data-d="Anbernic RG35XX H"]').classList.add('active');
+  $('#rptDevices').querySelector('[data-d="__unknown__"]').classList.add('active');
   $('rptDevCustom').style.display='none';$('rptDevCustom').value='';
   $('rptMuos').value='';$('rptVersion').value='';
   $$('#rptProfiles .profile-card').forEach(c=>c.classList.remove('active'));
