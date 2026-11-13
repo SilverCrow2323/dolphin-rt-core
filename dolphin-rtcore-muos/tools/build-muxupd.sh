@@ -127,7 +127,5 @@ unzip -Z1 "$ARCHIVE_TMP" | grep -Fxq manifest.sha256 || {
 }
 mv -f -- "$ARCHIVE_TMP" "$ARCHIVE"
 ARCHIVE_TMP=""
-FILE_COUNT="$(unzip -Z1 "$ARCHIVE" | grep -v '/
-echo "built $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1), $FILE_COUNT files)"
- | wc -l)"
+FILE_COUNT="$(unzip -Z1 "$ARCHIVE" | awk '$0 !~ /\/$/ { count++ } END { print count+0 }')"
 echo "built $ARCHIVE ($(du -h "$ARCHIVE" | cut -f1), $FILE_COUNT files)"
