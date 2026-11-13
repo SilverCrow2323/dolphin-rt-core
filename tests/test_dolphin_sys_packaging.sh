@@ -136,6 +136,44 @@ if find "$ATOMIC_OUT" -maxdepth 1 -type f -name "$(basename "$ATOMIC_ARCHIVE").t
 fi
 echo "[OK] failed ZIP write preserves the prior valid MUXUPD and cleans the temporary archive"
 
+# A faulty ZIP tool can also return zero while producing an invalid archive.
+# Integrity validation must reject it just as safely as a non-zero exit.
+CORRUPT_ZIP="$TMP/corrupt-zip-bin"
+mkdir -p "$CORRUPT_ZIP"
+cat > "$CORRUPT_ZIP/zip" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+target=""
+for arg in "$@"; do
+  case "$arg" in *.muxupd.tmp.*) target="$arg" ;; esac
+done
+[ -n "$target" ] || { echo "test wrapper did not receive a temporary archive path" >&2; exit 97; }
+printf 'not a ZIP archive, despite exit zero\n' > "$target"
+exit 0
+SH
+chmod 755 "$CORRUPT_ZIP/zip"
+if PATH="$CORRUPT_ZIP:$PATH" DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" DOLPHIN_LIB_DIR="$LIBS" \
+  bash "$PACKAGER" "$ATOMIC_OUT" >"$TMP/corrupt-zip.log" 2>&1; then
+  echo "[FAIL] packager accepted an invalid ZIP after zero exit status" >&2
+  exit 1
+fi
+grep -Eiq 'not a zip archive|zipfile|end-of-central-directory|cannot find zipfile directory' "$TMP/corrupt-zip.log" || {
+  echo "[FAIL] invalid ZIP was rejected for an unexpected reason" >&2
+  cat "$TMP/corrupt-zip.log" >&2
+  exit 1
+}
+[ "$ATOMIC_BEFORE" = "$(sha256sum "$ATOMIC_ARCHIVE" | awk '{print $1}')" ] || {
+  echo "[FAIL] invalid ZIP validation changed the existing package" >&2
+  exit 1
+}
+unzip -tq "$ATOMIC_ARCHIVE" >/dev/null
+if find "$ATOMIC_OUT" -maxdepth 1 -type f -name "$(basename "$ATOMIC_ARCHIVE").tmp.*" -print -quit | grep -q .; then
+  echo "[FAIL] invalid ZIP validation left a temporary archive behind" >&2
+  exit 1
+fi
+echo "[OK] invalid ZIP is rejected even after zip exits zero; prior MUXUPD stays intact"
+
+
 
 # Missing assets must fail before an update archive is produced.
 BROKEN_SYS="$TMP/Sys-missing-font"
