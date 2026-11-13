@@ -10,7 +10,7 @@ The current v12 package is documented for **muOS 2606.0 Andromeda**. The reposit
 2. Copy the release `.muxupd` into the ROM card's `ARCHIVE` folder.
 3. Install it from muOS Archive Manager.
 4. Place your compatible aarch64 `dolphin` executable at `/opt/muos/share/emulator/dolphin/dolphin` (the project does not redistribute that binary).
-5. Open Dolphin Rt:Core. The installer and launcher run `RtSys/manifest_tool.sh ensure`; Task Toolkit also provides **Register GameCube and Wii**, **Profiles - Standard Only**, and **Profiles - All Tiers**.
+5. Open Dolphin Rt:Core. The installer and launcher run `RtSys/manifest_tool.sh ensure`; use **Settings → System** to repair GameCube/Wii registration and choose **Standard Only** or **All Tiers** profile visibility.
 6. In Content Explorer, select a ROM folder, choose **Core Assignment**, then choose a profile.
 
 ## Automatic muOS detection
