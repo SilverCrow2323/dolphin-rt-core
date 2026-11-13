@@ -181,11 +181,80 @@ jobs:
               pattern = re.escape(fence) + r"json\s*\n(.*?)\n" + re.escape(fence)
               blocks = re.findall(pattern, body, re.DOTALL | re.IGNORECASE)
               json_block = next((block for block in blocks if block.strip().startswith("{")), None)
-              if not json_block:
-                  print("::error::No JSON payload found. Submit reports using the Compatibility Atlas report form.")
-                  sys.exit(1)
+              if json_block:
+                  payload = json.loads(json_block)
+              else:
+                  # Also accept the native GitHub Issue Form for contributors who do not
+                  # use the website. Field headings are parsed as data, never evaluated.
+                  def form_field(label):
+                      pattern = r"^###\s+" + re.escape(label) + r"\s*\n([\s\S]*?)(?=\n###\s|\Z)"
+                      match = re.search(pattern, body, re.MULTILINE)
+                      if not match:
+                          return ""
+                      value = match.group(1).strip()
+                      if value in {"_No response_", "No response"}:
+                          return ""
+                      return value
 
-              payload = json.loads(json_block)
+                  platform = form_field("Platform")
+                  system = {"GameCube": "GC", "GC": "GC", "Wii": "Wii"}.get(platform, "")
+                  game_title = clean(form_field("Game Title"))
+                  region = clean(form_field("Region")).upper()
+                  game_id = clean(form_field("Game ID (optional)")).upper() or "UNKNOWN"
+                  rating_text = form_field("Performance Rating")
+                  rating_match = re.search(r"(?<!\d)([0-5])\s*★", rating_text)
+                  fps_min_match = re.search(r"\d+", form_field("FPS Range - Minimum"))
+                  fps_max_match = re.search(r"\d+", form_field("FPS Range - Maximum"))
+                  if not rating_match or not fps_min_match or not fps_max_match:
+                      print("::error::The GitHub Issue Form is missing a valid rating or FPS range.")
+                      sys.exit(1)
+                  rating = int(rating_match.group(1))
+                  fps_min = int(fps_min_match.group())
+                  fps_max = int(fps_max_match.group())
+                  boot = "NO" if rating == 0 else ("CRASH" if rating == 1 else "YES")
+                  playable = "NO" if rating <= 2 else ("YES" if rating == 5 else "YES WITH ISSUES")
+                  now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                  attachment_values = []
+                  for url in re.findall(r"https?://\S+", form_field("Attachments (URLs of screenshots / videos)")):
+                      url = url.rstrip(").,")
+                      media = "video" if any(token in url.lower() for token in ("youtube.com", "youtu.be", ".mp4", ".webm")) else "image"
+                      attachment_values.append({"media_type": media, "media_title": url, "media_url": url})
+                  custom_values = []
+                  if form_field("Do you want to recommend Custom Settings?").casefold() == "yes":
+                      custom_type = clean(form_field("Custom Settings - Type"))
+                      custom_name = clean(form_field("Custom Settings - Name / Title")) or "Community recommendation"
+                      custom_url = clean(form_field("Custom Settings - URL (optional)"))
+                      custom_details = clean(form_field("Custom Settings - Details"))
+                      if custom_type:
+                          custom_values.append({
+                              "set_type": custom_type, "set_name": custom_name,
+                              "set_url": custom_url, "set_note": custom_details,
+                              "_author": clean(form_field("Tester Username")) or "Anonymous",
+                          })
+                  payload = {
+                      "game_info": {
+                          "game_id": game_id, "system": system, "game": game_title, "region": region,
+                      },
+                      "test_review": {
+                          "rating": rating, "fps": f"{fps_min}-{fps_max}",
+                          "boot": boot, "playable": playable,
+                          "fps_min": fps_min, "fps_max": fps_max, "date": now,
+                      },
+                      "test_details": {
+                          "rtcore_version": form_field("Dolphin Rt:Core Version"),
+                          "core_profile": form_field("Core Profile Used"),
+                          "considerations": form_field("Considerations & Gameplay Experience"),
+                      },
+                      "test_environment": {
+                          "tester": form_field("Tester Username"),
+                          "device": form_field("Device Used"),
+                          "muos_version": form_field("muOS Version"), "date": now,
+                      },
+                      "cover_art": form_field("Cover Art URL (optional)"),
+                      "custom_settings": custom_values,
+                      "attachments": attachment_values,
+                  }
+
               game = payload.get("game_info") or {}
               review = payload.get("test_review") or {}
               details = payload.get("test_details") or {}
