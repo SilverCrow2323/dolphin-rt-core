@@ -90,11 +90,11 @@ function M.deploy(entry, game_id)
     else
         local m = io.open(meta, "w")
         if m then
-            local game_name = tostring(entry.game or game_id):gsub("[\\r\\n]", " ")
+            local game_name = tostring(entry.game or game_id):gsub("[\r\n]", " ")
             local first_name = entry.configs[1] and entry.configs[1].filename or "base.ini"
             if type(first_name) ~= "string" or not first_name:match("^[%w_.%-]+%.ini$")
                or first_name:find("..", 1, true) or first_name:find("/", 1, true)
-               or first_name:find("\\\\", 1, true) then
+               or first_name:find("..", 1, true) or first_name:find("/", 1, true)
                 first_name = "base.ini"
             end
             m:write("[GameSettings]\n")
