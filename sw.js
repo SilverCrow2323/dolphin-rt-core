@@ -1,5 +1,13 @@
-const CACHE = 'rtcore-db-v3';
-const SHELL = ['./','./index.html','./manifest.json','./assets/spdw_symbol.png','./assets/gamecube.svg','./assets/wii.svg'];
+const CACHE = 'rtcore-site-v1';
+const SHELL = [
+  './',
+  './index.html',
+  './compatibility.html',
+  './manifest.json',
+  './assets/spdw_symbol.png',
+  './assets/gamecube.svg',
+  './assets/wii.svg'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
@@ -14,7 +22,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(key => key.startsWith('rtcore-db-') && key !== CACHE).map(key => caches.delete(key)));
+    await Promise.all(keys.filter(key => key.startsWith('rtcore-') && key !== CACHE).map(key => caches.delete(key)));
     await self.clients.claim();
   })());
 });
@@ -26,7 +34,8 @@ self.addEventListener('fetch', event => {
   if (!['http:','https:'].includes(url.protocol)) return;
 
   const isData = url.pathname.endsWith('.json') ||
-    url.hostname === 'raw.githubusercontent.com' || url.hostname === 'cdn.jsdelivr.net';
+    url.hostname === 'raw.githubusercontent.com' ||
+    url.hostname === 'cdn.jsdelivr.net';
   if (isData) {
     event.respondWith((async () => {
       try {
@@ -53,12 +62,16 @@ self.addEventListener('fetch', event => {
         const response = await fetch(request);
         if (response.ok) {
           const cache = await caches.open(CACHE);
-          await cache.put('./index.html', response.clone());
+          await cache.put(request, response.clone());
         }
         return response;
       } catch (error) {
-        return (await caches.match(request)) || (await caches.match('./index.html')) ||
-          new Response('Dolphin Rt:Core is unavailable offline.', {status:503});
+        const exact = await caches.match(request);
+        if (exact) return exact;
+        const fallback = url.pathname.endsWith('/compatibility.html')
+          ? await caches.match('./compatibility.html')
+          : await caches.match('./index.html');
+        return fallback || new Response('Dolphin Rt:Core is unavailable offline.', {status:503});
       }
     })());
     return;

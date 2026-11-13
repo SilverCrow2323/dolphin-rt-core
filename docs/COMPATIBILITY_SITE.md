@@ -1,10 +1,10 @@
-# Dolphin Rt:Core Compatibility Database
+# Dolphin Rt:Core Project Portal and Compatibility Database
 
-The repository-root index.html is the static community compatibility website. It is a read-only browser for tracked compatibility data and GameSettings. Submitting a test prepares a GitHub issue; it never writes directly to the database.
+The repository-root index.html is the public Project Portal. The standalone compatibility application lives in compatibility.html. It remains a read-only browser for tracked compatibility data and GameSettings; submitting a test prepares a GitHub issue and never writes directly to the database.
 
 ## Source of truth and runtime copies
 
-The canonical editable database lives in dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json. The website reads this bundled Rt:UI source.
+The canonical editable database lives in dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json. The Compatibility Database at compatibility.html reads this bundled Rt:UI source.
 
 The handheld boot updater also downloads data/games_data.json from the repository root and stores it in the frontend runtime data directory. The bundled Rt:UI file and the root download file are therefore two intentional, byte-identical copies of the same database; neither is an obsolete leftover. The compatibility Lua loader can read the bundled file or the downloaded runtime copy depending on launch context.
 
@@ -80,6 +80,6 @@ The website test checks the schema version, catalogues, report identity invarian
 
 ## GitHub Pages deployment
 
-The repository includes .github/workflows/deploy-compatibility.yml. It publishes a minimal website bundle from main and does not publish emulator sources, package archives, ROM data or the rest of the repository.
+The repository includes .github/workflows/deploy-compatibility.yml. It publishes the Project Portal and standalone Compatibility Database together as a minimal website bundle from main and does not publish emulator sources, package archives, ROM data or the rest of the repository.
 
 Open Settings → Pages → Build and deployment → Source and select GitHub Actions if this has not already been configured. Pull requests do not deploy. The expected project URL is https://silvercrow2323.github.io/dolphin-rt-core/.
