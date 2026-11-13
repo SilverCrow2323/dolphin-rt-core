@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://silvercrow2323.github.io/dolphin-rt-core/schemas/games_data.schema.json",
+  "title": "Dolphin Rt:Core compatibility database",
+  "description": "Canonical GameCube and Wii compatibility data. Reports remain independent observations and are grouped by Game ID, system and region.",
+  "type": "object",
+  "required": ["version", "schema_version", "last_update", "catalogs", "games"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Dataset revision identifier retained for existing Rt:UI consumers."
+    },
+    "schema_version": {
+      "const": 2,
+      "description": "Compatibility data contract version."
+    },
+    "last_update": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the latest community report imported into the database; schema migrations do not change it."
+    },
+    "catalogs": {
+      "type": "object",
+      "required": ["devices", "muos_versions", "rtcore_versions", "core_profiles"],
+      "properties": {
+        "devices": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "muos_versions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "rtcore_versions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "core_profiles": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+      },
+      "additionalProperties": false
+    },
+    "games": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/gameGroup"}
+    }
+  },
+  "$defs": {
+    "gameInfo": {
+      "type": "object",
+      "required": ["game_id", "system", "game", "region"],
+      "properties": {
+        "game_id": {"type": "string", "pattern": "^[A-Z0-9]{6}$"},
+        "system": {"enum": ["GC", "Wii"]},
+        "game": {"type": "string", "minLength": 1},
+        "region": {"enum": ["PAL", "NTSC", "NTSC-J"]},
+        "revision": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "gameGroup": {
+      "type": "object",
+      "required": ["game_info", "entries"],
+      "properties": {
+        "game_info": {"$ref": "#/$defs/gameInfo"},
+        "entries": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/report"}
+        }
+      },
+      "additionalProperties": true
+    },
+    "report": {
+      "type": "object",
+      "required": ["game_info", "test_review", "test_details", "test_environment"],
+      "properties": {
+        "game_info": {"$ref": "#/$defs/gameInfo"},
+        "test_review": {
+          "type": "object",
+          "required": ["rating", "fps", "boot", "playable", "fps_min", "fps_max"],
+          "properties": {
+            "rating": {"type": "integer", "minimum": 0, "maximum": 5},
+            "fps": {"type": "string"},
+            "boot": {"enum": ["YES", "NO", "CRASH"]},
+            "playable": {"enum": ["YES", "YES WITH ISSUES", "NO"]},
+            "fps_min": {"type": "integer", "minimum": 0, "maximum": 240},
+            "fps_max": {"type": "integer", "minimum": 0, "maximum": 240},
+            "date": {"type": "string", "format": "date-time"}
+          },
+          "additionalProperties": true
+        },
+        "test_details": {
+          "type": "object",
+          "required": ["rtcore_version", "core_profile", "considerations"],
+          "properties": {
+            "rtcore_version": {"type": "string", "minLength": 1},
+            "dolphin_version": {"type": "string"},
+            "core_profile": {"type": "string", "minLength": 1},
+            "graphics_backend": {"type": "string"},
+            "test_duration_minutes": {"type": "integer", "minimum": 1, "maximum": 600},
+            "test_scene": {"type": "string"},
+            "audio": {"enum": ["Not tested", "Clean", "Minor issues", "Major issues"]},
+            "graphics": {"enum": ["Not tested", "Clean", "Minor issues", "Major issues"]},
+            "input": {"enum": ["Not tested", "Clean", "Minor issues", "Major issues"]},
+            "stability": {"enum": ["Not tested", "Clean", "Minor issues", "Major issues"]},
+            "considerations": {"type": "string"}
+          },
+          "additionalProperties": true
+        },
+        "test_environment": {
+          "type": "object",
+          "required": ["tester", "device", "muos_version"],
+          "properties": {
+            "tester": {"type": "string"},
+            "device": {"type": "string", "minLength": 1},
+            "device_revision": {"type": "string"},
+            "muos_version": {"type": "string"},
+            "date": {"type": "string", "format": "date-time"}
+          },
+          "additionalProperties": true
+        },
+        "cover_art": {"type": "string"},
+        "custom_settings": {"type": "array"},
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "media_type": {"type": "string"},
+              "media_title": {"type": "string"},
+              "media_url": {"type": "string", "format": "uri"}
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
