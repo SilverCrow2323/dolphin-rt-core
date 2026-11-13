@@ -1,59 +1,84 @@
 # Hotkeys
 
-Dolphin Rt:UI supports two mutually exclusive hotkey paths. The active path is
-selected by \`[Hotkeys1] Device\` in the profile's \`Hotkeys.ini\`.
+Dolphin Rt:UI supports two hotkey paths. The active path is selected by
+`[Hotkeys1] Device` in the chosen profile's `Hotkeys.ini`.
 
 ## Keyboard mode (bundled Default)
 
 The bundled profile uses:
 
-\`\`\`ini
+```ini
 [Hotkeys1]
 Device = Keyboard
-\`\`\`
+```
 
-In this mode, Dolphin receives keyboard keys and \`gptokeyb2\` translates the
-handheld buttons to those keys using
-\`workshop/hotkeys/Default/ext-dolphin.gptk\`. The default modifier is SELECT:
+In this mode, Dolphin receives keyboard events. `gptokeyb2` adds keyboard
+events from the handheld controller using
+`workshop/hotkeys/Default/ext-dolphin.gptk`. SELECT is the modifier:
 
-| Handheld combo | Emulated key |
+| Handheld combo | Action |
 |---|---|
-| SELECT + L1 / R1 | F1 / F2 |
-| SELECT + L2 / R2 | F3 / F4 |
-| SELECT + A / B | F5 / F6 |
-| SELECT + D-pad Up / Down | F7 / F8 |
-| SELECT + D-pad Left / Right | F9 / F10 |
-| SELECT + X / Y | F11 / F12 |
-| SELECT + MENU | Escape |
+| SELECT + L1 | Save State 1 (F1) |
+| SELECT + R1 | Load State 1 (F2) |
+| SELECT + L2 | Save State 2 (F3) |
+| SELECT + R2 | Load State 2 (F4) |
+| SELECT + A | Save State 3 (F5) |
+| SELECT + B | Load State 3 (F6) |
+| SELECT + D-pad Up | Toggle Pause (F7) |
+| SELECT + D-pad Down | Fast Forward (F8) |
+| SELECT + D-pad Left | Frame Limit − (F9) |
+| SELECT + D-pad Right | Frame Limit + (F10) |
+| SELECT + X | Screenshot (F11) |
+| SELECT + Y | Reset (F12) |
+| SELECT + MENU / GUIDE | Exit (Escape) |
 
-The launcher starts \`gptokeyb2\` only in this keyboard mode.
+Unmodified 1 / 2 / 3 select the active save-state slot. The gptokeyb2
+mapping documents SDL tokens including L3 and R3; the editor converts
+captured logical buttons to the corresponding lowercase tokens.
+
+The launcher starts `gptokeyb2` only when `[Hotkeys1] Device = Keyboard`.
 
 ## Native SDL pad mode
 
-For direct Dolphin controller input, the profile uses:
+For direct Dolphin controller hotkeys, the profile uses the built-in muOS
+Andromeda device:
 
-\`\`\`ini
+```ini
 [Hotkeys1]
 Device = SDL/0/muOS-Keys
-Keys/Save State Slot 1 = \`Button 11\`
-\`\`\`
+Keys/Save State Slot 1 = `Button 11`
+```
 
-The Hotkey Designer in \`ui/screens/hotkeys.lua\` writes Dolphin button
-expressions from \`core/app_input.lua\`'s muOS Andromeda map. For the H700,
-the important indices are A=1, B=0, L1=4, R1=5, SELECT=6, START=7,
-MENU=8, L2=9, L3=11 and R2=12. Button 10 is the physical Volume Up key.
+The Hotkey Designer in `ui/screens/hotkeys.lua` writes Dolphin button
+expressions from `core/app_input.lua`'s muOS Andromeda map. H700 indices:
 
-In native SDL mode, the launcher does **not** start \`gptokeyb2\`; Dolphin
-handles the bindings directly. This prevents keyboard-injection hotkeys from
-running alongside native SDL hotkeys. D-pad directions are hats rather than
-\`Button N\` inputs and cannot be saved as native button expressions by the
-current designer.
+| SDL index | Key |
+|---:|---|
+| 0 | B |
+| 1 | A |
+| 2 | X |
+| 3 | Y |
+| 4 | L1 |
+| 5 | R1 |
+| 6 | SELECT |
+| 7 | START |
+| 8 | MENU / GUIDE |
+| 9 | L2 |
+| 10 | Volume Up (not a hotkey button in the app map) |
+| 11 | L3 |
+| 12 | R2 |
 
-## Safe Exit
+In native SDL mode, the launcher does **not** start `gptokeyb2`; Dolphin
+handles the bindings directly. This prevents keyboard-injection hotkeys
+from running alongside native SDL hotkeys. The D-pad is delivered as a hat
+(`Pad N/S/W/E`), not as a numbered button; the current native pad designer
+does not serialize hat directions into `Button N` expressions.
 
-The muOS overlay exit watcher handles START + SELECT independently of
-\`Hotkeys.ini\`. It is a process-exit safety path, not the Dolphin
-\`Keys/Exit\` binding edited in the Hotkey Designer.
+## Safe exit
+
+The muOS overlay exit watcher independently detects START + SELECT and
+terminates Dolphin. It is a safety path outside `Hotkeys.ini`; do not
+confuse it with the keyboard-profile Exit binding (SELECT + MENU / GUIDE).
 
 ## Editing
 
