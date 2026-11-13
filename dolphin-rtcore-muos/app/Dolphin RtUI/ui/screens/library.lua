@@ -70,7 +70,9 @@ function S.enter()
     S.t = 0
     S.compat_memo = {}
     if ok_cp and Compat then pcall(Compat.load) end      -- ricarica solo se il file e' cambiato
-    S.need_scan = (#(Library.games or {}) == 0)
+    S.need_scan = (#(Library.games or {}) == 0 and not Library.scanning)
+    S.scanning = Library.scanning == true
+    S.scan_t, S.scan_seen = 0, #(Library.games or {})
     rebuild(S.keep_id or Settings.get("last_game"))
     S.keep_id = nil
 end
@@ -82,17 +84,27 @@ function S.update(dt)
     -- riempie man mano (prima: Library.scan() bloccava tutto per secondi).
     if S.need_scan and S.t > 0.2 then
         S.need_scan = false
-        if pcall(Library.scan_begin) then S.scanning = true; S.scan_t = 0; S.scan_seen = 0 end
+        if pcall(Library.scan_begin, "ui") then S.scanning = Library.scanning; S.scan_t = 0; S.scan_seen = #(Library.games or {}) end
     end
     if S.scanning then
         S.scan_t = S.scan_t + dt
-        local ok, fin = pcall(Library.scan_step, 0.010)
+        -- BootInitializer owns its scan queue until it finishes. The Library
+        -- screen observes progress but must not process the same queue twice.
+        if Library.scanning and Library.scan_owner ~= "boot" then
+            local ok, fin = pcall(Library.scan_step, 0.010)
+            if not ok then
+                pcall(Library.scan_finish)
+                S.scanning = false
+                Notify.show("error", "ROM scan failed: " .. tostring(fin))
+            elseif fin then
+                S.scanning = false
+            end
+        end
         local count = #(Library.games or {})
-        if (not ok) or fin then
+        if S.scanning and not Library.scanning then
             S.scanning = false
-            local c = S.list:cur()
-            rebuild(c and c.id or nil)
-        elseif count ~= S.scan_seen and S.scan_t > 0.3 then
+        end
+        if not S.scanning or (count ~= S.scan_seen and S.scan_t > 0.3) then
             S.scan_seen, S.scan_t = count, 0
             local c = S.list:cur()
             rebuild(c and c.id or nil)
