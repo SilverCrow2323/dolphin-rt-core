@@ -84,6 +84,19 @@ class WebPortalTests(unittest.TestCase):
         self.assertIn("muxupd-ui-only-validation", self.ci)
         self.assertNotIn("verify-muxupd.sh dist/*.muxupd", self.ci)
 
+    def test_sftp_test_checks_configured_rom_directory(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with patch.object(self.portal.core, "load_config", return_value=cfg, create=True):
+            with patch.object(self.portal, "sftp_canonical_directory", return_value="/mnt/roms") as resolve:
+                result = self.portal.action({"action": "sftp-test"})
+        self.assertEqual(result["rom_path"], "/mnt/roms")
+        self.assertIn("Connected", result["message"])
+        resolve.assert_called_once_with(cfg, "/mnt/roms")
+
+    def test_remote_root_rejects_filesystem_root(self):
+        with self.assertRaisesRegex(ValueError, "filesystem root is not allowed"):
+            self.portal._remote_root({"device": {"rom_path": "/"}})
+
     def test_remote_path_rejects_traversal(self):
         self.assertEqual(self.portal.remote_path("/mnt/roms/GC/Game.iso"), "/mnt/roms/GC/Game.iso")
         with self.assertRaises(ValueError):
