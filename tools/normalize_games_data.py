@@ -117,6 +117,7 @@ CATALOGS = {
         "Performance",
         "Compatibility",
         "SpeedHack",
+        "Standard",
         "Black Screen Fix",
         "Ultra",
         "SpeedUp 1",

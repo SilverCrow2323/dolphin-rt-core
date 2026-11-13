@@ -223,6 +223,19 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertNotIn("v10.6 (pre release)", releases)
         self.assertNotIn("standard", profiles)
         self.assertNotIn("SpeedHack / Default", profiles)
+        reported_values = {
+            "devices": devices,
+            "muos_versions": muos,
+            "rtcore_versions": releases,
+            "core_profiles": profiles,
+        }
+        for key, values in reported_values.items():
+            missing = {value for value in values if value} - set(catalogues[key])
+            self.assertFalse(
+                missing,
+                f"{key} catalogue omits values used by reports: {sorted(missing)}",
+            )
+        self.assertIn("Standard", catalogues["core_profiles"])
 
     def test_canonical_database_normalizer_is_idempotent(self):
         normalizer = ROOT / "tools" / "normalize_games_data.py"
