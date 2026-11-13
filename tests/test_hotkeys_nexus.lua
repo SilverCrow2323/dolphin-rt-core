@@ -174,6 +174,15 @@ state = actions["hotkeys.state"].run()
 assert(state.dirty == false and files["workshop/hotkeys/Default/Hotkeys.ini"]:match("\x60F2\x60"))
 assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("a%s+=%s+F2"))
 
+-- Keyboard mode must also preserve Andromeda's L3 token in gptokeyb2.
+assert(actions["hotkeys.select_action"].run(3))
+assert(actions["hotkeys.start_capture"].run())
+assert(actions["hotkeys.capture_input"].run(11))
+assert(actions["hotkeys.finish_capture"].run(true))
+assert(actions["hotkeys.save"].run())
+assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("l3%s+=%s+F3"),
+       "L3 keyboard hotkeys must serialize with the supported gptokeyb2 l3 token")
+
 assert(actions["hotkeys.set_device"].run("pad"))
 assert(actions["hotkeys.state"].run().device == "pad")
 -- muOS Andromeda raw Button 11 is the left-stick click (L3).
