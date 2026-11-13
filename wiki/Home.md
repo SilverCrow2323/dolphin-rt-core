@@ -26,10 +26,11 @@
 | Submit a reproducible test | [[Reporting-a-Test]] |
 | Understand report fields | [[Compatibility-Data-Model]] |
 | Maintain the compatibility site | [[Compatibility-Site]] |
-| Fix a missing core or frontend issue | [[Troubleshooting]] · [[FAQ]] |
+| Fix a missing core or frontend issue | [[Troubleshooting]] · [[FAQ]] · [[Rt-System-Status-Center]] |
 | Build, test or contribute | [[Development]] · [[Architecture]] · [[Contributing]] |
 | Write or review a practical Wiki page | [[Conventions-and-Template]] |
 | Work on PC streaming | [[Rt-Stream]] |
+| Manage official or user graphics mods | [[Graphics-Mods]] |
 | Prepare a release | [[Quality-Gates]] · [[Release-Checklist]] |
 
 ## Project at a glance
@@ -37,7 +38,7 @@
 - **muOS** — primary handheld release line with version-aware core registration.
 - **Knulli** — separate platform integration and packaging.
 - **ROCKNIX** — experimental port; consult the root README before use.
-- **Dolphin RtUI** — LÖVE frontend for library, profiles, compatibility, diagnostics and Rt:Stream.
+- **Dolphin RtUI** — LÖVE frontend for library, profiles, compatibility, the Rt:System Status Center, native Graphics Mods and Rt:Stream.
 - **Compatibility Database** — static web application backed by the tracked test-report JSON.
 - **Rt:Stream** — PC-side portal and handheld Moonlight client.
 

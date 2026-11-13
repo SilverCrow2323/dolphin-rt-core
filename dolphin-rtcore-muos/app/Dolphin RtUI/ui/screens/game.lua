@@ -99,7 +99,7 @@ end
 local function reset_all()
     for k, v in pairs(DEFAULTS) do put(k, v) end
     U.mods_save(S.game, {})
-    pcall(function() for _, c in ipairs(require("core.mods").CATS) do if not c.legacy then U.vault_set_off(S.game, c.id, {}) end end end)
+    pcall(function() for _, c in ipairs(require("core.mods").CATS) do if not c.native then U.vault_set_off(S.game, c.id, {}) end end end)
     SFX.play("menu_back")
     Notify.show("info", "Options reset")
 end

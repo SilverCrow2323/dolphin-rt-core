@@ -1,6 +1,6 @@
 # muOS registration and firmware detection
 
-`dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh` is the single entry point used by the installer, startup launcher and Task Toolkit. It delegates release/API detection to `muos_platform.sh`.
+`dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh` is the single entry point used by the installer, startup launcher and Rt:UI Settings. It delegates release/API detection to `muos_platform.sh`.
 
 ## Detection strategy
 
@@ -60,7 +60,7 @@ list game filenames or modify storage.
 
 - `opt/update.sh` registers the core entries after package installation.
 - The muOS application launcher runs `manifest_tool.sh ensure` synchronously before opening LÖVE. A failure is logged but does not prevent the frontend from opening.
-- Task Toolkit exposes explicit register and profile-mode actions.
+- Rt:UI Settings exposes **Repair GameCube/Wii registration** and **Core profile visibility**; installation and startup still run the automatic registration check.
 - The triage screen checks the definition and alias index on manifest builds, and checks legacy `global.ini` files on Jacaranda-style installations.
 
 ## Tests
