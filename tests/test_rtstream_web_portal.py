@@ -89,25 +89,56 @@ class WebPortalTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.portal.remote_path("/mnt/roms/../etc/passwd")
 
-    def test_sftp_realpath_uses_server_canonical_path(self):
+    def test_sftp_canonical_directory_uses_portable_cd_pwd(self):
         cfg = {"device": {"rom_path": "/mnt/roms"}}
-        with patch.object(self.portal, "sftp_command", return_value="/mnt/roms/GC") as run:
-            self.assertEqual(self.portal.sftp_realpath(cfg, "/mnt/roms/GC"), "/mnt/roms/GC")
-        self.assertEqual(run.call_args.args[1], ['realpath "/mnt/roms/GC"'])
+        with patch.object(self.portal, "sftp_command", return_value="Remote working directory: /mnt/roms/GC") as run:
+            self.assertEqual(
+                self.portal.sftp_canonical_directory(cfg, "/mnt/roms/GC"),
+                "/mnt/roms/GC",
+            )
+        self.assertEqual(run.call_args.args[1], ['cd "/mnt/roms/GC"', "pwd"])
 
     def test_sftp_canonical_root_allows_device_root_symlink(self):
         cfg = {"device": {"rom_path": "/mnt/roms"}}
-        with patch.object(self.portal, "sftp_command", side_effect=["/data/games", "/data/games/GC"]):
+        with patch.object(self.portal, "sftp_command", side_effect=[
+            "Remote working directory: /data/games",
+            "Remote working directory: /data/games/GC",
+        ]):
             self.assertEqual(
-                self.portal.confined_remote_path(cfg, "/mnt/roms/GC"),
+                self.portal.confined_remote_directory(cfg, "/mnt/roms/GC"),
                 ("/data/games", "/data/games/GC"),
             )
 
-    def test_sftp_rejects_symlink_escape_outside_rom_root(self):
+    def test_sftp_rejects_directory_symlink_escape_outside_rom_root(self):
         cfg = {"device": {"rom_path": "/mnt/roms"}}
-        with patch.object(self.portal, "sftp_command", side_effect=["/mnt/roms", "/etc"]):
+        with patch.object(self.portal, "sftp_command", side_effect=[
+            "Remote working directory: /mnt/roms",
+            "Remote working directory: /etc",
+        ]):
             with self.assertRaisesRegex(ValueError, "escapes the configured ROM directory"):
-                self.portal.confined_remote_path(cfg, "/mnt/roms/GC/outside")
+                self.portal.confined_remote_directory(cfg, "/mnt/roms/GC/outside")
+
+    def test_sftp_rejects_file_symlink_entries(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with patch.object(self.portal, "sftp_command", side_effect=[
+            "Remote working directory: /mnt/roms",
+            "Remote working directory: /mnt/roms",
+            "lrwxrwxrwx 1 owner group 11 Jan 1 12:00 Game.iso -> /etc/passwd",
+        ]):
+            with self.assertRaisesRegex(ValueError, "Symbolic links are not allowed"):
+                self.portal.confined_remote_file(cfg, "/mnt/roms/Game.iso")
+
+    def test_sftp_confined_regular_file_path(self):
+        cfg = {"device": {"rom_path": "/mnt/roms"}}
+        with patch.object(self.portal, "sftp_command", side_effect=[
+            "Remote working directory: /mnt/roms",
+            "Remote working directory: /mnt/roms/GC",
+            "-rw-r--r-- 1 owner group 12345 Jan 1 12:00 Game.iso",
+        ]):
+            root, path, entry = self.portal.confined_remote_file(cfg, "/mnt/roms/GC/Game.iso")
+        self.assertEqual(root, "/mnt/roms")
+        self.assertEqual(path, "/mnt/roms/GC/Game.iso")
+        self.assertEqual(entry["type"], "file")
 
     def test_remote_rom_extension_is_checked_before_canonical_confinement(self):
         cfg = {"device": {"rom_path": "/mnt/roms"}}
