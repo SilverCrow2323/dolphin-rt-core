@@ -26,6 +26,10 @@ The two games_data.json copies must remain byte-identical. tools/normalize_games
 
 Raw GitHub is the primary endpoint for the website; jsDelivr is the fallback. Same-origin artwork is used for site icons so the PWA shell can cache it locally.
 
+## Project Portal
+
+The homepage introduces Dolphin Engine, RtSys, Rt:UI and Rt:Stream, shows the platform matrix, links to practical Wiki pages and displays the latest stable GitHub release with its attached MUXUPD / AppImage / RPM assets. It ignores draft and prerelease releases and has a last-known stable fallback for API outages. Compatibility game and test counts are refreshed from the canonical database with fallback values.
+
 ## Features
 
 - GameCube and Wii views and themes.
@@ -43,6 +47,10 @@ Raw GitHub is the primary endpoint for the website; jsDelivr is the fallback. Sa
 The report form uses the schema v2 catalogs from games_data.json for device, firmware, Rt:Core and profile selectors. It checks the setup, custom values, FPS pair/range, duration and HTTP(S) evidence URLs. It creates a readable summary and a JSON report payload but does not write to the database.
 
 GitHub provides separate compatibility-test-report, bug-report and feature-request templates. Blank issues are disabled; contact links direct users to the site, Wiki and discussions. Maintainers review reports before importing them.
+
+## PWA and offline behaviour
+
+The web app manifest describes the Project Portal. The service worker precaches both public pages and caches successful navigation responses by their actual request URL, preserving separate offline copies of the portal and database. External Wiki, GitHub issue creation and download links still require a connection.
 
 ## Quality checks
 
