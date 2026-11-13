@@ -135,22 +135,72 @@ def sftp_command(cfg, commands, timeout=30, quiet=True):
     return proc.stdout.strip()
 
 
-def remote_exists(cfg, path):
-    try:
-        sftp_command(cfg, ["ls " + quote_path(path)])
-        return True
-    except RuntimeError as exc:
-        msg = str(exc).lower()
-        if "no such file" in msg or "not found" in msg or "couldn't stat" in msg:
-            return False
-        raise
+def sftp_canonical_directory(cfg, value):
+    """Resolve a directory using portable OpenSSH SFTP cd/pwd commands."""
+    path = remote_path(value)
+    output = sftp_command(cfg, ["cd " + quote_path(path), "pwd"])
+    matches = [line.split(":", 1)[1].strip() for line in output.splitlines()
+               if line.strip().lower().startswith("remote working directory:")]
+    if len(matches) != 1 or not matches[0].startswith("/"):
+        raise RuntimeError("SFTP server did not return one canonical working directory.")
+    return remote_path(matches[0])
+
+
+def canonical_remote_root(cfg):
+    """Resolve and validate the configured remote ROM root."""
+    root = sftp_canonical_directory(cfg, _remote_root(cfg))
+    if root == "/":
+        raise ValueError("The configured ROM directory resolves to the filesystem root; refusing access.")
+    return root
+
+
+def confined_remote_directory(cfg, value):
+    """Return canonical (ROM root, requested directory), refusing symlink escapes."""
+    root = canonical_remote_root(cfg)
+    target = sftp_canonical_directory(cfg, value)
+    if not within_remote(root, target):
+        raise ValueError("The resolved remote path escapes the configured ROM directory.")
+    return root, target
+
+
+def remote_entry(cfg, directory, name):
+    """Find one entry in a parsed long listing; fail closed on unknown listing rows."""
+    raw = sftp_command(cfg, ["ls -la " + quote_path(directory)])
+    entries = _parse_sftp_listing(raw, directory)
+    if any(row["type"] == "unknown" for row in entries):
+        raise RuntimeError("SFTP listing format is not recognised; refusing the file operation.")
+    matches = [row for row in entries if row["name"] == name]
+    if len(matches) > 1:
+        raise RuntimeError("SFTP listing returned an ambiguous remote filename.")
+    return matches[0] if matches else None
+
+
+def confined_remote_file(cfg, value, allow_missing=False):
+    """Confine a regular file by resolving its parent and rejecting symlink entries."""
+    path = remote_path(value)
+    name = posixpath.basename(path)
+    if not name:
+        raise ValueError("A remote ROM filename is required.")
+    parent = posixpath.dirname(path) or "/"
+    root, parent_real = confined_remote_directory(cfg, parent)
+    entry = remote_entry(cfg, parent_real, name)
+    target = posixpath.join(parent_real, name)
+    if entry is None:
+        if allow_missing:
+            return root, target, None
+        raise ValueError("The selected remote ROM does not exist.")
+    if entry["type"] == "symlink":
+        raise ValueError("Symbolic links are not allowed for remote ROM operations.")
+    if entry["type"] != "file":
+        raise ValueError("The selected remote ROM is not a regular file.")
+    return root, target, entry
 
 
 def _parse_sftp_listing(raw, base):
     entries = []
     for line in raw.splitlines():
         line = line.strip()
-        if not line or line.startswith("sftp>") or line.startswith("Connected to"):
+        if not line or line.startswith("sftp>") or line.startswith("Connected to") or line.lower().startswith("total "):
             continue
         # OpenSSH's long listing has permissions, link count, owner, group, size,
         # date/time and filename. Unknown lines are preserved as non-actionable.
@@ -163,6 +213,8 @@ def _parse_sftp_listing(raw, base):
         if name in (".", ".."):
             continue
         kind = "directory" if mode.startswith("d") else "symlink" if mode.startswith("l") else "file"
+        if kind == "symlink" and " -> " in name:
+            name = name.split(" -> ", 1)[0]
         safe_name = not any(c in name for c in "\r\n\x00") and name not in (".", "..")
         full = posixpath.join(base, name) if safe_name else ""
         entries.append({
@@ -386,14 +438,16 @@ def _remote_root(cfg):
     root = device(cfg)["rom_path"]
     if not root:
         raise ValueError("Set the handheld ROM destination path first.")
-    return remote_path(root)
+    root = remote_path(root)
+    if root == "/":
+        raise ValueError("Use a dedicated ROM directory; the filesystem root is not allowed.")
+    return root
 
 
 def _validate_remote_rom(cfg, value):
     path = remote_path(value)
-    root = _remote_root(cfg)
-    if not within_remote(root, path) or path == root:
-        raise ValueError("The selected remote ROM must be inside the configured ROM directory.")
+    # Confinement is checked after server-side realpath resolution; a device ROM
+    # root may itself be a symlink and the browser returns canonical paths.
     if Path(path).suffix.lower() not in EXTS:
         raise ValueError("Only supported GameCube/Wii ROM file extensions are allowed.")
     return path
@@ -413,10 +467,14 @@ def queue_upload(cfg, body):
     src = _validate_local_rom(cfg, body.get("local"))
     root = _remote_root(cfg)
     dest_dir = remote_path(body.get("remote") or root)
-    if not within_remote(root, dest_dir):
-        raise ValueError("Upload destination must be inside the configured ROM directory.")
-    target = posixpath.join(dest_dir, src.name)
-    exists = remote_exists(cfg, target)
+    try:
+        resolved_root, dest_dir = confined_remote_directory(cfg, dest_dir)
+    except ValueError as exc:
+        raise ValueError("Upload destination must resolve inside the configured ROM directory.") from exc
+    resolved_root, target, existing = confined_remote_file(
+        cfg, posixpath.join(dest_dir, src.name), allow_missing=True,
+    )
+    exists = existing is not None
     resume = bool(body.get("resume"))
     overwrite = bool(body.get("overwrite"))
     if exists and not (resume or overwrite):
@@ -433,15 +491,23 @@ def queue_upload(cfg, body):
 
 def queue_download(cfg, body):
     remote = _validate_remote_rom(cfg, body.get("remote"))
-    root = core.lib_dir(cfg).resolve() / "received"
+    _resolved_root, remote, _entry = confined_remote_file(cfg, remote)
+    library_root = core.lib_dir(cfg).resolve()
+    root = library_root / "received"
     root.mkdir(parents=True, exist_ok=True)
+    if root.is_symlink() or root.resolve() != root:
+        raise ValueError("The PC receive directory must not be a symbolic link.")
     name = Path(remote).name
     if name in ("", ".", ".."):
         raise ValueError("Remote ROM filename is invalid.")
-    target = (root / name).resolve()
-    if root.resolve() not in target.parents:
-        raise ValueError("Download destination escaped the receive folder.")
+    target = root / name
     partial = target.with_name(target.name + ".part")
+    for candidate in (target, partial):
+        if candidate.is_symlink():
+            raise ValueError("Symbolic links are not allowed in the PC receive folder.")
+        resolved = candidate.resolve()
+        if root.resolve() not in resolved.parents:
+            raise ValueError("Download destination escaped the receive folder.")
     resume = bool(body.get("resume"))
     overwrite = bool(body.get("overwrite"))
     if target.exists() and not (resume or overwrite):
@@ -452,8 +518,6 @@ def queue_download(cfg, body):
         raise ValueError("A partial download exists. Choose Resume or restart it.")
     if partial.exists() and overwrite:
         partial.unlink()
-    if not remote_exists(cfg, remote):
-        raise ValueError("Remote ROM does not exist.")
     command = "get " + ("-a " if resume else "") + quote_path(remote) + " " + quote_path(partial)
 
     def worker(job_id):
@@ -542,12 +606,16 @@ def action(body):
         return {"devices": discover_devices(port)}
 
     if op == "sftp-test":
-        return {"message": sftp_command(cfg, ["pwd"])}
+        root = _remote_root(cfg)
+        canonical_root = canonical_remote_root(cfg)
+        return {"message": "Connected · ROM root " + canonical_root, "rom_path": canonical_root}
 
     if op == "sftp-list":
         path = remote_path(body.get("path") or _remote_root(cfg))
-        if not within_remote(_remote_root(cfg), path):
-            raise ValueError("Browsing is restricted to the configured ROM directory.")
+        try:
+            _resolved_root, path = confined_remote_directory(cfg, path)
+        except ValueError as exc:
+            raise ValueError("Browsing is restricted to the resolved configured ROM directory.") from exc
         raw = sftp_command(cfg, ["ls -la " + quote_path(path)])
         return {"path": path, "listing": raw, "entries": _parse_sftp_listing(raw, path)}
 
@@ -561,15 +629,21 @@ def action(body):
         path = _validate_remote_rom(cfg, body.get("remote"))
         if not body.get("confirm"):
             raise ValueError("Deletion requires explicit confirmation.")
+        _resolved_root, path, _entry = confined_remote_file(cfg, path)
         sftp_command(cfg, ["rm " + quote_path(path)])
         return {"deleted": path}
 
     if op == "sftp-mkdir":
         path = remote_path(body.get("remote"))
-        root = _remote_root(cfg)
-        if path == root or not within_remote(root, path):
+        parent = posixpath.dirname(path)
+        name = posixpath.basename(path)
+        if not name or name in (".", ".."):
+            raise ValueError("A new folder name is required.")
+        resolved_root, resolved_parent = confined_remote_directory(cfg, parent)
+        target = posixpath.join(resolved_parent, name)
+        if target == resolved_root or not within_remote(resolved_root, target):
             raise ValueError("New folders must be created below the configured ROM directory.")
-        sftp_command(cfg, ["mkdir " + quote_path(path)])
+        sftp_command(cfg, ["mkdir " + quote_path(target)])
         return {"created": path}
 
     if op == "scan":
