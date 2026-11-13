@@ -30,7 +30,7 @@ def snapshot():
  c=core.load_config(); g=core.load_library(c); d=device(c); lib=core.lib_dir(c); lan=core.lan_ip(); ts=core.tailscale_ip()
  try: u=shutil.disk_usage(lib if lib.exists() else lib.parent); disk={"free":u.free,"total":u.total}
  except OSError: disk={"free":0,"total":0}
- return {"version":"5.0.0","sunshine":{"installed":core.sunshine_installed(),"running":core.sunshine_running()},"network":{"lan":lan,"tailscale":ts,"sync_port":int(c.get("port",8765))},"library":{"count":len(g),"gc":sum(x.get("kind")=="gc" for x in g),"wii":sum(x.get("kind")=="wii" for x in g),"path":str(lib),"disk":disk},"device":{**d,"configured":bool(d["host"] and d["user"] and d["rom_path"])},"checks":[{"label":a,"state":b,"detail":c} for a,b,c in core.system_checks(c)]}
+ return {"version":"5.0.0","sunshine":{"installed":core.sunshine_installed(),"running":core.sunshine_running()},"network":{"lan":lan,"tailscale":ts,"sync_port":int(c.get("port",8765))},"library":{"count":len(g),"gc":sum(x.get("kind")=="gc" for x in g),"wii":sum(x.get("kind")=="wii" for x in g),"path":str(lib),"gc_paths":c.get("gc",[]),"wii_paths":c.get("wii",[]),"disk":disk},"device":{**d,"configured":bool(d["host"] and d["user"] and d["rom_path"])},"checks":[{"label":a,"state":b,"detail":c} for a,b,c in core.system_checks(c)]}
 def action(b):
  c=core.load_config(); op=b.get("action")
  if op=="save-device":
@@ -40,6 +40,18 @@ def action(b):
   if not 1<=d["port"]<=65535: raise ValueError("Invalid port.")
   if d["rom_path"]: remote_path(d["rom_path"])
   c["device"]=d; core.save_config(c); return {"saved":True}
+ if op=="save-sources":
+  def dirs(key):
+   out=[]
+   for raw in b.get(key,[]):
+    p=Path(str(raw).strip()).expanduser()
+    if not str(raw).strip(): continue
+    if not p.is_dir(): raise ValueError("ROM source folder does not exist: "+str(p))
+    value=str(p.resolve())
+    if value not in out: out.append(value)
+   return out
+  c["gc"]=dirs("gc"); c["wii"]=dirs("wii"); core.save_config(c)
+  return {"gc":len(c["gc"]),"wii":len(c["wii"])}
  if op=="sftp-test": return {"message":sftp(c,["pwd"])}
  if op=="sftp-list":
   p=remote_path(b.get("path") or device(c)["rom_path"]); return {"path":p,"listing":sftp(c,["ls -la "+quote_path(p)])}

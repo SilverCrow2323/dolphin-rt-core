@@ -47,6 +47,12 @@ class WebPortalTests(unittest.TestCase):
         for section in ('overview', 'library', 'device', 'streaming', 'system'):
             self.assertIn('id="'+section+'"', self.html)
 
+    def test_library_sources_are_editable(self):
+        self.assertIn('save-sources', self.backend)
+        self.assertIn('gc_paths', self.backend)
+        self.assertIn('id="gcpaths"', self.html)
+        self.assertIn('id="wiipaths"', self.html)
+
     def test_separate_stream_and_file_channels(self):
         self.assertIn('Sunshine transports video and input', self.html)
         self.assertIn('SFTP are separate', self.html)
