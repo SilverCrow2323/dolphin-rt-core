@@ -30,7 +30,7 @@ def snapshot():
  c=core.load_config(); g=core.load_library(c); d=device(c); lib=core.lib_dir(c); lan=core.lan_ip(); ts=core.tailscale_ip()
  try: u=shutil.disk_usage(lib if lib.exists() else lib.parent); disk={"free":u.free,"total":u.total}
  except OSError: disk={"free":0,"total":0}
- return {"version":"5.0.0","sunshine":{"installed":core.sunshine_installed(),"running":core.sunshine_running()},"network":{"lan":lan,"tailscale":ts,"sync_port":int(c.get("port",8765))},"library":{"count":len(g),"gc":sum(x.get("kind")=="gc" for x in g),"wii":sum(x.get("kind")=="wii" for x in g),"path":str(lib),"gc_paths":c.get("gc",[]),"wii_paths":c.get("wii",[]),"disk":disk},"device":{**d,"configured":bool(d["host"] and d["user"] and d["rom_path"])},"checks":[{"label":a,"state":b,"detail":c} for a,b,c in core.system_checks(c)]}
+ return {"version":"5.0.0-dev","sunshine":{"installed":core.sunshine_installed(),"running":core.sunshine_running()},"network":{"lan":lan,"tailscale":ts,"sync_port":int(c.get("port",8765))},"library":{"count":len(g),"gc":sum(x.get("kind")=="gc" for x in g),"wii":sum(x.get("kind")=="wii" for x in g),"path":str(lib),"gc_paths":c.get("gc",[]),"wii_paths":c.get("wii",[]),"disk":disk},"device":{**d,"configured":bool(d["host"] and d["user"] and d["rom_path"])},"checks":[{"label":a,"state":b,"detail":c} for a,b,c in core.system_checks(c)]}
 def action(b):
  c=core.load_config(); op=b.get("action")
  if op=="save-device":
