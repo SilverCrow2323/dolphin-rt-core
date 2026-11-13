@@ -29,7 +29,7 @@ The active LÖVE application is `dolphin-rtcore-muos/app/Dolphin RtUI/`.
 
 ## Data flow
 
-The frontend's compatibility service reads the bundled `data/games_data.json`. The website reads that same tracked JSON through raw GitHub / jsDelivr URLs. Update the data once, then validate the website contract and the frontend loader.
+The frontend's compatibility service reads the bundled `data/games_data.json` or the downloaded runtime copy. The website reads the bundled Rt:UI source at `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json`. The handheld boot updater downloads `data/games_data.json` from the repository root. These two tracked compatibility copies must stay byte-identical; `tools/normalize_games_data.py --check` validates parity and `--write` updates both. Update the data once, then validate the website contract and frontend loader.
 
 Rt:Stream separates handheld UI from the PC portal. The PC performs emulation; the handheld receives the stream and sends input. Do not describe Rt:Stream as local handheld emulation.
 
