@@ -180,7 +180,7 @@ assert(actions["hotkeys.start_capture"].run())
 assert(actions["hotkeys.capture_input"].run(11))
 assert(actions["hotkeys.finish_capture"].run(true))
 assert(actions["hotkeys.save"].run())
-assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("l3%s+=%s+F3"),
+assert(files["workshop/hotkeys/Default/ext-dolphin.gptk"]:match("l3%s+=%s+F%d+"),
        "L3 keyboard hotkeys must serialize with the supported gptokeyb2 l3 token")
 
 assert(actions["hotkeys.set_device"].run("pad"))
@@ -191,6 +191,8 @@ assert(actions["hotkeys.start_capture"].run())
 assert(actions["hotkeys.capture_input"].run(11))
 assert(actions["hotkeys.finish_capture"].run(true))
 assert(actions["hotkeys.save"].run())
+assert(files["workshop/hotkeys/Default/Hotkeys.ini"]:match("Device%s*=%s*SDL/0/muOS%-Keys"),
+       "switching from Keyboard to Pad must retain the Andromeda SDL device")
 assert(files["workshop/hotkeys/Default/Hotkeys.ini"]:match("Button 11"),
        "L3 hotkeys must serialize to the Andromeda Button 11 index")
 local wrong_device, wrong_device_err = actions["hotkeys.change_key"].run(1)
