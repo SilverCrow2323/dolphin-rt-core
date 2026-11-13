@@ -29,7 +29,7 @@ DEVICE_ALIASES = {
 MUOS_ALIASES = {
     "funky jacaranda": "muOS 2601.1 Jacaranda",
     "funky jakaranda": "muOS 2601.1 Jacaranda",
-    "jacaranda": "muOS 2601.1 Jacaranda",
+    "jacaranda": "muOS Jacaranda (version not specified)",
     "2601.1 funky jacaranda": "muOS 2601.1 Jacaranda",
     "2601.0 jacaranda": "muOS 2601.0 Jacaranda",
     "2508.3 golden goose": "muOS 2508.3 Golden Goose",
@@ -82,6 +82,7 @@ CATALOGS = {
     ],
     "muos_versions": [
         "muOS 2606.0 Andromeda",
+        "muOS Jacaranda (version not specified)",
         "muOS 2601.1 Jacaranda",
         "muOS 2601.0 Jacaranda",
         "muOS 2508.3 Golden Goose",
