@@ -377,6 +377,16 @@ local function get_icon(path)
     return _icon_cache[path] or nil
 end
 
+local function library_totals()
+    local total, gc, wii = 0, 0, 0
+    for _, game in ipairs(Library.games or {}) do
+        total = total + 1
+        if U.is_wii(game) then wii = wii + 1 else gc = gc + 1 end
+    end
+    local ok, installed = pcall(U.mods_installed)
+    return total, gc, wii, (ok and type(installed) == "table") and #installed or nil
+end
+
 local function draw_brand_header(n_games)
     local t = love.timer.getTime()
     local acc = K.ACC.gc
@@ -406,8 +416,22 @@ local function draw_brand_header(n_games)
     K.color(acc, 0.9)
     love.graphics.rectangle("fill", 104, 42, K.W - K.MARGIN - 104 - 200, 2)
 
-    -- subtitle
-    K.text("key", "FINAL CUT", 104, 50, K.C.dim, 0.95)
+    -- Live inventory: valid native metadata entries from Sys/Load + user Load.
+    local total, gc, wii, gfx = library_totals()
+    local gfx_label = gfx and tostring(gfx) or "—"
+    local summary
+    if S.scanning or Library.scanning then
+        local p = Library.progress or { done = 0, total = 0 }
+        summary = ("SCAN %d/%d  ·  %d found  ·  GFX %s"):format(
+            p.done or 0, p.total or 0, total, gfx_label)
+    elseif S.filter == 3 then
+        summary = ("%d ROMs  ·  %d fav  ·  GFX %s"):format(total, n_games, gfx_label)
+    else
+        summary = ("%d ROMs  ·  GC %d  ·  Wii %d  ·  GFX %s"):format(
+            total, gc, wii, gfx_label)
+    end
+    K.text("key", K.clip("key", summary, K.W - K.MARGIN - 104 - 200),
+           104, 50, K.C.dim, 0.95)
 
     -- separator
     K.color(K.C.line, 0.5)
@@ -446,14 +470,16 @@ function S.draw()
     local g = cur()
     local n = #S.list.items
     draw_brand_header(n)
-    if S.scanning then
+    local scanning = S.scanning or Library.scanning
+    if scanning then
         local p = Library.progress or { done = 0, total = 0 }
         local frac = (p.total > 0) and (p.done / p.total) or 0
-        K.bar(K.MARGIN, 70, K.W - K.MARGIN * 2, 3, frac, K.acc)
+        -- Header separator is y=72; keep the bar in the clear gap below it.
+        K.bar(K.MARGIN, 78, K.W - K.MARGIN * 2, 2, frac, K.acc)
     end
     if n == 0 then
         K.panel(LX, LY, K.W - K.MARGIN * 2, LH, { cut = 12 })
-        local msg = S.scanning and "Scanning ROMs\226\128\166"
+        local msg = scanning and "Scanning ROMs\226\128\166"
             or (#(Library.games or {}) == 0)
             and "No games found.\nPress A to add a ROM folder."
             or "Nothing matches this filter."
