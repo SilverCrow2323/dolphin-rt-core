@@ -56,6 +56,7 @@ jobs:
           luajit tests/test_keymap_nexus.lua
           luajit tests/test_app_input_andromeda.lua
           luajit tests/test_boot_initializer_async.lua
+          luajit tests/test_gameset_loader.lua
           luajit tests/test_gamesettings_deployer.lua
           luajit tests/test_cheats_downloader.lua
           luajit tests/test_boot_screen_auto_proceed.lua
