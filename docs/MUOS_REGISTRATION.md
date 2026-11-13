@@ -1,6 +1,6 @@
 # muOS registration and firmware detection
 
-`dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh` is the single entry point used by the installer, startup launcher and Task Toolkit. It delegates release/API detection to `muos_platform.sh`.
+`dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh` is the single entry point used by the installer, startup launcher and Rt:UI Settings. It delegates release/API detection to `muos_platform.sh`.
 
 ## Detection strategy
 
@@ -34,7 +34,7 @@ When the user confirms a rename, Registratore Z renames the selected folder to `
 
 - `opt/update.sh` registers the core entries after package installation.
 - The muOS application launcher runs `manifest_tool.sh ensure` synchronously before opening LÖVE. A failure is logged but does not prevent the frontend from opening.
-- Task Toolkit exposes explicit register and profile-mode actions.
+- Rt:UI Settings → System exposes registration repair and profile visibility actions.
 - The triage screen checks the definition and alias index on manifest builds, and checks legacy `global.ini` files on Jacaranda-style installations.
 
 ## Tests
