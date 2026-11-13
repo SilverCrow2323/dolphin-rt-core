@@ -13,8 +13,9 @@ M.scanned_at  = 0
 M.last_count  = 0
 
 local EXTS = {
-  gc  = { "iso", "gcm", "rvz", "gcz", "ciso" },
-  wii = { "iso", "rvz", "wbfs", "wia", "gcz" },
+  gc   = { "iso", "gcm", "rvz", "gcz", "ciso" },
+  wii  = { "iso", "rvz", "wbfs", "wia", "gcz" },
+  both = { "iso", "gcm", "rvz", "gcz", "ciso", "wbfs", "wia" },
 }
 
 local VALID_ID = "^[A-Z][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]$"
@@ -138,7 +139,7 @@ local function system_from_id(id)
 end
 
 local function find_files(root, system, depth)
-  local exts = EXTS[system:lower()] or EXTS.gc
+  local exts = EXTS[tostring(system or "GC"):lower()] or EXTS.gc
   local clauses = {}
   for _, e in ipairs(exts) do
     clauses[#clauses+1] = "-iname '*." .. e .. "'"
@@ -154,6 +155,12 @@ local function find_files(root, system, depth)
     if line ~= "" then files[#files+1] = line end
   end
   return files
+end
+
+local function path_key(path)
+  local p = tostring(path or ""):gsub("\\", "/"):gsub("/+", "/")
+  if #p > 1 then p = p:gsub("/+$", "") end
+  return p:lower()
 end
 
 -- ── scan ───────────────────────────────────────────────────────────
@@ -188,8 +195,9 @@ function M.scan_begin()
   for _, entry in ipairs(paths) do
     if entry.path and FS.is_dir(entry.path) then
       for _, path in ipairs(find_files(entry.path, entry.system, depth)) do
-        if not _seen[path] then
-          _seen[path] = true
+        local key = path_key(path)
+        if not _seen[key] then
+          _seen[key] = true
           _queue[#_queue + 1] = { path = path, entry = entry }
         end
       end
@@ -238,5 +246,7 @@ function M.count() return #M.games end
 
 M._file_size = file_size           -- esposto per i test
 M._extract_gameid = extract_gameid
+M._find_files = find_files
+M._path_key = path_key
 
 return M
