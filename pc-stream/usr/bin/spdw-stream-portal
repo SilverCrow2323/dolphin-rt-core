@@ -1,2 +1,2 @@
 #!/bin/sh
-exec python3 /usr/lib/spdw-stream-portal/portal.py "$@"
+exec python3 /usr/lib/spdw-stream-portal/web_portal.py "$@"
