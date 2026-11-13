@@ -45,6 +45,7 @@ class CompatibilitySiteTests(unittest.TestCase):
         cls.html = SITE.read_text(encoding="utf-8")
         cls.manifest = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
         cls.games = json.loads((APP_DATA / "games_data.json").read_text(encoding="utf-8"))
+        cls.runtime_games_path = ROOT / "data" / "games_data.json"
         cls.settings = json.loads((APP_DATA / "gamesettings.json").read_text(encoding="utf-8"))
 
     def test_website_reads_current_repository_data_files(self):
@@ -152,6 +153,129 @@ class CompatibilitySiteTests(unittest.TestCase):
             references = re.findall(r"\[\[([A-Za-z0-9_-]+)\]\]", path.read_text(encoding="utf-8"))
             for target in references:
                 self.assertIn(target, pages, f"{path.name} links to missing Wiki page {target}")
+
+
+
+    def test_runtime_download_copy_matches_bundled_database(self):
+        bundled = APP_DATA / "games_data.json"
+        self.assertTrue(self.runtime_games_path.is_file())
+        self.assertEqual(
+            self.runtime_games_path.read_bytes(),
+            bundled.read_bytes(),
+            "data/games_data.json must match the bundled Rt:UI database byte-for-byte",
+        )
+
+
+    def test_schema_v2_catalogues_and_group_identity(self):
+        self.assertEqual(self.games.get("schema_version"), 2)
+        catalogues = self.games.get("catalogs", {})
+        for key in ("devices", "muos_versions", "rtcore_versions", "core_profiles"):
+            self.assertIsInstance(catalogues.get(key), list)
+            self.assertTrue(catalogues[key])
+            self.assertEqual(len(catalogues[key]), len(set(catalogues[key])))
+        identities = set()
+        report_count = 0
+        for group in self.games["games"]:
+            info = group["game_info"]
+            identity = (info.get("game_id"), info.get("system"), info.get("region"))
+            self.assertNotIn(identity, identities, f"duplicate game group: {identity}")
+            identities.add(identity)
+            self.assertRegex(info.get("game_id", ""), r"^[A-Z0-9]{6}$")
+            self.assertIn(info.get("system"), ("GC", "Wii"))
+            self.assertIn(info.get("region"), ("PAL", "NTSC", "NTSC-J"))
+            for report in group["entries"]:
+                report_count += 1
+                for field in ("game_id", "system", "game", "region"):
+                    self.assertEqual(report["game_info"].get(field), info.get(field), f"{identity}: inconsistent {field}")
+                review = report["test_review"]
+                self.assertIsInstance(review.get("rating"), int)
+                self.assertGreaterEqual(review["rating"], 0)
+                self.assertLessEqual(review["rating"], 5)
+                self.assertIn(review.get("boot"), ("YES", "NO", "CRASH"))
+                self.assertIn(review.get("playable"), ("YES", "YES WITH ISSUES", "NO"))
+        self.assertEqual(report_count, 235)
+        self.assertEqual(len(identities), len(self.games["games"]))
+        all_reports = [entry for group in self.games["games"] for entry in group["entries"]]
+        devices = {entry["test_environment"].get("device", "") for entry in all_reports}
+        muos = {entry["test_environment"].get("muos_version", "") for entry in all_reports}
+        releases = {entry["test_details"].get("rtcore_version", "") for entry in all_reports}
+        profiles = {entry["test_details"].get("core_profile", "") for entry in all_reports}
+        self.assertNotIn("RG 35XX H", devices)
+        self.assertNotIn("RG35XXH", devices)
+        self.assertNotIn("Funky Jacaranda", muos)
+        self.assertNotIn("Funky Jakaranda", muos)
+        self.assertIn("muOS Jacaranda (version not specified)", muos)
+        self.assertNotIn("v11.0.00 (prerelease)", releases)
+        self.assertNotIn("v10.6 (pre release)", releases)
+        self.assertNotIn("standard", profiles)
+        self.assertNotIn("SpeedHack / Default", profiles)
+
+    def test_canonical_database_normalizer_is_idempotent(self):
+        normalizer = ROOT / "tools" / "normalize_games_data.py"
+        self.assertTrue(normalizer.is_file())
+        result = subprocess.run(
+            ["python3", str(normalizer), "--check"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Canonical compatibility data", result.stdout)
+
+    def test_schema_document_matches_dataset(self):
+        schema_path = ROOT / "docs" / "schemas" / "games_data.schema.json"
+        self.assertTrue(schema_path.is_file())
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        self.assertEqual(schema.get("$schema"), "https://json-schema.org/draft/2020-12/schema")
+        self.assertEqual(schema.get("properties", {}).get("schema_version", {}).get("const"), 2)
+        self.assertIn("catalogs", schema.get("properties", {}))
+        self.assertIn("gameGroup", schema.get("$defs", {}))
+        self.assertIn("report", schema.get("$defs", {}))
+
+    def test_issue_templates_are_complete_and_linked(self):
+        templates = ROOT / ".github" / "ISSUE_TEMPLATE"
+        report = templates / "compatibility-test-report.md"
+        bug = templates / "bug_report.yml"
+        feature = templates / "feature_request.yml"
+        config = templates / "config.yml"
+        for path in (report, bug, feature, config):
+            self.assertTrue(path.is_file(), str(path))
+        report_text = report.read_text(encoding="utf-8")
+        bug_text = bug.read_text(encoding="utf-8")
+        feature_text = feature.read_text(encoding="utf-8")
+        config_text = config.read_text(encoding="utf-8")
+        self.assertIn('labels: ["test-report"]', report_text)
+        self.assertIn("Machine-readable report", report_text)
+        self.assertIn("ROMs, BIOS files, firmware images", report_text)
+        self.assertIn("Steps to reproduce", bug_text)
+        self.assertIn("Expected behaviour", bug_text)
+        self.assertIn("Actual behaviour", bug_text)
+        self.assertIn("Acceptance criteria", feature_text)
+        self.assertIn("blank_issues_enabled: false", config_text)
+        self.assertIn("silvercrow2323.github.io/dolphin-rt-core", config_text)
+
+    def test_report_form_uses_shared_catalogues_and_structured_payload(self):
+        for field_id in (
+            "rptDevice", "rptMuos", "rptVersion", "rptProfile", "rptDolphinVersion",
+            "rptGraphicsBackend", "rptDuration", "rptTestScene", "rptAudio",
+            "rptGraphics", "rptInput", "rptStability",
+        ):
+            self.assertIn('id="' + field_id + '"', self.html)
+        self.assertIn("state.catalogs=_gamesCache.catalogs||{}", self.html)
+        self.assertIn("populateReportCatalogs()", self.html)
+        self.assertIn("URLSearchParams({template:'compatibility-test-report.md'", self.html)
+        self.assertIn("test_duration_minutes", self.html)
+        self.assertIn("dolphin_version", self.html)
+        self.assertIn("fps:hasFps?", self.html)
+        self.assertIn("issueUrl.length>7800", self.html)
+        self.assertNotIn('id="rptDevices"', self.html)
+        self.assertNotIn('id="rptProfiles"', self.html)
+        self.assertIn("Never attach ROMs, BIOS, firmware", self.html)
+
+    def test_pwa_cache_is_bumped_for_new_website_shell(self):
+        worker = (ROOT / "sw.js").read_text(encoding="utf-8")
+        self.assertIn("rtcore-db-v3", worker)
+        self.assertNotIn("rtcore-db-v2", worker)
+
 
 
 if __name__ == "__main__":
