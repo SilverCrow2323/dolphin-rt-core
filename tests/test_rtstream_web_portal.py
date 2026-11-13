@@ -88,11 +88,11 @@ class WebPortalTests(unittest.TestCase):
     def test_sftp_test_checks_configured_rom_directory(self):
         cfg = {"device": {"rom_path": "/mnt/roms"}}
         with patch.object(self.portal.core, "load_config", return_value=cfg, create=True):
-            with patch.object(self.portal, "sftp_canonical_directory", return_value="/mnt/roms") as resolve:
+            with patch.object(self.portal, "canonical_remote_root", return_value="/mnt/roms") as resolve:
                 result = self.portal.action({"action": "sftp-test"})
         self.assertEqual(result["rom_path"], "/mnt/roms")
         self.assertIn("Connected", result["message"])
-        resolve.assert_called_once_with(cfg, "/mnt/roms")
+        resolve.assert_called_once_with(cfg)
 
     def test_remote_root_rejects_filesystem_root(self):
         with self.assertRaisesRegex(ValueError, "filesystem root is not allowed"):
