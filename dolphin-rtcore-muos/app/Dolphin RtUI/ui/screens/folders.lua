@@ -222,8 +222,6 @@ function S.pad(b)
             S.preview_scroll = math.max(0, (S.preview_scroll or 0) - 42)
         elseif b == "DOWN" then
             S.preview_scroll = math.min(S.preview_scroll_max or 0, (S.preview_scroll or 0) + 42)
-        elseif b == "Y" then S.folder_waker_system = "GC"; SFX.play("menu_toggleoption")
-        elseif b == "X" then S.folder_waker_system = "Wii"; SFX.play("menu_toggleoption")
         elseif b == "A" then commit_folder_waker()
         elseif b == "B" then back_to_folder_waker_scan() end
     end
@@ -327,7 +325,7 @@ local function draw_folder_waker_preview()
         love.graphics.rectangle("fill", track_x, thumb_y, 3, thumb_h, 2, 2)
     end
 
-    local footer = { { key = "Y", label = "GameCube" }, { key = "X", label = "Wii" } }
+    local footer = {}
     if item.has_roms then
         footer[#footer + 1] = { key = "A", label = "Rename + register" }
     end
