@@ -1,2 +1,6 @@
 #!/bin/sh
-exec python3 /usr/lib/spdw-stream-portal/portal.py "$@"
+if [ "$1" = "--legacy" ]; then
+    shift
+    exec python3 /usr/lib/spdw-stream-portal/portal.py "$@"
+fi
+exec python3 /usr/lib/spdw-stream-portal/web_portal.py "$@"
