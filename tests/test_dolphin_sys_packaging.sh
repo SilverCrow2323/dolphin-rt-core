@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PACKAGER="$ROOT/dolphin-rtcore-muos/tools/build-muxupd.sh"
+bash -n "$PACKAGER"
 BASE_SYS="$ROOT/dolphin-rtcore-muos/emu/dolphin/Sys"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
