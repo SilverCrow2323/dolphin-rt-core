@@ -128,7 +128,7 @@ class WebPortalTests(unittest.TestCase):
             (base / "received").symlink_to(outside, target_is_directory=True)
             with patch.object(self.portal, "_validate_remote_rom", return_value="/mnt/roms/Game.iso"):
                 with patch.object(self.portal, "confined_remote_file", return_value=("/mnt/roms", "/mnt/roms/Game.iso", {})):
-                    with patch.object(self.portal.core, "lib_dir", return_value=base):
+                    with patch.object(self.portal.core, "lib_dir", return_value=base, create=True):
                         with self.assertRaisesRegex(ValueError, "PC receive directory must not be a symbolic link"):
                             self.portal.queue_download(cfg, {"remote": "/mnt/roms/Game.iso"})
 
@@ -143,7 +143,7 @@ class WebPortalTests(unittest.TestCase):
             outside.mkdir()
             with patch.object(self.portal, "_validate_remote_rom", return_value="/mnt/roms/Game.iso"):
                 with patch.object(self.portal, "confined_remote_file", return_value=("/mnt/roms", "/mnt/roms/Game.iso", {})):
-                    with patch.object(self.portal.core, "lib_dir", return_value=base):
+                    with patch.object(self.portal.core, "lib_dir", return_value=base, create=True):
                         for name in ("Game.iso", "Game.iso.part"):
                             with self.subTest(name=name):
                                 link = root / name
