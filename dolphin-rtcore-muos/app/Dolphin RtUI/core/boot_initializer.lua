@@ -14,6 +14,17 @@ local Shell = require("core.shell")
 
 local M = {}
 
+local function require_optional(module_name)
+  local ok, module = pcall(require, module_name)
+  if not ok then
+    pcall(function()
+      require("ui.notify").show("warning",
+        "Funzione non disponibile: " .. tostring(module_name))
+    end)
+  end
+  return ok, module
+end
+
 local URLS = {
   games_data = os.getenv("DOLPHINUI_URL_GAMESDATA")
                or "https://github.com/SilverCrow2323/dolphin-rt-core/raw/refs/heads/main/data/games_data.json",
@@ -30,9 +41,12 @@ local STATE = {
   ids      = {},
   results  = {
     roms = 0, gamesets = 0, cards = 0, downloads = {},
-    gamesets_status = "waiting", cheats_status = "waiting",
+    update_status = "waiting", gamesets_status = "waiting",
+    cheats_status = "waiting", cards_status = "waiting",
   },
   _fast_done = false,
+  scan_library = nil,
+  scan_driver = false,
 }
 
 local function marker(name) return "/tmp/rt_boot_" .. name .. ".done" end
@@ -76,15 +90,24 @@ local function is_done(key)
   return false
 end
 
+local function start_data_downloads()
+  spawn_dl("games_data",        URLS.games_data,        "data/games_data.json")
+  spawn_dl("gamesettings_json", URLS.gamesettings_json, "data/gamesettings.json")
+  spawn_dl("rtcheats_db",       URLS.rtcheats_db,       "data/rtcheats_db.json")
+end
+
 function M.start()
   STATE.step     = "update_check"
   STATE.t        = 0
   STATE.started  = os.time()
   STATE.results = {
     roms = 0, gamesets = 0, cards = 0, downloads = {},
-    gamesets_status = "waiting", cheats_status = "waiting",
+    update_status = "waiting", gamesets_status = "waiting",
+    cheats_status = "waiting", cards_status = "waiting",
   }
   STATE._fast_done = false
+  STATE.scan_library = nil
+  STATE.scan_driver = false
   Hub.push("info", "Boot sequence", "Starting up…", { silent = true, ttl = 2 })
 end
 
@@ -109,6 +132,15 @@ function M.update(dt)
 
   STATE.t = STATE.t + dt
   if STATE.t > 90 then
+    -- If boot owns an incremental ROM scan, close it cleanly and keep the
+    -- partial index rather than leaving Library.scanning stuck forever.
+    if STATE.scan_driver and STATE.scan_library
+       and STATE.scan_library.scanning then
+      pcall(STATE.scan_library.scan_finish)
+      STATE.results.roms = #(STATE.scan_library.games or {})
+    end
+    STATE.scan_library = nil
+    STATE.scan_driver = false
     Hub.push("warning", "Boot sequence", "Timed out")
     STATE.step = "done"
     return
@@ -123,23 +155,38 @@ function M.update(dt)
       if S.get("auto_update_check") == false then skip_update = true end
     end)
     if skip_update then
+      STATE.results.update_status = "skipped"
       STATE.step = "download_data"; STATE.t = 0
-      spawn_dl("games_data",        URLS.games_data,        "data/games_data.json")
-      spawn_dl("gamesettings_json", URLS.gamesettings_json, "data/gamesettings.json")
-      spawn_dl("rtcheats_db",       URLS.rtcheats_db,       "data/rtcheats_db.json")
+      start_data_downloads()
       return
     end
-    local ok, AU = (function() local ok,m = pcall(require, "core.app_updater"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.app_updater") end; return ok and m end)()
-    if ok then AU.check_async() end
-    STATE.step = "wait_update"; STATE.t = 0
+    local ok, AU = require_optional("core.app_updater")
+    if ok and AU and AU.available ~= false and AU.check_async then
+      local called = pcall(AU.check_async)
+      if called then
+        STATE.results.update_status = "checking"
+        STATE.step = "wait_update"; STATE.t = 0
+        return
+      end
+    end
+    -- The bundled app_updater is deliberately disabled in this release.
+    STATE.results.update_status = "disabled"
+    STATE.step = "download_data"; STATE.t = 0
+    start_data_downloads()
 
   elseif step == "wait_update" then
     local ok, AU = pcall(require, "core.app_updater")
-    if not ok or AU.poll() or STATE.t > 3 then
+    local complete = (not ok) or (not AU) or AU.available == false or type(AU.poll) ~= "function"
+    if not complete then
+      local poll_ok, result = pcall(AU.poll)
+      complete = (not poll_ok) or result == true
+      if not poll_ok then STATE.results.update_status = "failed"
+      elseif result == true then STATE.results.update_status = "up_to_date" end
+    end
+    if complete or STATE.t > 3 then
+      if STATE.results.update_status == "checking" then STATE.results.update_status = "timeout" end
       STATE.step = "download_data"; STATE.t = 0
-      spawn_dl("games_data",        URLS.games_data,        "data/games_data.json")
-      spawn_dl("gamesettings_json", URLS.gamesettings_json, "data/gamesettings.json")
-      spawn_dl("rtcheats_db",       URLS.rtcheats_db,       "data/rtcheats_db.json")
+      start_data_downloads()
     end
 
   elseif step == "download_data" then
@@ -159,10 +206,10 @@ function M.update(dt)
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
-      local ok_dep, DEP = (function() local ok,m = pcall(require, "core.gamesettings_deployer"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.gamesettings_deployer") end; return ok and m end)()
-      if ok_dep and DEP then
-        STATE.results.gamesets_status = "running"
-        pcall(DEP.start)
+      local ok_dep, DEP = require_optional("core.gamesettings_deployer")
+      if ok_dep and DEP and DEP.start then
+        local started, accepted = pcall(DEP.start)
+        STATE.results.gamesets_status = (started and accepted ~= false) and "running" or "unavailable"
       else
         STATE.results.gamesets_status = "unavailable"
       end
@@ -170,43 +217,98 @@ function M.update(dt)
     end
 
   elseif step == "scan_roms" then
-    local ok, Library = pcall(require, "core.library")
-    local n = 0
-    if ok and Library then
-      pcall(function() Library.scan() end)
-      n = #(Library.games or {})
+    if not STATE.scan_library then
+      local ok, Library = pcall(require, "core.library")
+      if ok and Library then
+        STATE.scan_library = Library
+        if Library.scanning then
+          -- Adopt any asynchronous scan rather than waiting on a UI screen
+          -- that may have been left. Mark it boot-owned so the two layers
+          -- never drive the same queue in one frame.
+          if Library.scan_owner ~= "blocking" then
+            Library.scan_owner = "boot"
+            STATE.scan_driver = true
+          else
+            STATE.scan_driver = false
+          end
+        else
+          local began, err = pcall(Library.scan_begin, "boot")
+          if not began then
+            Hub.push("warning", "ROM scan", tostring(err))
+            STATE.scan_library = nil
+          else
+            STATE.scan_driver = true
+          end
+        end
+      else
+        Hub.push("warning", "ROM scan", "Library scanner unavailable")
+      end
     end
-    STATE.results.roms = n
-    Hub.push("scan", "ROM scan complete",
-      string.format("%d ROM(s) indexed", n), { silent = true, ttl = 4 })
-    STATE.ids = {}
-    if ok and Library then
+
+    local Library = STATE.scan_library
+    if not Library then
+      STATE.results.roms = 0
+      STATE.ids = {}
+      STATE.step = "wait_gamesets"; STATE.t = 0
+      return
+    end
+
+    -- One small slice per frame. Library.scan() is intentionally not used
+    -- here: it drains the complete queue synchronously and freezes the intro.
+    if STATE.scan_driver and Library.scanning then
+      local ok, finished = pcall(Library.scan_step, 0.008)
+      if not ok then
+        Hub.push("warning", "ROM scan", tostring(finished))
+        pcall(Library.scan_finish)
+      end
+    end
+
+    if not Library.scanning then
+      STATE.results.roms = #(Library.games or {})
+      STATE.ids = {}
       for _, g in ipairs(Library.games or {}) do
         if g.id and g.id ~= "" then STATE.ids[#STATE.ids+1] = g.id end
       end
+      STATE.scan_library = nil
+      STATE.scan_driver = false
+      STATE.step = "wait_gamesets"; STATE.t = 0
     end
-    STATE.step = "wait_gamesets"; STATE.t = 0
 
   elseif step == "wait_gamesets" then
     local ok_dep, DEP = pcall(require, "core.gamesettings_deployer")
     local done, res = true, {}
-    if ok_dep and DEP then done, res = DEP.poll() end
+    if ok_dep and DEP and DEP.poll then
+      local poll_ok, finished, result = pcall(DEP.poll)
+      if poll_ok then done, res = finished == true, result or {}
+      else done, res = true, {failed = 1, error = tostring(finished)} end
+    end
     if done or STATE.t > 20 then
-      STATE.results.gamesets_status = done and "complete" or "timeout"
-      if res and res.deployed and res.deployed > 0 then
-        STATE.results.gamesets = res.deployed
+      if STATE.t > 20 and not done then
+        STATE.results.gamesets_status = "timeout"
+      elseif (tonumber(res.failed) or 0) > 0 then
+        STATE.results.gamesets_status = "partial"
+      elseif (tonumber(res.deployed) or 0) > 0 then
+        STATE.results.gamesets_status = "complete"
+      else
+        STATE.results.gamesets_status = "empty"
+      end
+      STATE.results.gamesets = tonumber(res.deployed) or 0
+      if STATE.results.gamesets > 0 then
         Hub.push("success", "GameSettings deployed",
-          string.format("%d preset(s) from the Rt database", res.deployed),
+          string.format("%d preset(s) from the Rt database", STATE.results.gamesets),
+          { silent = true, ttl = 5 })
+      elseif STATE.results.gamesets_status == "partial" then
+        Hub.push("warning", "GameSettings", "Some bundled configs could not be deployed",
           { silent = true, ttl = 5 })
       end
       STATE.step = "download_cheats"; STATE.t = 0
     end
 
   elseif step == "download_cheats" then
-    local ok, CD = (function() local ok,m = pcall(require, "core.cheats_downloader"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.cheats_downloader") end; return ok and m end)()
-    if ok then
-      STATE.results.cheats_status = "running"
-      CD.start_for(STATE.ids)
+    local ok, CD = require_optional("core.cheats_downloader")
+    if ok and CD and CD.start_for then
+      local called, accepted = pcall(CD.start_for)
+      STATE.results.cheats_status = (called and accepted ~= false) and "running" or "failed"
     else
       STATE.results.cheats_status = "unavailable"
     end
@@ -214,27 +316,48 @@ function M.update(dt)
 
   elseif step == "wait_cheats" then
     local ok, CD = pcall(require, "core.cheats_downloader")
-    local done = true
-    if ok then
-      local d, _ = CD.poll()
-      done = d
+    local done, result = true, nil
+    if ok and CD and CD.poll then
+      local poll_ok, finished, status = pcall(CD.poll)
+      if poll_ok then done, result = finished == true, status
+      else done, result = true, {state = "fail", msg = tostring(finished)} end
     end
-    if done or STATE.t > 20 then
-      STATE.results.cheats_status = done and "complete" or "timeout"
+    if done or STATE.t > 75 then
+      if STATE.t > 75 and not done then
+        STATE.results.cheats_status = "timeout"
+      elseif result and result.state == "fail" then
+        STATE.results.cheats_status = "failed"
+        Hub.push("warning", "Cheat database", tostring(result.msg or "Sync failed"),
+          { silent = true, ttl = 5 })
+      elseif result and tostring(result.msg or ""):find("failed", 1, true) then
+        STATE.results.cheats_status = "partial"
+      elseif result and tostring(result.msg or ""):find("no games", 1, true) then
+        STATE.results.cheats_status = "skipped"
+      else
+        STATE.results.cheats_status = "complete"
+      end
       STATE.step = "build_rtid"; STATE.t = 0
     end
 
   elseif step == "build_rtid" then
-    local ok, RB = (function() local ok,m = pcall(require, "core.rtid_builder"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.rtid_builder") end; return ok and m end)()
-    if ok then
-      local res = RB.rebuild_all()
-      STATE.results.cards = res.built or 0
-      Hub.push("success", "GamesLibrary updated",
-        string.format("%d cards · %d updated · %d orphans",
-          res.built or 0, res.updated or 0, res.orphans or 0),
-        { silent = true, ttl = 5 })
+    local ok, RB = require_optional("core.rtid_builder")
+    if ok and RB and RB.available ~= false and RB.rebuild_all then
+      local called, res = pcall(RB.rebuild_all)
+      if called and type(res) == "table" then
+        STATE.results.cards = tonumber(res.built) or 0
+        STATE.results.cards_status = "complete"
+        Hub.push("success", "GamesLibrary updated",
+          string.format("%d cards · %d updated · %d orphans",
+            res.built or 0, res.updated or 0, res.orphans or 0),
+          { silent = true, ttl = 5 })
+      else
+        STATE.results.cards_status = "failed"
+        Hub.push("warning", "GamesLibrary", "Card rebuild failed",
+          { silent = true, ttl = 4 })
+      end
     else
-      Hub.push("warning", "GamesLibrary", "Rebuild skipped", { silent = true, ttl = 4 })
+      -- RTID cards are generated on demand when the user opens a game.
+      STATE.results.cards_status = "on_demand"
     end
     Hub.push("success", "Boot complete",
       string.format("%d games · %d presets · %d cards",
@@ -292,6 +415,7 @@ function M.snapshot()
     step = STATE.step,
     done = STATE.step == "done",
     databases = databases,
+    update = {status = STATE.results.update_status or "waiting"},
     gamesets = {
       status = STATE.results.gamesets_status or "waiting",
       deployed = STATE.results.gamesets or 0,
@@ -299,6 +423,7 @@ function M.snapshot()
     cheats = {status = STATE.results.cheats_status or "waiting"},
     roms = STATE.results.roms or 0,
     cards = STATE.results.cards or 0,
+    cards_status = STATE.results.cards_status or "waiting",
   }
 end
 

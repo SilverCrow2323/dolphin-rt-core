@@ -43,10 +43,16 @@ end
 
 local function add(system)
     if S.mode ~= "browse" then return end
-    if Settings.add_rom_path(S.cwd, system) then
+    local ok, status = Settings.add_rom_path(S.cwd, system)
+    if ok then
         SFX.play("menu_toggleoption")
-        Notify.show("success", system .. " folder added — rescan from Settings")
-    else Notify.show("info", "Already in the list") end
+        local message = status == "updated"
+            and "Folder updated: GameCube + Wii — rescan from Settings"
+            or (system .. " folder added — rescan from Settings")
+        Notify.show("success", message)
+    else
+        Notify.show("info", status == "exists" and "Folder already registered" or "Invalid folder path")
+    end
 end
 
 function S.pad(b)
@@ -74,8 +80,12 @@ local function draw_row(r, x, y, w, h, focused)
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
     if r.add then K.text("body", r.label, x + 14, y + h / 2 - 9, focused and K.acc or K.C.dim)
     elseif r.idx then
-        K.text("body", K.clip("body", r.path, w - 90), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
-        K.pill(tostring(r.system or "GC"):upper(), x + w - 12, y + h / 2, tostring(r.system):lower() == "wii" and K.ACC.wii or K.ACC.gc, true)
+        K.text("body", K.clip("body", r.path, w - 110), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
+        local system = tostring(r.system or "GC"):upper()
+        local label = system == "BOTH" and "GC + WII" or system
+        local accent = system == "BOTH" and K.ACC.teal
+            or (system == "WII" and K.ACC.wii or K.ACC.gc)
+        K.pill(label, x + w - 12, y + h / 2, accent, true)
     else K.text("body", K.clip("body", r.label, w - 40), x + 14, y + h / 2 - 9, focused and K.C.text or K.C.dim)
         K.text("body", "›", x + w - 22, y + h / 2 - 9, K.C.faint) end
 end
