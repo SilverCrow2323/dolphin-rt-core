@@ -33,12 +33,22 @@ ini_value() {
     ' "$file"
 }
 expect() {
-    local file="$1" section="$2" key="$3" expected="$4" actual
+    local file="$1" section="$2" key="$3" expected="$4" actual pattern
     [ -f "$file" ] || fail "missing profile $file"
     actual="$(ini_value "$file" "$section" "$key")"
-    [ "$actual" = "$expected" ] ||
-        fail "$file [$section] $key: expected '$expected', got '${actual:-<missing>}'"
+    case "$expected" in
+        '`Button '*)
+            pattern="(^|[( &])${expected}([ )&]|$)"
+            printf '%s\n' "$actual" | grep -Eq "$pattern" ||
+                fail "$file [$section] $key: expected positive binding $expected, got '${actual:-<missing>}'"
+            ;;
+        *)
+            [ "$actual" = "$expected" ] ||
+                fail "$file [$section] $key: expected '$expected', got '${actual:-<missing>}'"
+            ;;
+    esac
 }
+
 check_gc() {
     local f="$1"
     expect "$f" GCPad1 Device 'SDL/0/muOS-Keys'
