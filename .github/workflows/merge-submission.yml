@@ -135,13 +135,18 @@ jobs:
                   "v11.0.0-dev": "Dolphin Rt:Core 11.0.00 · Development",
                   "v11.0.00-dev": "Dolphin Rt:Core 11.0.00 · Development",
                   "v11.5.00 'Comfort Zone' (prerelease)": "Dolphin Rt:Core 11.5.00-I · Comfort Zone · Prerelease",
+                  "v11.5.00 'Triptych'": "Dolphin Rt:Core 11.5.00 · Triptych",
                   "v11.5.00-II 'Bash Arsenal'": "Dolphin Rt:Core 11.5.00-II · Bash Arsenal",
+                  "v10.0.0 'SPDW'": "Dolphin Rt:Core 10.0.0 · SPDW",
+                  "v9 Goose": "Dolphin Rt:Core 9 · Goose",
+                  "v8": "Dolphin Rt:Core 8",
+                  "v7 or prior": "Dolphin Rt:Core 7 or earlier",
                   "v11.5.00-III FrontendONE": "Dolphin Rt:Core 11.5.00-III · FrontendONE",
               }
               if raw in aliases:
                   return aliases[raw]
               if raw.startswith("Dolphin Rt:Core "):
-                  return raw
+                  return re.sub(r"\s*\(release candidate\)$", "", raw, flags=re.IGNORECASE)
               return "Dolphin Rt:Core " + raw.removeprefix("v")
 
           def normalize_profile(value):
@@ -161,6 +166,7 @@ jobs:
                   "all profiles (tested multiple)": "All profiles tested",
                   "various / all profiles tested": "All profiles tested",
                   "various profiles": "Multiple profiles (details not recorded)",
+                  "multiple profiles (details in notes)": "Multiple profiles (details in notes)",
                   "speedhack / default": "Multiple profiles: Default + Speedhacks",
                   "speedhack / default (both tested)": "Multiple profiles: Default + Speedhacks",
                   "black screen fix, compatibility, default": "Multiple profiles: Black Screen Fix + Compatibility + Default",
