@@ -1,115 +1,738 @@
 #!/usr/bin/env python3
-"""Local-first Dolphin Rt:Stream web companion. Binds to loopback only."""
-import argparse,json,re,secrets,shutil,subprocess,sys,threading
-from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
+"""Local-first Dolphin Rt:Stream PC Companion.
+
+The browser control plane binds to loopback only. Streaming, library sync and
+optional SFTP file management remain separate services.
+"""
+import argparse
+import json
+import os
+import posixpath
+import re
+import secrets
+import selectors
+import shutil
+import socket
+import subprocess
+import sys
+import threading
+import time
+import urllib.request
+import uuid
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
-HERE=Path(__file__).resolve().parent; WEB=HERE/"web"; sys.path.insert(0,str(HERE))
+
+HERE = Path(__file__).resolve().parent
+WEB = HERE / "web"
+sys.path.insert(0, str(HERE))
 import spdw_stream_core as core
-TOKEN=secrets.token_urlsafe(32); LOCK=threading.RLock(); EXTS={".iso",".gcm",".rvz",".wbfs",".ciso",".gcz",".wia"}
-def remote_path(v):
- v=str(v or "").strip()
- if not v.startswith("/") or any(x==".." for x in v.split("/")) or any(c in v for c in "\r\n\x00"): raise ValueError("Remote path must be an absolute safe path.")
- return v
-def device(c):
- d=c.get("device") or {}; return {"host":str(d.get("host","")),"port":int(d.get("port",22)),"user":str(d.get("user","")),"rom_path":str(d.get("rom_path",""))}
-def sftp(c,commands,timeout=30):
- d=device(c)
- if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,253}",d["host"]): raise ValueError("Configure a valid device host or IP.")
- if not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}",d["user"]): raise ValueError("Configure a valid SSH username.")
- if not 1<=d["port"]<=65535: raise ValueError("Invalid SFTP port.")
- if not shutil.which("sftp"): raise RuntimeError("OpenSSH sftp client is not installed.")
- p=subprocess.run(["sftp","-q","-P",str(d["port"]),"-oBatchMode=yes","-oConnectTimeout=8","-oStrictHostKeyChecking=yes","-b","-",d["user"]+"@"+d["host"]],input="\n".join(commands)+"\n",text=True,capture_output=True,timeout=timeout)
- if p.returncode: raise RuntimeError((p.stderr or p.stdout or "SFTP failed").strip()[-1000:])
- return p.stdout.strip()
-def quote_path(s):
- s=str(s)
- if any(c in s for c in "\r\n\x00"): raise ValueError("Invalid path.")
- return '"'+s.replace("\\","\\\\").replace('"','\\"')+'"'
+import profiles as prof
+
+TOKEN = secrets.token_urlsafe(32)
+LOCK = threading.RLock()
+TRANSFER_LOCK = threading.Lock()
+JOBS = {}
+JOBS_LOCK = threading.RLock()
+EXTS = {".iso", ".gcm", ".rvz", ".wbfs", ".ciso", ".gcz", ".wia"}
+COMPAT_URL = "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/data/games_data.json"
+CACHE_ROOT = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "spdw-stream-portal"
+COMPAT_CACHE = CACHE_ROOT / "games_data.json"
+ALLOWED_ASPECTS = {"auto", "4:3", "16:9", "stretch"}
+ALLOWED_DISPLAY_MODES = {"", "640x480", "800x600", "1024x768", "1280x960", "1600x1200"}
+
+
+def local_host_allowed(value):
+    try:
+        host = urlparse("//" + str(value or "")).hostname
+    except ValueError:
+        return False
+    return host in ("127.0.0.1", "localhost")
+
+
+def local_origin_allowed(value):
+    if not value:
+        return True
+    try:
+        parsed = urlparse(value)
+    except ValueError:
+        return False
+    return (
+        parsed.scheme == "http"
+        and parsed.hostname in ("127.0.0.1", "localhost")
+        and parsed.username is None
+        and parsed.password is None
+        and parsed.path in ("", "/")
+        and parsed.params == ""
+        and parsed.query == ""
+        and parsed.fragment == ""
+    )
+
+
+def remote_path(value):
+    value = str(value or "").strip()
+    if not value.startswith("/") or any(part in (".", "..") for part in value.split("/")):
+        raise ValueError("Remote paths must be absolute and cannot contain dot segments.")
+    if any(c in value for c in "\r\n\x00"):
+        raise ValueError("Invalid remote path.")
+    return posixpath.normpath(value)
+
+
+def within_remote(root, target):
+    root = remote_path(root).rstrip("/") or "/"
+    target = remote_path(target)
+    return target == root or target.startswith(root.rstrip("/") + "/")
+
+
+def device(cfg):
+    d = cfg.get("device") or {}
+    return {
+        "host": str(d.get("host", "")),
+        "port": int(d.get("port", 22)),
+        "user": str(d.get("user", "")),
+        "rom_path": str(d.get("rom_path", "")),
+    }
+
+
+def sftp_target(d):
+    host = d["host"]
+    if ":" in host and not host.startswith("["):
+        host = "[" + host + "]"
+    return d["user"] + "@" + host
+
+
+def quote_path(value):
+    value = str(value)
+    if any(c in value for c in "\r\n\x00"):
+        raise ValueError("Invalid path.")
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def sftp_command(cfg, commands, timeout=30, quiet=True):
+    d = device(cfg)
+    if not re.fullmatch(r"[A-Za-z0-9_.:\[\]-]{1,253}", d["host"]):
+        raise ValueError("Configure a valid device host or IP.")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", d["user"]):
+        raise ValueError("Configure a valid SSH username.")
+    if not 1 <= d["port"] <= 65535:
+        raise ValueError("SFTP port must be between 1 and 65535.")
+    if not shutil.which("sftp"):
+        raise RuntimeError("OpenSSH sftp client is not installed.")
+    args = ["sftp"]
+    if quiet:
+        args.append("-q")
+    args += [
+        "-P", str(d["port"]), "-oBatchMode=yes", "-oConnectTimeout=8",
+        "-oStrictHostKeyChecking=yes", "-b", "-", sftp_target(d),
+    ]
+    proc = subprocess.run(
+        args, input="\n".join(commands) + "\n", text=True,
+        capture_output=True, timeout=timeout,
+    )
+    if proc.returncode:
+        detail = (proc.stderr or proc.stdout or "SFTP operation failed").strip()
+        raise RuntimeError(detail[-1400:])
+    return proc.stdout.strip()
+
+
+def remote_exists(cfg, path):
+    try:
+        sftp_command(cfg, ["ls " + quote_path(path)])
+        return True
+    except RuntimeError as exc:
+        msg = str(exc).lower()
+        if "no such file" in msg or "not found" in msg or "couldn't stat" in msg:
+            return False
+        raise
+
+
+def _parse_sftp_listing(raw, base):
+    entries = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line or line.startswith("sftp>") or line.startswith("Connected to"):
+            continue
+        # OpenSSH's long listing has permissions, link count, owner, group, size,
+        # date/time and filename. Unknown lines are preserved as non-actionable.
+        cols = line.split(None, 8)
+        if len(cols) < 9 or not re.match(r"^[bcdlps-][rwxStTs-]{9}", cols[0]):
+            entries.append({"name": line, "path": "", "type": "unknown", "actionable": False})
+            continue
+        mode, size = cols[0], cols[4]
+        name = cols[8]
+        if name in (".", ".."):
+            continue
+        kind = "directory" if mode.startswith("d") else "symlink" if mode.startswith("l") else "file"
+        safe_name = not any(c in name for c in "\r\n\x00") and name not in (".", "..")
+        full = posixpath.join(base, name) if safe_name else ""
+        entries.append({
+            "name": name,
+            "path": full,
+            "type": kind,
+            "size": int(size) if size.isdigit() else None,
+            "actionable": bool(safe_name and kind in ("directory", "file")),
+            "extension": Path(name).suffix.lower(),
+        })
+    return sorted(entries, key=lambda x: (x["type"] != "directory", x["name"].lower()))
+
+
+def discover_devices(port=22):
+    """Find known LAN neighbors and online Tailscale peers; never sweep subnets."""
+    candidates = {}
+
+    def add(host, label, source, online=True):
+        host = str(host or "").strip().strip("[]")
+        if not host or host in ("127.0.0.1", "::1") or not online:
+            return
+        item = candidates.setdefault(host, {"host": host, "name": label or host, "sources": []})
+        if source not in item["sources"]:
+            item["sources"].append(source)
+        if label and item["name"] == host:
+            item["name"] = label
+
+    if shutil.which("ip"):
+        try:
+            proc = subprocess.run(["ip", "-j", "neigh", "show"], capture_output=True,
+                                  text=True, timeout=4)
+            if proc.returncode == 0:
+                for row in json.loads(proc.stdout or "[]"):
+                    raw_states = row.get("state", [])
+                    states = {raw_states} if isinstance(raw_states, str) else set(raw_states)
+                    if states.intersection({"FAILED", "INCOMPLETE", "NOARP"}):
+                        continue
+                    add(row.get("dst"), row.get("lladdr", ""), "LAN neighbor")
+        except (OSError, ValueError, subprocess.TimeoutExpired):
+            pass
+
+    if shutil.which("tailscale"):
+        try:
+            proc = subprocess.run(["tailscale", "status", "--json"], capture_output=True,
+                                  text=True, timeout=5)
+            if proc.returncode == 0:
+                status = json.loads(proc.stdout or "{}")
+                self_ips = set((status.get("Self") or {}).get("TailscaleIPs", []))
+                for peer in (status.get("Peer") or {}).values():
+                    if not peer.get("Online"):
+                        continue
+                    name = peer.get("HostName") or peer.get("DNSName") or "Tailscale peer"
+                    for address in peer.get("TailscaleIPs", []):
+                        if address not in self_ips and ":" not in address:
+                            add(address, name, "Tailscale")
+        except (OSError, ValueError, subprocess.TimeoutExpired):
+            pass
+
+    found = []
+    for item in candidates.values():
+        try:
+            with socket.create_connection((item["host"], int(port)), timeout=0.45):
+                item["sftp_port_open"] = True
+        except OSError:
+            item["sftp_port_open"] = False
+        found.append(item)
+    return sorted(found, key=lambda x: (not x["sftp_port_open"], x["name"].lower()))
+
+
+def _compat_source():
+    packaged = Path("/usr/share/spdw-stream-portal/data/games_data.json")
+    for candidate in (packaged, COMPAT_CACHE):
+        if candidate.is_file():
+            try:
+                data = json.loads(candidate.read_text(encoding="utf-8"))
+                if data.get("schema_version") == 2 and isinstance(data.get("games"), list):
+                    return data
+            except (OSError, ValueError, AttributeError):
+                continue
+    return None
+
+
+def refresh_compatibility():
+    request = urllib.request.Request(COMPAT_URL, headers={"User-Agent": "Dolphin-RtStream-PC-Companion/5"})
+    with urllib.request.urlopen(request, timeout=20) as response:
+        raw = response.read(24 * 1024 * 1024 + 1)
+    if len(raw) > 24 * 1024 * 1024:
+        raise RuntimeError("Compatibility database exceeds the 24 MiB safety limit.")
+    data = json.loads(raw.decode("utf-8"))
+    if data.get("schema_version") != 2 or not isinstance(data.get("games"), list):
+        raise RuntimeError("Downloaded compatibility database has an unsupported schema.")
+    CACHE_ROOT.mkdir(parents=True, exist_ok=True)
+    temp = COMPAT_CACHE.with_suffix(".tmp")
+    temp.write_bytes(raw)
+    temp.replace(COMPAT_CACHE)
+    return {"games": len(data["games"]), "last_update": data.get("last_update", "")}
+
+
+def _compat_index():
+    data = _compat_source()
+    if not data:
+        return {}
+    out = {}
+    for group in data["games"]:
+        info = group.get("game_info") or {}
+        game_id = str(info.get("game_id", "")).upper()
+        system = str(info.get("system", "")).lower()
+        if not re.fullmatch(r"[A-Z0-9]{6}", game_id):
+            continue
+        rows = []
+        for entry in group.get("entries", []):
+            review = entry.get("test_review") or {}
+            if isinstance(review.get("rating"), int):
+                rows.append(review["rating"])
+        if rows:
+            out[(game_id, system)] = {
+                "reports": len(rows),
+                "average_rating": round(sum(rows) / len(rows), 1),
+                "rating_max": 5,
+                "last_update": data.get("last_update", ""),
+            }
+    return out
+
+
+def _library(cfg, include_compat=True):
+    games = core.load_library(cfg)
+    if include_compat:
+        index = _compat_index()
+        for game in games:
+            kind = "gc" if str(game.get("kind", "")).lower() == "gc" else "wii"
+            game["compatibility"] = index.get((str(game.get("id", "")).upper(), kind))
+    return games
+
+
+def _new_job(kind, filename, total, worker):
+    job_id = uuid.uuid4().hex[:12]
+    row = {
+        "id": job_id, "kind": kind, "filename": filename,
+        "state": "queued", "progress": 0, "progress_known": False,
+        "bytes_total": int(total or 0), "message": "Queued",
+        "created": time.time(), "updated": time.time(),
+    }
+    with JOBS_LOCK:
+        JOBS[job_id] = row
+
+    def run():
+        with JOBS_LOCK:
+            JOBS[job_id]["state"] = "running"
+            JOBS[job_id]["message"] = "Waiting for SFTP transfer slot"
+            JOBS[job_id]["updated"] = time.time()
+        try:
+            with TRANSFER_LOCK:
+                worker(job_id)
+            with JOBS_LOCK:
+                JOBS[job_id]["state"] = "completed"
+                JOBS[job_id]["progress"] = 100
+                JOBS[job_id]["progress_known"] = True
+                JOBS[job_id]["message"] = "Transfer completed"
+                JOBS[job_id]["updated"] = time.time()
+        except Exception as exc:
+            with JOBS_LOCK:
+                JOBS[job_id]["state"] = "failed"
+                JOBS[job_id]["message"] = str(exc)[-1200:]
+                JOBS[job_id]["updated"] = time.time()
+
+    threading.Thread(target=run, name="rtstream-transfer-" + job_id, daemon=True).start()
+    return {"job_id": job_id}
+
+
+def _run_sftp_transfer(job_id, cfg, command, timeout):
+    d = device(cfg)
+    host = sftp_target(d)
+    args = [
+        "sftp", "-P", str(d["port"]), "-oBatchMode=yes", "-oConnectTimeout=8",
+        "-oStrictHostKeyChecking=yes", "-b", "-", host,
+    ]
+    proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, bufsize=4096)
+    try:
+        proc.stdin.write((command + "\n").encode())
+        proc.stdin.close()
+        start = time.monotonic()
+        tail = ""
+        selector = selectors.DefaultSelector()
+        selector.register(proc.stdout, selectors.EVENT_READ)
+        while True:
+            if time.monotonic() - start > timeout:
+                proc.kill()
+                raise TimeoutError("SFTP transfer timed out; any partial file has been retained for resume.")
+            events = selector.select(timeout=0.25)
+            for key, _mask in events:
+                chunk = key.fileobj.read1(1024)
+                if not chunk:
+                    selector.unregister(key.fileobj)
+                    continue
+                text = chunk.decode("utf-8", "replace")
+                tail = (tail + text)[-2400:]
+                matches = re.findall(r"(?<!\d)(\d{1,3})%", text)
+                if matches:
+                    percent = max(0, min(99, int(matches[-1])))
+                    with JOBS_LOCK:
+                        JOBS[job_id]["progress"] = percent
+                        JOBS[job_id]["progress_known"] = True
+                        JOBS[job_id]["message"] = "Transferring…"
+                        JOBS[job_id]["updated"] = time.time()
+            if proc.poll() is not None and not selector.get_map():
+                break
+        selector.close()
+        tail += proc.stdout.read().decode("utf-8", "replace")
+        rc = proc.wait(timeout=5)
+        if rc:
+            raise RuntimeError(tail.strip()[-1200:] or "SFTP transfer failed.")
+        return tail.strip()
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+            proc.wait(timeout=3)
+
+
+def _remote_root(cfg):
+    root = device(cfg)["rom_path"]
+    if not root:
+        raise ValueError("Set the handheld ROM destination path first.")
+    return remote_path(root)
+
+
+def _validate_remote_rom(cfg, value):
+    path = remote_path(value)
+    root = _remote_root(cfg)
+    if not within_remote(root, path) or path == root:
+        raise ValueError("The selected remote ROM must be inside the configured ROM directory.")
+    if Path(path).suffix.lower() not in EXTS:
+        raise ValueError("Only supported GameCube/Wii ROM file extensions are allowed.")
+    return path
+
+
+def _validate_local_rom(cfg, value):
+    src = Path(str(value or "")).expanduser().resolve(strict=True)
+    if not src.is_file() or src.suffix.lower() not in EXTS:
+        raise ValueError("Choose an existing GameCube/Wii ROM file.")
+    roots = [Path(x).expanduser().resolve() for x in cfg.get("gc", []) + cfg.get("wii", [])]
+    if not any(src == root or root in src.parents for root in roots):
+        raise ValueError("ROM must be inside a configured library folder.")
+    return src
+
+
+def queue_upload(cfg, body):
+    src = _validate_local_rom(cfg, body.get("local"))
+    root = _remote_root(cfg)
+    dest_dir = remote_path(body.get("remote") or root)
+    if not within_remote(root, dest_dir):
+        raise ValueError("Upload destination must be inside the configured ROM directory.")
+    target = posixpath.join(dest_dir, src.name)
+    exists = remote_exists(cfg, target)
+    resume = bool(body.get("resume"))
+    overwrite = bool(body.get("overwrite"))
+    if exists and not (resume or overwrite):
+        raise ValueError("Target already exists. Choose Resume or confirm overwrite.")
+    if exists and resume and overwrite:
+        raise ValueError("Choose either resume or overwrite, not both.")
+    command = "put " + ("-a " if resume else "") + quote_path(src) + " " + quote_path(target)
+
+    def worker(job_id):
+        _run_sftp_transfer(job_id, cfg, command, 3600)
+
+    return _new_job("upload", src.name, src.stat().st_size, worker)
+
+
+def queue_download(cfg, body):
+    remote = _validate_remote_rom(cfg, body.get("remote"))
+    root = core.lib_dir(cfg).resolve() / "received"
+    root.mkdir(parents=True, exist_ok=True)
+    name = Path(remote).name
+    if name in ("", ".", ".."):
+        raise ValueError("Remote ROM filename is invalid.")
+    target = (root / name).resolve()
+    if root.resolve() not in target.parents:
+        raise ValueError("Download destination escaped the receive folder.")
+    partial = target.with_name(target.name + ".part")
+    resume = bool(body.get("resume"))
+    overwrite = bool(body.get("overwrite"))
+    if target.exists() and not (resume or overwrite):
+        raise ValueError("Local file already exists. Choose Resume or confirm overwrite.")
+    if target.exists() and resume:
+        raise ValueError("The completed local file already exists; resume is only for a .part file.")
+    if partial.exists() and not (resume or overwrite):
+        raise ValueError("A partial download exists. Choose Resume or restart it.")
+    if partial.exists() and overwrite:
+        partial.unlink()
+    if not remote_exists(cfg, remote):
+        raise ValueError("Remote ROM does not exist.")
+    command = "get " + ("-a " if resume else "") + quote_path(remote) + " " + quote_path(partial)
+
+    def worker(job_id):
+        _run_sftp_transfer(job_id, cfg, command, 3600)
+        partial.replace(target)
+
+    total = target.stat().st_size if target.exists() else 0
+    return _new_job("download", name, total, worker)
+
+
 def snapshot():
- c=core.load_config(); g=core.load_library(c); d=device(c); lib=core.lib_dir(c); lan=core.lan_ip(); ts=core.tailscale_ip()
- try: u=shutil.disk_usage(lib if lib.exists() else lib.parent); disk={"free":u.free,"total":u.total}
- except OSError: disk={"free":0,"total":0}
- return {"version":"5.0.0-dev","sunshine":{"installed":core.sunshine_installed(),"running":core.sunshine_running()},"sync_server":{"running":core.server_running(),"port":int(c.get("port",8765))},"network":{"lan":lan,"tailscale":ts,"sync_port":int(c.get("port",8765))},"library":{"count":len(g),"gc":sum(x.get("kind")=="gc" for x in g),"wii":sum(x.get("kind")=="wii" for x in g),"path":str(lib),"gc_paths":c.get("gc",[]),"wii_paths":c.get("wii",[]),"disk":disk},"device":{**d,"configured":bool(d["host"] and d["user"] and d["rom_path"])},"checks":[{"label":a,"state":b,"detail":c} for a,b,c in core.system_checks(c)]}
-def action(b):
- c=core.load_config(); op=b.get("action")
- if op=="save-device":
-  d={"host":str(b.get("host","")).strip(),"user":str(b.get("user","")).strip(),"port":int(b.get("port",22)),"rom_path":str(b.get("rom_path","")).strip()}
-  if d["host"] and not re.fullmatch(r"[A-Za-z0-9_.:-]{1,253}",d["host"]): raise ValueError("Invalid host.")
-  if d["user"] and not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}",d["user"]): raise ValueError("Invalid username.")
-  if not 1<=d["port"]<=65535: raise ValueError("Invalid port.")
-  if d["rom_path"]: remote_path(d["rom_path"])
-  c["device"]=d; core.save_config(c); return {"saved":True}
- if op=="save-sources":
-  def dirs(key):
-   out=[]
-   for raw in b.get(key,[]):
-    p=Path(str(raw).strip()).expanduser()
-    if not str(raw).strip(): continue
-    if not p.is_dir(): raise ValueError("ROM source folder does not exist: "+str(p))
-    value=str(p.resolve())
-    if value not in out: out.append(value)
-   return out
-  c["gc"]=dirs("gc"); c["wii"]=dirs("wii"); core.save_config(c)
-  return {"gc":len(c["gc"]),"wii":len(c["wii"])}
- if op=="sftp-test": return {"message":sftp(c,["pwd"])}
- if op=="sftp-list":
-  p=remote_path(b.get("path") or device(c)["rom_path"]); return {"path":p,"listing":sftp(c,["ls -la "+quote_path(p)])}
- if op=="sftp-upload":
-  src=Path(str(b.get("local",""))).expanduser().resolve(strict=True)
-  if not src.is_file() or src.suffix.lower() not in EXTS: raise ValueError("Choose a valid GameCube/Wii ROM.")
-  roots=[Path(x).expanduser().resolve() for x in c.get("gc",[])+c.get("wii",[])]
-  if not any(src==r or r in src.parents for r in roots): raise ValueError("ROM must be inside a configured library folder.")
-  dst=remote_path(b.get("remote") or device(c)["rom_path"]); target=dst.rstrip("/")+"/"+src.name
-  try: sftp(c,["ls "+quote_path(target)])
-  except RuntimeError as e:
-   if "No such file" not in str(e) and "not found" not in str(e).lower(): raise
-  else:
-   if not b.get("overwrite"): raise ValueError("Target already exists. Confirm overwrite to replace it.")
-  cmd="put "+quote_path(str(src))+" "+quote_path(target)
-  return {"message":sftp(c,[cmd],3600)}
- if op=="scan":
-  with LOCK: g=core.build(c,refresh_covers=bool(b.get("refresh")))
-  return {"count":len(g)}
- if op=="library-server-start": return {"running":core.server_start()}
- if op=="library-server-stop": core.server_stop(); return {"running":core.server_running()}
- if op=="sunshine-start": core.sunshine_start(); return {"running":core.sunshine_running()}
- if op=="sunshine-stop": core.sunshine_stop(); return {"running":core.sunshine_running()}
- if op=="sunshine-restart": core.sunshine_stop(); core.sunshine_start(); return {"running":core.sunshine_running()}
- if op=="checks": return {"checks":[{"label":a,"state":b,"detail":c} for a,b,c in core.system_checks(c)]}
- if op=="open-sunshine": subprocess.Popen(["xdg-open","https://localhost:47990"],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL); return {"opened":True}
- raise ValueError("Unknown action.")
+    cfg = core.load_config()
+    games = _library(cfg)
+    d = device(cfg)
+    lib = core.lib_dir(cfg)
+    lan, ts = core.lan_ip(), core.tailscale_ip()
+    try:
+        usage = shutil.disk_usage(lib if lib.exists() else lib.parent)
+        disk = {"free": usage.free, "total": usage.total}
+    except OSError:
+        disk = {"free": 0, "total": 0}
+    compat = _compat_source()
+    return {
+        "version": "5.1.0-dev",
+        "sunshine": {"installed": core.sunshine_installed(), "running": core.sunshine_running()},
+        "sync_server": {"running": core.server_running(), "port": int(cfg.get("port", 8765))},
+        "network": {"lan": lan, "tailscale": ts, "sync_port": int(cfg.get("port", 8765))},
+        "library": {
+            "count": len(games), "gc": sum(g.get("kind") == "gc" for g in games),
+            "wii": sum(g.get("kind") == "wii" for g in games), "path": str(lib),
+            "gc_paths": cfg.get("gc", []), "wii_paths": cfg.get("wii", []), "disk": disk,
+        },
+        "device": {**d, "configured": bool(d["host"] and d["user"] and d["rom_path"])},
+        "compatibility": {
+            "available": bool(compat),
+            "last_update": compat.get("last_update", "") if compat else "",
+            "source": "official Rt:Core games_data.json" if compat else "not cached",
+        },
+        "checks": [{"label": a, "state": b, "detail": c} for a, b, c in core.system_checks(cfg)],
+    }
+
+
+def action(body):
+    cfg = core.load_config()
+    op = body.get("action")
+    if op == "save-device":
+        d = {
+            "host": str(body.get("host", "")).strip(),
+            "user": str(body.get("user", "")).strip(),
+            "port": int(body.get("port", 22)),
+            "rom_path": str(body.get("rom_path", "")).strip(),
+        }
+        if d["host"] and not re.fullmatch(r"[A-Za-z0-9_.:\[\]-]{1,253}", d["host"]):
+            raise ValueError("Invalid host or IP.")
+        if d["user"] and not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", d["user"]):
+            raise ValueError("Invalid username.")
+        if not 1 <= d["port"] <= 65535:
+            raise ValueError("Invalid SFTP port.")
+        if d["rom_path"]:
+            remote_path(d["rom_path"])
+        cfg["device"] = d
+        core.save_config(cfg)
+        return {"saved": True}
+
+    if op == "save-sources":
+        def dirs(key):
+            out = []
+            for raw in body.get(key, []):
+                path = Path(str(raw).strip()).expanduser()
+                if not str(raw).strip():
+                    continue
+                if not path.is_dir():
+                    raise ValueError("ROM source folder does not exist: " + str(path))
+                value = str(path.resolve())
+                if value not in out:
+                    out.append(value)
+            return out
+        cfg["gc"], cfg["wii"] = dirs("gc"), dirs("wii")
+        core.save_config(cfg)
+        return {"gc": len(cfg["gc"]), "wii": len(cfg["wii"])}
+
+    if op == "discover-devices":
+        port = int(body.get("port", device(cfg)["port"]))
+        if not 1 <= port <= 65535:
+            raise ValueError("Invalid discovery port.")
+        return {"devices": discover_devices(port)}
+
+    if op == "sftp-test":
+        return {"message": sftp_command(cfg, ["pwd"])}
+
+    if op == "sftp-list":
+        path = remote_path(body.get("path") or _remote_root(cfg))
+        if not within_remote(_remote_root(cfg), path):
+            raise ValueError("Browsing is restricted to the configured ROM directory.")
+        raw = sftp_command(cfg, ["ls -la " + quote_path(path)])
+        return {"path": path, "listing": raw, "entries": _parse_sftp_listing(raw, path)}
+
+    if op == "sftp-upload":
+        return queue_upload(cfg, body)
+
+    if op == "sftp-download":
+        return queue_download(cfg, body)
+
+    if op == "sftp-delete":
+        path = _validate_remote_rom(cfg, body.get("remote"))
+        if not body.get("confirm"):
+            raise ValueError("Deletion requires explicit confirmation.")
+        sftp_command(cfg, ["rm " + quote_path(path)])
+        return {"deleted": path}
+
+    if op == "sftp-mkdir":
+        path = remote_path(body.get("remote"))
+        root = _remote_root(cfg)
+        if path == root or not within_remote(root, path):
+            raise ValueError("New folders must be created below the configured ROM directory.")
+        sftp_command(cfg, ["mkdir " + quote_path(path)])
+        return {"created": path}
+
+    if op == "scan":
+        with LOCK:
+            games = core.build(cfg, refresh_covers=bool(body.get("refresh")))
+        return {"count": len(games)}
+
+    if op == "refresh-compatibility":
+        return refresh_compatibility()
+
+    if op == "set-profile":
+        kind, name = str(body.get("kind", "")), str(body.get("name", ""))
+        if kind not in prof.KINDS:
+            raise ValueError("Unknown controller profile type.")
+        prof.set_active(cfg, kind, name)
+        core.save_config(cfg)
+        return {"active": prof.active(cfg)}
+
+    if op == "apply-profiles":
+        if not core.install_dolphin_profiles(cfg, activate=True):
+            raise RuntimeError("Profiles could not be applied. Check Dolphin state and logs.")
+        return {"applied": True}
+
+    if op == "save-stream-settings":
+        aspect = str(body.get("aspect", "auto"))
+        display = str(body.get("display_mode", ""))
+        if aspect not in ALLOWED_ASPECTS or display not in ALLOWED_DISPLAY_MODES:
+            raise ValueError("Unsupported stream display setting.")
+        cfg["aspect"] = aspect
+        cfg["hide_panel"] = bool(body.get("hide_panel", True))
+        cfg["display_mode"] = display
+        cfg["dolphin_args"] = core.FULLSCREEN_ARGS if body.get("fullscreen", True) else ""
+        core.save_config(cfg)
+        games = core.load_library(cfg)
+        if games:
+            core.update_sunshine_apps(cfg, games)
+        return {"saved": True, "sunshine_entries_updated": bool(games)}
+
+    if op == "library-server-start":
+        return {"running": core.server_start()}
+    if op == "library-server-stop":
+        core.server_stop()
+        return {"running": core.server_running()}
+    if op == "sunshine-start":
+        core.sunshine_start()
+        return {"running": core.sunshine_running()}
+    if op == "sunshine-stop":
+        core.sunshine_stop()
+        return {"running": core.sunshine_running()}
+    if op == "sunshine-restart":
+        core.sunshine_stop()
+        core.sunshine_start()
+        return {"running": core.sunshine_running()}
+    if op == "checks":
+        return {"checks": [{"label": a, "state": b, "detail": c} for a, b, c in core.system_checks(cfg)]}
+    if op == "open-sunshine":
+        subprocess.Popen(["xdg-open", "https://localhost:47990"],
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return {"opened": True}
+    raise ValueError("Unknown action.")
+
+
 class Handler(BaseHTTPRequestHandler):
- def log_message(self,*a): pass
- def reply(self,code,obj):
-  d=json.dumps(obj,ensure_ascii=False).encode(); self.send_response(code); self.send_header("Content-Type","application/json; charset=utf-8"); self.send_header("Cache-Control","no-store"); self.send_header("Content-Length",str(len(d))); self.end_headers(); self.wfile.write(d)
- def do_GET(self):
-  p=urlparse(self.path).path
-  if p=="/api/state": return self.reply(200,snapshot())
-  if p=="/api/library": return self.reply(200,{"games":core.load_library(core.load_config())})
-  f=WEB/("index.html" if p=="/" else p.lstrip("/"))
-  if p not in ("/","/app.css","/app.js") or not f.is_file(): return self.send_error(404)
-  d=f.read_text(encoding="utf-8").replace("__TOKEN__",TOKEN).encode() if p=="/" else f.read_bytes()
-  self.send_response(200); self.send_header("Content-Type","text/html; charset=utf-8" if p=="/" else ("text/css; charset=utf-8" if p.endswith(".css") else "text/javascript; charset=utf-8")); self.send_header("Cache-Control","no-store"); self.send_header("Content-Length",str(len(d))); self.end_headers(); self.wfile.write(d)
- def do_POST(self):
-  if self.headers.get("X-RtStream-Token","")!=TOKEN: return self.reply(403,{"error":"Invalid local session."})
-  origin=self.headers.get("Origin","")
-  if origin and not origin.startswith(("http://127.0.0.1:","http://localhost:")): return self.reply(403,{"error":"Cross-origin request blocked."})
-  try:
-   n=int(self.headers.get("Content-Length","0"))
-   if n<0 or n>1048576: raise ValueError("Invalid request size.")
-   b=json.loads(self.rfile.read(n) or b"{}")
-   if not isinstance(b,dict): raise ValueError("Invalid request.")
-   return self.reply(200,{"ok":True,"result":action(b)})
-  except (ValueError,RuntimeError,OSError,subprocess.TimeoutExpired) as e: return self.reply(400,{"ok":False,"error":str(e)})
+    server_version = "RtStreamPortal/5.1"
+
+    def log_message(self, *_):
+        pass
+
+    def reply(self, code, obj):
+        data = json.dumps(obj, ensure_ascii=False).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_GET(self):
+        if not local_host_allowed(self.headers.get("Host", "")):
+            return self.reply(403, {"error": "Local host header required."})
+        path = urlparse(self.path).path
+        if path == "/api/state":
+            return self.reply(200, snapshot())
+        if path == "/api/library":
+            return self.reply(200, {"games": _library(core.load_config())})
+        if path == "/api/profiles":
+            cfg = core.load_config()
+            return self.reply(200, {"active": prof.active(cfg), "profiles": {
+                kind: prof.available(cfg, kind) for kind in prof.KINDS
+            }})
+        if path == "/api/settings":
+            cfg = core.load_config()
+            return self.reply(200, {
+                "aspect": cfg.get("aspect", "auto"),
+                "display_mode": cfg.get("display_mode", "1280x960"),
+                "hide_panel": bool(cfg.get("hide_panel", True)),
+                "fullscreen": "Fullscreen=True" in str(cfg.get("dolphin_args", "")),
+            })
+        if path == "/api/jobs":
+            with JOBS_LOCK:
+                rows = [dict(row) for row in JOBS.values()]
+            return self.reply(200, {"jobs": sorted(rows, key=lambda x: x["created"], reverse=True)[:40]})
+        if path.startswith("/api/jobs/"):
+            job_id = path.rsplit("/", 1)[-1]
+            with JOBS_LOCK:
+                row = JOBS.get(job_id)
+                return self.reply(200 if row else 404, dict(row) if row else {"error": "Job not found."})
+        if path not in ("/", "/app.css", "/app.js"):
+            return self.send_error(404)
+        target = WEB / ("index.html" if path == "/" else path.lstrip("/"))
+        if not target.is_file():
+            return self.send_error(404)
+        data = target.read_text(encoding="utf-8").replace("__TOKEN__", TOKEN).encode() if path == "/" else target.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8" if path == "/" else
+                         ("text/css; charset=utf-8" if path.endswith(".css") else "text/javascript; charset=utf-8"))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_POST(self):
+        if not local_host_allowed(self.headers.get("Host", "")):
+            return self.reply(403, {"error": "Local host header required."})
+        if self.headers.get("X-RtStream-Token", "") != TOKEN:
+            return self.reply(403, {"error": "Invalid local session."})
+        if not local_origin_allowed(self.headers.get("Origin", "")):
+            return self.reply(403, {"error": "Cross-origin request blocked."})
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if length < 0 or length > 1024 * 1024:
+                raise ValueError("Invalid request size.")
+            body = json.loads(self.rfile.read(length) or b"{}")
+            if not isinstance(body, dict):
+                raise ValueError("Invalid request.")
+            return self.reply(200, {"ok": True, "result": action(body)})
+        except (ValueError, RuntimeError, OSError, subprocess.TimeoutExpired, TimeoutError) as exc:
+            return self.reply(400, {"ok": False, "error": str(exc)})
+
+
 def main():
- p=argparse.ArgumentParser(); p.add_argument("--port",type=int,default=8766); p.add_argument("--no-browser",action="store_true"); a=p.parse_args()
- if not 1<=a.port<=65535: p.error("invalid port")
- srv=ThreadingHTTPServer(("127.0.0.1",a.port),Handler); srv.daemon_threads=True; url="http://127.0.0.1:%d/"%a.port
- print("Dolphin Rt:Stream Portal: "+url,flush=True)
- if not a.no_browser:
-  import webbrowser; webbrowser.open(url)
- try: srv.serve_forever(poll_interval=.5)
- except KeyboardInterrupt: pass
- finally: srv.server_close()
-if __name__=="__main__": main()
+    parser = argparse.ArgumentParser(description="Dolphin Rt:Stream PC Companion")
+    parser.add_argument("--port", type=int, default=8766)
+    parser.add_argument("--no-browser", action="store_true")
+    args = parser.parse_args()
+    if not 1 <= args.port <= 65535:
+        parser.error("port must be between 1 and 65535")
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    server.daemon_threads = True
+    url = "http://127.0.0.1:%d/" % args.port
+    print("Dolphin Rt:Stream PC Companion: " + url, flush=True)
+    if not args.no_browser:
+        import webbrowser
+        webbrowser.open(url)
+    try:
+        server.serve_forever(poll_interval=0.5)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
+if __name__ == "__main__":
+    main()
