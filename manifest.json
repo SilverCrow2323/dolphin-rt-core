@@ -1,16 +1,26 @@
 {
-  "name": "Dolphin Rt:Core Compatibility Database",
-  "short_name": "Rt:Core DB",
-  "description": "Community-driven GameCube and Wii compatibility data for Dolphin Rt:Core handhelds.",
+  "name": "Dolphin Rt:Core — Project Portal",
+  "short_name": "Rt:Core",
+  "description": "The official Dolphin Rt:Core portal for releases, handheld integrations, Rt:UI, Rt:Stream, documentation and compatibility reports.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#08080f",
-  "theme_color": "#7c3aed",
+  "background_color": "#090a11",
+  "theme_color": "#0a0b12",
   "lang": "en",
   "icons": [
-    {"src":"./assets/spdw_symbol.png","sizes":"192x192","type":"image/png","purpose":"any"},
-    {"src":"./assets/spdw_symbol.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "./assets/spdw_symbol.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/spdw_symbol.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
