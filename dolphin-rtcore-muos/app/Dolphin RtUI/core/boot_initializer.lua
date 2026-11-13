@@ -14,6 +14,17 @@ local Shell = require("core.shell")
 
 local M = {}
 
+local function require_optional(module_name)
+  local ok, module = pcall(require, module_name)
+  if not ok then
+    pcall(function()
+      require("ui.notify").show("warning",
+        "Funzione non disponibile: " .. tostring(module_name))
+    end)
+  end
+  return ok, module
+end
+
 local URLS = {
   games_data = os.getenv("DOLPHINUI_URL_GAMESDATA")
                or "https://github.com/SilverCrow2323/dolphin-rt-core/raw/refs/heads/main/data/games_data.json",
@@ -142,8 +153,8 @@ function M.update(dt)
       spawn_dl("rtcheats_db",       URLS.rtcheats_db,       "data/rtcheats_db.json")
       return
     end
-    local ok, AU = (function() local ok,m = pcall(require, "core.app_updater"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.app_updater") end; return ok and m end)()
-    if ok then AU.check_async() end
+    local ok, AU = require_optional("core.app_updater")
+    if ok and AU and AU.check_async then AU.check_async() end
     STATE.step = "wait_update"; STATE.t = 0
 
   elseif step == "wait_update" then
@@ -172,8 +183,8 @@ function M.update(dt)
       else
         Hub.push("warning", "Data Center", n_ok .. "/3 updated (some failed)", { ttl = 4 })
       end
-      local ok_dep, DEP = (function() local ok,m = pcall(require, "core.gamesettings_deployer"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.gamesettings_deployer") end; return ok and m end)()
-      if ok_dep and DEP then
+      local ok_dep, DEP = require_optional("core.gamesettings_deployer")
+      if ok_dep and DEP and DEP.start then
         STATE.results.gamesets_status = "running"
         pcall(DEP.start)
       else
@@ -256,8 +267,8 @@ function M.update(dt)
     end
 
   elseif step == "download_cheats" then
-    local ok, CD = (function() local ok,m = pcall(require, "core.cheats_downloader"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.cheats_downloader") end; return ok and m end)()
-    if ok then
+    local ok, CD = require_optional("core.cheats_downloader")
+    if ok and CD and CD.start_for then
       STATE.results.cheats_status = "running"
       CD.start_for(STATE.ids)
     else
@@ -278,8 +289,8 @@ function M.update(dt)
     end
 
   elseif step == "build_rtid" then
-    local ok, RB = (function() local ok,m = pcall(require, "core.rtid_builder"); if not ok then require("ui.notify").show("warning", "Funzione non disponibile: core.rtid_builder") end; return ok and m end)()
-    if ok then
+    local ok, RB = require_optional("core.rtid_builder")
+    if ok and RB and RB.rebuild_all then
       local res = RB.rebuild_all()
       STATE.results.cards = res.built or 0
       Hub.push("success", "GamesLibrary updated",
