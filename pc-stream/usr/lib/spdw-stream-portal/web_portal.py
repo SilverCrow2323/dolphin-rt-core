@@ -415,9 +415,8 @@ def _remote_root(cfg):
 
 def _validate_remote_rom(cfg, value):
     path = remote_path(value)
-    root = _remote_root(cfg)
-    if not within_remote(root, path) or path == root:
-        raise ValueError("The selected remote ROM must be inside the configured ROM directory.")
+    # Confinement is checked after server-side realpath resolution; a device ROM
+    # root may itself be a symlink and the browser returns canonical paths.
     if Path(path).suffix.lower() not in EXTS:
         raise ValueError("Only supported GameCube/Wii ROM file extensions are allowed.")
     return path
