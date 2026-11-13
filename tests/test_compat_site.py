@@ -333,6 +333,7 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn('data-kfilter="stream"', self.portal_html)
         self.assertIn('data-kfilter="tech"', self.portal_html)
         self.assertNotIn("/wiki/", self.portal_html)
+        self.assertNotIn("github.com/SilverCrow2323/dolphin-rt-core/wiki", self.portal_html)
 
     def test_compatibility_page_returns_to_project_portal(self):
         self.assertIn('href="./"', self.html)
