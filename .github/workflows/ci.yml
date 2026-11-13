@@ -79,6 +79,7 @@ jobs:
           luajit tests/test_gameset_browser_nexus.lua
           bash tests/test_controller_button_schema.sh
           bash tests/test_dolphin_sys_packaging.sh
+          bash tests/test_muos_task_toolkit_migration.sh
           bash tests/test_rtui_stream_contract.sh
       - run: DOLPHIN_UI_ONLY=1 bash dolphin-rtcore-muos/tools/build-muxupd.sh dist
       - name: Run muOS Andromeda's own archive checks
