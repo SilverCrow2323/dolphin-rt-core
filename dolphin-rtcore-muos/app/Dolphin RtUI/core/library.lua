@@ -11,6 +11,7 @@ local M = {}
 M.games       = {}       -- { id, path, file, title, system, region, size }
 M.scanned_at  = 0
 M.last_count  = 0
+M.scan_owner  = nil
 
 local EXTS = {
   gc   = { "iso", "gcm", "rvz", "gcz", "ciso" },
@@ -187,7 +188,8 @@ local function add_game(path, entry)
   })
 end
 
-function M.scan_begin()
+function M.scan_begin(owner)
+  M.scan_owner = owner or "caller"
   M.games = {}
   _queue, _qi, _seen = {}, 1, {}
   local paths = Settings.get("rom_paths") or {}
@@ -217,6 +219,7 @@ function M.scan_finish()
   M.scanned_at = os.time()
   M.last_count = #M.games
   M.scanning = false
+  M.scan_owner = nil
   _queue = nil
 end
 
@@ -237,8 +240,10 @@ end
 
 -- Public: full scan. Blocking (usa scan_begin/scan_step per la versione fluida).
 function M.scan()
-  M.scan_begin()
-  while M.scanning do M.scan_step(1) end
+  -- Do not overwrite a scan already owned by the boot coordinator or the UI.
+  -- A synchronous caller only drives a scan that it started itself.
+  if not M.scanning then M.scan_begin("blocking") end
+  while M.scanning and M.scan_owner == "blocking" do M.scan_step(1) end
   return M.games
 end
 
