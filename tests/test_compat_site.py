@@ -318,6 +318,23 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn("does not include the Dolphin emulator executable", self.portal_html)
         self.assertIn("release.draft||release.prerelease", self.portal_html)
 
+    def test_public_knowledge_center_is_embedded_and_searchable(self):
+        for phrase in (
+            "Everything you need.", "Install Dolphin Rt:Core", "Understand the four layers",
+            "Controller profiles", "Performance and game settings", "Read and submit test reports",
+            "PC streaming companion", "Connect and manage handheld storage",
+            "Diagnose common problems", "Build, test and contribute",
+            "Frequently asked questions", "knowledgeSearch", "setupKnowledge()",
+        ):
+            self.assertIn(phrase, self.portal_html)
+        self.assertEqual(self.portal_html.count('class="knowledge-card reveal"'), 10)
+        self.assertIn('data-kfilter="setup"', self.portal_html)
+        self.assertIn('data-kfilter="play"', self.portal_html)
+        self.assertIn('data-kfilter="stream"', self.portal_html)
+        self.assertIn('data-kfilter="tech"', self.portal_html)
+        self.assertNotIn("/wiki/", self.portal_html)
+        self.assertNotIn("github.com/SilverCrow2323/dolphin-rt-core/wiki", self.portal_html)
+
     def test_compatibility_page_returns_to_project_portal(self):
         self.assertIn('href="./"', self.html)
         self.assertIn("Project Portal", self.html)
