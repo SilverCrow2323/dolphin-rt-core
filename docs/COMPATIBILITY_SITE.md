@@ -1,27 +1,32 @@
 # Dolphin Rt:Core Compatibility Database
 
-The repository-root index.html is the static community compatibility website. It is a read-only browser for the tracked compatibility data and GameSettings catalogue. Submitting a test prepares a GitHub issue; it never writes directly to the database.
+The repository-root index.html is the static community compatibility website. It is a read-only browser for tracked compatibility data and GameSettings. Submitting a test prepares a GitHub issue; it never writes directly to the database.
 
-## Source of truth
+## Source of truth and runtime copies
 
-The canonical data files live in:
+The canonical editable database lives in dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json. The website reads this bundled Rt:UI source.
 
-- dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json — compatibility reports.
-- dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json — community GameSettings and shared resources.
+The handheld boot updater also downloads data/games_data.json from the repository root and stores it in the frontend runtime data directory. The bundled Rt:UI file and the root download file are therefore two intentional, byte-identical copies of the same database; neither is an obsolete leftover. The compatibility Lua loader can read the bundled file or the downloaded runtime copy depending on launch context.
 
-The website and the LÖVE Rt:UI frontend consume these same files. Do not create a second manually maintained copy. The repository-root data/games_data.json is a legacy mirror and is not the website's source of truth.
+The canonical JSON source is:
+- dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json — Rt:UI bundle and website source.
+- data/games_data.json — runtime update endpoint consumed by the handheld boot initializer.
+
+The same design applies to neither gamesettings nor unrelated databases; do not infer that every root data file has a bundled mirror. For this compatibility file, keep the two copies identical. tools/normalize_games_data.py checks parity and writes both copies together. Never edit only one copy by hand.
+
+GameSettings remain in dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json for the website and app bundle; the boot updater has its own configured root data endpoint.
 
 ## Compatibility data contract
 
 games_data.json uses schema_version 2. The root contains the legacy version field, schema_version, last_update, catalogs and games.
 
-Each game group is keyed by the exact tuple Game ID + system + region. Every entry is one independently recorded test session. Different devices, firmware, Rt:Core builds, profiles, Dolphin revisions or game regions remain separate observations. A report with a mismatched Game ID is not silently merged under the group's title.
+Each game group is keyed by the exact tuple Game ID + system + region. Every entry is one independently recorded test session. Different devices, firmware, Rt:Core builds, profiles, Dolphin revisions or game regions remain separate observations. A report with a mismatched Game ID is never merged under the group's title.
 
-The shared catalogs define canonical spelling for handheld models, muOS releases, Rt:Core releases and core profiles. The site uses these catalogs to populate its report form; it must not keep a second hard-coded list. A custom value is allowed when a tester has a genuine build or profile not yet in the catalogue.
+The shared catalogs define canonical spelling for handheld models, muOS releases, Rt:Core releases and core profiles. The site uses these catalogs to populate its report form; it does not keep another hard-coded list. A custom value is allowed when a tester has a genuine build or profile not yet in the catalogue.
 
 An empty firmware in an older entry means not recorded. The generic label muOS Jacaranda (version not specified) is not equivalent to a numbered 2601.x build. The schema migration does not update last_update, which continues to describe the latest imported test data rather than the migration date.
 
-The normative schema is docs/schemas/games_data.schema.json. The idempotent normalizer is tools/normalize_games_data.py. Run it in check mode during CI; use --write only when intentionally migrating aliases or group identities.
+The normative schema is docs/schemas/games_data.schema.json. The idempotent normalizer is tools/normalize_games_data.py. Run it in check mode during CI; use --write only when intentionally migrating aliases or repairing a stale copy.
 
 ## Test report intake
 
@@ -58,8 +63,6 @@ The rating is tied to the exact device, firmware, game region, emulator build an
 
 ## Local preview
 
-From the repository root:
-
 ~~~sh
 python3 -m http.server 8000
 ~~~
@@ -73,7 +76,7 @@ python3 tools/normalize_games_data.py --check
 python3 -m unittest tests/test_compat_site.py -v
 ~~~
 
-The website test checks the schema version, catalogues, report identity invariants, normalizer idempotence, GitHub issue templates, local PWA icons, source URLs, Pages packaging and inline JavaScript syntax when Node.js is installed. Visual release review must still cover desktop / narrow mobile layouts and offline use after an online load.
+The website test checks the schema version, catalogues, report identity invariants, parity of both database copies, normalizer idempotence, GitHub issue templates, local PWA icons, source URLs, Pages packaging and inline JavaScript syntax when Node.js is installed. Visual release review must still cover desktop / narrow mobile layouts and offline use after an online load.
 
 ## GitHub Pages deployment
 
