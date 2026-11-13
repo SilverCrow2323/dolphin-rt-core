@@ -10,7 +10,7 @@ local Library = require("core.library")
 
 local S = {}
 local LY = 100
-S.list = K.List(K.MARGIN, LY, 296, K.BOT - LY, 36)
+S.list = K.List(K.MARGIN, LY, 288, K.BOT - LY, 36)
 S.t, S.filter, S.mine_only = 0, 1, false
 
 local FILTERS = {
@@ -239,8 +239,8 @@ local function draw_stars(x, y, rating)
 end
 
 local function draw_detail(g)
-    local px, py = 332, LY
-    local pw, ph = K.W - 332 - K.MARGIN, K.BOT - LY
+    local px, py = 336, LY
+    local pw, ph = K.W - 336 - K.MARGIN, K.BOT - LY
     K.panel(px, py, pw, ph, { cut = 12 })
     if not g then
         K.text("body", "Nothing matches this filter", px, py + ph / 2 - 10,
@@ -348,12 +348,15 @@ function S.draw()
         if #S.list.items > 0 then
             S.list:draw(draw_item)
         else
-            K.panel(K.MARGIN, LY, 296, K.BOT - LY, { cut = 12 })
+            K.panel(K.MARGIN, LY, 288, K.BOT - LY, { cut = 12 })
             local message = S.mine_only and "No owned games match this filter."
                 or "No games match this filter."
             K.text("body", message, K.MARGIN + 12, LY + 138,
                    K.C.faint, 1, 272, "center")
         end
+        -- Clear gutter between the list scrollbar and the detail panel.
+        K.color(K.C.line, 0.42)
+        love.graphics.rectangle("fill", 329, LY + 8, 1, K.BOT - LY - 16)
         draw_detail(S.list:cur())
     end
 
