@@ -415,6 +415,7 @@ function M.snapshot()
     step = STATE.step,
     done = STATE.step == "done",
     databases = databases,
+    update = {status = STATE.results.update_status or "waiting"},
     gamesets = {
       status = STATE.results.gamesets_status or "waiting",
       deployed = STATE.results.gamesets or 0,
@@ -422,6 +423,7 @@ function M.snapshot()
     cheats = {status = STATE.results.cheats_status or "waiting"},
     roms = STATE.results.roms or 0,
     cards = STATE.results.cards or 0,
+    cards_status = STATE.results.cards_status or "waiting",
   }
 end
 
