@@ -40,8 +40,12 @@ end
 function M.start_for(ids)
     if STATE.running then return false, "cheat sync already running" end
 
+    -- No argument delegates selection to rtcheats_sync.sh, which downloads
+    -- only entries marked performance_boost in the bundled index. An
+    -- explicit empty list means that there are no game-specific downloads.
+    local all_boost = (ids == nil)
     local wanted = normalize_ids(ids)
-    if #wanted == 0 then
+    if not all_boost and #wanted == 0 then
         STATE.running = false
         STATE.result = { state = "ok", msg = "no games to sync", done = 0, total = 0 }
         return true
@@ -49,8 +53,10 @@ function M.start_for(ids)
 
     os.remove(STATUS)
     local command = "sh " .. Shell.shq(SCRIPT)
-    for _, id in ipairs(wanted) do
-        command = command .. " " .. Shell.shq(id)
+    if not all_boost then
+        for _, id in ipairs(wanted) do
+            command = command .. " " .. Shell.shq(id)
+        end
     end
 
     local ok, result = pcall(Shell.run_async, command)
