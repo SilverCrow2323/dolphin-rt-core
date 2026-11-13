@@ -4,6 +4,7 @@ local M = {}
 local Shell = require("core.sh")
 local SCRIPT = Shell.abs("scripts/rtcheats_sync.sh")
 local STATUS = Shell.abs("data/rtcheats_sync.status")
+local ROOT = SCRIPT:match("^(.*)/scripts/rtcheats_sync%.sh$") or "."
 local RUN_TIMEOUT = 75
 
 local STATE = {
@@ -52,7 +53,7 @@ function M.start_for(ids)
     end
 
     os.remove(STATUS)
-    local command = "sh " .. Shell.shq(SCRIPT)
+    local command = "cd " .. Shell.shq(ROOT) .. " && sh " .. Shell.shq(SCRIPT)
     if not all_boost then
         for _, id in ipairs(wanted) do
             command = command .. " " .. Shell.shq(id)
