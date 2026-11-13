@@ -430,7 +430,10 @@ def _remote_root(cfg):
     root = device(cfg)["rom_path"]
     if not root:
         raise ValueError("Set the handheld ROM destination path first.")
-    return remote_path(root)
+    root = remote_path(root)
+    if root == "/":
+        raise ValueError("Use a dedicated ROM directory; the filesystem root is not allowed.")
+    return root
 
 
 def _validate_remote_rom(cfg, value):
@@ -590,7 +593,9 @@ def action(body):
         return {"devices": discover_devices(port)}
 
     if op == "sftp-test":
-        return {"message": sftp_command(cfg, ["pwd"])}
+        root = _remote_root(cfg)
+        canonical_root = sftp_canonical_directory(cfg, root)
+        return {"message": "Connected · ROM root " + canonical_root, "rom_path": canonical_root}
 
     if op == "sftp-list":
         path = remote_path(body.get("path") or _remote_root(cfg))
