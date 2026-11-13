@@ -58,10 +58,24 @@ jobs:
           luajit tests/test_compat_nexus.lua
           luajit tests/test_cheatdb_nexus.lua
 
-      - name: Run muOS Andromeda's own archive checks
-        run: bash dolphin-rtcore-muos/tools/verify-muxupd.sh dist/*.muxupd
+      - name: Build explicitly UI-only archive for CI validation
+        run: |
+          OUT="$RUNNER_TEMP/muos-ui-only"
+          mkdir -p "$OUT"
+          DOLPHIN_UI_ONLY=1 bash dolphin-rtcore-muos/tools/build-muxupd.sh "$OUT"
+          ARCHIVE="$(find "$OUT" -maxdepth 1 -type f -name '*_ui-only.muxupd' -print -quit)"
+          test -n "$ARCHIVE"
+          if unzip -Z1 "$ARCHIVE" | grep -Fxq 'opt/muos/share/emulator/dolphin/dolphin'; then
+            echo "ERROR: UI-only validation archive unexpectedly contains a Dolphin executable." >&2
+            exit 1
+          fi
+          bash dolphin-rtcore-muos/tools/verify-muxupd.sh "$ARCHIVE"
       - uses: actions/upload-artifact@v4
-        with: { name: muxupd, path: dist/*.muxupd }
+        with:
+          name: muxupd-ui-only-validation
+          path: "${{ runner.temp }}/muos-ui-only/*_ui-only.muxupd"
+          if-no-files-found: error
+          retention-days: 7
 
   ports-dryrun:
     runs-on: ubuntu-latest

@@ -42,6 +42,33 @@ ALLOWED_ASPECTS = {"auto", "4:3", "16:9", "stretch"}
 ALLOWED_DISPLAY_MODES = {"", "640x480", "800x600", "1024x768", "1280x960", "1600x1200"}
 
 
+def local_host_allowed(value):
+    try:
+        host = urlparse("//" + str(value or "")).hostname
+    except ValueError:
+        return False
+    return host in ("127.0.0.1", "localhost")
+
+
+def local_origin_allowed(value):
+    if not value:
+        return True
+    try:
+        parsed = urlparse(value)
+    except ValueError:
+        return False
+    return (
+        parsed.scheme == "http"
+        and parsed.hostname in ("127.0.0.1", "localhost")
+        and parsed.username is None
+        and parsed.password is None
+        and parsed.path in ("", "/")
+        and parsed.params == ""
+        and parsed.query == ""
+        and parsed.fragment == ""
+    )
+
+
 def remote_path(value):
     value = str(value or "").strip()
     if not value.startswith("/") or any(part in (".", "..") for part in value.split("/")):
@@ -622,6 +649,8 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_GET(self):
+        if not local_host_allowed(self.headers.get("Host", "")):
+            return self.reply(403, {"error": "Local host header required."})
         path = urlparse(self.path).path
         if path == "/api/state":
             return self.reply(200, snapshot())
@@ -665,10 +694,11 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_POST(self):
+        if not local_host_allowed(self.headers.get("Host", "")):
+            return self.reply(403, {"error": "Local host header required."})
         if self.headers.get("X-RtStream-Token", "") != TOKEN:
             return self.reply(403, {"error": "Invalid local session."})
-        origin = self.headers.get("Origin", "")
-        if origin and not origin.startswith(("http://127.0.0.1:", "http://localhost:")):
+        if not local_origin_allowed(self.headers.get("Origin", "")):
             return self.reply(403, {"error": "Cross-origin request blocked."})
         try:
             length = int(self.headers.get("Content-Length", "0"))

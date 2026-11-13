@@ -19,6 +19,7 @@ class WebPortalTests(unittest.TestCase):
         cls.html = (WEB / "index.html").read_text(encoding="utf-8")
         cls.js = (WEB / "app.js").read_text(encoding="utf-8")
         cls.css = (WEB / "app.css").read_text(encoding="utf-8")
+        cls.ci = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         fake_core = types.ModuleType("spdw_stream_core")
         fake_profiles = types.ModuleType("profiles")
         with patch.dict(sys.modules, {"spdw_stream_core": fake_core, "profiles": fake_profiles}):
@@ -61,12 +62,27 @@ class WebPortalTests(unittest.TestCase):
 
     def test_compatibility_uses_canonical_dataset(self):
         self.assertIn("/data/games_data.json", self.backend)
-        self.assertIn("schema_version") 
+        self.assertIn('"schema_version"', self.backend) 
         self.assertIn("refresh-compatibility", self.backend)
 
     def test_profile_and_stream_settings_endpoints(self):
         for item in ("set-profile", "apply-profiles", "save-stream-settings"):
             self.assertIn(item, self.backend)
+
+    def test_host_header_and_origin_are_exactly_local(self):
+        self.assertTrue(self.portal.local_host_allowed("127.0.0.1:8766"))
+        self.assertTrue(self.portal.local_host_allowed("localhost:8766"))
+        self.assertFalse(self.portal.local_host_allowed("localhost.attacker.invalid:8766"))
+        self.assertTrue(self.portal.local_origin_allowed("http://localhost:8766"))
+        self.assertFalse(self.portal.local_origin_allowed("http://localhost.attacker.invalid:8766"))
+        self.assertFalse(self.portal.local_origin_allowed("https://localhost:8766"))
+        self.assertFalse(self.portal.local_origin_allowed("http://user@localhost:8766"))
+
+    def test_muos_ci_archive_is_explicitly_ui_only_and_generated_in_runner_temp(self):
+        self.assertIn("DOLPHIN_UI_ONLY=1", self.ci)
+        self.assertIn("muos-ui-only", self.ci)
+        self.assertIn("muxupd-ui-only-validation", self.ci)
+        self.assertNotIn("verify-muxupd.sh dist/*.muxupd", self.ci)
 
     def test_remote_path_rejects_traversal(self):
         self.assertEqual(self.portal.remote_path("/mnt/roms/GC/Game.iso"), "/mnt/roms/GC/Game.iso")
