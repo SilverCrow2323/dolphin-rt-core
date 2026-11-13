@@ -51,18 +51,22 @@ function M.deploy(entry, game_id)
 
     local dir = sh.workshop("gamesettings/" .. game_id)
     local made = sh.mkdir_p(dir)
-    if made ~= true and made ~= 0 then return 0, #entry.configs end
+    if made ~= true and made ~= 0 then
+        return 0, #entry.configs
+    end
+
+    local function valid_ini_name(filename)
+        return type(filename) == "string"
+            and filename:match("^[%w_.%-]+%.ini$")
+            and not filename:find("..", 1, true)
+            and not filename:find("/", 1, true)
+            and not filename:find("\\", 1, true)
+    end
 
     local n, failed = 0, 0
     for _, cfg in ipairs(entry.configs) do
         local filename = type(cfg) == "table" and cfg.filename or nil
-        -- Bundled metadata can arrive from a downloaded JSON file. Restrict
-        -- filenames to one INI basename; never allow a path to escape the ID.
-        if type(filename) ~= "string"
-           or not filename:match("^[%w_.%-]+%.ini$")
-           or filename:find("..", 1, true)
-           or filename:find("/", 1, true)
-           or filename:find("\\", 1, true) then
+        if not valid_ini_name(filename) then
             failed = failed + 1
         else
             local target = dir .. "/" .. filename
@@ -82,7 +86,7 @@ function M.deploy(entry, game_id)
         end
     end
 
-    -- Preserve an existing selection and close the probe handle correctly.
+    -- Preserve existing selection and close all metadata probe handles.
     local meta = dir .. "/rtgameset_data.ini"
     local existing_meta = io.open(meta, "r")
     if existing_meta then
@@ -92,11 +96,7 @@ function M.deploy(entry, game_id)
         if m then
             local game_name = tostring(entry.game or game_id):gsub("[\r\n]", " ")
             local first_name = entry.configs[1] and entry.configs[1].filename or "base.ini"
-            if type(first_name) ~= "string" or not first_name:match("^[%w_.%-]+%.ini$")
-               or first_name:find("..", 1, true) or first_name:find("/", 1, true)
-               or first_name:find("..", 1, true) or first_name:find("/", 1, true)
-                first_name = "base.ini"
-            end
+            if not valid_ini_name(first_name) then first_name = "base.ini" end
             m:write("[GameSettings]\n")
             m:write("GameName = " .. game_name .. "\n")
             m:write("ActiveConfig = " .. first_name .. "\n")
