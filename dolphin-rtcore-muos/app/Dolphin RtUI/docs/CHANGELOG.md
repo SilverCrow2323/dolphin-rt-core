@@ -8,6 +8,7 @@
 - ROM roots and discovered paths are deduplicated case-insensitively. Automatic root registration remains disabled: the user explicitly selects a folder with **Add GC** or **Add Wii**.
 
 ### FolderWaker and muOS
+- Legacy Task Toolkit entries retired. Registration and profile visibility now live in **Settings → System**; upgrades remove previous `Dolphin Rt*Core` task directories without touching unrelated muOS tasks.
 - Exact FolderWaker names are gc, ngc, gamecube, game cube, and wii, matched case-insensitively only. Prefixes, suffixes, punctuation and extra whitespace are not accepted.
 - The warning explains the muOS Content Explorer firmware restriction in English and presents an explicit YES / NO choice. YES previews the reversible RtGC / RtWii rename and alias; NO leaves the folders untouched.
 
