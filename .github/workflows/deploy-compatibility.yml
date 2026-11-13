@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "compatibility.html"
       - "manifest.json"
       - "sw.js"
       - "assets/spdw_symbol.png"
@@ -32,7 +33,7 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-      - name: Build minimal Compatibility Database site
+      - name: Build Dolphin Rt:Core Project Portal
         run: bash tools/build-compat-site.sh "$RUNNER_TEMP/compatibility-site"
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
