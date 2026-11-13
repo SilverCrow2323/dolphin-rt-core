@@ -45,6 +45,7 @@ class CompatibilitySiteTests(unittest.TestCase):
         cls.html = SITE.read_text(encoding="utf-8")
         cls.manifest = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
         cls.games = json.loads((APP_DATA / "games_data.json").read_text(encoding="utf-8"))
+        cls.runtime_games_path = ROOT / "data" / "games_data.json"
         cls.settings = json.loads((APP_DATA / "gamesettings.json").read_text(encoding="utf-8"))
 
     def test_website_reads_current_repository_data_files(self):
@@ -152,6 +153,17 @@ class CompatibilitySiteTests(unittest.TestCase):
             references = re.findall(r"\[\[([A-Za-z0-9_-]+)\]\]", path.read_text(encoding="utf-8"))
             for target in references:
                 self.assertIn(target, pages, f"{path.name} links to missing Wiki page {target}")
+
+
+
+    def test_runtime_download_copy_matches_bundled_database(self):
+        bundled = APP_DATA / "games_data.json"
+        self.assertTrue(self.runtime_games_path.is_file())
+        self.assertEqual(
+            self.runtime_games_path.read_bytes(),
+            bundled.read_bytes(),
+            "data/games_data.json must match the bundled Rt:UI database byte-for-byte",
+        )
 
 
     def test_schema_v2_catalogues_and_group_identity(self):
