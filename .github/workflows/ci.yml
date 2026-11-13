@@ -56,6 +56,7 @@ jobs:
           luajit tests/test_keymap_nexus.lua
           luajit tests/test_controller_profiles_nexus.lua
           luajit tests/test_compat_nexus.lua
+          luajit tests/test_compat_layout.lua
           luajit tests/test_cheatdb_nexus.lua
           bash tests/test_muos_ui.sh
           bash tests/test_graphics_mods.sh
