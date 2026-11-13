@@ -199,6 +199,14 @@ function M.init()
         end
     end
 
+    local gameset_browser_screen = Nexus.get_screen("gameset_browser")
+    if gameset_browser_screen and gameset_browser_screen.register_actions then
+        local ok, registered, detail = pcall(gameset_browser_screen.register_actions, M)
+        if not ok or registered == false then
+            log("gameset browser NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
     local cheats_screen = Nexus.get_screen("cheats")
     if cheats_screen and cheats_screen.register_actions then
         local ok, registered, detail = pcall(cheats_screen.register_actions, M)
@@ -212,6 +220,14 @@ function M.init()
         local ok, registered, detail = pcall(diagnostics_screen.register_actions, M)
         if not ok or registered == false then
             log("diagnostics NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
+    local settings_screen = Nexus.get_screen("settings")
+    if settings_screen and settings_screen.register_actions then
+        local ok, registered, detail = pcall(settings_screen.register_actions, M)
+        if not ok or registered == false then
+            log("settings NEXUS actions: " .. tostring(ok and detail or registered))
         end
     end
 
