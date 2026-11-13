@@ -1,56 +1,66 @@
 # Hotkeys
 
-## 1. Format
+Dolphin Rt:UI supports two mutually exclusive hotkey paths. The active path is
+selected by \`[Hotkeys1] Device\` in the profile's \`Hotkeys.ini\`.
 
-`Config/Hotkeys.ini`:
+## Keyboard mode (bundled Default)
 
-```ini
+The bundled profile uses:
+
+\`\`\`ini
+[Hotkeys1]
+Device = Keyboard
+\`\`\`
+
+In this mode, Dolphin receives keyboard keys and \`gptokeyb2\` translates the
+handheld buttons to those keys using
+\`workshop/hotkeys/Default/ext-dolphin.gptk\`. The default modifier is SELECT:
+
+| Handheld combo | Emulated key |
+|---|---|
+| SELECT + L1 / R1 | F1 / F2 |
+| SELECT + L2 / R2 | F3 / F4 |
+| SELECT + A / B | F5 / F6 |
+| SELECT + D-pad Up / Down | F7 / F8 |
+| SELECT + D-pad Left / Right | F9 / F10 |
+| SELECT + X / Y | F11 / F12 |
+| SELECT + MENU | Escape |
+
+The launcher starts \`gptokeyb2\` only in this keyboard mode.
+
+## Native SDL pad mode
+
+For direct Dolphin controller input, the profile uses:
+
+\`\`\`ini
 [Hotkeys1]
 Device = SDL/0/muOS-Keys
-Keys/Exit = `Button 9` & `Button 7`
-Keys/Save State Slot 1 = `Button 9` & `Button 1`
-Keys/Load State Slot 1 = `Button 9` & `Button 0`
-...
-```
+Keys/Save State Slot 1 = \`Button 11\`
+\`\`\`
 
-Expressions are Dolphin syntax: backtick-wrapped button tokens
-joined by `&`. `hotkey_editor.lua` builds and parses these.
+The Hotkey Designer in \`ui/screens/hotkeys.lua\` writes Dolphin button
+expressions from \`core/app_input.lua\`'s muOS Andromeda map. For the H700,
+the important indices are A=1, B=0, L1=4, R1=5, SELECT=6, START=7,
+MENU=8, L2=9, L3=11 and R2=12. Button 10 is the physical Volume Up key.
 
-## 2. Bundled profile
+In native SDL mode, the launcher does **not** start \`gptokeyb2\`; Dolphin
+handles the bindings directly. This prevents keyboard-injection hotkeys from
+running alongside native SDL hotkeys. D-pad directions are hats rather than
+\`Button N\` inputs and cannot be saved as native button expressions by the
+current designer.
 
-`workshop/hotkeys/Default/Hotkeys.ini`:
+## Safe Exit
 
-| Action | Binding |
-|---|---|
-| Exit | SELECT + START |
-| Save State 1 | SELECT + A |
-| Load State 1 | SELECT + B |
-| Toggle Pause | SELECT + X |
-| Fast Forward | SELECT + Y |
-| Reset | SELECT + L1 |
+The muOS overlay exit watcher handles START + SELECT independently of
+\`Hotkeys.ini\`. It is a process-exit safety path, not the Dolphin
+\`Keys/Exit\` binding edited in the Hotkey Designer.
 
-## 3. Live Menu override
+## Editing
 
-When Live Menu is enabled, `launch.sh` swaps in
-`scripts/livemenu/Hotkeys.internal.ini` before starting Dolphin.
-The user's file is preserved as `Hotkeys.ini.user`. The frontend
-re-applies the chosen hotkey profile on every launch, so no state
-is lost.
-
-## 4. Editor
-
-`workshop_hotkey_edit.lua` binds one action at a time:
-
-1. Navigate to the row, [A] to start capture.
-2. Press one or more buttons. Release to commit.
-3. Commit fires 1.5 s after the last button or on [Enter].
-4. [X] clears the binding, [Y] resets the file to Default.
-
-Capture mode is global: `State.capture_mode = true` while
-capturing, so main.lua routes raw pad events directly.
-
-## 5. Native exit
-
-Comfort Zone ships a native hotkey: **START + SELECT**. This sends
-SIGTERM directly to Dolphin, clean process termination, no memory
-card corruption. It is independent of the Hotkeys.ini bindings.
+1. Open the Hotkeys editor and select a profile.
+2. Choose Keyboard or Pad with L1/R1.
+3. In Pad mode, press A on an action and then press the desired button combo.
+4. Hold the combo briefly to commit; the editor warns about unsupported
+   D-pad or unmapped inputs.
+5. Press START to save. B returns to the profile list; unsaved changes prompt
+   before leaving.
