@@ -67,6 +67,7 @@ jobs:
           luajit tests/test_controller_map_input.lua
           bash tests/test_muos_controller_profiles.sh
           bash tests/test_hotkeys_runtime.sh
+          bash tests/test_muos_controls.sh
           bash tests/test_ui_action_registration.sh
           luajit tests/test_compat_layout.lua
           bash tests/test_rom_paths.sh

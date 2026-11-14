@@ -136,7 +136,10 @@ jobs:
           grep -Fxq 'opt/muos/share/info/assign/Nintendo GameCube/dolphin - rtprime - upright.ini' "$OUT/archive-files.txt"
           grep -Fxq 'opt/muos/share/info/assign/Nintendo Wii/global.ini' "$OUT/archive-files.txt"
           grep -Fxq 'opt/muos/share/info/assign/Nintendo Wii/dolphin - rtprime - upright.ini' "$OUT/archive-files.txt"
-          grep -Fxq 'opt/muos/share/task/Dolphin Rt-Core/Diagnose ROM folders.sh' "$OUT/archive-files.txt"
+          if grep -Eq '^opt/muos/share/task/Dolphin Rt.*Core/' "$OUT/archive-files.txt"; then
+            echo "ERROR: retired Dolphin Task Toolkit payload is still shipped." >&2
+            exit 1
+          fi
           ! grep -Fxq 'run/muos/storage/application/Dolphin RtUI/data/settings.json' "$OUT/archive-files.txt"
           grep -Fxq 'manifest.sha256' "$OUT/archive-files.txt"
           bash dolphin-rtcore-muos/tools/verify-muxupd.sh "$ARCHIVE"

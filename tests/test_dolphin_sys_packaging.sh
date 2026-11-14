@@ -54,6 +54,11 @@ DOLPHIN_BIN="$TMP/dolphin" DOLPHIN_SYS_DIR="$SYS" DOLPHIN_LIB_DIR="$LIBS" \
 VERSION="$(tr -d '[:space:]' < "$ROOT/dolphin-rtcore-muos/VERSION")"
 ARCHIVE="$OUT/Dolphin_RtCore_v${VERSION//./_}_Andromeda.muxupd"
 [ -s "$ARCHIVE" ]
+if unzip -Z1 "$ARCHIVE" | grep -Eq '^opt/muos/share/task/Dolphin Rt.*Core/'; then
+  echo "[FAIL] MUXUPD still ships a retired Dolphin Task Toolkit directory" >&2
+  exit 1
+fi
+echo "[OK] MUXUPD excludes retired Task Toolkit payloads"
 
 EMU_PATH="opt/muos/share/emulator/dolphin"
 for asset in \
@@ -118,3 +123,20 @@ if find "$TMP/fail-dsp-dist" -maxdepth 1 -type f -name '*.muxupd' -print -quit 2
   exit 1
 fi
 echo "[OK] missing GameCube DSP data is rejected before archive creation"
+
+# The update hook removes only legacy Dolphin Task Toolkit directories. Run it
+# against a disposable root; unrelated muOS task folders must remain untouched.
+LEGACY_TASK_ROOT="$TMP/legacy-task-root"
+mkdir -p "$LEGACY_TASK_ROOT/Dolphin Rt-Core" "$LEGACY_TASK_ROOT/Dolphin RtCore" "$LEGACY_TASK_ROOT/Other App"
+printf 'old task\\n' > "$LEGACY_TASK_ROOT/Dolphin Rt-Core/old.sh"
+printf 'other task\\n' > "$LEGACY_TASK_ROOT/Other App/keep.sh"
+sh -n "$ROOT/dolphin-rtcore-muos/overlay/opt/update.sh"
+MUOS_TASK_ROOT="$LEGACY_TASK_ROOT" sh "$ROOT/dolphin-rtcore-muos/overlay/opt/update.sh"
+[ ! -e "$LEGACY_TASK_ROOT/Dolphin Rt-Core" ]
+[ ! -e "$LEGACY_TASK_ROOT/Dolphin RtCore" ]
+[ -s "$LEGACY_TASK_ROOT/Other App/keep.sh" ]
+echo "[OK] update hook removes stale Dolphin tasks without touching other muOS tasks"
+
+! grep -Fq 'Task Toolkit registration task' "$ROOT/wiki/FAQ.md"
+! grep -Fq 'Task Toolkit also includes' "$ROOT/docs/MUOS_REGISTRATION.md"
+echo "[OK] current support docs no longer direct users to retired Task Toolkit entries"
