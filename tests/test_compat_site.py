@@ -114,11 +114,11 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             expected = {
                 ".nojekyll", "index.html", "compatibility.html", "quick-start.html",
-                "profiles.html", "gamesettings.html", "manifest.json", "sw.js",
+                "profiles.html", "gamesettings.html", "docs.html", "manifest.json", "sw.js",
                 "assets/site.css", "assets/site.js", "assets/spdw_symbol.png",
                 "assets/dolphinrt_icon.png", "assets/dolphin_rtcore_title.png",
                 "assets/gamecube.svg", "assets/wii.svg",
-                "data/site-gamesettings-index.json", "data/site-profiles.json",
+                "data/site-gamesettings-index.json", "data/site-profiles.json", "data/site-docs-index.json",
             }
             actual = {
                 str(path.relative_to(output))
@@ -129,7 +129,7 @@ class CompatibilitySiteTests(unittest.TestCase):
             deployed_html = (output / "index.html").read_text(encoding="utf-8")
             self.assertIn('href="./quick-start.html"', deployed_html)
             self.assertIn('href="./compatibility.html"', deployed_html)
-            for page in ("quick-start.html", "profiles.html", "gamesettings.html"):
+            for page in ("quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
                 self.assertTrue((output / page).is_file(), page)
             self.assertIn("1,914", deployed_html)
             catalog = json.loads((output / "data" / "site-gamesettings-index.json").read_text(encoding="utf-8"))
@@ -137,6 +137,7 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertEqual(len(catalog["entries"]), 1914)
             self.assertTrue(all((ROOT / entry["path"]).is_file() for entry in catalog["entries"]))
             self.assertEqual(len(json.loads((output / "data" / "site-profiles.json").read_text(encoding="utf-8"))["profiles"]), 19)
+            self.assertEqual(len(json.loads((output / "data" / "site-docs-index.json").read_text(encoding="utf-8"))["entries"]), 50)
             deployed_compatibility = (output / "compatibility.html").read_text(encoding="utf-8")
             self.assertIn("Compatibility Database", deployed_compatibility)
             self.assertIn('id="reportBtn"', deployed_compatibility)
@@ -340,7 +341,7 @@ if __name__ == "__main__":
 
 
     def test_product_hub_has_real_navigation_and_motion_system(self):
-        for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html"):
+        for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
             source = (ROOT / filename).read_text(encoding="utf-8")
             self.assertIn("./assets/site.css", source, filename)
             self.assertIn("./assets/site.js", source, filename)
