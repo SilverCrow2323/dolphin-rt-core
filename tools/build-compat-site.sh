@@ -8,7 +8,7 @@ mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 [[ "$OUT" != "$ROOT" ]] || { echo "Refusing to build the website into the repository root" >&2; exit 2; }
 case "$ROOT/" in "$OUT/"*) echo "Refusing to build into a parent directory of the repository" >&2; exit 2 ;; esac
-FILES=(index.html compatibility.html quick-start.html profiles.html gamesettings.html manifest.json sw.js assets/site.css assets/site.js data/site-gamesettings-index.json data/site-profiles.json)
+FILES=(index.html compatibility.html quick-start.html profiles.html gamesettings.html docs.html manifest.json sw.js assets/site.css assets/site.js data/site-gamesettings-index.json data/site-profiles.json data/site-docs-index.json)
 for file in "${FILES[@]}"; do [[ -f "$ROOT/$file" ]] || { echo "Required website file is missing: $file" >&2; exit 1; }; done
 ASSETS=(spdw_symbol.png dolphinrt_icon.png dolphin_rtcore_title.png gamecube.svg wii.svg)
 for asset in "${ASSETS[@]}"; do [[ -f "$ROOT/assets/$asset" ]] || { echo "Required website asset is missing: assets/$asset" >&2; exit 1; }; done
