@@ -113,14 +113,12 @@ class CompatibilitySiteTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             expected = {
-                ".nojekyll",
-                "index.html",
-                "compatibility.html",
-                "manifest.json",
-                "sw.js",
-                "assets/spdw_symbol.png",
-                "assets/gamecube.svg",
-                "assets/wii.svg",
+                ".nojekyll", "index.html", "compatibility.html", "quick-start.html",
+                "profiles.html", "gamesettings.html", "manifest.json", "sw.js",
+                "assets/site.css", "assets/site.js", "assets/spdw_symbol.png",
+                "assets/dolphinrt_icon.png", "assets/dolphin_rtcore_title.png",
+                "assets/gamecube.svg", "assets/wii.svg",
+                "data/site-gamesettings-index.json", "data/site-profiles.json",
             }
             actual = {
                 str(path.relative_to(output))
@@ -129,8 +127,16 @@ class CompatibilitySiteTests(unittest.TestCase):
             }
             self.assertEqual(actual, expected)
             deployed_html = (output / "index.html").read_text(encoding="utf-8")
-            self.assertIn('href="./"', deployed_html)
+            self.assertIn('href="./quick-start.html"', deployed_html)
             self.assertIn('href="./compatibility.html"', deployed_html)
+            for page in ("quick-start.html", "profiles.html", "gamesettings.html"):
+                self.assertTrue((output / page).is_file(), page)
+            self.assertIn("1,914", deployed_html)
+            catalog = json.loads((output / "data" / "site-gamesettings-index.json").read_text(encoding="utf-8"))
+            self.assertEqual(catalog["count"], 1914)
+            self.assertEqual(len(catalog["entries"]), 1914)
+            self.assertTrue(all((ROOT / entry["path"]).is_file() for entry in catalog["entries"]))
+            self.assertEqual(len(json.loads((output / "data" / "site-profiles.json").read_text(encoding="utf-8"))["profiles"]), 19)
             deployed_compatibility = (output / "compatibility.html").read_text(encoding="utf-8")
             self.assertIn("Compatibility Database", deployed_compatibility)
             self.assertIn('id="reportBtn"', deployed_compatibility)
@@ -147,9 +153,14 @@ class CompatibilitySiteTests(unittest.TestCase):
         portal_parser.feed(self.portal_html)
         self.assertTrue(parser.scripts, "No inline compatibility application script found")
         self.assertTrue(portal_parser.scripts, "No inline project portal script found")
+        page_scripts = [("compatibility", parser.scripts), ("portal", portal_parser.scripts)]
+        for filename in ("quick-start.html", "profiles.html", "gamesettings.html"):
+            page_parser = ScriptCollector()
+            page_parser.feed((ROOT / filename).read_text(encoding="utf-8"))
+            page_scripts.append((filename, page_parser.scripts))
         # Each HTML page is a separate browser document. Do not concatenate
-        # the compatibility page and project portal into one global lexical scope.
-        for page_name, scripts in (("compatibility", parser.scripts), ("portal", portal_parser.scripts)):
+        # independent page scripts into one global lexical scope.
+        for page_name, scripts in page_scripts:
             with self.subTest(page=page_name), tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as tmp:
                 tmp.write("\n".join(scripts))
                 tmp.flush()
@@ -326,3 +337,17 @@ class CompatibilitySiteTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_product_hub_has_real_navigation_and_motion_system(self):
+        for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html"):
+            source = (ROOT / filename).read_text(encoding="utf-8")
+            self.assertIn("./assets/site.css", source, filename)
+            self.assertIn("./assets/site.js", source, filename)
+            self.assertIn("data-open-drawer", source, filename)
+            self.assertIn("prefers-reduced-motion", (ROOT / "assets" / "site.css").read_text(encoding="utf-8"))
+        self.assertIn("IntersectionObserver", (ROOT / "assets" / "site.js").read_text(encoding="utf-8"))
+        self.assertIn("Rt:System Status Center", (ROOT / "quick-start.html").read_text(encoding="utf-8"))
+        self.assertIn("SDL/0/muOS-Keys", (ROOT / "quick-start.html").read_text(encoding="utf-8"))
+        self.assertIn("Video_Hacks", (ROOT / "profiles.html").read_text(encoding="utf-8"))
+        self.assertIn("GameSettings Library", (ROOT / "gamesettings.html").read_text(encoding="utf-8"))
