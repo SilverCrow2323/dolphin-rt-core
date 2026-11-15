@@ -8,8 +8,28 @@
       "type": "Balanced",
       "family": "",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Default/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Default/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Default/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Default/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Default/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Default/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Default/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Default/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Default/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Default/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Performance",
@@ -18,8 +38,28 @@
       "type": "Performance",
       "family": "",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Performance/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Performance/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Performance/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Performance/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Performance/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Performance/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Performance/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Performance/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Performance/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Performance/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Speedhack",
@@ -28,8 +68,28 @@
       "type": "Performance",
       "family": "",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Speedhack/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Speedhack/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Speedhack/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Speedhack/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Speedhack/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Speedhack/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Speedhack/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Speedhack/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Speedhack/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Speedhack/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Compatibility",
@@ -38,8 +98,28 @@
       "type": "Compatibility",
       "family": "",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Compatibility/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Compatibility/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Compatibility/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Compatibility/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Compatibility/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Compatibility/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Compatibility/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Compatibility/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Compatibility/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Compatibility/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Black Screen Fix",
@@ -48,8 +128,28 @@
       "type": "Compatibility",
       "family": "",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Black Screen Fix/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Black Screen Fix/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Black Screen Fix/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Black Screen Fix/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Black%20Screen%20Fix/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Black%20Screen%20Fix/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Black%20Screen%20Fix/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Black%20Screen%20Fix/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Black%20Screen%20Fix/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Black%20Screen%20Fix/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Sweet Spot",
@@ -57,9 +157,29 @@
       "description": "Hand-tuned compromise between speed and visual correctness.",
       "type": "Balanced",
       "family": "",
-      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Sweet Spot/",
-      "ini_files": [],
-      "source_urls": []
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Sweetspot/",
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Sweetspot/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Sweetspot/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Sweetspot/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Sweetspot/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Sweetspot/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Sweetspot/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Sweetspot/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Sweetspot/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Sweetspot/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rintromping",
@@ -68,8 +188,28 @@
       "type": "Experimental",
       "family": "",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Rintromping/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Rintromping/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Rintromping/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Rintromping/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Rintromping/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Rintromping/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Rintromping/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Rintromping/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Rintromping/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/Rintromping/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Boost",
@@ -78,8 +218,82 @@
       "type": "Rt:CORE",
       "family": "RtBoost",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/lite/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/lite/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/lite/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/max/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/max/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/max/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/std/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/std/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/std/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/GFX.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/rtprofile_data.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/rtprofile_data.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/rtprofile_data.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Boost Lite",
@@ -88,8 +302,28 @@
       "type": "Rt:CORE",
       "family": "RtBoost",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/lite/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/lite/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/lite/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/lite/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/lite/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Boost Standard",
@@ -98,8 +332,28 @@
       "type": "Rt:CORE",
       "family": "RtBoost",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/std/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/std/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/std/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/std/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/std/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Boost Max",
@@ -108,8 +362,28 @@
       "type": "Rt:CORE",
       "family": "RtBoost",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/max/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/max/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/max/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/max/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtBoost/max/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Prime",
@@ -118,8 +392,82 @@
       "type": "Rt:CORE",
       "family": "RtPrime",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/lite/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/lite/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/lite/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/max/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/max/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/max/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/std/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/std/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/std/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/GFX.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/rtprofile_data.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/rtprofile_data.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/rtprofile_data.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Prime Lite",
@@ -128,8 +476,28 @@
       "type": "Rt:CORE",
       "family": "RtPrime",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/lite/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/lite/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/lite/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/lite/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/lite/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Prime Standard",
@@ -138,8 +506,28 @@
       "type": "Rt:CORE",
       "family": "RtPrime",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/std/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/std/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/std/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/std/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/std/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Prime Max",
@@ -148,8 +536,28 @@
       "type": "Rt:CORE",
       "family": "RtPrime",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/max/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/max/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/max/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/max/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPrime/max/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Pure",
@@ -158,8 +566,82 @@
       "type": "Rt:CORE",
       "family": "RtPure",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/lite/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/lite/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/lite/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/max/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/max/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/max/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/rtprofile_data.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/std/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/std/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/std/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/GFX.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/rtprofile_data.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/rtprofile_data.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/rtprofile_data.ini"
+        },
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Pure Lite",
@@ -168,8 +650,28 @@
       "type": "Rt:CORE",
       "family": "RtPure",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/lite/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/lite/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/lite/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/lite/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/lite/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Pure Standard",
@@ -178,8 +680,28 @@
       "type": "Rt:CORE",
       "family": "RtPure",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/std/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/std/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/std/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/std/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/std/rtprofile_data.ini"
+        }
+      ]
     },
     {
       "name": "Rt:Pure Max",
@@ -188,8 +710,28 @@
       "type": "Rt:CORE",
       "family": "RtPure",
       "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/max/",
-      "ini_files": [],
-      "source_urls": []
+      "ini_files": [
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/max/Dolphin.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/max/GFX.ini",
+        "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/max/rtprofile_data.ini"
+      ],
+      "source_urls": [
+        {
+          "name": "Dolphin.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/Dolphin.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/Dolphin.ini"
+        },
+        {
+          "name": "GFX.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/GFX.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/GFX.ini"
+        },
+        {
+          "name": "rtprofile_data.ini",
+          "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/rtprofile_data.ini",
+          "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/rtcoreprofile/RtPure/max/rtprofile_data.ini"
+        }
+      ]
     }
   ]
 }
