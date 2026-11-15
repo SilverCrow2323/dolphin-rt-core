@@ -6,133 +6,190 @@
       "focus": "Baseline",
       "description": "Safe balanced starting point matching native Dolphin defaults.",
       "type": "Balanced",
-      "family": ""
+      "family": "",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Default/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Performance",
       "focus": "Performance",
       "description": "Legacy performance preset with asynchronous shader compilation.",
       "type": "Performance",
-      "family": ""
+      "family": "",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Performance/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Speedhack",
       "focus": "Performance",
       "description": "Aggressive speed-oriented baseline; test each title carefully.",
       "type": "Performance",
-      "family": ""
+      "family": "",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Speedhack/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Compatibility",
       "focus": "Compatibility",
       "description": "Conservative compatibility-first settings with fewer speed hacks.",
       "type": "Compatibility",
-      "family": ""
+      "family": "",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Compatibility/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Black Screen Fix",
       "focus": "Compatibility",
       "description": "Troubleshooting preset for titles that boot to a black screen.",
       "type": "Compatibility",
-      "family": ""
+      "family": "",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Black Screen Fix/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Sweet Spot",
       "focus": "Balanced",
       "description": "Hand-tuned compromise between speed and visual correctness.",
       "type": "Balanced",
-      "family": ""
+      "family": "",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Sweet Spot/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rintromping",
       "focus": "Extreme",
       "description": "Experimental extreme preset; expect title-specific trade-offs.",
       "type": "Experimental",
-      "family": ""
+      "family": "",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/Rintromping/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Boost",
       "focus": "Performance",
       "description": "Performance-first profile family.",
       "type": "Rt:CORE",
-      "family": "RtBoost"
+      "family": "RtBoost",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Boost Lite",
       "focus": "Performance",
       "description": "Lower-intensity Rt:Boost tier.",
       "type": "Rt:CORE",
-      "family": "RtBoost"
+      "family": "RtBoost",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/lite/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Boost Standard",
       "focus": "Performance",
       "description": "Standard Rt:Boost tier.",
       "type": "Rt:CORE",
-      "family": "RtBoost"
+      "family": "RtBoost",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/std/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Boost Max",
       "focus": "Performance",
       "description": "Maximum Rt:Boost tier; aggressive trade-offs.",
       "type": "Rt:CORE",
-      "family": "RtBoost"
+      "family": "RtBoost",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtBoost/max/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Prime",
       "focus": "Balanced",
       "description": "Balanced daily-driver profile family.",
       "type": "Rt:CORE",
-      "family": "RtPrime"
+      "family": "RtPrime",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Prime Lite",
       "focus": "Balanced",
       "description": "Lower-intensity Rt:Prime tier.",
       "type": "Rt:CORE",
-      "family": "RtPrime"
+      "family": "RtPrime",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/lite/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Prime Standard",
       "focus": "Balanced",
       "description": "Standard Rt:Prime tier.",
       "type": "Rt:CORE",
-      "family": "RtPrime"
+      "family": "RtPrime",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/std/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Prime Max",
       "focus": "Balanced",
       "description": "Maximum Rt:Prime tier.",
       "type": "Rt:CORE",
-      "family": "RtPrime"
+      "family": "RtPrime",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPrime/max/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Pure",
       "focus": "Accuracy",
       "description": "Accuracy-first profile family.",
       "type": "Rt:CORE",
-      "family": "RtPure"
+      "family": "RtPure",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Pure Lite",
       "focus": "Accuracy",
       "description": "Lower-intensity Rt:Pure tier.",
       "type": "Rt:CORE",
-      "family": "RtPure"
+      "family": "RtPure",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/lite/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Pure Standard",
       "focus": "Accuracy",
       "description": "Standard Rt:Pure tier.",
       "type": "Rt:CORE",
-      "family": "RtPure"
+      "family": "RtPure",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/std/",
+      "ini_files": [],
+      "source_urls": []
     },
     {
       "name": "Rt:Pure Max",
       "focus": "Accuracy",
       "description": "Maximum Rt:Pure tier.",
       "type": "Rt:CORE",
-      "family": "RtPure"
+      "family": "RtPure",
+      "folder": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/rtcoreprofile/RtPure/max/",
+      "ini_files": [],
+      "source_urls": []
     }
   ]
 }
