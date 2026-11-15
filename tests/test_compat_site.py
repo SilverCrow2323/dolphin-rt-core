@@ -299,36 +299,33 @@ class CompatibilitySiteTests(unittest.TestCase):
 
     def test_pwa_cache_is_bumped_for_new_website_shell(self):
         worker = (ROOT / "sw.js").read_text(encoding="utf-8")
-        self.assertIn("rtcore-site-v1", worker)
-        self.assertIn("'./compatibility.html'", worker)
-        self.assertIn("'./index.html'", worker)
-        self.assertIn("url.pathname.endsWith('/compatibility.html')", worker)
-        self.assertIn("caches.match('./compatibility.html')", worker)
+        self.assertIn("rtcore-site-v2", worker)
+        for page in ("index.html", "compatibility.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+            self.assertIn("'./" + page + "'", worker)
+        self.assertIn("'./data/site-gamesettings-index.json'", worker)
+        self.assertIn("'./data/site-docs-index.json'", worker)
+        self.assertIn("raw.githubusercontent.com", worker)
         self.assertNotIn("rtcore-db-v3", worker)
-
-
 
     def test_project_portal_is_the_public_homepage(self):
         self.assertIn("Dolphin Rt:Core — Handheld GameCube", self.portal_html)
-        self.assertIn('id="ecosystem"', self.portal_html)
-        self.assertIn('id="platforms"', self.portal_html)
         self.assertIn('id="downloads"', self.portal_html)
-        self.assertIn('id="docs"', self.portal_html)
-        self.assertIn('id="roadmap"', self.portal_html)
-        self.assertIn('id="community"', self.portal_html)
-        self.assertIn("Rt:Stream Guide", self.portal_html)
+        self.assertIn('href="./quick-start.html"', self.portal_html)
+        self.assertIn('href="./profiles.html"', self.portal_html)
+        self.assertIn('href="./gamesettings.html"', self.portal_html)
+        self.assertIn('href="./docs.html"', self.portal_html)
         self.assertIn('href="./compatibility.html"', self.portal_html)
-        self.assertIn("const REPO_API='https://api.github.com/repos/SilverCrow2323/dolphin-rt-core';", self.portal_html)
-        self.assertIn("REPO_API+'/releases/latest'", self.portal_html)
-        self.assertIn("FALLBACK_RELEASE", self.portal_html)
-        self.assertIn("loadCompatibilityStats()", self.portal_html)
+        self.assertIn("LATEST STABLE RELEASE", self.portal_html)
+        self.assertIn("H700 FIELD ENGINEERING", self.portal_html)
+        self.assertIn("One engine.", self.portal_html)
 
-    def test_portal_uses_real_release_assets_and_explains_package_boundary(self):
+    def test_portal_uses_live_release_assets_and_explains_package_boundary(self):
         self.assertIn("Dolphin_RtCore_v12_0_0_Andromeda.muxupd", self.portal_html)
         self.assertIn("SPDW_Stream_Portal-4.2.1-x86_64.AppImage", self.portal_html)
         self.assertIn("spdw-stream-portal-4.2.1-1.noarch.rpm", self.portal_html)
         self.assertIn("does not include the Dolphin emulator executable", self.portal_html)
-        self.assertIn("release.draft||release.prerelease", self.portal_html)
+        self.assertIn("releases/latest", (ROOT / "assets" / "site.js").read_text(encoding="utf-8"))
+        self.assertIn("data-release-asset", self.portal_html)
 
     def test_compatibility_page_returns_to_project_portal(self):
         self.assertIn('href="./"', self.html)
