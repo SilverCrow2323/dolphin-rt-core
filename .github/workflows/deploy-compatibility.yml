@@ -1,4 +1,4 @@
-name: Deploy Dolphin Rt:Core Project Portal
+name: Deploy Dolphin Rt:Core Product Hub
 
 on:
   push:
@@ -6,11 +6,20 @@ on:
     paths:
       - "index.html"
       - "compatibility.html"
+      - "quick-start.html"
+      - "profiles.html"
+      - "gamesettings.html"
       - "manifest.json"
       - "sw.js"
+      - "assets/site.css"
+      - "assets/site.js"
       - "assets/spdw_symbol.png"
+      - "assets/dolphinrt_icon.png"
+      - "assets/dolphin_rtcore_title.png"
       - "assets/gamecube.svg"
       - "assets/wii.svg"
+      - "data/site-gamesettings-index.json"
+      - "data/site-profiles.json"
       - "dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json"
       - "dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json"
       - "tools/build-compat-site.sh"
@@ -33,7 +42,7 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-      - name: Build Dolphin Rt:Core Project Portal
+      - name: Build complete Dolphin Rt:Core Product Hub
         run: bash tools/build-compat-site.sh "$RUNNER_TEMP/compatibility-site"
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -53,6 +62,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy Project Portal and Compatibility Database
+      - name: Deploy Product Hub and Compatibility Database
         id: deployment
         uses: actions/deploy-pages@v4
