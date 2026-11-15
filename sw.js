@@ -1,9 +1,9 @@
 const CACHE = 'rtcore-site-v2';
 const SHELL = [
-  './','./index.html','./compatibility.html','./quick-start.html','./profiles.html','./gamesettings.html',
+  './','./index.html','./compatibility.html','./quick-start.html','./profiles.html','./gamesettings.html','./docs.html',
   './manifest.json','./assets/site.css','./assets/site.js','./assets/spdw_symbol.png',
   './assets/dolphinrt_icon.png','./assets/dolphin_rtcore_title.png','./assets/gamecube.svg','./assets/wii.svg',
-  './data/site-gamesettings-index.json','./data/site-profiles.json'
+  './data/site-gamesettings-index.json','./data/site-profiles.json','./data/site-docs-index.json'
 ];
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
@@ -46,7 +46,7 @@ self.addEventListener('fetch', event => {
       } catch (error) {
         const exact = await caches.match(request); if (exact) return exact;
         const name = url.pathname.split('/').pop() || 'index.html';
-        const known = ['index.html','compatibility.html','quick-start.html','profiles.html','gamesettings.html'].includes(name) ? './'+name : './index.html';
+        const known = ['index.html','compatibility.html','quick-start.html','profiles.html','gamesettings.html','docs.html'].includes(name) ? './'+name : './index.html';
         return (await caches.match(known)) || new Response('Dolphin Rt:Core is unavailable offline.',{status:503});
       }
     })()); return;
