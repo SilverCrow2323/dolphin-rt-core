@@ -50,11 +50,26 @@ shipped in the MUXUPD. An update therefore cannot replace the user's ROM paths,
 theme or last-game state with the repository's development defaults. On a
 first install, Rt:UI initializes its settings from `core/settings.lua` defaults.
 
-Task Toolkit also includes **Dolphin Rt-Core → Diagnose ROM folders**. It
-writes a report under `MUOS/log` (or a temporary fallback) with SD1/SD2
-mounts, `ROMS` versus `roms` folder casing, GameCube/Wii image counts, legacy
-assignment INI status and input-device presence. It deliberately does not
-list game filenames or modify storage.
+The legacy muOS Task Toolkit is retired and is no longer shipped in the
+current MUXUPD. The post-install hook removes leftover `Dolphin Rt*Core`
+task folders under `/opt/muos/share/task` so menu entries from older Rt:Core
+releases do not survive an update.
+
+Use the current Rt:UI workflows instead:
+
+- **Settings → System → Repair GameCube/Wii registration** runs the same
+  manifest registration check used by installation and startup.
+- **Settings → About & Tools → Rt:Core Env Triage** checks the installed
+  Rt:Core layers, registration health, ROM image counts, emulator size,
+  available storage and software versions. Its report is saved at
+  `data/logs/triage_report.txt` inside the Rt:UI application directory.
+- **Settings → Library → ROM folders** and **Rescan library** manage the
+  configured GameCube/Wii roots and refresh the game index.
+
+The old standalone task's raw mount table and `skip.ini` dump are not exposed
+by the current Rt:UI report. If support needs those low-level details, collect
+the device logs and mount/filter configuration separately; do not expect a
+Task Toolkit entry on current installs.
 
 ## Runtime integration
 

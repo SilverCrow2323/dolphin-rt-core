@@ -66,7 +66,7 @@ cp -a "$ROOT/app/Dolphin RtUI/." "$S/$APP/"
 # last-game state with a developer/test copy. core/settings.lua supplies
 # first-run defaults when no local settings.json exists.
 rm -f "$S/$APP/data/settings.json"
-cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, tasks, manifest tool, update hook)
+cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, manifest tool, update hook)
 # Jacaranda and older muOS releases read external core choices from the legacy
 # info/assign/<System>/*.ini tree. Seed standard profiles in the update too;
 # opt/update.sh + manifest_tool.sh then replace them with the selected profile

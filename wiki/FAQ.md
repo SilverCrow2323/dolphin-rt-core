@@ -8,7 +8,7 @@ Run the registration check and inspect its result:
 sh /opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh status
 ```
 
-If missing or stale, run `ensure` or the Task Toolkit registration task. See [[muOS-Registration]].
+If missing or stale, choose **Settings → System → Repair GameCube/Wii registration** in Rt:UI, or run `sh /opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh ensure` over SSH. For a broader health report, open **Settings → About & Tools → Rt:Core Env Triage**. See [[muOS-Registration]].
 
 ## Why does a game show different results from another device?
 
