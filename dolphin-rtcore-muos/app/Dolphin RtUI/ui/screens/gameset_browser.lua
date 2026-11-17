@@ -5,6 +5,7 @@ local U        = require("ui.util")
 local GL       = require("core.gameset_loader")
 local GM       = require("core.gameset_manager")
 local Library  = require("core.library")
+local Deployer = require("core.gamesettings_deployer")
 
 local S = {}
 S.tab = 1
@@ -35,6 +36,18 @@ end
 local function clean(t)
     if U.clean_title then return U.clean_title(t or "") end
     return t or ""
+end
+
+-- Normalize LF, CRLF and legacy CR files while preserving blank INI lines.
+local function split_lines(value)
+    local content = tostring(value or ""):gsub("\r\n", "\n"):gsub("\r", "\n")
+    if content == "" then return {} end
+    if content:sub(-1) ~= "\n" then content = content .. "\n" end
+    local lines = {}
+    for line in content:gmatch("(.-)\n") do
+        lines[#lines + 1] = line
+    end
+    return lines
 end
 
 local function build_library()
@@ -109,6 +122,7 @@ local function build_grouped(tab_id)
                         table.insert(grp.regions, {
                             id = gid, region = region_of(gid),
                             n_cfg = n, in_lib = lib[gid] ~= nil,
+                            db_configs = entry.configs or {},
                         })
                     end
                 end
@@ -135,7 +149,21 @@ local function build_grouped(tab_id)
                     title = grp.title,
                     id = r.id, region = r.region,
                     n_cfg = r.n_cfg, in_lib = r.in_lib,
+                    n_db_cfg = #(r.db_configs or {}),
                 }
+                for _, cfg in ipairs(r.db_configs or {}) do
+                    rows[#rows+1] = {
+                        kind = "config",
+                        title = cfg.title or cfg.filename or "GameSettings",
+                        game_title = grp.title,
+                        author = cfg.author or "Community",
+                        description = cfg.description or "",
+                        filename = cfg.filename,
+                        raw_content = cfg.raw_content or "",
+                        tags = cfg.tags or {},
+                        id = r.id,
+                    }
+                end
             end
         end
     end
@@ -155,6 +183,7 @@ local function refresh()
     S.rows = r
     S.list:set(S.rows, false)
     S.list.sel = 1
+    S._db_generation = GL.generation or 0
     K.set_accent(K.ACC[TABS[S.tab].color] or K.ACC.gc)
 end
 
@@ -162,9 +191,25 @@ function S.enter()
     S.tab = 1
     S.expanded = {}
     S.sel = 1
+    S.preview = nil
     refresh()
 end
-function S.update(dt) S.list:update(dt) end
+function S.update(dt)
+    S.list:update(dt)
+    if S.tab == 3 and S._db_generation ~= (GL.generation or 0) then
+        refresh()
+    end
+    if S._deploy_pending then
+        local ok, done, stats = pcall(Deployer.poll)
+        if not ok then
+            S._deploy_pending = false
+            S._deploy_error = tostring(done)
+        else
+            S._deploy_stats = stats or S._deploy_stats
+            if done then S._deploy_pending = false end
+        end
+    end
+end
 
 local function cycle_tab(d)
     S.tab = ((S.tab - 1 + d) % #TABS) + 1
@@ -189,6 +234,16 @@ local function alphabet_jump(d)
 end
 
 function S.pad(b)
+    if S.preview then
+        if b == "UP" then
+            S.preview.scroll = math.max(0, S.preview.scroll - 1)
+        elseif b == "DOWN" then
+            S.preview.scroll = math.min(math.max(0, #S.preview.lines - 10), S.preview.scroll + 1)
+        elseif b == "B" or b == "SELECT" then
+            S.preview = nil
+        end
+        return
+    end
     local row = S.list:cur()
     if b == "UP" then
         if S.list:move(-1) then SFX.play("menu_move") end
@@ -206,9 +261,13 @@ function S.pad(b)
             S.expanded[row.title] = not S.expanded[row.title]
             SFX.play("menu_flip")
             refresh()
+        elseif row.kind == "config" then
+            SFX.play("menu_select")
+            local lines = split_lines(row.raw_content)
+            S.preview = { row = row, lines = lines, scroll = 0 }
         elseif row.kind == "region" then
             SFX.play("menu_select")
-            require("ui").go("gameset_explorer", { game_id = row.id, game_title = row.title })
+            require("ui").go("gameset_explorer", { game_id = row.id, game_title = row.game_title or row.title })
         end
     elseif b == "B" then
         require("ui").back()
@@ -260,11 +319,24 @@ local function draw_row(row, x, y, w, h, focused)
     elseif row.kind == "region" then
         K.region_flag(row.region, x + 30, y + h/2 - 10, 40, 20)
         K.id_plate(row.id, x + 78, y + h/2 - 10, 90, 20)
+        local details = {}
         if row.n_cfg and row.n_cfg > 0 then
-            K.text("small", row.n_cfg .. " cfg", x + w - 64, y + h/2 - 8, K.C.ok)
+            details[#details + 1] = row.n_cfg .. " saved"
+        end
+        if row.n_db_cfg and row.n_db_cfg > 0 then
+            details[#details + 1] = row.n_db_cfg .. " DB"
+        end
+        if #details > 0 then
+            local detail = K.clip("small", table.concat(details, " / "), 132)
+            K.text("small", detail, x + w - 146, y + h/2 - 8, K.acc)
         elseif row.in_lib then
             K.text("small", "in library", x + w - 90, y + h/2 - 8, K.C.dim)
         end
+    elseif row.kind == "config" then
+        K.text("small", "↳", x + 48, y + h/2 - 8, K.C.faint)
+        K.text("small", K.clip("small", row.title, w - 230), x + 66, y + h/2 - 8,
+               focused and K.C.text or K.C.dim)
+        K.text("small", K.clip("small", row.author, 110), x + w - 130, y + h/2 - 8, K.C.faint)
     end
 end
 
@@ -277,12 +349,128 @@ function S.draw()
     else
         S.list:draw(draw_row)
     end
-    K.footer({
-        { key = "A", label = "Open / Expand" },
-        { key = "L1 R1", label = "Tab" },
-        { key = "L2 R2", label = "Letter" },
-        { key = "B", label = "Back" },
-    })
+    if S.preview then
+        local p = S.preview
+        local x, y, w, h = 28, 76, K.W - 56, K.H - 104
+        K.color(K.C.bg0, 0.96); love.graphics.rectangle("fill", 0, 0, K.W, K.H)
+        K.panel(x, y, w, h, { accent = K.ACC.wii, cut = 10, force = true })
+        K.text("h", K.clip("h", p.row.title, w - 32), x + 18, y + 14, K.C.text)
+        K.text("small", (p.row.game_title or "Game") .. " · " .. p.row.id .. " · " .. (p.row.author or "Community"),
+               x + 18, y + 48, K.C.dim)
+        K.text("small", K.clip("small", p.row.description or "", w - 36), x + 18, y + 72, K.C.text)
+        K.text("mono", p.row.filename or "embedded preset", x + 18, y + 112, K.ACC.wii)
+        local code_y = y + 138
+        love.graphics.setScissor(x + 12, code_y, w - 24, h - 174)
+        if #p.lines == 0 then
+            K.text("small", "No embedded INI content in this database entry.", x + 18, code_y, K.C.dim)
+        else
+            for i = 1, 10 do
+                local line = p.lines[p.scroll + i]
+                if not line then break end
+                K.text("mono", K.clip("mono", line, w - 44), x + 18, code_y + (i - 1) * 19, K.C.text)
+            end
+        end
+        love.graphics.setScissor()
+        K.footer({ { key = "UP/DOWN", label = "Scroll preset" }, { key = "B", label = "Close" } })
+    else
+        K.footer({
+            { key = "A", label = "Open / Expand" },
+            { key = "L1 R1", label = "Tab" },
+            { key = "L2 R2", label = "Letter" },
+            { key = "B", label = "Back" },
+        })
+    end
+end
+
+
+-- NEXUS actions use the same tab, refresh and preview state as the controller UI.
+function S.register_actions(ui)
+    if not ui or type(ui.register_action) ~= "function" then
+        return false, "UI action registrar unavailable"
+    end
+
+    local function set_tab(index)
+        S.preview = nil
+        S.tab = index
+        S.expanded = {}
+        refresh()
+        return true
+    end
+
+    local function selected_row()
+        return S.rows[S.list and S.list.sel or 0]
+    end
+
+    local function preview_selected()
+        local row = selected_row()
+        if not row or row.kind ~= "config" then
+            return false, "selected row is not a database preset"
+        end
+        local lines = split_lines(row.raw_content)
+        S.preview = { row = row, lines = lines, scroll = 0 }
+        return true
+    end
+
+    local specs = {
+        { id = "gamesettings.open_library", title = "Open GameSettings library", order = 10,
+          run = function() return set_tab(1) end },
+        { id = "gamesettings.open_storage", title = "Open stored GameSettings", order = 20,
+          run = function() return set_tab(2) end },
+        { id = "gamesettings.open_database", title = "Open GameSettings database", order = 30,
+          run = function() return set_tab(3) end },
+        { id = "gamesettings.refresh_database", title = "Refresh GameSettings database", order = 40,
+          run = function()
+              GL.invalidate()
+              return set_tab(3)
+          end },
+        { id = "gamesettings.select_row", title = "Select GameSettings row", order = 50,
+          run = function(index)
+              if type(index) ~= "number" or index % 1 ~= 0
+                 or index < 1 or index > #S.rows then
+                  return false, "GameSettings row index out of range"
+              end
+              S.list.sel, S.sel = index, index
+              if S.list._aim then pcall(S.list._aim, S.list) end
+              return true
+          end },
+        { id = "gamesettings.preview_selected", title = "Preview selected database preset", order = 60,
+          run = preview_selected },
+        { id = "gamesettings.sync_library", title = "Queue GameSettings library sync", order = 70,
+          run = function()
+              if S._deploy_pending then return false, "GameSettings sync is already running" end
+              local ok, queued = pcall(Deployer.start, Library.games or {})
+              if not ok then return false, tostring(queued) end
+              queued = tonumber(queued) or 0
+              S._deploy_pending = queued > 0
+              S._deploy_error = nil
+              S._deploy_stats = { deployed = 0, matched = queued, queued = queued, processed = 0 }
+              return true, { queued = queued, deployed = 0, matched = queued }
+          end },
+        { id = "gamesettings.state", title = "Get GameSettings browser state", order = 80,
+          run = function()
+              local row = selected_row()
+              return {
+                  tab = TABS[S.tab] and TABS[S.tab].id or "library",
+                  row_count = #S.rows,
+                  selected_index = S.list and S.list.sel or 0,
+                  selected_kind = row and row.kind or nil,
+                  preview_open = S.preview ~= nil,
+                  preview_line_count = S.preview and #S.preview.lines or 0,
+                  deployment_pending = S._deploy_pending == true,
+                  deployment = S._deploy_stats,
+                  error = S._deploy_error,
+              }
+          end },
+    }
+
+    for _, spec in ipairs(specs) do
+        local ok, err = ui.register_action(spec.id, spec.run, {
+            title = spec.title, group = "gamesettings", order = spec.order,
+            screen = "gameset_browser",
+        })
+        if not ok then return false, err or ("could not register " .. spec.id) end
+    end
+    return true
 end
 
 return S
