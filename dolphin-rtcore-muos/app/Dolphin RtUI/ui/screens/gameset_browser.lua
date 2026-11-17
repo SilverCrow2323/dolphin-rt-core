@@ -38,6 +38,18 @@ local function clean(t)
     return t or ""
 end
 
+-- Normalize LF, CRLF and legacy CR files while preserving blank INI lines.
+local function split_lines(value)
+    local content = tostring(value or ""):gsub("\r\n", "\n"):gsub("\r", "\n")
+    if content == "" then return {} end
+    if content:sub(-1) ~= "\n" then content = content .. "\n" end
+    local lines = {}
+    for line in content:gmatch("(.-)\n") do
+        lines[#lines + 1] = line
+    end
+    return lines
+end
+
 local function build_library()
     local rows = {}
     for _, g in ipairs(Library.games or {}) do
@@ -251,10 +263,7 @@ function S.pad(b)
             refresh()
         elseif row.kind == "config" then
             SFX.play("menu_select")
-            local lines = {}
-            for line in tostring(row.raw_content or ""):gmatch("[^\r\n]+") do
-                lines[#lines + 1] = line
-            end
+            local lines = split_lines(row.raw_content)
             S.preview = { row = row, lines = lines, scroll = 0 }
         elseif row.kind == "region" then
             SFX.play("menu_select")
@@ -397,10 +406,7 @@ function S.register_actions(ui)
         if not row or row.kind ~= "config" then
             return false, "selected row is not a database preset"
         end
-        local lines = {}
-        for line in tostring(row.raw_content or ""):gmatch("[^\r\n]+") do
-            lines[#lines + 1] = line
-        end
+        local lines = split_lines(row.raw_content)
         S.preview = { row = row, lines = lines, scroll = 0 }
         return true
     end
