@@ -36,7 +36,7 @@ package.preload["core.gameset_loader"] = function()
                         author = "SPDW Factory",
                         description = "A test preset",
                         filename = "Default.ini",
-                        raw_content = "[Core]\nCPUThread = True\n[Video]\nBackend = Vulkan",
+                        raw_content = "[Core]\r\nCPUThread = True\r\n\r\n[Video]\r\nBackend = Vulkan",
                     }},
                 }},
             }
@@ -90,7 +90,7 @@ Screen.pad("A")
 assert(actions["gamesettings.select_row"].run(3), "database preset row should be selectable")
 assert(actions["gamesettings.preview_selected"].run(), "database preset should open in preview")
 local preview_state = actions["gamesettings.state"].run()
-assert(preview_state.preview_open and preview_state.preview_line_count == 4,
+assert(preview_state.preview_open and preview_state.preview_line_count == 5,
        "preview must split embedded INI text on line boundaries")
 Screen.pad("B")
 assert(not actions["gamesettings.state"].run().preview_open, "B should close the preview")
