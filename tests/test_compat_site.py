@@ -327,7 +327,7 @@ class CompatibilitySiteTests(unittest.TestCase):
 
     def test_pwa_cache_is_bumped_for_new_website_shell(self):
         worker = (ROOT / "sw.js").read_text(encoding="utf-8")
-        self.assertIn("rtcore-site-v2", worker)
+        self.assertIn("rtcore-magazine-v3", worker)
         for page in ("index.html", "compatibility.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
             self.assertIn("'./" + page + "'", worker)
         self.assertIn("'./data/site-gamesettings-index.json'", worker)
@@ -336,16 +336,17 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertNotIn("rtcore-db-v3", worker)
 
     def test_project_portal_is_the_public_homepage(self):
-        self.assertIn("Dolphin Rt:Core — Handheld GameCube", self.portal_html)
+        self.assertIn("Dolphin Rt:Core — The Handheld Emulation Files", self.portal_html)
         self.assertIn('id="downloads"', self.portal_html)
         self.assertIn('href="./quick-start.html"', self.portal_html)
         self.assertIn('href="./profiles.html"', self.portal_html)
-        self.assertIn('href="./gamesettings.html"', self.portal_html)
+        self.assertIn("Compatibility + INIs", self.portal_html)
+        self.assertNotIn('href="./gamesettings.html">GameSettings', self.portal_html)
         self.assertIn('href="./docs.html"', self.portal_html)
         self.assertIn('href="./compatibility.html"', self.portal_html)
-        self.assertIn("LATEST STABLE RELEASE", self.portal_html)
-        self.assertIn("H700 FIELD ENGINEERING", self.portal_html)
-        self.assertIn("One engine.", self.portal_html)
+        self.assertIn("ON THE BENCH · LATEST STABLE", self.portal_html)
+        self.assertIn("SPDW FACTORY PRESENTS · ISSUE 01 · H700 FIELD FILES", self.portal_html)
+        self.assertIn("THE HANDHELD", self.portal_html)
 
     def test_portal_uses_live_release_assets_and_explains_package_boundary(self):
         self.assertIn("Dolphin_RtCore_v12_0_0_Andromeda.muxupd", self.portal_html)
@@ -369,7 +370,7 @@ class CompatibilitySiteTests(unittest.TestCase):
 
     def test_compatibility_page_returns_to_project_portal(self):
         self.assertIn('href="./"', self.html)
-        self.assertIn("Project Portal", self.html)
+        self.assertIn("The Project", self.html)
         self.assertIn("Compatibility Database", self.html)
 
 
