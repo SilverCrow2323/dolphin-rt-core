@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Dolphin Rt:Core · Compatibility Database</title>
+<title>Dolphin Rt:Core · Compatibility Workshop</title>
 <link rel="icon" type="image/png" href="./assets/spdw_symbol.png" />
 <link rel="manifest" href="./manifest.json" />
-<meta name="theme-color" content="#7c3aed" />
+<meta name="theme-color" content="#ff365f" />
 <meta name="description" content="Search community-tested GameCube and Wii results for Dolphin Rt:Core. Compare device, muOS firmware, Rt:Core builds and individual test reports." />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Dolphin Rt:Core · Compatibility Database" />
 <meta property="og:description" content="Browse reproducible GameCube and Wii test reports for Dolphin Rt:Core handheld builds." />
 <meta name="twitter:card" content="summary" />
-<meta name="color-scheme" content="dark light" />
+<meta name="color-scheme" content="dark" />
+<link rel="stylesheet" href="./assets/site.css" />
 <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=JetBrains+Mono:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -510,6 +511,30 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
 }
+
+/* Unified SPDW Factory masthead and magazine art direction */
+#header{background:#09070bf2;border-bottom:2px solid #ff365f;box-shadow:0 8px 32px #000b}
+#header .header-inner{max-width:1380px;padding:12px 22px;gap:12px}
+#header .brand-title{font-family:Audiowide,sans-serif;text-transform:uppercase;letter-spacing:.04em;text-shadow:3px 2px 0 #ff365f55}
+#header .brand-title .rt{color:#ffb52e}
+#header .brand-sub{color:#63e6e2;font:9px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
+#header .nav{gap:4px}
+#header .nav-btn{border-radius:3px;border-color:#61434d;background:#120c12;color:#fff0e8;font:800 10px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;padding:9px 10px}
+#header .nav-btn:hover{border-color:#ffb52e;color:#ffb52e;background:#211018}
+#header .nav-btn.accent{border-color:#ff365f;color:#fff;background:#ff365f}
+#header .console-toggle{border-radius:3px;border-color:#61434d;background:#120c12}
+#header .console-toggle .slider{border-radius:2px;background:#ff365f}
+body.theme-wii #header .console-toggle .slider{background:#63e6e2}
+.hero{padding-top:112px}
+.hero-title{font-family:Audiowide,sans-serif!important;text-transform:uppercase;letter-spacing:-.05em;text-shadow:4px 4px 0 #ff365f55}
+.hero-title .rt{color:#ffb52e!important}
+.hero-tag{color:#c3b3b4}
+.stat,.rating-pill,.game-card,.modal,.filter-bar{border-radius:4px!important}
+.game-card{border-color:#55414b!important;box-shadow:5px 5px 0 #ff365f18}
+.game-card:hover{border-color:#ffb52e!important;transform:translateY(-3px)}
+.filter-bar{border-top:1px solid #ff365f66;border-bottom:1px solid #ff365f66}
+#header .nav-btn span{display:inline}
+@media(max-width:900px){#header .nav-btn span{display:none}#header .nav-btn{padding:10px 12px}}
 </style>
 </head>
 <body class="theme-gc">
@@ -525,14 +550,15 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
       <img id="brandIcon" class="brand-icon" src="./assets/gamecube.svg" alt="">
       <div>
         <div class="brand-title">Dolphin <span class="rt">Rt</span>:Core</div>
-        <div class="brand-sub">Community Compatibility Database · GameCube + Wii</div>
+        <div class="brand-sub">SPDW FACTORY · THE COMPATIBILITY WORKSHOP</div>
       </div>
     </div>
     <nav class="nav">
-      <a href="./" class="nav-btn"><i class="fa-solid fa-house"></i><span>Project Portal</span></a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core" target="_blank" rel="noopener" class="nav-btn"><i class="fa-brands fa-github"></i><span>Repo</span></a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases" target="_blank" rel="noopener" class="nav-btn"><i class="fa-solid fa-download"></i><span>Release</span></a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/wiki" target="_blank" rel="noopener" class="nav-btn"><i class="fa-solid fa-book-open"></i><span>Wiki</span></a>
+      <a href="./index.html" class="nav-btn"><i class="fa-solid fa-house"></i><span>The Project</span></a>
+      <a href="./quick-start.html" class="nav-btn"><i class="fa-solid fa-book"></i><span>Field Guide</span></a>
+      <a href="./profiles.html" class="nav-btn"><i class="fa-solid fa-sliders"></i><span>Profile Lab</span></a>
+      <a href="./docs.html" class="nav-btn"><i class="fa-solid fa-layer-group"></i><span>Knowledge</span></a>
+      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases" target="_blank" rel="noopener" class="nav-btn"><i class="fa-solid fa-download"></i><span>Releases</span></a>
       <button class="nav-btn" id="reportBtn"><i class="fa-solid fa-clipboard-list"></i><span>Report</span></button>
       <button class="nav-btn accent" id="gsBtn"><i class="fa-solid fa-sliders"></i><span>GameSettings</span><span class="badge" id="gsBadge" style="display:none;">0</span></button>
     </nav>
@@ -549,8 +575,8 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 <section class="hero">
   <div class="hero-inner">
     <div>
-      <h1 class="hero-title"><a href="./">Dolphin <span class="rt">Rt</span>:Core Compatibility</a></h1>
-      <p class="hero-tag">Community-driven compatibility data for Dolphin Rt:Core on muOS &amp; H700 handhelds.</p>
+      <h1 class="hero-title"><a href="./">THE COMPATIBILITY<br><span class="rt">WORKSHOP</span></a></h1>
+      <p class="hero-tag">FIELD REPORTS · GAME DATABASE · GAMESETTINGS INIs<br>Real sessions. Exact builds. No “works on my device” guesswork.</p>
     </div>
     <div class="hero-stats">
       <div class="stat"><div class="stat-num" id="statGames">0</div><div class="stat-lbl">Games</div></div>
