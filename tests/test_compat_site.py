@@ -40,6 +40,20 @@ class ScriptCollector(HTMLParser):
             self.current = []
 
 
+    def test_unified_magazine_portal_and_integrated_compatibility_workspace(self):
+        shared_nav = ('The Project', 'Field Guide', 'Profile Lab', 'Compatibility + INIs', 'Knowledge Base', 'Rt:Stream')
+        for filename in ('index.html', 'quick-start.html', 'profiles.html', 'gamesettings.html', 'docs.html'):
+            source = (ROOT / filename).read_text(encoding='utf-8')
+            for label in shared_nav:
+                self.assertIn(label, source, f'{filename} is missing unified navigation item: {label}')
+        self.assertIn('SPDW FACTORY · THE COMPATIBILITY WORKSHOP', self.html)
+        self.assertIn('Compatibility + INIs', self.html)
+        self.assertIn('id="gsBtn"', self.html)
+        self.assertIn('id="gsBadge"', self.html)
+        self.assertIn('PSM-inspired underground manga editorial system', (ROOT / 'assets' / 'site.css').read_text(encoding='utf-8'))
+        self.assertIn('rtcore-magazine-v3', (ROOT / 'sw.js').read_text(encoding='utf-8'))
+        self.assertIn('GameSettings is deliberately grouped with Compatibility', (ROOT / 'docs' / 'COMPATIBILITY_SITE.md').read_text(encoding='utf-8'))
+
 class CompatibilitySiteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
