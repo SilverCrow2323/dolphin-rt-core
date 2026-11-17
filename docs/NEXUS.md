@@ -189,6 +189,21 @@ The Cheat Database Browser reads the global index; it does not toggle per-game c
 
 `Cheats.refresh_index()` invalidates both the cached index and derived Boost memo before rebuilding the browser. The state snapshot contains database metadata only and does not expose ROM paths or cheat file paths.
 
+## GameSettings Browser
+
+| Action | Arguments | Purpose |
+|---|---|---|
+| `gamesettings.open_library` | — | Show GameSettings for locally discovered games |
+| `gamesettings.open_storage` | — | Browse presets already stored on the device |
+| `gamesettings.open_database` | — | Browse bundled database presets |
+| `gamesettings.refresh_database` | — | Invalidate and reload the database index |
+| `gamesettings.select_row` | 1-based index | Select a visible browser row; out-of-range indices are rejected |
+| `gamesettings.preview_selected` | — | Preview the selected database preset without applying it |
+| `gamesettings.sync_library` | — | Queue presets for locally discovered games through the incremental deployer |
+| `gamesettings.state` | — | Read the active tab, row selection, preview and deployment status |
+
+The browser reuses the existing Gameset Loader, Gameset Manager, local library and incremental GameSettings deployer. A sync is rejected while another sync is pending. The UI polls one queue step per update so a large local library does not monopolize the frontend loop. State reports counts and selection metadata only; preset contents and local filesystem paths are not exposed in the action snapshot.
+
 ## Validation
 
 Run the contract checks from the repository root:
