@@ -327,6 +327,15 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn("releases/latest", (ROOT / "assets" / "site.js").read_text(encoding="utf-8"))
         self.assertIn("data-release-asset", self.portal_html)
 
+    def test_release_feed_updates_every_duplicate_version_and_date_label(self):
+        script = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+        self.assertIn("$('[data-latest-release]')", script)
+        self.assertIn("$('[data-release-date]')", script)
+        self.assertIn("nodes.forEach", script)
+        self.assertIn("dates.forEach", script)
+        self.assertGreaterEqual(self.portal_html.count("data-latest-release"), 2)
+        self.assertGreaterEqual(self.portal_html.count("data-release-date"), 2)
+
     def test_compatibility_page_returns_to_project_portal(self):
         self.assertIn('href="./"', self.html)
         self.assertIn("Project Portal", self.html)
