@@ -27,7 +27,7 @@ local entries = Mods.entries(cat, "/fake/Load")
 expect(#entries == 3, "global catalogue should include active and parked entries")
 local parked
 for _, entry in ipairs(entries) do if entry.parked then parked = entry end end
-expect(parked and parked.name == "GZLE01", "parked entry must be marked")
+expect(parked and parked.name == "Parked Mod", "parked entry must be marked")
 
 local global_rows = Mods.for_game(cat, nil, nil, "/fake/Load")
 expect(#global_rows == 3, "global view must include active and parked items")
