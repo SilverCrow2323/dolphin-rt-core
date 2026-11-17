@@ -31,3 +31,41 @@ a{color:inherit;text-decoration:none}button,input,select{font:inherit}button{cur
   transform:translateY(-160%);transition:transform .18s ease;
 }
 .skip-link:focus-visible{transform:translateY(0)}
+
+/* SPDW FACTORY · PSM-inspired underground manga editorial system */
+:root{--bg:#08070a;--panel:#121016;--panel2:#1b151b;--line:#51404a;--text:#fff7ed;--muted:#c3b3b4;--dim:#8e777e;--violet:#ff365f;--cyan:#63e6e2;--orange:#ffb52e;--green:#9bff70;--red:#ff365f;--shadow:0 24px 90px #000b}
+body{background:#08070a;font-family:Manrope,system-ui,sans-serif}
+body:before{background:radial-gradient(ellipse at 6% 4%,#ff365f30,transparent 34%),radial-gradient(ellipse at 94% 28%,#ffb52e1c,transparent 34%),linear-gradient(180deg,#0b080d,#08070a 70%,#110b10)}
+body:after{opacity:.17;background-image:radial-gradient(#fff 0.65px,transparent .65px);background-size:5px 5px;mask-image:linear-gradient(#000,transparent 75%)}
+.topline{background:linear-gradient(90deg,#ff365f,#ffb52e,#63e6e2);height:3px}
+.header{background:#09070bf0;border-bottom:1px solid #ff365f66;box-shadow:0 8px 32px #0009}
+.brand b{font-family:Audiowide,sans-serif;letter-spacing:.04em;text-shadow:3px 2px 0 #ff365f55}
+.brand b span{color:#ffb52e!important}
+.brand small{color:#63e6e2;letter-spacing:.18em}
+.nav a{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.nav a:hover,.nav a.active{color:#ffb52e}
+.toolbtn,.btn{border-radius:3px;text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;font-weight:800}
+.btn.primary{background:#ff365f;color:#fff;border:2px solid #ff365f;box-shadow:5px 5px 0 #ffb52e;transform:translate(-2px,-2px)}
+.btn.primary:hover{transform:translate(0,0);box-shadow:2px 2px 0 #ffb52e}
+.btn.ghost,.toolbtn{border:1px solid #80616c;background:#120c12;color:#fff1e5}
+.hero{position:relative;isolation:isolate}
+.hero:after{content:'ISSUE 01 / H700 FIELD FILES';position:absolute;right:max(22px,calc((100% - var(--max))/2));top:24px;color:#ffb52e;font:10px 'DM Mono';letter-spacing:.2em;transform:rotate(2deg);border:1px solid #ffb52e;padding:7px 10px}
+.hero h1,.page-hero h1{font-family:Audiowide,sans-serif;text-transform:uppercase;letter-spacing:-.055em;line-height:.98;text-shadow:4px 4px 0 #ff365f55,-2px -2px 0 #63e6e233}
+.gradient{background:linear-gradient(100deg,#ffb52e 0%,#ff365f 52%,#63e6e2 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.eyebrow,.tag{color:#63e6e2;letter-spacing:.18em}
+.section-head h2,.page-hero h1{font-family:Audiowide,sans-serif;text-transform:uppercase}
+.card,.banner,.callout,.metric,.docs-index,.docs-content{border-radius:4px;border-color:#55414b;background:linear-gradient(145deg,#171019,#0d0a10);box-shadow:5px 5px 0 #ff365f18}
+.card{position:relative;overflow:hidden;transition:transform .22s var(--ease),border-color .22s,box-shadow .22s}
+.card:before{content:'';position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(#ff365f,#ffb52e,#63e6e2);opacity:.85}
+.card:hover{transform:translate(-3px,-4px) rotate(-.25deg);border-color:#ffb52e;box-shadow:8px 8px 0 #ff365f25}
+.card h3{font-family:Audiowide,sans-serif;text-transform:uppercase;letter-spacing:-.025em}
+.banner{border:1px solid #ffb52e;background:linear-gradient(110deg,#271019,#131019 65%,#102024)}
+.callout{border-left:4px solid #ffb52e}
+.metric strong{color:#ffb52e}
+.footer{border-top:2px solid #ff365f;background:#09070b}
+.page-enter{animation:magazine-enter .45s cubic-bezier(.2,.75,.2,1) both}
+@keyframes magazine-enter{from{opacity:0;transform:translateY(12px);filter:contrast(1.3)}to{opacity:1;transform:none;filter:none}}
+.reveal{transition:opacity .55s,transform .55s cubic-bezier(.2,.75,.2,1),filter .55s}
+::selection{background:#ff365f;color:#fff}
+@media(max-width:760px){.hero:after{position:static;display:inline-block;margin:0 22px 12px;transform:rotate(-1deg)}.nav{gap:4px}.nav a{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.page-enter{animation:none}}
