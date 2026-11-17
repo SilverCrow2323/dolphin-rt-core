@@ -1,6 +1,6 @@
 # Compatibility Site Operations
 
-The public site has two entry points: the Project Portal at index.html and the standalone Compatibility Database at compatibility.html. The database retains GameCube/Wii search, filters, game details, GameSettings and test-report submission. The repository also tracks the shared service worker (sw.js) and web app manifest (manifest.json).
+The public site is one SPDW Factory editorial portal. `index.html` is the magazine cover and project dashboard; `compatibility.html` is the Compatibility Workshop within the same masthead, navigation and visual identity. GameSettings is part of this workspace, not a separate top-level destination. The existing GameCube/Wii search, filters, game details and test-report submission are preserved. The shared service worker (`sw.js`) and web app manifest (`manifest.json`) cover the unified experience.
 
 ## Local preview
 
@@ -10,7 +10,7 @@ From the repository root:
 python3 -m http.server 8000
 ~~~
 
-Open http://localhost:8000 for the portal and http://localhost:8000/compatibility.html for the database. Do not use file://: fetch, service workers and browser storage behave differently.
+Open http://localhost:8000 for the unified portal. Enter Compatibility Workshop from the shared navigation. Do not use file://: fetch, service workers and browser storage behave differently. Do not use file://: fetch, service workers and browser storage behave differently.
 
 ## Publish
 
