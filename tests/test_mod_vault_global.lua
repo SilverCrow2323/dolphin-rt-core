@@ -59,6 +59,9 @@ expect(unsafe == false, "path traversal must be rejected")
 expect(#commands == before, "unsafe names must never reach the shell")
 local unknown = Mods.set_enabled({ id = "../outside" }, { name = "x" }, false, "/fake/Load")
 expect(unknown == false, "unknown categories must be rejected")
+local control_name = "bad\nname"
+local control_entry = Mods.set_enabled(cat, { name = control_name }, false, "/fake/Load")
+expect(control_entry == false, "control characters in mod names must be rejected")
 local native = Mods.set_enabled(Mods.CATS[5], { name = "Graphic" }, false, "/fake/Load")
 expect(native == false, "native Graphics Mods stay on their per-game manager")
 
