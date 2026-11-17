@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Assemble the complete public Dolphin Rt:Core product hub and standalone Compatibility Database.
+# Assemble the unified Dolphin Rt:Core magazine portal and its Compatibility + GameSettings workspace.
 # Publish only the web application, local catalogues and referenced artwork.
 set -Eeuo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
