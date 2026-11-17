@@ -4,9 +4,9 @@
 
 # Dolphin Rt:Core · Project Wiki
 
-**The practical handbook for the handheld core, frontend, compatibility database and Rt:Stream.**
+**The SPDW Factory field magazine for the handheld core, frontend, Compatibility Workshop and Rt:Stream.**
 
-[Repository](https://github.com/SilverCrow2323/dolphin-rt-core) · [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases) · [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues) · [Project Portal](https://silvercrow2323.github.io/dolphin-rt-core/) · [Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html)
+[Repository](https://github.com/SilverCrow2323/dolphin-rt-core) · [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases) · [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues) · [Project Portal](https://silvercrow2323.github.io/dolphin-rt-core/)
 
 </div>
 
@@ -39,14 +39,14 @@
 - **Knulli** — separate platform integration and packaging.
 - **ROCKNIX** — experimental port; consult the root README before use.
 - **Dolphin RtUI** — LÖVE frontend for library, profiles, compatibility, the Rt:System Status Center, native Graphics Mods and Rt:Stream.
-- **Compatibility Database** — static web application backed by the tracked test-report JSON.
+- **Compatibility Workshop** — integrated portal workspace for GameCube/Wii reports, filters, test evidence and GameSettings INIs.
 - **Rt:Stream** — PC-side portal and handheld Moonlight client.
 
 See [[Project-Map]] and [[Platform-Support]] for boundaries and supported combinations.
 
-## Compatibility Database
+## Compatibility Workshop
 
-The public homepage is the repository-root `index.html`; the standalone Compatibility Database lives at `compatibility.html`. The database reads the frontend's tracked `games_data.json` and `gamesettings.json`. The app includes GameCube/Wii themes, search, region/boot/rating filters, per-device and per-muOS filters, shareable filter URLs, report submission and offline shell support.
+The repository-root `index.html` is the magazine cover and project dashboard. `compatibility.html` is the Compatibility Workshop inside the same portal identity and navigation; GameSettings remains integrated in this workspace. The database reads the frontend's tracked `games_data.json` and `gamesettings.json`. The app includes GameCube/Wii themes, search, region/boot/rating filters, per-device and per-muOS filters, shareable filter URLs, report submission and offline shell support.
 
 **The source file is not proof that GitHub Pages is enabled.** Use a public Pages URL only after the repository owner has configured Pages. See [[Compatibility-Site]].
 
