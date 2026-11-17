@@ -120,11 +120,15 @@ function M.for_game(cat, game, titles, root)
   local list = {}
   local ts = titles_set(titles)
   for _, e in ipairs(M.entries(cat, root)) do
-    if game then
-      local k = M.match_kind(game.id, ts, e)
-      if k then e.kind = k; list[#list + 1] = e end
-    else
-      e.kind = "all"; list[#list + 1] = e
+    -- A globally parked mod is absent from the active Load/ tree. Never let
+    -- a per-game launch plan turn it back on implicitly.
+    if not (game and e.parked) then
+      if game then
+        local k = M.match_kind(game.id, ts, e)
+        if k then e.kind = k; list[#list + 1] = e end
+      else
+        e.kind = "all"; list[#list + 1] = e
+      end
     end
   end
   table.sort(list, function(a, b)
@@ -169,6 +173,77 @@ function M.write_plan(game, titles, off_of, root, path)
   f:write(table.concat(lines, "\n"), #lines > 0 and "\n" or "")
   f:close()
   return #lines
+end
+
+
+
+-- Globally park/unpark an installed mod without deleting its payload.
+-- This state is distinct from the per-game OFF plan and uses a reversible
+-- sibling directory: Load/<Category>.off.
+local function safe_entry_name(name)
+  return type(name) == "string" and name ~= "" and name ~= "." and name ~= ".."
+    and not name:find("/", 1, true) and not name:find("\\", 1, true)
+    and not name:find("[%z\1-\31\127]")
+end
+
+local function valid_global_category(cat)
+  if type(cat) ~= "table" or type(cat.id) ~= "string"
+     or not cat.id:match("^[%w_%-]+$") or cat.native then
+    return false
+  end
+  for _, known in ipairs(M.CATS) do
+    if known.id == cat.id and not known.native then return true end
+  end
+  return false
+end
+
+function M.set_enabled(cat, entry, enabled, root)
+  if not valid_global_category(cat) then
+    return false, "invalid or globally unsupported mod category"
+  end
+  if type(entry) ~= "table" or not safe_entry_name(entry.name) then
+    return false, "invalid mod entry"
+  end
+  if type(enabled) ~= "boolean" then return false, "enabled must be boolean" end
+  local currently_enabled = entry.parked ~= true
+  if currently_enabled == enabled then return true, "unchanged" end
+
+  root = root or M.LOAD
+  if type(root) ~= "string" or root == "" then return false, "invalid Load root" end
+  local on_dir = root .. "/" .. cat.id
+  local off_dir = on_dir .. ".off"
+  local source_dir = currently_enabled and on_dir or off_dir
+  local target_dir = enabled and on_dir or off_dir
+  local source = source_dir .. "/" .. entry.name
+  local target = target_dir .. "/" .. entry.name
+  local command = "if [ ! -e " .. Shell.shq(source) .. " ]; then exit 2; fi; " ..
+    "if [ -e " .. Shell.shq(target) .. " ]; then exit 3; fi; " ..
+    "mkdir -p " .. Shell.shq(target_dir) .. " && mv " ..
+    Shell.shq(source) .. " " .. Shell.shq(target)
+  local rc = Shell.exec(command)
+  if rc == true or rc == 0 then
+    entry.parked = not enabled
+    return true
+  end
+  return false, "could not move mod between Load/" .. cat.id .. " and Load/" .. cat.id .. ".off"
+end
+
+function M.set_all_enabled(cat, enabled, root)
+  if not valid_global_category(cat) then
+    return 0, { "invalid or globally unsupported mod category" }
+  end
+  if type(enabled) ~= "boolean" then return 0, { "enabled must be boolean" } end
+  local changed, errors = 0, {}
+  local rows = M.entries(cat, root)
+  for _, entry in ipairs(rows) do
+    local ok, err = M.set_enabled(cat, entry, enabled, root)
+    if ok then
+      if err ~= "unchanged" then changed = changed + 1 end
+    else
+      errors[#errors + 1] = entry.name .. ": " .. tostring(err)
+    end
+  end
+  return changed, errors
 end
 
 return M
