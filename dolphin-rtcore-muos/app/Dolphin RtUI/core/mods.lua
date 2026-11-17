@@ -183,6 +183,7 @@ end
 local function safe_entry_name(name)
   return type(name) == "string" and name ~= "" and name ~= "." and name ~= ".."
     and not name:find("/", 1, true) and not name:find("\\", 1, true)
+    and not name:find("[%z\1-\31\127]")
 end
 
 local function valid_global_category(cat)
