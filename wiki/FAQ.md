@@ -28,7 +28,7 @@ No. The form prepares a GitHub issue. A maintainer reviews it and updates the tr
 
 ## Is the Compatibility Database website deployed?
 
-The HTML application is tracked in the repository. A public GitHub Pages URL exists only after the repository owner enables Pages. See [[Compatibility-Site]].
+Yes. The official Project Portal is published at [silvercrow2323.github.io/dolphin-rt-core](https://silvercrow2323.github.io/dolphin-rt-core/). The Compatibility Database remains a separate live page at [compatibility.html](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html). The portal and database are separate routes, not a replacement for each other. See [[Compatibility-Site]].
 
 ## Can I use the current Andromeda package on Jacaranda?
 
