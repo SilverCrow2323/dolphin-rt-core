@@ -30,6 +30,8 @@ SFTP requires a working SSH/SFTP server on the handheld. Configure its actual ho
 - Authentication uses OpenSSH keys or an existing SSH agent. Passwords and private keys are never stored by Rt:Stream.
 - The device SSH host key must already be trusted in the system \`known_hosts\`.
 - Host-key verification is strict and is never disabled.
+- The connection test verifies that the configured ROM directory is reachable; it is not merely an SSH login check.
+- Remote directories are canonicalized through SFTP before use; symlinked ROM entries and directory escapes are rejected.
 - Browsing and destructive actions are restricted to the configured remote ROM directory.
 - Upload is limited to supported ROM files within configured PC library roots.
 - Remote downloads are placed in the PC library's \`received/\` folder.
