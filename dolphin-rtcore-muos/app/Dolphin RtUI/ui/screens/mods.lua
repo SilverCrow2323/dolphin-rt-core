@@ -29,8 +29,10 @@ local function counts(i)
     local on = 0
     if Mods.CATS[i].native then
         for _, r in ipairs(rows) do if r.enabled then on = on + 1 end end
-    else
+    elseif S.game then
         for _, r in ipairs(rows) do if not off[r.name] then on = on + 1 end end
+    else
+        for _, r in ipairs(rows) do if not r.parked then on = on + 1 end end
     end
     return on, #rows
 end
@@ -77,6 +79,25 @@ local function save()
     if S.game and not cat.native then U.vault_set_off(S.game, cat.id, S.off[S.tab]) end
 end
 
+local function refresh_mod_rows()
+    local selected = S.list:cur()
+    local selected_name = selected and selected.name or nil
+    local cat = Mods.CATS[S.tab]
+    local titles = S.game and U.vault_titles(S.game) or nil
+    S.rows[S.tab] = Mods.for_game(cat, S.game, titles)
+    S.off[S.tab] = (S.game and not cat.native) and U.vault_off(S.game, cat.id) or {}
+    S.list:set(S.rows[S.tab], false)
+    if selected_name then
+        for i, row in ipairs(S.list.items) do
+            if row.name == selected_name then
+                S.list.sel = i
+                S.list:_aim(true)
+                break
+            end
+        end
+    end
+end
+
 local function refresh_graphics_rows()
     local selected = S.list.sel
     S.rows[S.tab] = Graphics.list_for(S.game)
@@ -98,32 +119,65 @@ function S.pad(b)
     elseif b == "DOWN" then if S.list:move(1) then SFX.play("menu_move") end
     elseif b == "L1" or b == "LEFT" then set_tab(-1)
     elseif b == "R1" or b == "RIGHT" then set_tab(1)
-    elseif b == "A" and r and S.game then
-        if Mods.CATS[S.tab].native then
-            local ok, err = Graphics.set_enabled(S.game, r, not r.enabled)
-            if ok then refresh_graphics_rows(); SFX.play("menu_toggleoption")
-            else Notify.show("error", "Graphics Mod: " .. tostring(err)) end
-        else
+    elseif b == "A" and r then
+        local cat = Mods.CATS[S.tab]
+        if cat.native then
+            if S.game then
+                local ok, err = Graphics.set_enabled(S.game, r, not r.enabled)
+                if ok then refresh_graphics_rows(); SFX.play("menu_toggleoption")
+                else Notify.show("error", "Graphics Mod: " .. tostring(err)) end
+            end
+        elseif S.game then
             off[r.name] = (not off[r.name]) or nil
             save(); SFX.play("menu_toggleoption")
+        else
+            local enabling = r.parked == true
+            local ok, err = Mods.set_enabled(cat, r, enabling)
+            if ok then
+                refresh_mod_rows()
+                Notify.show("success", (enabling and "Enabled " or "Disabled ") .. r.name, 1.8)
+                SFX.play("menu_toggleoption")
+            else
+                Notify.show("error", tostring(err))
+            end
         end
-    elseif b == "X" and S.game then
-        if Mods.CATS[S.tab].native then
+    elseif b == "X" and (S.game or not Mods.CATS[S.tab].native) then
+        local cat = Mods.CATS[S.tab]
+        if cat.native then
             local ok, err = Graphics.set_all(S.game, S.rows[S.tab], true)
             if ok then refresh_graphics_rows(); SFX.play("menu_toggleoption")
             else Notify.show("error", "Graphics Mods: " .. tostring(err)) end
-        else
+        elseif S.game then
             for k in pairs(off) do off[k] = nil end
             save(); SFX.play("menu_toggleoption")
+        else
+            local changed, errors = Mods.set_all_enabled(cat, true)
+            refresh_mod_rows()
+            if #errors > 0 then
+                Notify.show("warning", changed .. " mod(s) enabled · " .. #errors .. " failed")
+            else
+                Notify.show("success", changed .. " mod(s) enabled")
+            end
+            SFX.play("menu_toggleoption")
         end
-    elseif b == "Y" and S.game then
-        if Mods.CATS[S.tab].native then
+    elseif b == "Y" and (S.game or not Mods.CATS[S.tab].native) then
+        local cat = Mods.CATS[S.tab]
+        if cat.native then
             local ok, err = Graphics.set_all(S.game, S.rows[S.tab], false)
             if ok then refresh_graphics_rows(); SFX.play("menu_back")
             else Notify.show("error", "Graphics Mods: " .. tostring(err)) end
-        else
+        elseif S.game then
             for _, row in ipairs(S.list.items) do off[row.name] = true end
             save(); SFX.play("menu_back")
+        else
+            local changed, errors = Mods.set_all_enabled(cat, false)
+            refresh_mod_rows()
+            if #errors > 0 then
+                Notify.show("warning", changed .. " mod(s) disabled · " .. #errors .. " failed")
+            else
+                Notify.show("success", changed .. " mod(s) disabled")
+            end
+            SFX.play("menu_back")
         end
     elseif b == "B" then require("ui").back() end
 end
@@ -143,7 +197,7 @@ local function draw_tabs()
         K.draw_tool_icon(cat.icon, x + 17, TAB_Y + TAB_H / 2, 14, c, on and 1 or 0.6)
         K.text("key", K.clip("key", cat.short or cat.label, w - 36), x + 31, TAB_Y + 2, on and K.C.text or K.C.dim)
         local n_on, n = counts(i)
-        local badge = S.game and (n_on .. "/" .. n) or tostring(n)
+        local badge = (S.game or not cat.native) and (n_on .. "/" .. n) or tostring(n)
         K.text("key", badge, x + 31, TAB_Y + 17, n == 0 and K.C.faint or c, on and 1 or 0.7)
     end
     K.color(acc, 1)
@@ -160,9 +214,9 @@ local function draw_row(r, x, y, w, h, focused)
     local cat = Mods.CATS[S.tab]
     K.panel(x, y + 2, w, h - 4, { focus = focused, cut = 6 })
     local on = cat.native and (S.game and r.enabled == true)
-        or (not cat.native and ((not S.game) or not S.off[S.tab][r.name]))
+        or (not cat.native and (S.game and not S.off[S.tab][r.name] or not S.game and not r.parked))
     local right = x + w - 14
-    if S.game then
+    if S.game or not cat.native then
         right = x + w - 60
         K.switch(x + w - 46, y + h / 2, on, focused)
     end
@@ -196,8 +250,8 @@ function S.draw()
     local cat = Mods.CATS[S.tab]
     local on, total = 0, 0
     for i = 1, #Mods.CATS do local a, b = counts(i); on, total = on + a, total + b end
-    K.header("Mod Vault", S.game and (S.game.title or "") or "Dolphin Sys + user catalog",
-             S.game and (on .. " / " .. total .. " enabled") or (total .. " installed"),
+    K.header("Mod Vault", S.game and (S.game.title or "") or "GLOBAL · Enable / park installed mods",
+             on .. " / " .. total .. " active",
              nil, { icon = "mods", accent = K.ACC[cat.acc] })
     draw_tabs()
     if #S.list.items == 0 then
@@ -214,9 +268,10 @@ function S.draw()
     else
         S.list:draw(draw_row)
     end
-    if S.game then
-        K.footer({ { key = "A", label = "Toggle" }, { key = "L1 R1", label = "Tab" },
-                   { key = "X", label = "All on" }, { key = "Y", label = "All off" }, { key = "B", label = "Back" } })
+    if S.game or not cat.native then
+        K.footer({ { key = "A", label = S.game and "Per-game toggle" or "Enable / park" },
+                   { key = "L1 R1", label = "Tab" }, { key = "X", label = "All on" },
+                   { key = "Y", label = "All off" }, { key = "B", label = "Back" } })
     else
         K.footer({ { key = "L1 R1", label = "Tab" }, { key = "B", label = "Back" } })
     end
