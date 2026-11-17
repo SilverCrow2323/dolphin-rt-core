@@ -81,6 +81,22 @@ function M.init()
                 if mistaken and d.pad.R3 ~= nil and d.pad.R3 ~= 12 then
                     mistaken = false
                 end
+                -- A matching legacy core mapping is not enough if the user has
+                -- additional persisted controls. Migrate only the exact known
+                -- signature; never discard custom D-pad or extension mappings.
+                if mistaken then
+                    local allowed = {}
+                    for _, logical in ipairs(signature) do
+                        allowed[logical] = true
+                    end
+                    if d.pad.R3 == 12 then allowed.R3 = true end
+                    for logical in pairs(d.pad) do
+                        if not allowed[logical] then
+                            mistaken = false
+                            break
+                        end
+                    end
+                end
                 if mistaken then
                     changed = true
                 else
