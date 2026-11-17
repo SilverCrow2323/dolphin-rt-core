@@ -27,7 +27,7 @@ local entries = Mods.entries(cat, "/fake/Load")
 expect(#entries == 3, "global catalogue should include active and parked entries")
 local parked
 for _, entry in ipairs(entries) do if entry.parked then parked = entry end end
-expect(parked and parked.name == "Parked Mod", "parked entry must be marked")
+expect(parked and parked.name == "GZLE01", "parked entry must be marked")
 
 local global_rows = Mods.for_game(cat, nil, nil, "/fake/Load")
 expect(#global_rows == 3, "global view must include active and parked items")
@@ -65,5 +65,25 @@ expect(native == false, "native Graphics Mods stay on their per-game manager")
 local changed, errors = Mods.set_all_enabled(cat, false, "/fake/Load")
 expect(changed == 2, "bulk disable should move the two active entries only")
 expect(#errors == 0, "bulk disable should report no errors")
+
+
+local plan_path = os.tmpname()
+local plan_count, plan_err = Mods.write_plan({ id = "GZLE01" }, { "Game" }, nil, "/fake/Load", plan_path)
+expect(plan_count and not plan_err, "per-game launch plan should be generated")
+local plan_file = assert(io.open(plan_path, "r"))
+local plan = plan_file:read("*a")
+plan_file:close()
+os.remove(plan_path)
+expect(not plan:find("ON|Textures|GZLE01", 1, true),
+    "globally parked folders must never be added to the per-game launch plan")
+expect(plan:find("LINK|Textures|All|GZLE01", 1, true),
+    "active global All mod should retain its existing per-game link behavior")
+
+package.preload["core.graphics_mods"] = function()
+    return { list_for = function(game) return { { name = "Native Graphics", enabled = true, game = game } } end }
+end
+local native_rows = Mods.for_game(Mods.CATS[5], { id = "GZLE01" }, { "Game" }, "/fake/Load")
+expect(#native_rows == 1 and native_rows[1].name == "Native Graphics",
+    "native Graphics Mods must continue to use their existing per-game manager")
 
 print("Mod Vault reversible global toggles: PASS")
