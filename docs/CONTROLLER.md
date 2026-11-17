@@ -1,5 +1,13 @@
 # Controller profiles
 
+## Persisted Rt:UI App Pad mappings
+
+The file `data/app_input.json` stores **zero-based SDL button IDs** used by LÖVE and Dolphin's `Button n` profiles. These values are not Linux `EV_KEY` codes or `/dev/input/jsN` joydev indices.
+
+Older development builds accidentally persisted the joydev sequence as if it were SDL. Startup now migrates only the complete, known mistaken default signature to the canonical SDL defaults. Partial or custom mappings are ambiguous, so they are preserved rather than rewritten heuristically. The migration keeps the selected controller GUID/name.
+
+The regression test `tests/test_app_input_migration.lua` covers new defaults, the exact legacy signature, partial/custom remaps, existing correct SDL preferences and the optional R3 mapping.
+
 ## Profile locations and application
 
 Controller profiles are stored in:
