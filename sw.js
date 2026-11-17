@@ -1,4 +1,4 @@
-const CACHE = 'rtcore-site-v2';
+const CACHE = 'rtcore-magazine-v3';
 const SHELL = [
   './','./index.html','./compatibility.html','./quick-start.html','./profiles.html','./gamesettings.html','./docs.html',
   './manifest.json','./assets/site.css','./assets/site.js','./assets/spdw_symbol.png',
