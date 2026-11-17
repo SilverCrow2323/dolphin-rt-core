@@ -362,6 +362,24 @@ if __name__ == "__main__":
     unittest.main()
 
 
+    def test_product_hub_navigation_is_keyboard_and_screen_reader_accessible(self):
+        for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+            source = (ROOT / filename).read_text(encoding="utf-8")
+            self.assertIn('class="skip-link" href="#main-content"', source, filename)
+            self.assertIn('id="main-content" tabindex="-1"', source, filename)
+            self.assertIn('aria-controls="site-drawer" aria-expanded="false"', source, filename)
+            self.assertIn('role="dialog" aria-modal="true"', source, filename)
+            self.assertIn('aria-hidden="true" inert', source, filename)
+        stylesheet = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+        script = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+        self.assertIn(":focus-visible", stylesheet)
+        self.assertIn(".skip-link:focus-visible", stylesheet)
+        self.assertIn("visibility:hidden", stylesheet)
+        self.assertIn("e.key!=='Tab'", script)
+        self.assertIn("toggleAttribute('inert',!open)", script)
+        self.assertIn("drawerOpener.focus()", script)
+        self.assertIn("aria-current","".join((ROOT / filename).read_text(encoding="utf-8") for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html")) + script)
+
     def test_product_hub_has_real_navigation_and_motion_system(self):
         for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
             source = (ROOT / filename).read_text(encoding="utf-8")
