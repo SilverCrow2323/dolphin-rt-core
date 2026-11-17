@@ -73,6 +73,17 @@ expect(AppInput.pad_map().A == 12 and AppInput.pad_map().L2 == 10,
     "custom values must survive a near-match to the mistaken defaults")
 expect(persisted == nil, "custom near-match must not trigger migration")
 
+-- The full old signature plus an additional custom button is still user data.
+saved = { pad = {
+    A=0, B=1, X=2, Y=3, L1=4, R1=5, L2=6, R2=7,
+    SELECT=8, START=9, MENU=10, L3=11, R3=12, PADDLE=15,
+} }
+persisted = nil
+AppInput.init()
+expect(AppInput.pad_map().A == 0 and AppInput.pad_map().PADDLE == 15,
+    "additional persisted custom controls must prevent heuristic migration")
+expect(persisted == nil, "extended custom maps must never be rewritten")
+
 -- A previously correct persisted SDL map loads unchanged.
 saved = { active_device = "known-pad", pad = {
     A=1, B=0, X=2, Y=3, L1=4, R1=5, L2=9, R2=12,
