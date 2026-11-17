@@ -21,10 +21,12 @@
 
 ---
 
-> **FIELD NOTE // 2026-11-11**
+> **FIELD NOTE // 2026-11-17**
 >
 > The active hardware reference for this development line is the **Anbernic RG35XX H with the Allwinner H700 SoC**.
 > Legacy hardware notes have been reconciled with this RG35XX H reference.
+>
+> The currently published stable release is **v12.0.0**. Dolphin Rt:Core **12.5.00 / Rt:UI 3.7.0 Arcade** remains an integration candidate and has not been released.
 >
 > A successful build is not a successful device boot. The current H700 binaries still need to pass the on-device launch, font, input, rendering and clean-exit checks described below.
 
@@ -212,14 +214,16 @@ GitHub Actions runs repository contracts, packaging dry-runs, frontend smoke tes
 
 Development should happen on short-lived branches and be merged through pull requests. Keep changes small and independently reviewable. Do not bypass a failing check by weakening architecture validation or relabelling an untested build.
 
-**Current engineering priorities**
+**Current engineering priorities — 17 November 2026**
 
-1. Produce a repeatable muOS NoGUI ARM64 artifact for the H700.
-2. Validate the artifact on the RG35XX H: fonts, HIDAPI, input, rendering and safe exit.
-3. Deliver a reproducible x86_64 desktop bundle for MX XFCE and verify it on a real PC.
-4. Keep the Qt 6 EGLFS path experimental until it boots and renders on device.
-5. Finish the ROCKNIX Wayland build and hardware validation.
-6. Keep compatibility reports, wiki pages and release notes aligned with actual test evidence.
+1. Bring the **12.5.00 release candidate** onto a reviewable branch based on current `main`; reconcile the Rt:UI 3.7.0 Arcade, Hotkeys 2606, Settings/NEXUS and GameSettings contracts without carrying a divergent repository snapshot.
+2. Build the **full Andromeda MUXUPD** from one matching AArch64 Dolphin binary, `Sys/` tree and private runtime-library set. Verify ELF64/AArch64, GLIBC baseline, archive integrity and `manifest.sha256` on the exact candidate SHA.
+3. Exercise install, upgrade, rollback and uninstall with disposable fixtures; audit package contents, runtime provenance and preservation of user data.
+4. Verify the exact package on a real **RG35XX H / H700** running the recorded muOS firmware: boot, fonts, controller/hotkeys, GameCube/Wii launch and return, audio/video, memory behavior and clean shutdown.
+5. Complete Rt:UI 3.7.0 Arcade smoke/input review and Rt:Stream PC Companion interoperability, including real-device Sunshine/Moonlight and SFTP path/transfer checks.
+6. Finish the product hub review: mobile/desktop layout, keyboard/accessibility, reduced-motion behavior, PWA cache/offline routes and release-feed behavior. Keep the Compatibility Database available at `compatibility.html`.
+
+**Release status:** v12.0.0 is the latest published stable release. Draft v12.0.1 build candidates are not public releases; 12.5.00 is not released. A green CI run or native ARM64 build is not a handheld installation test.
 
 ## 11 — Documentation and links
 
