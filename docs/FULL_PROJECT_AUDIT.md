@@ -106,10 +106,10 @@ The browser control plane binds to loopback. SFTP uses strict host-key checking 
 
 ### F-008 — Atomic MUXUPD publication needs to remain a release invariant
 
-**Status:** being integrated and validated  
+**Status:** implemented on `main` and CI-verified by PR #94  
 **Area:** packaging
 
-The atomic publisher builds to a temporary archive beside the destination, verifies the ZIP and integrity manifest, and only then replaces the published package. Regression tests simulate a failed ZIP process and a corrupt archive returned with exit status zero. The old valid archive must remain byte-for-byte unchanged in both cases.
+The atomic publisher merged to `main` in PR #94. It builds to a temporary archive beside the destination, verifies ZIP integrity and `manifest.sha256`, and only then replaces the published package. The current CI regression test simulates both a failed ZIP process and a corrupt archive returned with exit status zero; the old valid archive remains byte-for-byte unchanged in both cases. This is host-side packaging evidence, not a device install/upgrade result.
 
 **Regression gate:** never publish a MUXUPD before ZIP integrity and \`manifest.sha256\` checks pass.
 
