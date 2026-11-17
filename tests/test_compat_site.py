@@ -40,6 +40,9 @@ class ScriptCollector(HTMLParser):
             self.current = []
 
 
+
+
+class CompatibilitySiteTests(unittest.TestCase):
     def test_unified_magazine_portal_and_integrated_compatibility_workspace(self):
         shared_nav = ('The Project', 'Field Guide', 'Profile Lab', 'Compatibility + INIs', 'Knowledge Base', 'Rt:Stream')
         for filename in ('index.html', 'quick-start.html', 'profiles.html', 'gamesettings.html', 'docs.html'):
@@ -53,8 +56,6 @@ class ScriptCollector(HTMLParser):
         self.assertIn('PSM-inspired underground manga editorial system', (ROOT / 'assets' / 'site.css').read_text(encoding='utf-8'))
         self.assertIn('rtcore-magazine-v3', (ROOT / 'sw.js').read_text(encoding='utf-8'))
         self.assertIn('GameSettings is deliberately grouped with Compatibility', (ROOT / 'docs' / 'COMPATIBILITY_SITE.md').read_text(encoding='utf-8'))
-
-class CompatibilitySiteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.html = SITE.read_text(encoding="utf-8")
