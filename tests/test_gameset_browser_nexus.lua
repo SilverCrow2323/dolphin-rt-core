@@ -1,5 +1,5 @@
 package.path = "dolphin-rtcore-muos/app/Dolphin RtUI/?.lua;" .. package.path
-local invalidations, deployments = 0, 0
+local invalidations, deployments, polls = 0, 0, 0
 local function make_list()
     return {
         items = {}, sel = 1,
@@ -52,8 +52,8 @@ package.preload["core.gamesettings_deployer"] = function()
             return #games
         end,
         poll = function()
-            deployments = deployments + 1
-            if deployments == 2 then
+            polls = polls + 1
+            if polls == 2 then
                 return true, { deployed = 2, matched = 1, processed = 1 }
             end
             return false, { deployed = 0, matched = 1, processed = 0 }
