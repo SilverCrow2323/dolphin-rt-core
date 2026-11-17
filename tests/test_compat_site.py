@@ -113,14 +113,12 @@ class CompatibilitySiteTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             expected = {
-                ".nojekyll",
-                "index.html",
-                "compatibility.html",
-                "manifest.json",
-                "sw.js",
-                "assets/spdw_symbol.png",
-                "assets/gamecube.svg",
-                "assets/wii.svg",
+                ".nojekyll", "index.html", "compatibility.html", "quick-start.html",
+                "profiles.html", "gamesettings.html", "docs.html", "manifest.json", "sw.js",
+                "assets/site.css", "assets/site.js", "assets/spdw_symbol.png",
+                "assets/dolphinrt_icon.png", "assets/dolphin_rtcore_title.png",
+                "assets/gamecube.svg", "assets/wii.svg",
+                "data/site-gamesettings-index.json", "data/site-profiles.json", "data/site-docs-index.json",
             }
             actual = {
                 str(path.relative_to(output))
@@ -129,8 +127,17 @@ class CompatibilitySiteTests(unittest.TestCase):
             }
             self.assertEqual(actual, expected)
             deployed_html = (output / "index.html").read_text(encoding="utf-8")
-            self.assertIn('href="./"', deployed_html)
+            self.assertIn('href="./quick-start.html"', deployed_html)
             self.assertIn('href="./compatibility.html"', deployed_html)
+            for page in ("quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+                self.assertTrue((output / page).is_file(), page)
+            self.assertIn("1,914", deployed_html)
+            catalog = json.loads((output / "data" / "site-gamesettings-index.json").read_text(encoding="utf-8"))
+            self.assertEqual(catalog["count"], 1914)
+            self.assertEqual(len(catalog["entries"]), 1914)
+            self.assertTrue(all((ROOT / entry["path"]).is_file() for entry in catalog["entries"]))
+            self.assertEqual(len(json.loads((output / "data" / "site-profiles.json").read_text(encoding="utf-8"))["profiles"]), 19)
+            self.assertEqual(len(json.loads((output / "data" / "site-docs-index.json").read_text(encoding="utf-8"))["entries"]), 50)
             deployed_compatibility = (output / "compatibility.html").read_text(encoding="utf-8")
             self.assertIn("Compatibility Database", deployed_compatibility)
             self.assertIn('id="reportBtn"', deployed_compatibility)
@@ -147,9 +154,14 @@ class CompatibilitySiteTests(unittest.TestCase):
         portal_parser.feed(self.portal_html)
         self.assertTrue(parser.scripts, "No inline compatibility application script found")
         self.assertTrue(portal_parser.scripts, "No inline project portal script found")
+        page_scripts = [("compatibility", parser.scripts), ("portal", portal_parser.scripts)]
+        for filename in ("quick-start.html", "profiles.html", "gamesettings.html"):
+            page_parser = ScriptCollector()
+            page_parser.feed((ROOT / filename).read_text(encoding="utf-8"))
+            page_scripts.append((filename, page_parser.scripts))
         # Each HTML page is a separate browser document. Do not concatenate
-        # the compatibility page and project portal into one global lexical scope.
-        for page_name, scripts in (("compatibility", parser.scripts), ("portal", portal_parser.scripts)):
+        # independent page scripts into one global lexical scope.
+        for page_name, scripts in page_scripts:
             with self.subTest(page=page_name), tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as tmp:
                 tmp.write("\n".join(scripts))
                 tmp.flush()
@@ -300,36 +312,45 @@ class CompatibilitySiteTests(unittest.TestCase):
 
     def test_pwa_cache_is_bumped_for_new_website_shell(self):
         worker = (ROOT / "sw.js").read_text(encoding="utf-8")
-        self.assertIn("rtcore-site-v1", worker)
-        self.assertIn("'./compatibility.html'", worker)
-        self.assertIn("'./index.html'", worker)
-        self.assertIn("url.pathname.endsWith('/compatibility.html')", worker)
-        self.assertIn("caches.match('./compatibility.html')", worker)
+        self.assertIn("rtcore-site-v2", worker)
+        for page in ("index.html", "compatibility.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+            self.assertIn("'./" + page + "'", worker)
+        self.assertIn("'./data/site-gamesettings-index.json'", worker)
+        self.assertIn("'./data/site-docs-index.json'", worker)
+        self.assertIn("raw.githubusercontent.com", worker)
         self.assertNotIn("rtcore-db-v3", worker)
-
-
 
     def test_project_portal_is_the_public_homepage(self):
         self.assertIn("Dolphin Rt:Core — Handheld GameCube", self.portal_html)
-        self.assertIn('id="ecosystem"', self.portal_html)
-        self.assertIn('id="platforms"', self.portal_html)
         self.assertIn('id="downloads"', self.portal_html)
-        self.assertIn('id="docs"', self.portal_html)
-        self.assertIn('id="roadmap"', self.portal_html)
-        self.assertIn('id="community"', self.portal_html)
-        self.assertIn("Rt:Stream Guide", self.portal_html)
+        self.assertIn('href="./quick-start.html"', self.portal_html)
+        self.assertIn('href="./profiles.html"', self.portal_html)
+        self.assertIn('href="./gamesettings.html"', self.portal_html)
+        self.assertIn('href="./docs.html"', self.portal_html)
         self.assertIn('href="./compatibility.html"', self.portal_html)
-        self.assertIn("const REPO_API='https://api.github.com/repos/SilverCrow2323/dolphin-rt-core';", self.portal_html)
-        self.assertIn("REPO_API+'/releases/latest'", self.portal_html)
-        self.assertIn("FALLBACK_RELEASE", self.portal_html)
-        self.assertIn("loadCompatibilityStats()", self.portal_html)
+        self.assertIn("LATEST STABLE RELEASE", self.portal_html)
+        self.assertIn("H700 FIELD ENGINEERING", self.portal_html)
+        self.assertIn("One engine.", self.portal_html)
 
-    def test_portal_uses_real_release_assets_and_explains_package_boundary(self):
+    def test_portal_uses_live_release_assets_and_explains_package_boundary(self):
         self.assertIn("Dolphin_RtCore_v12_0_0_Andromeda.muxupd", self.portal_html)
         self.assertIn("SPDW_Stream_Portal-4.2.1-x86_64.AppImage", self.portal_html)
         self.assertIn("spdw-stream-portal-4.2.1-1.noarch.rpm", self.portal_html)
         self.assertIn("does not include the Dolphin emulator executable", self.portal_html)
-        self.assertIn("release.draft||release.prerelease", self.portal_html)
+        self.assertIn("releases/latest", (ROOT / "assets" / "site.js").read_text(encoding="utf-8"))
+        self.assertIn("data-release-asset", self.portal_html)
+
+    def test_release_feed_updates_every_duplicate_version_and_date_label(self):
+        script = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+        self.assertIn("$$('[data-latest-release]')", script)
+        self.assertIn("$$('[data-release-date]')", script)
+        self.assertNotIn("const nodes=$('[data-latest-release]')", script)
+        self.assertNotIn("const dates=$('[data-release-date]')", script)
+        self.assertIn("nodes.map", script)
+        self.assertIn("nodes.forEach", script)
+        self.assertIn("dates.forEach", script)
+        self.assertGreaterEqual(self.portal_html.count("data-latest-release"), 2)
+        self.assertGreaterEqual(self.portal_html.count("data-release-date"), 2)
 
     def test_compatibility_page_returns_to_project_portal(self):
         self.assertIn('href="./"', self.html)
@@ -339,3 +360,35 @@ class CompatibilitySiteTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_product_hub_navigation_is_keyboard_and_screen_reader_accessible(self):
+        for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+            source = (ROOT / filename).read_text(encoding="utf-8")
+            self.assertIn('class="skip-link" href="#main-content"', source, filename)
+            self.assertIn('id="main-content" tabindex="-1"', source, filename)
+            self.assertIn('aria-controls="site-drawer" aria-expanded="false"', source, filename)
+            self.assertIn('role="dialog" aria-modal="true"', source, filename)
+            self.assertIn('aria-hidden="true" inert', source, filename)
+        stylesheet = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+        script = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+        self.assertIn(":focus-visible", stylesheet)
+        self.assertIn(".skip-link:focus-visible", stylesheet)
+        self.assertIn("visibility:hidden", stylesheet)
+        self.assertIn("e.key!=='Tab'", script)
+        self.assertIn("toggleAttribute('inert',!open)", script)
+        self.assertIn("drawerOpener.focus()", script)
+        self.assertIn("aria-current","".join((ROOT / filename).read_text(encoding="utf-8") for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html")) + script)
+
+    def test_product_hub_has_real_navigation_and_motion_system(self):
+        for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+            source = (ROOT / filename).read_text(encoding="utf-8")
+            self.assertIn("./assets/site.css", source, filename)
+            self.assertIn("./assets/site.js", source, filename)
+            self.assertIn("data-open-drawer", source, filename)
+            self.assertIn("prefers-reduced-motion", (ROOT / "assets" / "site.css").read_text(encoding="utf-8"))
+        self.assertIn("IntersectionObserver", (ROOT / "assets" / "site.js").read_text(encoding="utf-8"))
+        self.assertIn("Rt:System Status Center", (ROOT / "quick-start.html").read_text(encoding="utf-8"))
+        self.assertIn("SDL/0/muOS-Keys", (ROOT / "quick-start.html").read_text(encoding="utf-8"))
+        self.assertIn("Video_Hacks", (ROOT / "profiles.html").read_text(encoding="utf-8"))
+        self.assertIn("GameSettings Library", (ROOT / "gamesettings.html").read_text(encoding="utf-8"))

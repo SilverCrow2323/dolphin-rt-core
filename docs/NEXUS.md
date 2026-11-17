@@ -219,7 +219,6 @@ luajit tests/test_keymap_nexus.lua
 luajit tests/test_controller_profiles_nexus.lua
 luajit tests/test_compat_nexus.lua
 luajit tests/test_cheatdb_nexus.lua
-luajit tests/test_gameset_browser_nexus.lua
 ```
 
 The muOS CI job runs these contract checks before packaging the `.muxupd` archive. Native ARM64 Dolphin build workflows are not required for these UI-only changes.
