@@ -329,8 +329,8 @@ class CompatibilitySiteTests(unittest.TestCase):
 
     def test_release_feed_updates_every_duplicate_version_and_date_label(self):
         script = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
-        self.assertIn("$('[data-latest-release]')", script)
-        self.assertIn("$('[data-release-date]')", script)
+        self.assertIn("$$('[data-latest-release]')", script)
+        self.assertIn("$$('[data-release-date]')", script)
         self.assertNotIn("$('[data-latest-release]')", script)
         self.assertNotIn("$('[data-release-date]')", script)
         self.assertIn("nodes.map", script)
