@@ -61,6 +61,10 @@ Ratings run from 0 to 5. Zero means no usable boot; one means the title starts b
 
 The rating is tied to the exact device, firmware, game region, emulator build and profile. A successful CI build is not a hardware certification and a result from one H700 handheld is not a guarantee for another board or firmware.
 
+## Live release feed
+
+The Product Hub reads the latest published stable GitHub release at runtime. All repeated version and publication-date labels use collection selectors (`querySelectorAll`) so every matching card is refreshed together. A static release label remains in the HTML as an offline/API-failure fallback; asset links fall back to the Releases page when a matching package is absent. The website regression test guards the multi-label selector contract.
+
 ## Local preview
 
 ~~~sh
