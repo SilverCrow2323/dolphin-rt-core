@@ -10,7 +10,7 @@ This page covers the safe first install and first launch of the current **muOS A
 - Confirm the core registration and choose a profile before launching a game.
 
 > [!IMPORTANT]
-> **MUST KNOW!!** The v12.0.0 Kanzentai package is the Andromeda line. Jacaranda has a separate legacy v11.5.1 release. A registration detector does not make one package interchangeable with another firmware.
+> **MUST KNOW!!** The latest published stable package is **v12.0.0 Kanzentai** for muOS Andromeda. Jacaranda has a separate legacy v11.5.1 release. **12.5.00 / Rt:UI 3.7.0 Arcade is still a release candidate and is not a public download.** A registration detector does not make one package interchangeable with another firmware.
 
 ## Before installing
 
@@ -21,7 +21,7 @@ This page covers the safe first install and first launch of the current **muOS A
 
 ## Install on muOS Andromeda
 
-1. Download the matching `.muxupd` from [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases).
+1. Download the latest **published stable** matching `.muxupd` from [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases). Do not install draft candidate assets as stable releases.
 2. Copy it into the SD card's `ARCHIVE/` folder.
 3. Install it through **muOS → Applications → Archive Manager**.
 4. Place the AArch64 executable at `/opt/muos/share/emulator/dolphin/dolphin`.
