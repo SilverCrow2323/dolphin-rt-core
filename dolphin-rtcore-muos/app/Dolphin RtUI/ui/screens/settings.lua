@@ -34,7 +34,7 @@ local CATS = {
     { id = "EDITORS", label = "Editors",         color = "boost", icon = "profile" },
     { id = "DISPLAY", label = "Display & Sound", color = "teal",  icon = "screen" },
     { id = "SYSTEM",  label = "System",          color = "lime",  icon = "gear" },
-    { id = "TOOLS",   label = "Tools", color = "hot", icon = "info" },
+    { id = "ABOUT",   label = "About & Tools",   color = "hot",   icon = "info" },
 }
 S.cats = CATS
 
@@ -48,8 +48,8 @@ local function memo(fn, ttl)
     end
 end
 
-local function cyc(label, key, values, default, after, display)
-    return { kind = "choice", label = label, values = values, display = display,
+local function cyc(label, key, values, default, after)
+    return { kind = "choice", label = label, values = values,
         get = function() return Settings.get(key) or default end,
         set = function(v) Settings.set(key, v); if after then after(v) end end }
 end
@@ -60,17 +60,11 @@ local function tog(label, key, default, after)
 end
 
 local function rescan()
-    if S.rescanning then
-        Notify.show("info", "ROM scan already running")
-        return
-    end
-    local ok, err = pcall(Library.scan_begin)
-    if not ok then
-        Notify.show("error", "Could not start ROM scan: " .. tostring(err))
-        return
-    end
-    S.rescanning, S.rescan_error = true, nil
     Notify.show("scan", "Scanning ROM folders…")
+    local ok = pcall(Library.scan)
+    U.card_reset()
+    Notify.show(ok and "success" or "error",
+        ok and (#Library.games .. " games found") or "Scan failed")
 end
 
 local function sync_all_gamesettings()
@@ -160,6 +154,9 @@ local function sections()
                       Notify.show("download", #need .. " cheat file(s) downloading in the background")
                   end
               end },
+            { kind = "action", label = "Download GameSettings", icon = "file",
+              badge = missing_badge(missing_gamesettings),
+              run = sync_all_gamesettings },
         },
         EDITORS = {
             { kind = "action", label = "Profile Editor", icon = "profile", editor_label = "Editor",
@@ -168,10 +165,8 @@ local function sections()
               run = function() require("ui").go("controller_profiles") end },
             { kind = "action", label = "GameSettings Editor", icon = "file", editor_label = "Editor",
               run = function() require("ui").go("gameset_browser") end },
-            { kind = "action", label = "Hotkeys", icon = "hotkeys", editor_label = "Editor",
+            { kind = "action", label = "Hotkeys", icon = "hotkeys", sub = "design combos",
               run = function() require("ui").go("hotkeys", {}) end },
-            { kind = "action", label = "Safe Exit", icon = "hotkeys", sub = function() return require("core.safe_exit").describe() end,
-              editor_label = "Editor", run = function() require("ui").go("safe_exit", {}) end },
             { kind = "action", label = "Rt:Stream", icon = "play", sub = "play from your PC",
               run = function() require("ui").go("stream_library") end },
             { kind = "action", label = "Mod Vault", icon = "mods", sub = vault_sub,
@@ -187,13 +182,29 @@ local function sections()
             tog("Sound effects", "sfx_on", true, function(v) require("ui.sfx").set_enabled(v) end),
         },
         SYSTEM = {
-            cyc("muOS firmware profile", "muos_profile", { "auto", "andromeda", "not_andromeda" }, "auto",
-                nil, function() return require("core.muos_platform").label() end),
             tog("Confirm before quitting", "confirm_quit", true),
             -- stessa chiave che legge boot_initializer (prima: enable_update_check, mai letta)
             tog("Update check on boot", "auto_update_check", true),
             tog("Compatibility data", "enable_compat_data", true,
                 function() pcall(function() require("core.compatibility").load(true) end) end),
+            {
+                kind = "choice", label = "Core profile visibility",
+                values = { "Standard Only", "All Tiers" },
+                get = function() return MuOS.profile_mode() end,
+                set = function(value)
+                    local mode = value == "All Tiers" and 2 or 1
+                    local ok, err = MuOS.apply_profile_mode(mode)
+                    if ok then Notify.show("success", "Core profiles: " .. value)
+                    else Notify.show("error", "Profile mode failed: " .. tostring(err)) end
+                end,
+            },
+            { kind = "action", label = "Repair GameCube/Wii registration", icon = "rescan",
+              sub = "muOS manifest",
+              run = function()
+                  local ok, err = MuOS.ensure()
+                  if ok then Notify.show("success", "GameCube/Wii registration repaired")
+                  else Notify.show("error", "Registration failed: " .. tostring(err)) end
+              end },
             { kind = "action", label = "Latest release", icon = "rescan",
               sub = function() local l = Updater.latest(); return l and l.tag or "check" end,
               run = function()
@@ -201,14 +212,8 @@ local function sections()
                   Notify.show("info", "Checking\226\128\166")
               end },
         },
-        TOOLS = {
-            { kind = "action", label = "ROM folders & FolderWaker", icon = "folder",
-              sub = "choose ROM paths and repair muOS folder names",
-              run = function() require("ui").go("folders") end },
-            { kind = "action", label = "Rt:Stream network & pairing", icon = "play",
-              sub = "LAN scan, Tailscale, Sunshine",
-              run = function() require("ui").go("stream_settings") end },
-            { kind = "action", label = "Diagnostics & logs", icon = "list", editor_label = "Viewer",
+        ABOUT = {
+            { kind = "action", label = "Diagnostics", icon = "list", editor_label = "Viewer",
               run = function() require("ui").go("diagnostics") end },
             { kind = "action", label = "Rt:Core Env Triage", icon = "info", sub = "I · II · III health check",
               run = function() SFX.play("menu_select"); require("ui").go("triage") end },
@@ -241,15 +246,6 @@ function S.update(dt)
     S.sec_t = math.min(1, S.sec_t + dt * 5)
     S.list:update(dt)
     Updater.poll()
-    if S.rescanning then
-        local ok, done = pcall(Library.scan_step, 0.006)
-        if not ok or done then
-            S.rescanning = false
-            U.card_reset()
-            Notify.show(ok and "success" or "error",
-                ok and (#Library.games .. " games found") or ("Scan failed: " .. tostring(done)))
-        end
-    end
     if S.list.sel ~= S._last_sel then S._last_sel = S.list.sel; S._sel_t = 0 end
     S._sel_t = S._sel_t + dt
 end
@@ -357,7 +353,7 @@ local function draw_row(row, x, y, w, h, focused)
         return
     end
     if row.kind == "choice" then
-        local v = tostring((row.display and row.display()) or row.get() or ""):upper()
+        local v = tostring(row.get() or ""):upper()
         local lw = K.width("value", v)
         K.text("value", v, right - lw, y + h / 2 - 10, focused and K.acc or K.C.text)
         if focused then
@@ -379,54 +375,37 @@ end
 
 -- titolo grande + icona dedicata nel colore della sezione + chip delle 5 sezioni
 local function draw_header()
-    local category = CATS[S.sec]
-    local acc = K.ACC[category.color] or K.ACC.gc
+    local c = CATS[S.sec]
+    local acc = K.ACC[c.color] or K.ACC.gc
     local m = K.MARGIN
-    local chip, gap, chip_h = 30, 4, 28
-    local strip_w = #CATS * chip + (#CATS - 1) * gap
-    local strip_x = K.W - m - strip_w
-
-    -- Left title lane and right navigation lane are fixed-width neighbours;
-    -- no title, subtitle, hint or category chip can overlap another element.
-    K.panel(m, 8, K.W - m * 2, 72, { cut = 10, accent = acc })
-    local cx, cy = m + 25, 44
-    K.color(acc, 0.14); love.graphics.circle("fill", cx, cy, 19)
-    K.color(acc, 0.8); love.graphics.setLineWidth(1.4)
-    love.graphics.circle("line", cx, cy, 19)
+    local cx, cy, r = m + 26, 42, 26
+    K.color(acc, 0.16); love.graphics.circle("fill", cx, cy, r)
+    K.color(acc, 1); love.graphics.setLineWidth(2); love.graphics.circle("line", cx, cy, r)
     love.graphics.setLineWidth(1)
-    K.draw_tool_icon(category.icon, cx, cy, 22, acc, 1)
+    K.draw_tool_icon(c.icon, cx, cy, 30, acc, 1)
 
-    local tx = m + 53
-    K.text("key", "SETTINGS / CONFIGURATION", tx, 17, acc)
-    K.text("xl", K.clip("xl", category.label, strip_x - tx - 24), tx, 32, K.C.text)
-    local meta = ("SECTION %02d  /  %02d"):format(S.sec, #CATS)
-    K.text("small", meta, tx, 59, K.C.faint)
+    local tx = m + 64
+    local slide = (1 - (1 - (1 - S.sec_t) ^ 3)) * 0       -- (titolo fermo, scorre solo la lista)
+    K.text("xl", K.clip("xl", c.label, 270), tx + slide, 6, K.C.text)
+    K.text("small", ("Settings  \194\183  %d / %d"):format(S.sec, #CATS), tx, 50, K.C.dim)
 
-    -- Section hints sit above the tabs rather than beside them.
-    local hint = "L1   /   R1"
-    K.text("key", hint, strip_x, 14, K.C.faint, 1, strip_w, "center")
-    for i, item in ipairs(CATS) do
-        local c = K.ACC[item.color] or K.ACC.gc
-        local active = i == S.sec
-        local x = strip_x + (i - 1) * (chip + gap)
-        local y = 34
-        K.color(c, active and 0.24 or 0.06)
-        love.graphics.rectangle("fill", x, y, chip, chip_h, 6, 6)
-        K.color(c, active and 1 or 0.28)
-        love.graphics.setLineWidth(active and 1.6 or 1)
-        love.graphics.rectangle("line", x, y, chip, chip_h, 6, 6)
-        love.graphics.setLineWidth(1)
-        K.draw_tool_icon(item.icon, x + chip / 2, y + chip_h / 2, 14, c, active and 1 or 0.55)
-        if active then
-            K.color(c, 1)
-            love.graphics.rectangle("fill", x + 6, y + chip_h + 3, chip - 12, 2, 1, 1)
-        end
+    -- chip sezioni (L1 R1)
+    local chip, gap = 34, 6
+    local total = #CATS * chip + (#CATS - 1) * gap
+    local x0 = K.W - m - total
+    K.text("key", "L1", x0 - 26, 30, K.C.faint)
+    K.text("key", "R1", x0 + total + 4, 30, K.C.faint)
+    for i, cat in ipairs(CATS) do
+        local ca = K.ACC[cat.color] or K.ACC.gc
+        local on = (i == S.sec)
+        local x = x0 + (i - 1) * (chip + gap)
+        K.color(ca, on and 0.30 or 0.08); love.graphics.rectangle("fill", x, 24, chip, 30, 6, 6)
+        K.color(ca, on and 1 or 0.35);    love.graphics.rectangle("line", x, 24, chip, 30, 6, 6)
+        K.draw_tool_icon(cat.icon, x + chip / 2, 39, 15, ca, on and 1 or 0.55)
     end
 
-    K.color(acc, 0.9)
-    love.graphics.rectangle("fill", m, 84, 64, 2)
-    K.color(K.C.line, 0.42)
-    love.graphics.rectangle("fill", m + 64, 84, K.W - m * 2 - 64, 1)
+    K.color(acc, 1); love.graphics.rectangle("fill", m, 78, 72, 3)
+    K.color(K.C.line, 0.5); love.graphics.rectangle("fill", m + 72, 79, K.W - m * 2 - 72, 1)
 end
 
 function S.draw()

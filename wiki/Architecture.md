@@ -13,7 +13,7 @@ Dolphin Rt:Core is a multi-deliverable repository. Keep the root README as the c
 | `data/` | shared repository data and databases |
 | `assets/` | repository-level artwork and icon resources |
 | `Core_History/` | archived prior implementations; historical reference, not current source by default |
-| `index.html`, `manifest.json`, `sw.js` | static Compatibility Database web app and PWA shell |
+| `index.html`, `compatibility.html`, `manifest.json`, `sw.js` | Project Portal, standalone Compatibility Database and PWA shell |
 | `wiki/` | tracked Markdown source used by the Wiki publisher |
 
 ## Current muOS frontend
@@ -27,9 +27,17 @@ The active LÖVE application is `dolphin-rtcore-muos/app/Dolphin RtUI/`.
 - `data/` contains bundled databases and defaults; user-generated runtime data must remain separate from source-controlled defaults.
 - `scripts/` launches Dolphin and handles platform integration.
 
+### Rt:UI status and Dolphin system resources
+
+The global **M** drawer is the Rt:System Status Center. It reads live device telemetry from ui.statusbar, boot/download state from core.boot_initializer, Rt:Stream endpoint health from core.stream, and notification/operation state from the notification hub. It is a view over those sources; it must not maintain duplicate status truth.
+
+The Graphics Mods tab uses Dolphin's native source model: built-in metadata under Sys/Load/GraphicMods, user metadata under Load/GraphicMods, and per-game state under Config/GraphicMods. The official Sys/GameSettings tree is also retained. Rt:UI must not move, rename or delete official Sys resources during per-game enablement.
+
+See [[Rt-System-Status-Center]] and [[Graphics-Mods]] for operational details.
+
 ## Data flow
 
-The frontend's compatibility service reads the bundled `data/games_data.json`. The website reads that same tracked JSON through raw GitHub / jsDelivr URLs. Update the data once, then validate the website contract and the frontend loader.
+The frontend's compatibility service reads the bundled `data/games_data.json` or the downloaded runtime copy. The website reads the bundled Rt:UI source at `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json`. The handheld boot updater downloads `data/games_data.json` from the repository root. These two tracked compatibility copies must stay byte-identical; `tools/normalize_games_data.py --check` validates parity and `--write` updates both. Update the data once, then validate the website contract and frontend loader.
 
 Rt:Stream separates handheld UI from the PC portal. The PC performs emulation; the handheld receives the stream and sends input. Do not describe Rt:Stream as local handheld emulation.
 

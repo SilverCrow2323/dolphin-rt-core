@@ -23,43 +23,12 @@ NS="Nintendo"
 STATE="$SW/mode.conf"
 OLD_GC_NAME="Nintendo Gamecube"
 OLD_WII_NAME="Nintendo Wii"
+# Jacaranda legacy assign folder uses this exact historical directory casing.
+LEGACY_GC_DIR_NAME="Nintendo GameCube"
 
 say() { printf '  %s\n' "$*"; }
 die() { printf '  [ERR] %s\n' "$*" >&2; exit 1; }
 need_jq() { command -v jq >/dev/null 2>&1 || die "jq is required for manifest-based muOS builds"; }
-
-alias_file() {
-    kind="$1"
-    case "$kind" in gc|wii) ;; *) die "alias system must be gc or wii" ;; esac
-    printf '%s/rtcore-folder-aliases-%s.txt' "$USERM" "$kind"
-}
-
-add_custom_alias_lines() {
-    kind="$1"
-    file="$2"
-    aliases="$(alias_file "$kind")"
-    [ -r "$aliases" ] || return 0
-    while IFS= read -r alias; do
-        [ -n "$alias" ] || continue
-        grep -Fxq "$alias" "$file" || printf '%s\n' "$alias" >> "$file"
-    done < "$aliases"
-}
-
-verify_custom_aliases() {
-    need_jq
-    map="$USERM/assign.json"
-    [ -r "$map" ] || die "muOS assign map is missing: $map"
-    for kind in gc wii; do
-        aliases="$(alias_file "$kind")"
-        [ -r "$aliases" ] || continue
-        if [ "$kind" = gc ]; then system="Nintendo Gamecube"; else system="Nintendo Wii"; fi
-        while IFS= read -r alias; do
-            [ -n "$alias" ] || continue
-            jq -e --arg alias "$alias" --arg system "$system" '.[$alias] == $system' "$map" >/dev/null 2>&1 \
-                || die "muOS assign map does not contain custom alias '$alias' -> '$system'"
-        done < "$aliases"
-    done
-}
 
 cur_mode() {
     m="$(sed -n 's/^MODE=\([12]\)[[:space:]]*$/\1/p' "$STATE" 2>/dev/null | head -n 1)"
@@ -97,54 +66,121 @@ count_profiles() {
     echo "$count"
 }
 
+ini_value() {
+    file="$1"
+    wanted_section="$2"
+    wanted_key="$3"
+    awk -v wanted_section="$wanted_section" -v wanted_key="$wanted_key" '
+        {
+            line=$0
+            sub(/\r$/, "", line)
+        }
+        line ~ /^[[:space:]]*\[/ {
+            section=line
+            sub(/^[[:space:]]*\[/, "", section)
+            sub(/\][[:space:]]*$/, "", section)
+            active=(section==wanted_section)
+            next
+        }
+        !active { next }
+        {
+            eq=index(line, "=")
+            if (!eq) next
+            key=substr(line, 1, eq-1)
+            gsub(/^[ \t]+|[ \t]+$/, "", key)
+            if (key==wanted_key) {
+                value=substr(line, eq+1)
+                sub(/^[ \t]+/, "", value)
+                sub(/[ \t]+$/, "", value)
+                print value
+                exit
+            }
+        }
+    ' "$file"
+}
+
 build_system() {
     dir="$1"
-    {
-        awk -F= '
-          /^\[/ { sec=$0; gsub(/[\[\]\r]/,"",sec); next }
-          { sub(/\r$/,"") }
-          sec=="global" && $1 ~ /^(name|default|catalogue|lookup|governor)$/ { print "G\t" $1 "\t" substr($0,index($0,"=")+1) }
-          sec=="friendly" && NF>0 && $0!="" { print "F\t" $0 }
-        ' "$dir/global.ini"
-        kind="$(basename "$(dirname "$dir")")"
-        aliases="$(alias_file "$kind")"
-        if [ -r "$aliases" ]; then
-            while IFS= read -r alias; do
-                [ -n "$alias" ] && printf 'F\t%s\n' "$alias"
-            done < "$aliases"
-        fi
-        for f in "$dir"/*.ini; do
-            [ -f "$f" ] || continue
-            [ "$(basename "$f")" = "global.ini" ] && continue
-            awk -F= '
-              /^\[/ { sec=$0; gsub(/[\[\]\r]/,"",sec); next }
-              { sub(/\r$/,"") }
-              $1=="name" && !n { n=substr($0,6) }
-              $1=="core" && !c { c=substr($0,6) }
-              $1=="exec" && !e { e=substr($0,6) }
-              END {
-                if (n!="" && c!="" && e!="") {
-                  k=FILENAME; sub(/.*\//,"",k); sub(/\.ini$/,"",k)
-                  sub(/.*\//,"",e); sub(/^ext-/,"",e)
-                  print "E\t" k "\t" n "\t" c "\t" e
-                }
-              }
-            ' "$f"
-        done
-    } | jq -Rn --arg ns "$NS" '
-        [inputs | split("\t")] as $r
-        | ($r | map(select(.[0]=="G")) | map({(.[1]): .[2]}) | add) as $g
-        | {
-            name: $g.name, namespace: $ns,
-            catalogue: ($g.catalogue // $g.name),
-            lookup: (($g.lookup // "0") | tonumber),
-            default: $g.default,
-            runtime: "external",
-            friendly: ($r | map(select(.[0]=="F") | .[1])),
-            bios: [],
-            external: ($r | map(select(.[0]=="E") | {(.[1]): {name: .[2], core: .[3], launcher: .[4]}}) | add)
-          }
-        + (if ($g.governor // "") != "" then {governor: $g.governor} else {} end)'
+    global="$dir/global.ini"
+
+    name="$(ini_value "$global" global name)"
+    catalogue="$(ini_value "$global" global catalogue)"
+    lookup="$(ini_value "$global" global lookup)"
+    default="$(ini_value "$global" global default)"
+    governor="$(ini_value "$global" global governor)"
+
+    [ -n "$name" ] || die "missing [global] name in $global"
+    [ -n "$default" ] || die "missing [global] default in $global"
+    [ -n "$catalogue" ] || catalogue="$name"
+    case "$lookup" in "" ) lookup=0 ;; *[!0-9]* ) die "invalid [global] lookup '$lookup' in $global" ;; esac
+
+    friendly_lines="$(awk '
+        {
+            line=$0
+            sub(/\r$/, "", line)
+        }
+        line ~ /^[[:space:]]*\[/ {
+            section=line
+            sub(/^[[:space:]]*\[/, "", section)
+            sub(/\][[:space:]]*$/, "", section)
+            active=(section=="friendly")
+            next
+        }
+        active {
+            value=line
+            sub(/^[ \t]+/, "", value)
+            sub(/[ \t]+$/, "", value)
+            if (value!="") print value
+        }
+    ' "$global")"
+    friendly_json="$(printf '%s\n' "$friendly_lines" | jq -Rn '[inputs | select(length>0)]')"
+
+    external_json='{}'
+    profile_count=0
+    for f in "$dir"/*.ini; do
+        [ -f "$f" ] || continue
+        [ "$(basename "$f")" = "global.ini" ] && continue
+
+        profile="$(basename "$f" .ini)"
+        profile_name="$(ini_value "$f" "$profile" name)"
+        core="$(ini_value "$f" "$profile" core)"
+        exec_path="$(ini_value "$f" launch exec)"
+
+        [ -n "$profile_name" ] || die "profile '$f' has no name in [$profile]"
+        [ -n "$core" ] || die "profile '$f' has no core in [$profile]"
+        [ -n "$exec_path" ] || die "profile '$f' has no exec in [launch]"
+
+        launcher="$(basename "$exec_path")"
+        case "$launcher" in ext-*) launcher="${launcher#ext-}" ;; esac
+
+        external_json="$(jq -cn --argjson current "$external_json" \
+            --arg key "$profile" --arg name "$profile_name" \
+            --arg core "$core" --arg launcher "$launcher" \
+            '$current + {($key): {name:$name, core:$core, launcher:$launcher}}')" \
+            || die "cannot encode profile '$profile' from $f"
+        profile_count=$((profile_count + 1))
+    done
+
+    [ "$profile_count" -gt 0 ] || die "no external profiles found in $dir"
+    printf '%s' "$external_json" | jq -e --arg default "$default" 'type=="object" and has($default)' >/dev/null \
+        || die "default profile '$default' is not present in the external profile list for $name"
+
+    jq -cn \
+        --arg name "$name" --arg ns "$NS" --arg catalogue "$catalogue" \
+        --argjson lookup "$lookup" --arg default "$default" \
+        --argjson friendly "$friendly_json" --argjson external "$external_json" \
+        --arg governor "$governor" \
+        '{
+            name:$name,
+            namespace:$ns,
+            catalogue:$catalogue,
+            lookup:$lookup,
+            default:$default,
+            runtime:"external",
+            friendly:$friendly,
+            bios:[],
+            external:$external
+        } + (if $governor!="" then {governor:$governor} else {} end)'
 }
 
 build_both() {
@@ -152,11 +188,11 @@ build_both() {
     validate_sources "$n"
     GC_KEY="$(sys_name "$SW/gc/mode $n")"
     WII_KEY="$(sys_name "$SW/wii/mode $n")"
-    GC_JSON="$(build_system "$SW/gc/mode $n")" || die "cannot build GameCube manifest entry"
-    WII_JSON="$(build_system "$SW/wii/mode $n")" || die "cannot build Wii manifest entry"
+    GC_JSON="$(build_system "$SW/gc/mode $n")" || return 1
+    WII_JSON="$(build_system "$SW/wii/mode $n")" || return 1
     for item in "$GC_JSON" "$WII_JSON"; do
         printf '%s' "$item" | jq -e '(.namespace=="Nintendo") and ((.external|length)>0) and (.default as $d | .external | has($d))' >/dev/null \
-            || { system_name="$(printf '%s' "$item" | jq -r '.name // "unknown"')"; die "invalid profile manifest entry for $system_name"; }
+            || { system_name="$(printf '%s' "$item" | jq -r '.name // "unknown"')"; printf '[ERR] invalid profile manifest entry for %s\n' "$system_name" >&2; return 1; }
     done
 }
 
@@ -174,28 +210,18 @@ refresh_assign() {
     [ -x "$tool" ] || die "manifest is updated, but muOS automatic assignment tool is missing: $tool"
     "$tool" -p -v || die "muOS assign.sh failed; check MUOS/log/assign_gen.txt"
     sync
-    # Content Explorer consumes the generated alias map as well as the core manifest.
+    # Content Explorer consumes this generated alias map as well as the core manifest.
     if [ "$expected" = "absent" ]; then
-        jq -e '
-            keys as $keys
-            | ([ "nintendogamecube", "nintendogc", "gamecube", "gamecubez", "ngc", "gc",
-                 "nintendowii", "nwii", "wii", "wiiz" ]
-               | all(.[]; . as $key | $keys | index($key) == null))
-        ' "$USERM/assign.json" >/dev/null 2>&1 \
+        jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' \
+            "$USERM/assign.json" >/dev/null 2>&1 \
             || die "muOS assign.sh completed but stale Nintendo GameCube/Wii aliases remain in assign.json"
     else
-        jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" '
-            . as $map
-            | ([ "nintendogamecube", "nintendogc", "gamecube", "gamecubez", "ngc", "gc" ]
-               | all(.[]; . as $key | $map[$key] == $gc))
-            and
-              ([ "nintendowii", "nwii", "wii", "wiiz" ]
-               | all(.[]; . as $key | $map[$key] == $wii))
-        ' "$USERM/assign.json" >/dev/null 2>&1 \
-            || die "muOS assign.sh completed but assign.json does not map all Nintendo GameCube/Wii aliases; check MUOS/log/assign_gen.txt"
+        jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" \
+            '.["nintendogamecube"]==$gc and .["nintendowii"]==$wii' "$USERM/assign.json" >/dev/null 2>&1 \
+            || die "muOS assign.sh completed but assign.json does not map Nintendo GameCube/Wii; check MUOS/log/assign_gen.txt"
     fi
-    [ "$expected" = "absent" ] || verify_custom_aliases
 }
+
 legacy_replace_system() {
     source_dir="$1"
     target="$2"
@@ -212,8 +238,6 @@ legacy_replace_system() {
         [ -f "$stale" ] && rm -f "$stale"
     done
     cp -f "$source_dir"/*.ini "$stage/" || { rm -rf "$stage"; return 1; }
-    kind="$(basename "$(dirname "$source_dir")")"
-    add_custom_alias_lines "$kind" "$stage/global.ini"
     [ -s "$stage/global.ini" ] || { rm -rf "$stage"; return 1; }
 
     if [ -e "$target" ]; then
@@ -233,12 +257,12 @@ legacy_apply() {
     gc_source="$SW/gc/mode $n"
     wii_source="$SW/wii/mode $n"
     mkdir -p "$RT_MUOS_ASSIGN_DIR" || die "cannot create legacy assign directory: $RT_MUOS_ASSIGN_DIR"
-    legacy_replace_system "$gc_source" "$RT_MUOS_ASSIGN_DIR/$GC_KEY" || die "cannot stage GameCube legacy core assignments"
+    legacy_replace_system "$gc_source" "$RT_MUOS_ASSIGN_DIR/$LEGACY_GC_DIR_NAME" || die "cannot stage GameCube legacy core assignments"
     legacy_replace_system "$wii_source" "$RT_MUOS_ASSIGN_DIR/$WII_KEY" || die "cannot stage Wii legacy core assignments"
 
     # Remove the spelling used by older Rt:Core builds without touching unrelated systems.
     for old in "$RT_MUOS_ASSIGN_DIR/$OLD_GC_NAME" "$RT_MUOS_ASSIGN_DIR/$OLD_WII_NAME"; do
-        [ "$old" = "$RT_MUOS_ASSIGN_DIR/$GC_KEY" ] && continue
+        [ "$old" = "$RT_MUOS_ASSIGN_DIR/$LEGACY_GC_DIR_NAME" ] && continue
         [ "$old" = "$RT_MUOS_ASSIGN_DIR/$WII_KEY" ] && continue
         if [ -d "$old" ]; then
             for stale in "$old"/dolphin\ -\ *.ini; do [ -f "$stale" ] && rm -f "$stale"; done
@@ -253,17 +277,7 @@ legacy_apply() {
 legacy_system_current() {
     source_dir="$1"
     target="$2"
-    kind="$(basename "$(dirname "$source_dir")")"
-    aliases="$(alias_file "$kind")"
-    if [ -s "$aliases" ]; then
-        grep -Fvx -f "$aliases" "$target/global.ini" | cmp -s - "$source_dir/global.ini" || return 1
-        while IFS= read -r alias; do
-            [ -n "$alias" ] || continue
-            grep -Fxq "$alias" "$target/global.ini" || return 1
-        done < "$aliases"
-    else
-        [ -s "$target/global.ini" ] && cmp -s "$source_dir/global.ini" "$target/global.ini" || return 1
-    fi
+    [ -s "$target/global.ini" ] && cmp -s "$source_dir/global.ini" "$target/global.ini" || return 1
     for f in "$source_dir"/*.ini; do
         [ -f "$f" ] || continue
         cmp -s "$f" "$target/$(basename "$f")" || return 1
@@ -277,12 +291,12 @@ legacy_system_current() {
 
 legacy_current() {
     n="$1"
-    legacy_system_current "$SW/gc/mode $n" "$RT_MUOS_ASSIGN_DIR/$GC_KEY" &&
+    legacy_system_current "$SW/gc/mode $n" "$RT_MUOS_ASSIGN_DIR/$LEGACY_GC_DIR_NAME" &&
     legacy_system_current "$SW/wii/mode $n" "$RT_MUOS_ASSIGN_DIR/$WII_KEY"
 }
 
 legacy_remove() {
-    for key in "$GC_KEY" "$WII_KEY" "$OLD_GC_NAME" "$OLD_WII_NAME"; do
+    for key in "$LEGACY_GC_DIR_NAME" "$GC_KEY" "$WII_KEY" "$OLD_GC_NAME" "$OLD_WII_NAME"; do
         dir="$RT_MUOS_ASSIGN_DIR/$key"
         [ -d "$dir" ] || continue
         rm -f "$dir/global.ini"
@@ -294,7 +308,7 @@ legacy_remove() {
 manifest_apply() {
     n="$1"
     need_jq
-    build_both "$n"
+    build_both "$n" || die "cannot build GameCube/Wii profile manifests; check the profile INI files above"
 
     if [ "$RT_MUOS_REGISTRATION_LAYOUT" = "single" ]; then
         file="$USERM/core.json"
@@ -376,23 +390,8 @@ manifest_current() {
         [ "$OLD_GC_NAME" = "$GC_KEY" ] || [ ! -e "$USERM/core/$NS/$OLD_GC_NAME.json" ] || return 1
         [ "$OLD_WII_NAME" = "$WII_KEY" ] || [ ! -e "$USERM/core/$NS/$OLD_WII_NAME.json" ] || return 1
     fi
-    jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" '
-        . as $map
-        | ([ "nintendogamecube", "nintendogc", "gamecube", "gamecubez", "ngc", "gc" ]
-           | all(.[]; . as $key | $map[$key] == $gc))
-        and
-          ([ "nintendowii", "nwii", "wii", "wiiz" ]
-           | all(.[]; . as $key | $map[$key] == $wii))
-    ' "$USERM/assign.json" >/dev/null 2>&1 || return 1
-    for kind in gc wii; do
-        aliases="$(alias_file "$kind")"
-        [ -r "$aliases" ] || continue
-        if [ "$kind" = gc ]; then system="Nintendo Gamecube"; else system="Nintendo Wii"; fi
-        while IFS= read -r alias; do
-            [ -n "$alias" ] || continue
-            jq -e --arg alias "$alias" --arg system "$system" '.[$alias] == $system' "$USERM/assign.json" >/dev/null 2>&1 || return 1
-        done < "$aliases"
-    done
+    jq -e --arg gc "$GC_KEY" --arg wii "$WII_KEY" \
+        '.["nintendogamecube"]==$gc and .["nintendowii"]==$wii' "$USERM/assign.json" >/dev/null 2>&1
 }
 
 do_remove() {
@@ -410,7 +409,6 @@ do_remove() {
     else
         WII_KEY="$OLD_WII_NAME"
     fi
-    rm -f "$(alias_file gc)" "$(alias_file wii)"
     case "$RT_MUOS_REGISTRATION_LAYOUT" in
         legacy-assign)
             legacy_remove
@@ -441,32 +439,6 @@ do_remove() {
         *) die "unsupported muOS registration layout: $RT_MUOS_REGISTRATION_LAYOUT" ;;
     esac
     sync
-}
-
-do_alias_add() {
-    kind="${2:-}"
-    alias="${3:-}"
-    case "$kind" in gc|wii) ;; *) die "usage: manifest_tool.sh alias-add <gc|wii> <lowercase-alias>" ;; esac
-    case "$alias" in ""|*[!a-z0-9]*) die "alias must contain lowercase letters and digits only" ;; esac
-    [ "${#alias}" -le 64 ] || die "alias is too long"
-
-    if [ "$kind" = gc ]; then system="Nintendo Gamecube"; else system="Nintendo Wii"; fi
-    file="$(alias_file "$kind")"
-    mkdir -p "$USERM" || die "cannot create alias storage: $USERM"
-
-    other=""
-    if [ -r "$USERM/assign.json" ] && command -v jq >/dev/null 2>&1; then
-        other="$(jq -r --arg alias "$alias" '.[$alias] // empty' "$USERM/assign.json" 2>/dev/null || true)"
-    fi
-    [ -z "$other" ] || [ "$other" = "$system" ] || die "alias '$alias' is already assigned to '$other'"
-
-    if [ -r "$file" ] && grep -Fxq "$alias" "$file"; then
-        say "alias already registered: $alias -> $system"
-    else
-        printf '%s\n' "$alias" >> "$file" || die "cannot save custom alias: $file"
-        say "registered custom alias: $alias -> $system"
-    fi
-    do_apply "$(cur_mode)"
 }
 
 do_status() {
@@ -504,7 +476,6 @@ case "${1:-status}" in
         fi
         ;;
     remove) do_remove ;;
-    alias-add) do_alias_add "$@" ;;
     status) do_status ;;
-    *) echo "usage: $0 apply [1|2] | ensure | remove | alias-add <gc|wii> <alias> | status"; exit 1 ;;
+    *) echo "usage: $0 apply [1|2] | ensure | remove | status"; exit 1 ;;
 esac

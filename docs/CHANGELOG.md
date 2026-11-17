@@ -4,27 +4,28 @@ Newest first. Format loosely based on Keep a Changelog.
 
 ## [Unreleased]
 
-### Fixed (autofix2)
-- launch.sh: ora applica controller, game settings, mods e logging scelti nella UI (prima venivano ignorati).
-- launch.sh: ShowFPS/VPS/Speed scritti in GFX.ini [Settings] (prima Dolphin.ini [Interface], senza effetto).
-- launch_screen: lista Game Settings senza rtgameset_data.ini e con le varianti .speedhack/patch.
-- rtcoreprofile: valori riallineati alle descrizioni, tier lite/std/max coerenti.
-
 ### Added
-- `frontend/ui/tokens.lua`: shared design token layer
-  (Dual-Face Cel-Tech).
-- `docs/`: full documentation set (architecture, styleguide,
-  screens, paths, profiles, controller, hotkeys, Minoru,
-  downloader, testing, troubleshooting, glossary).
-- `dev.sh tokens`: print every design token.
-- `dev.sh docs`: list documentation files.
-- `dev.sh audit`: report hardcoded fonts and colors.
+- Official Dolphin Rt:Core product portal at the site root, with the Compatibility Database retained as a separate application at `compatibility.html`.
+- Evidence-based release and quality documentation, including the current repository map, active Rt:UI location, contributor checks and hardware-verification procedure.
 
 ### Changed
-- All documentation written in English only.
-- `ui/button_icons.lua`: every `setLineWidth()` is now multiplied by
-  the theme's `outline_boost` (GC 1.0, Wii 1.4). WiFi and GC badges
-  keep their proportions but Wii gets visibly chunkier borders.
+- Rt:UI is documented at `dolphin-rtcore-muos/app/Dolphin RtUI/`; retired `frontend/` and `dev.sh` instructions are no longer presented as the active workflow.
+- The muOS Task Toolkit diagnostic payload is retired from new MUXUPD packages. Upgrade cleanup targets only legacy Dolphin Rt*Core task directories and leaves unrelated muOS tasks untouched.
+- Rt:Stream SFTP operations are confined to canonical configured ROM roots, with canonical-path and symlink checks for device roots and local receive paths.
+
+### Fixed
+- MUXUPD publication now builds a fresh temporary archive beside the destination, validates ZIP integrity and `manifest.sha256`, then atomically replaces the previous package. Failed or corrupt ZIP output leaves the existing package intact.
+- Added regression coverage for failed ZIP writes, corrupt archives that return exit status zero, retired Task Toolkit exclusion and upgrade cleanup.
+- Added a CI contract test that rejects duplicate NEXUS screen-action registration declarations.
+
+### Release status
+- Latest published stable release: **v12.0.0** (muOS Andromeda).
+- Draft v12.0.1 candidate artifacts are not published releases.
+- **Dolphin Rt:Core 12.5.00 / Rt:UI 3.7.0 Arcade is still under integration.** Do not treat CI, a cross-build or a draft asset as device certification.
+
+---
+
+> Entries below preserve the legacy FrontendONE changelog. Paths and developer commands in those historical entries describe that older implementation, not the current active Rt:UI repository layout.
 
 ## [0.5.3] — 2026-10-03
 

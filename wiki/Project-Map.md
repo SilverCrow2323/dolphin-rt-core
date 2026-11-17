@@ -8,7 +8,8 @@ Dolphin Rt:Core contains several platform deliverables. The repository root READ
 | Knulli | `dolphin-rtcore-k/` | Platform-specific integration and packaging |
 | ROCKNIX | `dolphin-rtcore-r/` | Experimental platform derivative |
 | Rt:Stream PC portal | `portal/` | PC portal, host services, profiles and packaging |
-| Compatibility Database | `index.html`, `sw.js`, `manifest.json` | Searchable community test reports and PWA shell |
+| Project Portal | `index.html`, `manifest.json`, `sw.js` | Public project overview, releases, documentation and community links |
+| Compatibility Database | `compatibility.html` | Searchable community test reports, GameSettings and PWA integration |
 | Historical releases | `Core_History/` | Archived versions; not the current source of truth |
 
 The active muOS LÖVE frontend is `dolphin-rtcore-muos/app/Dolphin RtUI/`. Entry points include `main.lua`, `conf.lua`, `core/`, `ui/` and `assets/`.

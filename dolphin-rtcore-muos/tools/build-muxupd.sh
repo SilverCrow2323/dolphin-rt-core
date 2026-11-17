@@ -31,8 +31,14 @@ if [ -z "$DOLPHIN_BIN" ]; then
   ARCHIVE="${ARCHIVE%.muxupd}_ui-only.muxupd"
 else
   [ -s "$DOLPHIN_BIN" ] || { echo "ERROR: DOLPHIN_BIN is missing or empty: $DOLPHIN_BIN" >&2; exit 1; }
-  hdr="$(head -c 20 "$DOLPHIN_BIN" | od -An -tx1 | tr -d ' \n')"
+  hdr="$(head -c 20 "$DOLPHIN_BIN" | od -An -tx1 | tr -d ' \\n')"
   case "$hdr" in 7f454c46020101*b700) ;; *) echo "ERROR: DOLPHIN_BIN is not an aarch64 ELF executable" >&2; exit 1;; esac
+  if readelf -d "$DOLPHIN_BIN" 2>/dev/null | grep -q "libhidapi-hidraw.so.0"; then
+    [ -s "$DOLPHIN_LIB_DIR/libhidapi-hidraw.so.0" ] || {
+      echo "ERROR: Dolphin requires libhidapi-hidraw.so.0 but it is not present in DOLPHIN_LIB_DIR=$DOLPHIN_LIB_DIR" >&2
+      exit 1
+    }
+  fi
 fi
 S="$(mktemp -d)"
 ARCHIVE_TMP=""
@@ -58,24 +64,22 @@ APP="run/muos/storage/application/Dolphin RtUI"; EMU="opt/muos/share/emulator/do
 mkdir -p "$S/$APP" "$S/$EMU"
 cp -a "$ROOT/emu/dolphin/." "$S/$EMU/"
 if [ "$SYS_SOURCE" != "$DEFAULT_SYS_SOURCE" ]; then
-  # Merge the freshly built engine resources over the curated official Sys payload.
-  # A build output may omit bundled Sys/Load mods and other user-facing resources.
+  rm -rf "$S/$EMU/Sys"
   mkdir -p "$S/$EMU/Sys"
   cp -a "$SYS_SOURCE/." "$S/$EMU/Sys/"
 fi
 cp -a "$ROOT/app/Dolphin RtUI/." "$S/$APP/"
-# Never distribute a developer's settings/ROM paths in an update package.
+# User preferences belong to the installed device, not to the source checkout.
+# Omitting this seed prevents an update from replacing ROM paths, theme and
+# last-game state with a developer/test copy. core/settings.lua supplies
+# first-run defaults when no local settings.json exists.
 rm -f "$S/$APP/data/settings.json"
-cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, tasks, manifest tool, update hook)
-# Keep Jacaranda legacy Content Explorer assignments alongside the Andromeda manifest.
+cp -a "$ROOT/overlay/." "$S/"                         # muOS-only files (launcher, manifest tool, update hook)
+# Jacaranda and older muOS releases read external core choices from the legacy
+# info/assign/<System>/*.ini tree. Seed standard profiles in the update too;
+# opt/update.sh + manifest_tool.sh then replace them with the selected profile
+# mode on legacy systems. Manifest-based releases safely ignore this tree.
 bash "$ROOT/tools/stage-legacy-assign.sh" "$S" 1
-
-# Preserve the official Dolphin GameSettings, Sys/Load resources, HD textures
-# and every installed graphics mod. Rt:UI Mod Vault controls enable/disable state;
-# packaging must not silently remove the payload users can manage.
-# Only generated app-local caches are excluded from the update archive.
-rm -rf "$S/$APP/data/gamesettings"
-rm -f "$S/$APP/data/gamesettings.json"
 [ -n "$DOLPHIN_BIN" ] && install -m755 "$DOLPHIN_BIN" "$S/$EMU/dolphin"
 if [ -n "$DOLPHIN_LIB_DIR" ]; then
   [ -d "$DOLPHIN_LIB_DIR" ] || { echo "ERROR: DOLPHIN_LIB_DIR is not a directory: $DOLPHIN_LIB_DIR" >&2; exit 1; }
@@ -83,32 +87,24 @@ if [ -n "$DOLPHIN_LIB_DIR" ]; then
   cp -a "$DOLPHIN_LIB_DIR/." "$S/$EMU/lib/"
 fi
 if [ -n "$DOLPHIN_BIN" ] && readelf -d "$DOLPHIN_BIN" 2>/dev/null | grep -q "libhidapi-hidraw.so.0"; then
-  [ -s "$S/$EMU/lib/libhidapi-hidraw.so.0" ] || {
-    echo "ERROR: Dolphin requires libhidapi-hidraw.so.0 but the matching runtime is absent." >&2
-    exit 1
-  }
+  [ -s "$S/$EMU/lib/libhidapi-hidraw.so.0" ] || { echo "ERROR: missing bundled HIDAPI runtime; set DOLPHIN_LIB_DIR" >&2; exit 1; }
   readelf -h "$S/$EMU/lib/libhidapi-hidraw.so.0" | grep -q 'Machine:.*AArch64' || {
-    echo "ERROR: bundled libhidapi-hidraw.so.0 is not an AArch64 ELF library" >&2
-    exit 1
+    echo "ERROR: bundled libhidapi-hidraw.so.0 is not an AArch64 ELF library" >&2; exit 1;
   }
 fi
 mkdir -p "$S/$APP/data/logs" "$S/$APP/data/stream/covers" "$S/$APP/data/stream/keys"
 
 find "$S" -name '*.sh' -exec chmod 755 {} +
 chmod 755 "$S/$APP"/lib/love "$S/$APP"/lib/moonlight "$S/$APP"/lib/gptokeyb2 2>/dev/null || true
-# Exclude backup files, including timestamped editor/maintainer copies.
-# The old '*.bak' exact match missed names such as Dolphin.ini.bak.20261030.
-find "$S" \( -name __pycache__ -o -name '*.rt.*' -o -name '*.tmp' \
-  -o -name '*.bak' -o -name '*.bak.*' -o -name '*~' -o -name '*.swp' \) \
-  -prune -exec rm -rf {} +
+find "$S" \( -name __pycache__ -o -name '*.rt.*' -o -name '*.tmp' -o -name '*.bak' \) -prune -exec rm -rf {} +
 
 # Never ship personal / runtime data
 if find "$S" -path '*/data/stream/*' -type f | grep -q .; then echo "ERROR: runtime stream data in the package" >&2; exit 1; fi
 
 ARCHIVE_TMP="$(mktemp "$ARCHIVE.tmp.XXXXXX")"
 FILES_LIST="$(mktemp)"
-# Build beside the destination, but leave the existing published package untouched
-# until the complete ZIP has been written and independently integrity-tested.
+# Build beside the destination, but preserve the previous package until the
+# new archive is complete and independently verified.
 rm -f -- "$ARCHIVE_TMP"
 (
   cd "$S"

@@ -31,8 +31,10 @@ This page covers the safe first install and first launch of the current **muOS A
 
 ## First-launch checks
 
-- Open Diagnostics and resolve missing dependencies.
+- Open Diagnostics and resolve missing dependencies. Press **M** to open Rt:System Status Center and review Wi-Fi, Portal/Sunshine, database and library status.
 - Confirm Nintendo → GameCube and Nintendo → Wii appear in Content Explorer.
+- Keep Dolphin's official Sys/GameSettings and Sys/Load/GraphicMods resources intact.
+- Use **Mod Vault → Graphics Mods** to enable official or user graphics mods separately for each game; All Games means compatible, not automatically enabled.
 - Start with the Default profile.
 - Compare the exact Game ID, region, firmware and device in the Compatibility Database.
 - Change one setting at a time and record the result.

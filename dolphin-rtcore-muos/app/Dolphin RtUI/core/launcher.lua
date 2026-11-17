@@ -120,7 +120,6 @@ function M.launch(game, opts)
       opts.hotkeys      = opts.hotkeys      or rtid.Hotkeys
       opts.gamesettings = opts.gamesettings or rtid.GameSettings
       opts.cheats       = (opts.cheats == nil) and (rtid.Cheats == "yes") or opts.cheats
-      opts.mods         = opts.mods         or ((rtid.Mods == "yes") and "all" or nil)
       opts.logging      = opts.logging      or rtid.Logger
       if opts.show_fps   == nil then opts.show_fps   = (rtid.OverlayFPS   == "yes") end
       if opts.show_vps   == nil then opts.show_vps   = (rtid.OverlayVPS   == "yes") end
@@ -196,9 +195,6 @@ function M.launch(game, opts)
     end
     if opts.gamesettings and opts.gamesettings ~= "" then
         parts[#parts+1] = "--gamesettings=" .. shq(opts.gamesettings)
-    end
-    if opts.mods and opts.mods ~= "" and opts.mods ~= false then
-        parts[#parts+1] = "--mods=" .. shq(opts.mods)
     end
     if opts.logging and opts.logging ~= "" and opts.logging ~= false then
         parts[#parts+1] = "--logging=" .. shq(opts.logging)

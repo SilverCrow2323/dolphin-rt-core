@@ -117,6 +117,19 @@ function M.dismiss(id)
   return false
 end
 
+function M.remove_history(id)
+  load_history()
+  for i, entry in ipairs(M._history) do
+    if entry.id == id then
+      table.remove(M._history, i)
+      M.dismiss(id)
+      save_history()
+      return true
+    end
+  end
+  return false
+end
+
 function M.clear_active() M._active = {} end
 
 function M.count_active() return #M._active end

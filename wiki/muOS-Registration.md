@@ -18,12 +18,7 @@ The helper also checks the generated `assign.json` on manifest-based systems. A 
 
 ## Rt:UI controls
 
-Registration repair and profile visibility are managed inside Dolphin Rt:UI:
-
-- **Settings → System → Repair GameCube/Wii registration** runs the safe `manifest_tool.sh ensure` action.
-- **Settings → System → Core profile visibility** selects **Standard Only** or **All Tiers**.
-
-The legacy muOS Task Toolkit entries are no longer installed. The upgrade hook removes old `Dolphin Rt*Core` task directories while preserving unrelated muOS tasks.
+Open **Settings > System** to repair GameCube/Wii registration or switch between **Standard Only** and **All Tiers**. The installer and app launcher also run the registration check automatically.
 
 ## Commands
 

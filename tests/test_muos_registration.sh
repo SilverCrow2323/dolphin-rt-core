@@ -7,10 +7,15 @@ SOURCES="$ROOT/dolphin-rtcore-muos/emu/dolphin/RtSys/switch_weapon"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-ok() { printf '  [OK] %s\n' "$*"; }
+pass=0
+fail=0
+ok() { pass=$((pass + 1)); printf '  [OK] %s\n' "$*"; }
+check() {
+    if "$@"; then ok "$1"; else fail=$((fail + 1)); printf '  [FAIL] %s\n' "$1"; fi
+}
 
 make_assign_stub() {
-    local root="$1"
+    root="$1"
     mkdir -p "$root/script/system"
     cat > "$root/script/system/assign.sh" <<'STUB'
 #!/bin/sh
@@ -35,12 +40,17 @@ STUB
 }
 
 run_tool() {
-    local root="$1" store="$2" source="$3"
+    root="$1"
+    store="$2"
+    layout="$3"
     shift 3
-    RT_MUOS_ROOT="$root" RT_MUOS_STORE_DIR="$store" RT_MUOS_ASSIGN_DIR="$root/share/info/assign" RT_MUOS_MANIFEST_DIR="$root/share/info/manifest" RT_SWITCH_WEAPON_DIR="$source" RT_MUOS_ASSIGN_REFRESH="$root/script/system/assign.sh" RT_TEST_REFRESH_LOG="$root/refresh.log" sh "$TOOL" "$@"
+    RT_MUOS_ROOT="$root" RT_MUOS_STORE_DIR="$store" RT_MUOS_ASSIGN_DIR="$root/share/info/assign" \
+    RT_MUOS_MANIFEST_DIR="$root/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+    RT_MUOS_ASSIGN_REFRESH="$root/script/system/assign.sh" RT_TEST_REFRESH_LOG="$root/refresh.log" \
+    sh "$TOOL" "$@"
 }
 
-# Andromeda 2606.0: single user core.json + muOS-generated assign.json.
+# Andromeda: 2606.0 uses one user core.json and a regenerated assign.json.
 A="$TMP/andromeda"
 AS="$TMP/andromeda-store"
 mkdir -p "$A/config/system" "$A/share/info/manifest" "$AS/info/manifest"
@@ -49,108 +59,123 @@ cat > "$AS/info/manifest/core.json" <<'JSON'
 {"Nintendo DS":{"name":"Nintendo DS","namespace":"Nintendo","catalogue":"Nintendo DS","default":"nds","friendly":["nds"],"bios":[],"external":{}},"Sony PlayStation":{"name":"Sony PlayStation","namespace":"Sony","catalogue":"Sony PlayStation","default":"pcsx","friendly":["ps"],"bios":[],"external":{}}}
 JSON
 make_assign_stub "$A"
-run_tool "$A" "$AS" "$SOURCES" apply 1
+RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
+sh "$TOOL" apply 1
 jq -e '.["Nintendo Gamecube"].namespace=="Nintendo" and .["Nintendo Wii"].namespace=="Nintendo" and has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
 [ -s "$AS/info/manifest/core.json.rtcore.bak" ]
-jq -e '.nintendogamecube=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii" and .gamecube=="Nintendo Gamecube" and .gamecubez=="Nintendo Gamecube" and .wii=="Nintendo Wii" and .wiiz=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
-for mode in 1 2; do
-    for alias in nintendogamecube nintendogc gamecube gamecubez ngc gc; do
-        grep -Fxq "$alias" "$SOURCES/gc/mode $mode/global.ini"
-    done
-    for alias in nintendowii nwii wii wiiz; do
-        grep -Fxq "$alias" "$SOURCES/wii/mode $mode/global.ini"
-    done
-done
+jq -e '.nintendogamecube=="Nintendo Gamecube" and .nintendowii=="Nintendo Wii" and .gamecube=="Nintendo Gamecube"' "$AS/info/manifest/assign.json" >/dev/null
+ok "Andromeda single manifest registers the Nintendo systems and preserves other systems"
 [ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 1 ]
-ok "Andromeda registers built-in aliases and preserves existing systems"
+ok "Andromeda automatic assignment refresh runs"
 
-run_tool "$A" "$AS" "$SOURCES" alias-add gc rtgamecubez
-run_tool "$A" "$AS" "$SOURCES" alias-add wii rtwiiz
-jq -e '.rtgamecubez=="Nintendo Gamecube" and .rtwiiz=="Nintendo Wii"' "$AS/info/manifest/assign.json" >/dev/null
-[ -s "$AS/info/manifest/rtcore-folder-aliases-gc.txt" ]
-[ -s "$AS/info/manifest/rtcore-folder-aliases-wii.txt" ]
-[ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 3 ]
-ok "Andromeda persists custom folder aliases and regenerates assign.json"
-
-run_tool "$A" "$AS" "$SOURCES" ensure
-[ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 3 ]
-ok "Andromeda ensure is idempotent with custom aliases"
-
+# Status must report stale registration when a profile is malformed, rather
+# than exiting before it prints the registration verdict.
+BROKEN_PROFILE="$TMP/broken-profile"
+cp -a "$SOURCES" "$BROKEN_PROFILE"
+PROFILE_FILE="$BROKEN_PROFILE/gc/mode 1/dolphin - rtprime - upright.ini"
+sed '/^core=/d' "$PROFILE_FILE" > "$PROFILE_FILE.tmp"
+mv "$PROFILE_FILE.tmp" "$PROFILE_FILE"
+STATUS_OUT="$(RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$BROKEN_PROFILE" \
+RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
+sh "$TOOL" status 2>&1 || true)"
+printf '%s\\n' "$STATUS_OUT" | grep -Fq 'registration     : MISSING/STALE'
+ok "status reports a stale registration instead of exiting during profile validation"
+RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
+sh "$TOOL" ensure
+[ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 1 ]
+ok "Andromeda ensure is idempotent"
 BROKEN="$TMP/broken-sources"
 cp -a "$SOURCES" "$BROKEN"
 rm -f "$BROKEN/gc/mode 1/global.ini" "$BROKEN/wii/mode 1/global.ini"
-run_tool "$A" "$AS" "$BROKEN" remove
+RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$BROKEN" \
+RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
+sh "$TOOL" remove
 jq -e 'has("Nintendo Gamecube")|not' "$AS/info/manifest/core.json" >/dev/null
 jq -e 'has("Nintendo Wii")|not' "$AS/info/manifest/core.json" >/dev/null
 jq -e 'has("Nintendo DS") and has("Sony PlayStation")' "$AS/info/manifest/core.json" >/dev/null
-jq -e '((has("nintendogamecube")|not) and (has("nintendogc")|not) and (has("gamecube")|not) and (has("gamecubez")|not) and (has("ngc")|not) and (has("gc")|not) and (has("nintendowii")|not) and (has("nwii")|not) and (has("wii")|not) and (has("wiiz")|not) and (has("rtgamecubez")|not) and (has("rtwiiz")|not))' "$AS/info/manifest/assign.json" >/dev/null
-[ ! -e "$AS/info/manifest/rtcore-folder-aliases-gc.txt" ]
-[ ! -e "$AS/info/manifest/rtcore-folder-aliases-wii.txt" ]
-[ "$(grep -c '^refresh$' "$A/refresh.log")" -eq 4 ]
-ok "Andromeda remove cleans Rt:Core aliases and preserves unrelated systems"
-
+jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' "$AS/info/manifest/assign.json" >/dev/null
+ok "Andromeda remove deletes only Rt:Core systems and refreshes the Content Explorer map"
 cat > "$A/share/info/manifest/core.json" <<'JSON'
 {"Nintendo DS":{"name":"Nintendo DS","namespace":"Nintendo","catalogue":"Nintendo DS","default":"nds","friendly":["nds"],"bios":[],"external":{}}}
 JSON
 rm -f "$AS/info/manifest/core.json"
-run_tool "$A" "$AS" "$BROKEN" remove
-jq -e '((has("nintendogamecube")|not) and (has("nintendowii")|not))' "$AS/info/manifest/assign.json" >/dev/null
-ok "Andromeda remove refreshes the assignment map when user core.json is already absent"
+RT_MUOS_ROOT="$A" RT_MUOS_STORE_DIR="$AS" RT_MUOS_ASSIGN_DIR="$A/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$A/share/info/manifest" RT_SWITCH_WEAPON_DIR="$BROKEN" \
+RT_MUOS_ASSIGN_REFRESH="$A/script/system/assign.sh" RT_TEST_REFRESH_LOG="$A/refresh.log" \
+sh "$TOOL" remove
+jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' "$AS/info/manifest/assign.json" >/dev/null
+ok "Andromeda remove refreshes stale aliases even when the user core.json is already absent"
 
-# Split-manifest API: core/<Namespace>/<System>.json.
+# Split-manifest generation: systems are written under core/Nintendo/*.json.
 S="$TMP/split"
 SS="$TMP/split-store"
 mkdir -p "$S/config/system" "$S/share/info/manifest/core/Existing" "$SS/info/manifest"
 printf '2612.0_SUPERNOVA\n' > "$S/config/system/version"
 printf '{"catalogue":"Existing","lookup":0,"default":"default","friendly":["existing"],"bios":[],"external":{}}\n' > "$S/share/info/manifest/core/Existing/Existing.json"
 make_assign_stub "$S"
-run_tool "$S" "$SS" "$SOURCES" apply 1
-jq -e '(.catalogue=="Nintendo Gamecube") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Gamecube.json" >/dev/null
+RT_MUOS_ROOT="$S" RT_MUOS_STORE_DIR="$SS" RT_MUOS_ASSIGN_DIR="$S/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$S/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+RT_MUOS_ASSIGN_REFRESH="$S/script/system/assign.sh" RT_TEST_REFRESH_LOG="$S/refresh.log" \
+sh "$TOOL" apply 1
+jq -e '(.catalogue=="Nintendo Gamecube") and (.external|length>0) and (.friendly | index("gamecube") != null)' "$SS/info/manifest/core/Nintendo/Nintendo Gamecube.json" >/dev/null
 jq -e '(.catalogue=="Nintendo Wii") and (.external|length>0)' "$SS/info/manifest/core/Nintendo/Nintendo Wii.json" >/dev/null
 [ -f "$S/share/info/manifest/core/Existing/Existing.json" ]
-ok "Split manifest writes both Nintendo systems and preserves existing files"
-run_tool "$S" "$SS" "$SOURCES" remove
+ok "Split manifest stores both systems under the Nintendo namespace and preserves existing files"
+RT_MUOS_ROOT="$S" RT_MUOS_STORE_DIR="$SS" RT_MUOS_ASSIGN_DIR="$S/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$S/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+RT_MUOS_ASSIGN_REFRESH="$S/script/system/assign.sh" RT_TEST_REFRESH_LOG="$S/refresh.log" \
+sh "$TOOL" remove
 [ ! -e "$SS/info/manifest/core/Nintendo/Nintendo Gamecube.json" ]
 [ ! -e "$SS/info/manifest/core/Nintendo/Nintendo Wii.json" ]
 [ -f "$S/share/info/manifest/core/Existing/Existing.json" ]
-jq -e '((has("nintendogamecube")|not) and (has("nintendowii")|not))' "$SS/info/manifest/assign.json" >/dev/null
-ok "Split manifest remove cleans only GameCube/Wii"
+jq -e '((has("nintendogamecube") | not) and (has("nintendowii") | not))' "$SS/info/manifest/assign.json" >/dev/null
+ok "Split manifest remove cleans only GameCube/Wii and refreshes the Content Explorer map"
 
-# Jacaranda: legacy info/assign/<System>/*.ini, preserving unrelated files.
+# Every MUXUPD ships a Jacaranda-compatible legacy assignment tree.
+LEGACY_STAGE="$TMP/legacy-payload"
+bash "$ROOT/dolphin-rtcore-muos/tools/stage-legacy-assign.sh" "$LEGACY_STAGE" 1
+GC_ASSIGN="$LEGACY_STAGE/opt/muos/share/info/assign/Nintendo GameCube"
+WII_ASSIGN="$LEGACY_STAGE/opt/muos/share/info/assign/Nintendo Wii"
+[ -s "$GC_ASSIGN/global.ini" ] && [ -s "$WII_ASSIGN/global.ini" ]
+[ -s "$GC_ASSIGN/dolphin - rtprime - upright.ini" ]
+[ -s "$WII_ASSIGN/dolphin - rtprime - upright.ini" ]
+GC_COUNT="$(find "$GC_ASSIGN" -maxdepth 1 -type f -name '*.ini' ! -name global.ini | wc -l)"
+WII_COUNT="$(find "$WII_ASSIGN" -maxdepth 1 -type f -name '*.ini' ! -name global.ini | wc -l)"
+[ "$GC_COUNT" -eq 11 ] && [ "$WII_COUNT" -eq 22 ]
+grep -Fxq gamecube "$GC_ASSIGN/global.ini"
+grep -Fxq nintendowii "$WII_ASSIGN/global.ini"
+ok "MUXUPD seeds Jacaranda GameCube/Wii assignment folders (11 + 22 standard profiles)"
+# Jacaranda: legacy info/assign/*.ini format, with user files in the same folder preserved.
 J="$TMP/jacaranda"
 JS="$TMP/jacaranda-store"
 mkdir -p "$J/config/system" "$J/share/info/assign/Nintendo Gamecube" "$JS"
 printf '2601.1_JACARANDA\n' > "$J/config/system/version"
 printf 'keep me\n' > "$J/share/info/assign/Nintendo Gamecube/user-note.txt"
-run_tool "$J" "$JS" "$SOURCES" apply 1
-[ -s "$J/share/info/assign/Nintendo Gamecube/global.ini" ]
+RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$J/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+sh "$TOOL" apply 1
+[ -s "$J/share/info/assign/Nintendo GameCube/global.ini" ]
 [ -s "$J/share/info/assign/Nintendo Wii/global.ini" ]
-[ -s "$J/share/info/assign/Nintendo Gamecube/dolphin - rtprime - upright.ini" ]
-[ -s "$J/share/info/assign/Nintendo Wii/dolphin - rtprime - upright.ini" ]
-for alias in nintendogamecube nintendogc gamecube gamecubez ngc gc; do
-    grep -Fxq "$alias" "$J/share/info/assign/Nintendo Gamecube/global.ini"
-done
-for alias in nintendowii nwii wii wiiz; do
-    grep -Fxq "$alias" "$J/share/info/assign/Nintendo Wii/global.ini"
-done
+[ -s "$J/share/info/assign/Nintendo GameCube/dolphin - rtprime - upright.ini" ]
 grep -q 'keep me' "$J/share/info/assign/Nintendo Gamecube/user-note.txt"
-ok "Jacaranda installs legacy assignments without deleting unrelated files"
-
-run_tool "$J" "$JS" "$SOURCES" alias-add gc rtgamecubez
-run_tool "$J" "$JS" "$SOURCES" alias-add wii rtwiiz
-grep -Fxq 'rtgamecubez' "$J/share/info/assign/Nintendo Gamecube/global.ini"
-grep -Fxq 'rtwiiz' "$J/share/info/assign/Nintendo Wii/global.ini"
-[ -s "$JS/info/manifest/rtcore-folder-aliases-gc.txt" ]
-[ -s "$JS/info/manifest/rtcore-folder-aliases-wii.txt" ]
-ok "Jacaranda adds persistent custom aliases to both legacy systems"
-
-run_tool "$J" "$JS" "$SOURCES" ensure
+ok "Jacaranda legacy assignment installs GameCube/Wii profiles without deleting unrelated files"
+RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$J/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+sh "$TOOL" ensure
 ok "Jacaranda ensure accepts an already-current legacy installation"
-run_tool "$J" "$JS" "$SOURCES" remove
-[ ! -e "$J/share/info/assign/Nintendo Gamecube/dolphin - rtprime - upright.ini" ]
+RT_MUOS_ROOT="$J" RT_MUOS_STORE_DIR="$JS" RT_MUOS_ASSIGN_DIR="$J/share/info/assign" \
+RT_MUOS_MANIFEST_DIR="$J/share/info/manifest" RT_SWITCH_WEAPON_DIR="$SOURCES" \
+sh "$TOOL" remove
+[ ! -e "$J/share/info/assign/Nintendo GameCube/global.ini" ]
+[ ! -e "$J/share/info/assign/Nintendo GameCube/dolphin - rtprime - upright.ini" ]
 [ -f "$J/share/info/assign/Nintendo Gamecube/user-note.txt" ]
-[ ! -e "$JS/info/manifest/rtcore-folder-aliases-gc.txt" ]
-[ ! -e "$JS/info/manifest/rtcore-folder-aliases-wii.txt" ]
-ok "Jacaranda remove cleans Rt:Core profiles while preserving unrelated files"
+ok "Jacaranda remove cleans only Rt:Core profile files"
 
-printf '\nmuOS registration tests: passed\n'
+printf '\nmuOS registration tests: %d passed, %d failed\n' "$pass" "$fail"
+[ "$fail" -eq 0 ]

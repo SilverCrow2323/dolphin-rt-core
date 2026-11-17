@@ -1,40 +1,79 @@
--- core/gamesettings_deployer.lua — deploy bundled presets only for games
--- that are actually present in the scanned local library.
+-- core/gamesettings_deployer.lua — incremental deployment of bundled GameSettings.
 local M = {}
+
 local Loader = require("core.gameset_loader")
+local STATE = {
+    running = false, queue = {}, index = 1,
+    total = 0, processed = 0, deployed = 0, failed = 0,
+}
 
-local queue, index, deployed, started = {}, 1, 0, false
-
-function M.start(games)
-    queue, index, deployed, started = {}, 1, 0, true
-    local seen = {}
-    for _, game in ipairs(games or {}) do
-        local id = game and game.id
-        if type(id) == "string" and id:match("^[%w][%w][%w][%w][%w][%w]$") and not seen[id] then
-            seen[id] = true
-            local entry = Loader.for_game(id)
-            if entry then queue[#queue + 1] = { id = id, entry = entry } end
-        end
-    end
-    return #queue
+local function normalize_id(value)
+    local id = type(value) == "table" and value.id or value
+    if type(id) ~= "string" or not id:match("^[A-Z0-9]+$") then return nil end
+    return id
 end
 
--- Incremental: one matching game per poll, so boot remains responsive.
-function M.poll()
-    if not started then return true, { deployed = deployed, matched = 0 } end
-    local item = queue[index]
-    if item then
-        local ok, n = pcall(Loader.deploy, item.entry, item.id)
-        if ok then deployed = deployed + (tonumber(n) or 0) end
-        index = index + 1
+function M.start()
+    STATE = {
+        running = true, queue = {}, index = 1,
+        total = 0, processed = 0, deployed = 0, failed = 0,
+    }
+
+    local ok, data = pcall(Loader.load)
+    if not ok or type(data) ~= "table" or type(data.games) ~= "table" then
+        STATE.running = false
+        STATE.failed = 1
+        return false, "GameSettings database unavailable"
     end
-    local done = index > #queue
-    if done then started = false end
-    return done, { deployed = deployed, matched = #queue, processed = index - 1 }
+
+    local seen = {}
+    for _, entry in ipairs(data.games) do
+        if type(entry) == "table" and type(entry.configs) == "table" then
+            for _, raw_id in ipairs(entry.ids or {}) do
+                local id = normalize_id(raw_id)
+                if id and not seen[id] then
+                    seen[id] = true
+                    STATE.queue[#STATE.queue + 1] = { entry = entry, id = id }
+                end
+            end
+        end
+    end
+    STATE.total = #STATE.queue
+    if STATE.total == 0 then STATE.running = false end
+    return true
+end
+
+function M.poll()
+    if STATE.running then
+        local item = STATE.queue[STATE.index]
+        if item then
+            local ok, written, failed = pcall(Loader.deploy, item.entry, item.id)
+            STATE.processed = STATE.processed + 1
+            if ok then
+                STATE.deployed = STATE.deployed + (tonumber(written) or 0)
+                STATE.failed = STATE.failed + (tonumber(failed) or 0)
+            else
+                STATE.failed = STATE.failed + 1
+            end
+            STATE.index = STATE.index + 1
+        end
+        if STATE.index > #STATE.queue then STATE.running = false end
+    end
+
+    return not STATE.running, {
+        deployed = STATE.deployed,
+        processed = STATE.processed,
+        total = STATE.total,
+        failed = STATE.failed,
+        status = STATE.running and "running" or (STATE.failed > 0 and "partial" or "complete"),
+    }
 end
 
 function M.reset()
-    queue, index, deployed, started = {}, 1, 0, false
+    STATE = {
+        running = false, queue = {}, index = 1,
+        total = 0, processed = 0, deployed = 0, failed = 0,
+    }
 end
 
 return M

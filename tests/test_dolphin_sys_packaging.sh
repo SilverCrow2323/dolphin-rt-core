@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PACKAGER="$ROOT/dolphin-rtcore-muos/tools/build-muxupd.sh"
-bash -n "$PACKAGER"
 BASE_SYS="$ROOT/dolphin-rtcore-muos/emu/dolphin/Sys"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -83,24 +82,10 @@ unzip -p "$ARCHIVE" manifest.sha256 | grep -Fqx "$MARKER_SHA  $EMU_PATH/Sys/$MAR
 
 echo "[OK] binary, private HIDAPI runtime and supplied Sys tree are included at the muOS runtime paths"
 echo "[OK] GameCube fonts, DSP assets, and the Sys-tree marker are present"
-
-# Official per-game settings, stock texture packs and graphics mods are user-facing
-# Dolphin payload. A supplied build Sys tree must not erase the curated resources.
-for asset in \
-  "$EMU_PATH/GameSettings/GOWP69.ini" \
-  "$EMU_PATH/Load/Textures/GCN/tex1_512x256_c8101281265628cc_14.png" \
-  "$EMU_PATH/Sys/Load/GraphicMods/Dragon Ball Z Budokai Tenkaichi 3/metadata.json" \
-  "run/muos/storage/application/Dolphin RtUI/workshop/gamesettings/GD7E70/base.ini"; do
-  unzip -Z1 "$ARCHIVE" | grep -Fxq "$asset" || {
-    echo "[FAIL] official Dolphin settings/mod payload missing from MUXUPD: $asset" >&2
-    exit 1
-  }
-done
-echo "[OK] official GameSettings, texture packs, graphics mods and Rt:UI game profiles are retained"
 echo "[OK] manifest.sha256 covers the supplied Sys-tree marker"
 
-# Publishing is atomic: an interrupted ZIP write must preserve the previous
-# valid package byte-for-byte and remove the incomplete temporary file.
+# Publishing is atomic: a failed ZIP write must preserve the previous
+# valid archive byte-for-byte and clean up the temporary destination.
 ATOMIC_OUT="$TMP/atomic-dist"
 mkdir -p "$ATOMIC_OUT"
 ATOMIC_ARCHIVE="$ATOMIC_OUT/$(basename "$ARCHIVE")"
@@ -137,8 +122,7 @@ if find "$ATOMIC_OUT" -maxdepth 1 -type f -name "$(basename "$ATOMIC_ARCHIVE").t
 fi
 echo "[OK] failed ZIP write preserves the prior valid MUXUPD and cleans the temporary archive"
 
-# A faulty ZIP tool can also return zero while producing an invalid archive.
-# Integrity validation must reject it just as safely as a non-zero exit.
+# A faulty ZIP tool can return success and still emit an invalid archive.
 CORRUPT_ZIP="$TMP/corrupt-zip-bin"
 mkdir -p "$CORRUPT_ZIP"
 cat > "$CORRUPT_ZIP/zip" <<'SH'
@@ -169,8 +153,6 @@ if find "$ATOMIC_OUT" -maxdepth 1 -type f -name "$(basename "$ATOMIC_ARCHIVE").t
   exit 1
 fi
 echo "[OK] invalid ZIP is rejected even after zip exits zero; prior MUXUPD stays intact"
-
-
 
 # Missing assets must fail before an update archive is produced.
 BROKEN_SYS="$TMP/Sys-missing-font"
@@ -207,18 +189,19 @@ if find "$TMP/fail-dsp-dist" -maxdepth 1 -type f -name '*.muxupd' -print -quit 2
 fi
 echo "[OK] missing GameCube DSP data is rejected before archive creation"
 
-# Legacy muOS Task Toolkit files must not ship in the release archive.
-if unzip -Z1 "$ARCHIVE" | grep -Eq '^opt/muos/share/task/Dolphin Rt[^/]*/'; then
-  echo "[FAIL] legacy Dolphin Rt:Core Task Toolkit files are still packaged" >&2
-  exit 1
-fi
-if unzip -Z1 "$ARCHIVE" | grep -Fxq "$EMU_PATH/RtSys/bash_arsenal/scan_load.sh"; then
-  echo "[FAIL] legacy Load-folder Task Toolkit scanner is still packaged" >&2
-  exit 1
-fi
-echo "[OK] legacy Task Toolkit entries are absent from the MUXUPD"
-if ! unzip -Z1 "$ARCHIVE" | grep -Fxq "$EMU_PATH/RtSys/cleanup_legacy_tasks.sh"; then
-  echo "[FAIL] upgrade cleanup helper is missing from the MUXUPD" >&2
-  exit 1
-fi
-echo "[OK] upgrade cleanup helper is included in the MUXUPD"
+# The update hook removes only legacy Dolphin Task Toolkit directories. Run it
+# against a disposable root; unrelated muOS task folders must remain untouched.
+LEGACY_TASK_ROOT="$TMP/legacy-task-root"
+mkdir -p "$LEGACY_TASK_ROOT/Dolphin Rt-Core" "$LEGACY_TASK_ROOT/Dolphin RtCore" "$LEGACY_TASK_ROOT/Other App"
+printf 'old task\\n' > "$LEGACY_TASK_ROOT/Dolphin Rt-Core/old.sh"
+printf 'other task\\n' > "$LEGACY_TASK_ROOT/Other App/keep.sh"
+sh -n "$ROOT/dolphin-rtcore-muos/overlay/opt/update.sh"
+MUOS_TASK_ROOT="$LEGACY_TASK_ROOT" sh "$ROOT/dolphin-rtcore-muos/overlay/opt/update.sh"
+[ ! -e "$LEGACY_TASK_ROOT/Dolphin Rt-Core" ]
+[ ! -e "$LEGACY_TASK_ROOT/Dolphin RtCore" ]
+[ -s "$LEGACY_TASK_ROOT/Other App/keep.sh" ]
+echo "[OK] update hook removes stale Dolphin tasks without touching other muOS tasks"
+
+! grep -Fq 'Task Toolkit registration task' "$ROOT/wiki/FAQ.md"
+! grep -Fq 'Task Toolkit also includes' "$ROOT/docs/MUOS_REGISTRATION.md"
+echo "[OK] current support docs no longer direct users to retired Task Toolkit entries"

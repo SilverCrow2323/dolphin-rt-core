@@ -34,10 +34,9 @@ M.CATS = {
   { id = "WiiSDSync",            label = "Wii SD Sync",   short = "SD Sync",     icon = "rescan",  acc = "lime",  link = false },
   { id = "Riivolution",          label = "Riivolution",   short = "Riivolution", icon = "boost",   acc = "boost", link = false },
   { id = "DynamicInputTextures", label = "Dynamic Input", short = "Dyn. Input",  icon = "gamepad", acc = "hot",   link = true  },
-  -- Mod grafiche native di Dolphin (Load/GraphicMods). Non si abbinano per nome:
-  -- si elencano tutte e si scelgono a mano. Default SPENTE (come prima).
-  -- Il lancio le gestisce con --mods (core/launcher), non col piano.
-  { id = "GraphicMods",          label = "Graphic Mods",  short = "Gfx Mods",    icon = "mods",    acc = "mods",  link = false, legacy = true },
+  -- Catalogo Graphics Mods nativo di Dolphin: Sys + Load, attivazione per-game.
+  -- Le mod di sistema sono read-only e restano disabilitate finché non selezionate.
+  { id = "GraphicMods",          label = "Graphics Mods", short = "Gfx Mods",    icon = "mods",    acc = "mods",  link = false, native = true },
 }
 
 local ALL_NAMES = {
@@ -69,6 +68,9 @@ end
 
 -- voci della categoria: attive (Load/<Cat>) + parcheggiate (Load/<Cat>.off)
 function M.entries(cat, root)
+  if cat.native then
+    return require("core.graphics_mods").list_for(nil)
+  end
   root = root or M.LOAD
   local seen, out = {}, {}
   for _, parked in ipairs({ false, true }) do
@@ -112,20 +114,17 @@ end
 -- Voci applicabili al gioco, ordinate: id, prefix, name, all (poi per nome).
 -- game = { id=, title= }.  Se game == nil restituisce tutto (catalogo).
 function M.for_game(cat, game, titles, root)
+  if cat.native then
+    return require("core.graphics_mods").list_for(game)
+  end
   local list = {}
   local ts = titles_set(titles)
   for _, e in ipairs(M.entries(cat, root)) do
-    -- A globally parked mod stays disabled for every game. Game-specific
-    -- launch plans must not silently pull it back out of <Category>.off.
-    if not (game and not cat.legacy and e.parked) then
-      if cat.legacy then
-        e.kind = "gfx"; list[#list + 1] = e
-      elseif game then
-        local k = M.match_kind(game.id, ts, e)
-        if k then e.kind = k; list[#list + 1] = e end
-      else
-        e.kind = "all"; list[#list + 1] = e
-      end
+    if game then
+      local k = M.match_kind(game.id, ts, e)
+      if k then e.kind = k; list[#list + 1] = e end
+    else
+      e.kind = "all"; list[#list + 1] = e
     end
   end
   table.sort(list, function(a, b)
@@ -143,7 +142,7 @@ function M.write_plan(game, titles, off_of, root, path)
   path = path or M.PLAN
   local lines = {}
   for _, cat in ipairs(M.CATS) do
-   if not cat.legacy then
+   if not cat.native then
     local off = off_of and off_of(cat.id) or {}
     local list = M.for_game(cat, game, titles, root)
     local has_native = false           -- voce che Dolphin carica da solo (id/prefix)
@@ -170,61 +169,6 @@ function M.write_plan(game, titles, off_of, root, path)
   f:write(table.concat(lines, "\n"), #lines > 0 and "\n" or "")
   f:close()
   return #lines
-end
-
-
--- Globally park/unpark a mod without deleting it. This is intentionally
--- separate from the per-game OFF plan: the active Load/ tree is what Dolphin
--- sees at runtime, while <Category>.off is the reversible disabled shelf.
-local function safe_entry_name(name)
-  return type(name) == "string" and name ~= "" and name ~= "." and name ~= ".."
-    and not name:find("/", 1, true) and not name:find("\\", 1, true)
-end
-
-function M.set_enabled(cat, entry, enabled, root)
-  root = root or M.LOAD
-  if type(cat) ~= "table" or type(cat.id) ~= "string"
-     or not cat.id:match("^[%w_%-]+$") then
-    return false, "invalid mod category"
-  end
-  if type(entry) ~= "table" or not safe_entry_name(entry.name) then
-    return false, "invalid mod entry"
-  end
-  if type(enabled) ~= "boolean" then return false, "enabled must be boolean" end
-  local currently_enabled = entry.parked ~= true
-  if currently_enabled == enabled then return true, "unchanged" end
-
-  local on_dir = root .. "/" .. cat.id
-  local off_dir = on_dir .. ".off"
-  local source_dir = currently_enabled and on_dir or off_dir
-  local target_dir = enabled and on_dir or off_dir
-  local source = source_dir .. "/" .. entry.name
-  local target = target_dir .. "/" .. entry.name
-  local command = "if [ ! -e " .. Shell.shq(source) .. " ]; then exit 2; fi; " ..
-    "if [ -e " .. Shell.shq(target) .. " ]; then exit 3; fi; " ..
-    "mkdir -p " .. Shell.shq(target_dir) .. " && mv " ..
-    Shell.shq(source) .. " " .. Shell.shq(target)
-  local rc = Shell.exec(command)
-  if rc == true or rc == 0 then
-    entry.parked = not enabled
-    return true
-  end
-  return false, "could not move mod between Load/" .. cat.id .. " and Load/" .. cat.id .. ".off"
-end
-
-function M.set_all_enabled(cat, enabled, root)
-  if type(enabled) ~= "boolean" then return 0, { "enabled must be boolean" } end
-  local changed, errors = 0, {}
-  local rows = M.entries(cat, root)
-  for _, entry in ipairs(rows) do
-    local ok, err = M.set_enabled(cat, entry, enabled, root)
-    if ok then
-      if err ~= "unchanged" then changed = changed + 1 end
-    else
-      errors[#errors + 1] = entry.name .. ": " .. tostring(err)
-    end
-  end
-  return changed, errors
 end
 
 return M

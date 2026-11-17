@@ -3,8 +3,7 @@
 -- Screens are plain tables: enter(params) leave() update(dt) draw()
 -- pad(logical) key(k) [raw_pad(raw)] [accept_raw_input()].
 -- Logical buttons: A B X Y L1 R1 L2 R2 START SELECT MENU UP DOWN LEFT RIGHT.
--- The D-pad auto-repeats (hold to scroll). START+MENU asks to quit.
--- SELECT is handled only by Home to enter Rt:Stream; all other screens own their input.
+-- The D-pad auto-repeats (hold to scroll). START+SELECT asks to quit.
 -- A screen that fails to load never takes the app down: it is skipped and
 -- the error is logged.
 
@@ -87,10 +86,10 @@ function M.catalog()
 end
 
 local SCREEN_MODULES = {
-    { "boot", "ui.screens.boot" }, { "home", "ui.screens.home" }, { "library", "ui.screens.library" },
+    { "boot", "ui.screens.boot" }, { "library", "ui.screens.library" },
     { "mods", "ui.screens.mods" }, { "cheatdb", "ui.screens.cheatdb" },
     { "game", "ui.screens.game" }, { "cheats", "ui.screens.cheats" },
-    { "hotkeys", "ui.screens.hotkeys" }, { "safe_exit", "ui.screens.safe_exit" }, { "settings", "ui.screens.settings" },
+    { "hotkeys", "ui.screens.hotkeys" }, { "settings", "ui.screens.settings" },
     { "rt_editor", "ui.screens.rt_editor" },
     { "folders", "ui.screens.folders" }, { "about", "ui.screens.about" },
     { "diagnostics", "ui.screens.diagnostics" },
@@ -159,14 +158,6 @@ function M.init()
         end
     end
 
-    local compat_screen = Nexus.get_screen("compat_list")
-    if compat_screen and compat_screen.register_actions then
-        local ok, registered, detail = pcall(compat_screen.register_actions, M)
-        if not ok or registered == false then
-            log("compatibility NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
     local controller_profiles_screen = Nexus.get_screen("controller_profiles")
     if controller_profiles_screen and controller_profiles_screen.register_actions then
         local ok, registered, detail = pcall(controller_profiles_screen.register_actions, M)
@@ -183,27 +174,11 @@ function M.init()
         end
     end
 
-    local keymap_screen = Nexus.get_screen("keymap")
-    if keymap_screen and keymap_screen.register_actions then
-        local ok, registered, detail = pcall(keymap_screen.register_actions, M)
-        if not ok or registered == false then
-            log("keymap NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
     local game_screen = Nexus.get_screen("game")
     if game_screen and game_screen.register_actions then
         local ok, registered, detail = pcall(game_screen.register_actions, M)
         if not ok or registered == false then
             log("game NEXUS actions: " .. tostring(ok and detail or registered))
-        end
-    end
-
-    local gameset_browser_screen = Nexus.get_screen("gameset_browser")
-    if gameset_browser_screen and gameset_browser_screen.register_actions then
-        local ok, registered, detail = pcall(gameset_browser_screen.register_actions, M)
-        if not ok or registered == false then
-            log("gameset browser NEXUS actions: " .. tostring(ok and detail or registered))
         end
     end
 
@@ -228,6 +203,14 @@ function M.init()
         local ok, registered, detail = pcall(settings_screen.register_actions, M)
         if not ok or registered == false then
             log("settings NEXUS actions: " .. tostring(ok and detail or registered))
+        end
+    end
+
+    local gameset_browser_screen = Nexus.get_screen("gameset_browser")
+    if gameset_browser_screen and gameset_browser_screen.register_actions then
+        local ok, registered, detail = pcall(gameset_browser_screen.register_actions, M)
+        if not ok or registered == false then
+            log("GameSettings browser NEXUS actions: " .. tostring(ok and detail or registered))
         end
     end
 
@@ -376,13 +359,12 @@ function M.current() return current_name end
 -- ── logical dispatch ────────────────────────────────────────
 local function dispatch(lg)
     if not lg then return end
-    if Modal.is_open() then Modal.pad(lg); return end
-
-    local ok_sp, SP = pcall(require, "ui.system_panel")    local ok_sp, SP = pcall(require, "ui.system_panel")
+    local ok_sp, SP = pcall(require, "ui.system_panel")
     if ok_sp and SP then
         if SP.is_open() then SP.pad(lg); return end
         if lg == "MENU" then SP.open(); return end
     end
+    if Modal.is_open() then Modal.pad(lg); return end
     if fade.phase ~= "idle" then return end
     if current and current.pad then
         local ok, err = pcall(current.pad, lg)
@@ -397,14 +379,14 @@ local last_press = {}
 local function now() return love.timer.getTime() end
 
 local function combo_check(lg)
-    if lg ~= "START" and lg ~= "MENU" then return false end
+    if lg ~= "START" and lg ~= "SELECT" then return false end
     held[lg] = now()
-    local o = (lg == "START") and "MENU" or "START"
+    local o = (lg == "START") and "SELECT" or "START"
     if held[o] and now() - held[o] < 0.5 and not Modal.is_open() then
-        held.START, held.MENU = nil, nil
+        held.START, held.SELECT = nil, nil
         local okS, St = pcall(require, "core.settings")
         if okS and St.get("confirm_quit") == false then love.event.quit(); return true end
-        Modal.show("Quit", "Close Dolphin Rt:UI and return to muOS? (START + MENU)", {
+        Modal.show("Quit", "Close Dolphin Rt:UI and return to muOS?", {
             accept_label = "Quit", cancel_label = "Stay", color = K.C.bad,
             on_accept = function() love.event.quit() end })
         return true
@@ -428,21 +410,19 @@ local function release(lg)
 end
 
 function M.pad(raw)
-    local logical = IM.from_raw(raw)
     if current and current.raw_pad and not Modal.is_open() then
         local ok, eaten = pcall(current.raw_pad, raw)
         if ok and eaten then return end
     end
-    press(logical, true)
+    press(IM.from_raw(raw), true)
 end
 function M.pad_released(raw) release(IM.from_raw(raw)) end
 function M.gamepad(name)
-    local logical = IM.from_gamepad(name)
     if current and current.raw_pad and not Modal.is_open() then
         local ok, eaten = pcall(current.raw_pad, name)
         if ok and eaten then return end
     end
-    press(logical, true)
+    press(IM.from_gamepad(name), true)
 end
 function M.gamepad_released(name) release(IM.from_gamepad(name)) end
 
@@ -516,7 +496,8 @@ local function draw_scene()
 
     -- statusbar globale (batteria + wifi) in alto a dx
     local ok_sb, SB = pcall(require, "ui.statusbar")
-    if ok_sb and SB and SB.draw then SB.draw(K.W, K.H) end
+    local panel_open = ok_sp and SP and SP.is_open and SP.is_open()
+    if not panel_open and ok_sb and SB and SB.draw then SB.draw(K.W, K.H) end
 end
 
 local trans_canvas

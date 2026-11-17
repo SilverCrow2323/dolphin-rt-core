@@ -21,16 +21,14 @@
 
 ---
 
-> **FIELD NOTE // 2026-11-11**
+> **FIELD NOTE // 2026-11-17**
 >
 > The active hardware reference for this development line is the **Anbernic RG35XX H with the Allwinner H700 SoC**.
 > Legacy hardware notes have been reconciled with this RG35XX H reference.
 >
+> The currently published stable release is **v12.0.0**. Dolphin Rt:Core **12.5.00 / Rt:UI 3.7.0 Arcade** remains an integration candidate and has not been released.
+>
 > A successful build is not a successful device boot. The current H700 binaries still need to pass the on-device launch, font, input, rendering and clean-exit checks described below.
-
-## Next release candidate — Rt:Core 12.5.00
-
-The next planned muOS release is **Dolphin Rt:Core 12.5.00** with **Rt:UI 3.7.0 “Arcade”**. This is a development candidate, not a published release. The full Andromeda update is being prepared with a native AArch64 Dolphin build, matching runtime resources and the official GameSettings / graphics-mod payload. The current published release remains v12.0.0 until the candidate passes CI and RG35XX H device validation.
 
 ## 01 — The project
 
@@ -77,11 +75,17 @@ The current muOS line combines the formerly separate flavours into one installat
 | Layer | Component | Role |
 |---|---|---|
 | I | **Dolphin engine** | Pinned emulator build, profiles, GameSettings and system resources. |
-| II | **RtSys / Bash Arsenal** | Launch integration, profile selection, registration, maintenance tasks and diagnostics. |
+| II | **RtSys** | Device baseline, launch integration, profile application, muOS core registration and low-level diagnostics. |
 | III | **Rt:UI / FrontendONE** | LÖVE-based library, configuration, compatibility, tools and user interface. |
 | IV | **Rt:Stream** | PC-side streaming workflow and handheld Moonlight companion; streaming is not local H700 emulation. |
 
 The active muOS frontend lives in **dolphin-rtcore-muos/app/Dolphin RtUI/**. Historical material in **Core_History/** is an archive and is not automatically the current implementation.
+
+### Rt:UI system status and Dolphin's native resources
+
+Press **M** in Rt:UI to expand the header into the scrollable **Rt:System Status Center**. It reports Wi-Fi and battery telemetry, Rt:Stream portal/Sunshine health, database download state, GameSettings deployment, library indexing, background operations and notification history. Wi-Fi link state and remote server health are deliberately reported separately.
+
+Keep Dolphin's official **Sys/GameSettings/** and **Sys/Load/GraphicMods/** resources. Rt:UI's **Mod Vault → Graphics Mods** combines that built-in catalog with user mods from **Load/GraphicMods/**. A mod marked **All Games** is eligible for every game; it is not globally enabled. Enablement is saved per Game ID in the game's **Config/GraphicMods** profile, and the launcher turns on Dolphin's Graphics Mods engine only when that profile contains an enabled entry. See [Graphics Mods](wiki/Graphics-Mods.md) and [Rt:System Status Center](wiki/Rt-System-Status-Center.md).
 
 ## 05 — Build system
 
@@ -134,7 +138,7 @@ The test rejects wrong ELF class/architecture, malformed headers, unreadable or 
 
 Use the binary and **Sys/** directory from the **same build output**:
 
-The builder assembles the `.muxupd` into a fresh temporary file beside the destination, checks the ZIP and integrity manifest, then atomically replaces the final package. A failed archive build preserves any previously published package.
+The `.muxupd` is assembled beside the destination, ZIP-tested and checked for `manifest.sha256` before an atomic rename. Failed or corrupt archive builds leave any previously published package untouched.
 
 ~~~bash
 DOLPHIN_BIN="$PWD/out/muos/dolphin" DOLPHIN_SYS_DIR="$PWD/out/muos/Sys" DOLPHIN_LIB_DIR="$PWD/out/muos/lib" bash dolphin-rtcore-muos/tools/build-muxupd.sh ./dist
@@ -210,20 +214,23 @@ GitHub Actions runs repository contracts, packaging dry-runs, frontend smoke tes
 
 Development should happen on short-lived branches and be merged through pull requests. Keep changes small and independently reviewable. Do not bypass a failing check by weakening architecture validation or relabelling an untested build.
 
-**Current engineering priorities**
+**Current engineering priorities — 17 November 2026**
 
-1. Produce a repeatable muOS NoGUI ARM64 artifact for the H700.
-2. Validate the artifact on the RG35XX H: fonts, HIDAPI, input, rendering and safe exit.
-3. Deliver a reproducible x86_64 desktop bundle for MX XFCE and verify it on a real PC.
-4. Keep the Qt 6 EGLFS path experimental until it boots and renders on device.
-5. Finish the ROCKNIX Wayland build and hardware validation.
-6. Keep compatibility reports, wiki pages and release notes aligned with actual test evidence.
+1. Bring the **12.5.00 release candidate** onto a reviewable branch based on current `main`; reconcile the Rt:UI 3.7.0 Arcade, Hotkeys 2606, Settings/NEXUS and GameSettings contracts without carrying a divergent repository snapshot.
+2. Build the **full Andromeda MUXUPD** from one matching AArch64 Dolphin binary, `Sys/` tree and private runtime-library set. Verify ELF64/AArch64, GLIBC baseline, archive integrity and `manifest.sha256` on the exact candidate SHA.
+3. Exercise install, upgrade, rollback and uninstall with disposable fixtures; audit package contents, runtime provenance and preservation of user data.
+4. Verify the exact package on a real **RG35XX H / H700** running the recorded muOS firmware: boot, fonts, controller/hotkeys, GameCube/Wii launch and return, audio/video, memory behavior and clean shutdown.
+5. Complete Rt:UI 3.7.0 Arcade smoke/input review and Rt:Stream PC Companion interoperability, including real-device Sunshine/Moonlight and SFTP path/transfer checks.
+6. Finish the product hub review: mobile/desktop layout, keyboard/accessibility, reduced-motion behavior, PWA cache/offline routes and release-feed behavior. Keep the Compatibility Database available at `compatibility.html`.
+
+**Release status:** v12.0.0 is the latest published stable release. Draft v12.0.1 build candidates are not public releases; 12.5.00 is not released. A green CI run or native ARM64 build is not a handheld installation test.
 
 ## 11 — Documentation and links
 
 - [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases)
 - [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues)
-- [Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/)
+- [Official Project Portal](https://silvercrow2323.github.io/dolphin-rt-core/)
+- [Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html)
 - [Engineering guide](docs/REPO_GUIDE.md)
 - [Build guide](dolphin-build/README.md)
 - [muOS registration](docs/MUOS_REGISTRATION.md)

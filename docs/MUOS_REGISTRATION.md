@@ -15,32 +15,73 @@
 | `info/manifest/core/<Namespace>/<System>.json` | Write one JSON file per system under the Nintendo namespace. |
 | Legacy `info/assign/<System>/*.ini` | Stage and replace only the two Rt:Core system folders, retaining unrelated user files. |
 
-On manifest-based versions, the tool calls the installed muOS `script/system/assign.sh -p -v` and verifies the generated `assign.json` contains the canonical aliases. Andromeda reads `friendly` arrays from `core.json`; a static legacy `share/info/assign` overlay is not a substitute for this generated map.
+The MUXUPD builder also seeds the Jacaranda-compatible paths
+`opt/muos/share/info/assign/Nintendo GameCube` and
+`opt/muos/share/info/assign/Nintendo Wii` from the standard profile INIs.
+The GameCube directory spelling is intentionally `GameCube` (capital C),
+matching the legacy layout shipped by earlier Rt:Core builds. The display name
+inside `global.ini` remains `Nintendo Gamecube`, matching the existing muOS
+system identifier. On a legacy install, `manifest_tool.sh` then replaces the
+seeded files with the active mode (standard or all tiers).
 
-## Folder aliases and Registratore Z
+On manifest-based versions, the tool calls the installed muOS `script/system/assign.sh -p -v` and verifies `assign.json` contains the canonical `nintendogamecube` and `nintendowii` aliases. This reflects the actual Content Explorer pipeline: definitions alone are not sufficient if the alias index is stale.
 
-The built-in GameCube and Wii definitions include canonical aliases and the observed folder-name variants. RTUI's **Registratore Z** scans detected ROM roots and labels candidate folders as:
+## Content Explorer visibility is separate from core registration
 
-- `SKIP MATCH`: the folder name matched a current rule from muOS `skip.ini`.
-- `NO ASSIGN`: the name suggests GameCube/Wii but no matching alias is present in the assignment map.
-- `MAPPED`: an assignment alias already resolves to that system.
-- `REVIEW`: the folder needs manual system selection.
+The Nintendo manifest controls which system/core choices muOS can assign. It
+does **not** mount arbitrary directories or add Rt:UI's private ROM paths to
+muOS Explore Content.
 
-The scanner does not assume that every GameCube/Wii directory is blacklisted. Current Andromeda skip patterns include hidden names (`.*`), underscore-prefixed names (`_*`), the `/img*` path pattern, and several file patterns; they do not explicitly blacklist GameCube or Wii directory names.
+Rt:UI's library scans the paths stored in its own `data/settings.json`.
+muOS Explore Content scans the mounted storage library under a directory
+named `ROMS`. Consequently, a game can appear in Rt:UI while its parent
+folder remains absent from native muOS Explore Content when that path is
+outside the mounted `ROMS` tree.
 
-When the user confirms a rename, Registratore Z renames the selected folder to `Rt<original-name>` and calls `manifest_tool.sh alias-add <gc|wii> <alias>`. Custom aliases are stored in `/run/muos/storage/info/manifest/rtcore-folder-aliases-*.txt` and merged into the manifest/legacy assignments. The rename is blocked for registered scan roots, existing destinations and symbolic links. If alias registration fails, the folder rename is rolled back. ROM files themselves are not modified.
+For example, place the GameCube library beneath
+`/mnt/mmc/ROMS/GameCube` or `/mnt/sdcard/ROMS/GameCube` (use the mount that
+actually contains the ROMs). The GameCube manifest now includes the
+`gamecube` friendly alias as well as `gc`, `ngc` and Nintendo aliases.
+After changing a folder alias, run `RtSys/manifest_tool.sh ensure` and
+reopen Explore Content so muOS can rebuild its visible content list.
+
+Device-local Rt:UI preferences in `data/settings.json` are deliberately not
+shipped in the MUXUPD. An update therefore cannot replace the user's ROM paths,
+theme or last-game state with the repository's development defaults. On a
+first install, Rt:UI initializes its settings from `core/settings.lua` defaults.
+
+The legacy muOS Task Toolkit is retired and is no longer shipped in the
+current MUXUPD. The post-install hook removes leftover `Dolphin Rt*Core`
+task folders under `/opt/muos/share/task` so menu entries from older Rt:Core
+releases do not survive an update.
+
+Use the current Rt:UI workflows instead:
+
+- **Settings → System → Repair GameCube/Wii registration** runs the same
+  manifest registration check used by installation and startup.
+- **Settings → About & Tools → Rt:Core Env Triage** checks the installed
+  Rt:Core layers, registration health, ROM image counts, emulator size,
+  available storage and software versions. Its report is saved at
+  `data/logs/triage_report.txt` inside the Rt:UI application directory.
+- **Settings → Library → ROM folders** and **Rescan library** manage the
+  configured GameCube/Wii roots and refresh the game index.
+
+The old standalone task's raw mount table and `skip.ini` dump are not exposed
+by the current Rt:UI report. If support needs those low-level details, collect
+the device logs and mount/filter configuration separately; do not expect a
+Task Toolkit entry on current installs.
 
 ## Runtime integration
 
 - `opt/update.sh` registers the core entries after package installation.
 - The muOS application launcher runs `manifest_tool.sh ensure` synchronously before opening LÖVE. A failure is logged but does not prevent the frontend from opening.
-- Rt:UI Settings → System exposes registration repair and profile visibility actions.
+- Rt:UI Settings exposes **Repair GameCube/Wii registration** and **Core profile visibility**; installation and startup still run the automatic registration check.
 - The triage screen checks the definition and alias index on manifest builds, and checks legacy `global.ini` files on Jacaranda-style installations.
 
 ## Tests
 
-Run `bash tests/test_muos_registration.sh`. CI also runs Lua tests for Safe Exit, Registratore Z and ROM-root discovery. These tests do not replace a physical muOS test.
+Run `bash tests/test_muos_registration.sh`. CI checks `sh -n`, `bash -n`, and exercises single-file, split-manifest and legacy fixtures using disposable directories. The test does not replace a physical muOS test.
 
 ## Support boundary
 
-The v12 release remains documented for Andromeda 2606.0. Jacaranda's v11.5.1 line remains separate in the root support matrix. The detection layer makes the registration method adaptable; it does not claim the v12 package is a certified Jacaranda release.
+The native H700 build remains targeted at Andromeda 2606.0. The package now also carries the legacy assignment payload and a Jacaranda-specific registration path for 2601.1-era systems. This adds compatibility to the external-core menu and profile assignment format; it is not a claim that every v12 runtime component has been physically certified on Jacaranda hardware.

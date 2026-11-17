@@ -1,43 +1,47 @@
-# Compatibility Atlas
+# Compatibility Database
 
-The **Dolphin Rt:Core Compatibility Atlas** is the community's GameCube and Wii test browser. It combines the live compatibility catalogue with device/firmware distribution, core/profile references, testing guidance and contribution tools.
+The Compatibility Database is the community report browser for Nintendo GameCube and Nintendo Wii titles. It compares observed results on specific handheld, firmware and emulator configurations.
 
-## Browse games
+## Source of truth
 
-1. Select **GameCube** or **Wii**.
-2. Search by title, Game ID, notes, tester, device, firmware or profile.
-3. Filter by region, boot result, exact rating, handheld or muOS release.
-4. Sort by rating, recency, title or test count.
-5. Open a title to inspect its individual report history before applying settings.
+The public project homepage is the repository-root index.html. The interactive Compatibility Database is compatibility.html. The LÖVE Rt:UI frontend and database page use the schema v2 compatibility database.
 
-The Share action preserves console and supported filters in the URL. Favourites are stored locally in the browser and are not uploaded.
+- dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json — canonical bundled source and website input.
+- data/games_data.json — root endpoint downloaded by the handheld boot initializer into the runtime data directory.
+- dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json — GameSettings and shared resources.
 
-## Environment explorer
+The two games_data.json copies must remain byte-identical. The normalizer checks both and writes both in a single operation. The canonical group identity is Game ID + system + region. Each report entry is one independent test session; reports from other devices, firmware releases, profiles or Dolphin builds must remain separate.
 
-The **Devices & muOS firmware** section counts actual reports by normalized handheld and firmware label. Missing environment information is counted separately and never assigned to a likely device or firmware.
+## Search and filters
 
-The **Rt:Core builds & profiles** section reports the observed build and profile vocabulary. Legacy, prerelease and development builds are not interchangeable with published releases. A combined profile test remains a multi-profile result.
+1. Select GameCube or Wii.
+2. Search by title, Game ID, test notes, tester, handheld, firmware or core profile.
+3. Filter by region, boot result, rating, tested device or muOS version.
+4. Sort by rating, recent report, title or number of tests.
+5. Open a game to inspect each test report before applying settings.
 
-## Understanding compatibility
+The device and firmware filters use actual report metadata. Missing firmware is not guessed. The Share action preserves the console and supported filters in the URL; favourites remain local to the browser.
 
-A card summarizes multiple observations. Open the details to compare each tester's device, muOS version, Rt:Core build, profile, Game ID, region, FPS range, boot state, playability and notes.
+## Reading a test report
 
-The score is not a universal guarantee. A result is tied to the hardware, firmware, game region/revision, core build and profile that were tested. Boot and playability are separate fields.
+Open the game details to compare the tester, handheld, board revision, firmware, Rt:Core release, Dolphin build, profile, graphics backend, test duration, scene, observed FPS, rating, boot / playability result, audio, graphics, input, stability, GameSettings and evidence links.
 
-## Submit a test
+A result is not portable automatically across regions, firmware revisions, devices, Dolphin builds or profiles. A successful build or CI check is not proof of physical-device compatibility.
 
-Use the Atlas **Submit a test report** form. It prepares a GitHub issue for review; the browser does not write to the data file. The report records game identity, rating, FPS, device, firmware, Rt:Core version, profile and observations. You can explicitly mark unknown environment data instead of guessing.
+## Submitting a report
 
-Maintainers validate and merge accepted reports into `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json`. The same importer also accepts the structured GitHub issue form.
+Use the website's Submit a Compatibility Test form. It reads the device, muOS, Rt:Core and profile options from the shared JSON catalogs. It checks required setup fields, FPS range consistency, test duration and evidence URLs, then creates a prefilled GitHub issue using the compatibility-test-report template.
 
-## GameSettings and resources
+The website does not write directly to the database. Maintainers validate the issue and add an independent report entry to the canonical games_data.json. For the full workflow, see [[Reporting-a-Test]] and [[Rating-Guide]].
 
-The GameSettings browser reads `dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json`. Inspect the target game, region, author, notes and INI content before using a community file. Back up your own configuration first.
+## Issue categories
 
-## Privacy and safety
+The repository provides a compatibility test report template, a bug report form and a feature request form. Blank issues are disabled to keep incoming reports structured. General documentation and project discussions are linked from the issue chooser.
 
-Do not submit ROMs, BIOS files, firmware images, copyrighted game files, serial numbers, pairing tokens or private logs. Share only configuration text and evidence you are entitled to distribute.
+## Privacy and licensing
 
-## Site operations
+Do not upload ROMs, BIOS files, firmware images, copyrighted game files, serial numbers, MAC addresses, pairing tokens, passwords or private logs. Screenshots and clips should contain only relevant evidence and must be safe to share publicly.
 
-Local preview, Pages deployment, offline/PWA behavior, source endpoints and automated checks are documented in [[Compatibility-Site]]. Data field names and naming conventions are documented in [[Compatibility-Data-Model]].
+## Site deployment and checks
+
+See [[Compatibility-Site]] for local preview, GitHub Pages configuration, PWA cache behaviour and automated checks. A committed index.html does not by itself mean that GitHub Pages is enabled.

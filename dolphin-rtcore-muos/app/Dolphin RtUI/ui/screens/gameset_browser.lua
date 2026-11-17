@@ -38,6 +38,18 @@ local function clean(t)
     return t or ""
 end
 
+-- Normalize LF, CRLF and legacy CR files while preserving blank INI lines.
+local function split_lines(value)
+    local content = tostring(value or ""):gsub("\r\n", "\n"):gsub("\r", "\n")
+    if content == "" then return {} end
+    if content:sub(-1) ~= "\n" then content = content .. "\n" end
+    local lines = {}
+    for line in content:gmatch("(.-)\n") do
+        lines[#lines + 1] = line
+    end
+    return lines
+end
+
 local function build_library()
     local rows = {}
     for _, g in ipairs(Library.games or {}) do
@@ -251,10 +263,7 @@ function S.pad(b)
             refresh()
         elseif row.kind == "config" then
             SFX.play("menu_select")
-            local lines = {}
-            for line in tostring(row.raw_content or ""):gmatch("[^\n]+") do
-                lines[#lines + 1] = line
-            end
+            local lines = split_lines(row.raw_content)
             S.preview = { row = row, lines = lines, scroll = 0 }
         elseif row.kind == "region" then
             SFX.play("menu_select")
@@ -310,8 +319,16 @@ local function draw_row(row, x, y, w, h, focused)
     elseif row.kind == "region" then
         K.region_flag(row.region, x + 30, y + h/2 - 10, 40, 20)
         K.id_plate(row.id, x + 78, y + h/2 - 10, 90, 20)
+        local details = {}
+        if row.n_cfg and row.n_cfg > 0 then
+            details[#details + 1] = row.n_cfg .. " saved"
+        end
         if row.n_db_cfg and row.n_db_cfg > 0 then
-            K.text("small", row.n_db_cfg .. " in DB", x + w - 90, y + h/2 - 8, K.acc)
+            details[#details + 1] = row.n_db_cfg .. " DB"
+        end
+        if #details > 0 then
+            local detail = K.clip("small", table.concat(details, " / "), 132)
+            K.text("small", detail, x + w - 146, y + h/2 - 8, K.acc)
         elseif row.in_lib then
             K.text("small", "in library", x + w - 90, y + h/2 - 8, K.C.dim)
         end
@@ -389,10 +406,7 @@ function S.register_actions(ui)
         if not row or row.kind ~= "config" then
             return false, "selected row is not a database preset"
         end
-        local lines = {}
-        for line in tostring(row.raw_content or ""):gmatch("[^\\n]+") do
-            lines[#lines + 1] = line
-        end
+        local lines = split_lines(row.raw_content)
         S.preview = { row = row, lines = lines, scroll = 0 }
         return true
     end
@@ -441,6 +455,7 @@ function S.register_actions(ui)
                   selected_index = S.list and S.list.sel or 0,
                   selected_kind = row and row.kind or nil,
                   preview_open = S.preview ~= nil,
+                  preview_line_count = S.preview and #S.preview.lines or 0,
                   deployment_pending = S._deploy_pending == true,
                   deployment = S._deploy_stats,
                   error = S._deploy_error,

@@ -10,7 +10,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SITE = ROOT / "index.html"
+SITE = ROOT / "compatibility.html"
+PORTAL_SITE = ROOT / "index.html"
 APP_DATA = ROOT / "dolphin-rtcore-muos" / "app" / "Dolphin RtUI" / "data"
 
 
@@ -43,8 +44,10 @@ class CompatibilitySiteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.html = SITE.read_text(encoding="utf-8")
+        cls.portal_html = PORTAL_SITE.read_text(encoding="utf-8")
         cls.manifest = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
         cls.games = json.loads((APP_DATA / "games_data.json").read_text(encoding="utf-8"))
+        cls.runtime_games_path = ROOT / "data" / "games_data.json"
         cls.settings = json.loads((APP_DATA / "gamesettings.json").read_text(encoding="utf-8"))
 
     def test_website_reads_current_repository_data_files(self):
@@ -71,6 +74,7 @@ class CompatibilitySiteTests(unittest.TestCase):
     def test_manifest_icons_are_local_and_present(self):
         self.assertEqual(self.manifest.get("start_url"), "./")
         self.assertEqual(self.manifest.get("scope"), "./")
+        self.assertEqual(self.manifest.get("name"), "Dolphin Rt:Core — Project Portal")
         for icon in self.manifest.get("icons", []):
             path = icon["src"]
             self.assertTrue(path.startswith("./assets/"), path)
@@ -109,13 +113,12 @@ class CompatibilitySiteTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             expected = {
-                ".nojekyll",
-                "index.html",
-                "manifest.json",
-                "sw.js",
-                "assets/spdw_symbol.png",
-                "assets/gamecube.svg",
-                "assets/wii.svg",
+                ".nojekyll", "index.html", "compatibility.html", "quick-start.html",
+                "profiles.html", "gamesettings.html", "docs.html", "manifest.json", "sw.js",
+                "assets/site.css", "assets/site.js", "assets/spdw_symbol.png",
+                "assets/dolphinrt_icon.png", "assets/dolphin_rtcore_title.png",
+                "assets/gamecube.svg", "assets/wii.svg",
+                "data/site-gamesettings-index.json", "data/site-profiles.json", "data/site-docs-index.json",
             }
             actual = {
                 str(path.relative_to(output))
@@ -124,7 +127,20 @@ class CompatibilitySiteTests(unittest.TestCase):
             }
             self.assertEqual(actual, expected)
             deployed_html = (output / "index.html").read_text(encoding="utf-8")
-            self.assertIn('href="./"', deployed_html)
+            self.assertIn('href="./quick-start.html"', deployed_html)
+            self.assertIn('href="./compatibility.html"', deployed_html)
+            for page in ("quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+                self.assertTrue((output / page).is_file(), page)
+            self.assertIn("1,914", deployed_html)
+            catalog = json.loads((output / "data" / "site-gamesettings-index.json").read_text(encoding="utf-8"))
+            self.assertEqual(catalog["count"], 1914)
+            self.assertEqual(len(catalog["entries"]), 1914)
+            self.assertTrue(all((ROOT / entry["path"]).is_file() for entry in catalog["entries"]))
+            self.assertEqual(len(json.loads((output / "data" / "site-profiles.json").read_text(encoding="utf-8"))["profiles"]), 19)
+            self.assertEqual(len(json.loads((output / "data" / "site-docs-index.json").read_text(encoding="utf-8"))["entries"]), 50)
+            deployed_compatibility = (output / "compatibility.html").read_text(encoding="utf-8")
+            self.assertIn("Compatibility Database", deployed_compatibility)
+            self.assertIn('id="reportBtn"', deployed_compatibility)
             self.assertNotIn("README.md", actual)
             self.assertFalse((output / "dolphin-rtcore-muos").exists())
 
@@ -134,12 +150,23 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.skipTest("Node.js is not installed on this host")
         parser = ScriptCollector()
         parser.feed(self.html)
-        self.assertTrue(parser.scripts, "No inline application script found")
-        with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as tmp:
-            tmp.write("\n".join(parser.scripts))
-            tmp.flush()
-            result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
-        self.assertEqual(result.returncode, 0, result.stderr)
+        portal_parser = ScriptCollector()
+        portal_parser.feed(self.portal_html)
+        self.assertTrue(parser.scripts, "No inline compatibility application script found")
+        self.assertTrue(portal_parser.scripts, "No inline project portal script found")
+        page_scripts = [("compatibility", parser.scripts), ("portal", portal_parser.scripts)]
+        for filename in ("quick-start.html", "profiles.html", "gamesettings.html"):
+            page_parser = ScriptCollector()
+            page_parser.feed((ROOT / filename).read_text(encoding="utf-8"))
+            page_scripts.append((filename, page_parser.scripts))
+        # Each HTML page is a separate browser document. Do not concatenate
+        # independent page scripts into one global lexical scope.
+        for page_name, scripts in page_scripts:
+            with self.subTest(page=page_name), tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as tmp:
+                tmp.write("\n".join(scripts))
+                tmp.flush()
+                result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_wiki_navigation_references_resolve(self):
         wiki = ROOT / "wiki"
@@ -155,79 +182,213 @@ class CompatibilitySiteTests(unittest.TestCase):
 
 
 
-    def test_metadata_labels_are_canonical_without_inventing_missing_values(self):
-        reports = [
-            report
-            for group in self.games["games"]
-            for report in group["entries"]
-        ]
-        self.assertGreater(len(reports), 0)
-        for report in reports:
-            env = report["test_environment"]
-            details = report["test_details"]
-            device = env.get("device", "")
-            muos = env.get("muos_version", "")
-            core = details.get("rtcore_version", "")
-            profile = details.get("core_profile", "")
-            self.assertNotEqual(device, "Unknown Device")
-            self.assertNotIn(device, {"RG35XX H", "RG 35XX H", "RG35XXH", "RG34XX SP", "RG-34XX SP"})
-            self.assertNotIn(muos, {"Funky Jacaranda", "Funky Jakaranda", "Jacaranda", "2601.1 Funky Jacaranda", "2601.0 Jacaranda"})
-            self.assertFalse(muos and not muos.startswith("muOS "))
-            self.assertFalse(core and not core.startswith("Dolphin Rt:Core "))
-            self.assertNotIn(profile, {"SpeedHack", "standard", "SpeedHack / Default", "All profiles", "All profiles (tested multiple)"})
-        # Historic placeholders are empty, not assigned to a guessed device or firmware.
-        unknown_devices = sum(not r["test_environment"].get("device") for r in reports)
-        unknown_firmware = sum(not r["test_environment"].get("muos_version") for r in reports)
-        self.assertGreater(unknown_devices, 0)
-        self.assertGreater(unknown_firmware, 0)
+    def test_runtime_download_copy_matches_bundled_database(self):
+        bundled = APP_DATA / "games_data.json"
+        self.assertTrue(self.runtime_games_path.is_file())
+        self.assertEqual(
+            self.runtime_games_path.read_bytes(),
+            bundled.read_bytes(),
+            "data/games_data.json must match the bundled Rt:UI database byte-for-byte",
+        )
 
-    def test_atlas_sections_and_dynamic_catalogs_are_present(self):
-        for section in ("catalog", "environment", "core-reference", "methodology", "contribute", "faq"):
-            self.assertIn('id="' + section + '"', self.html)
-        for element in (
-            "portalReports", "portalDeviceKnown", "portalFirmwareKnown",
-            "portalCoreKnown", "portalProfileKnown", "portalDeviceGrid",
-            "portalFirmwareGrid", "portalCoreGrid", "portalProfileGrid",
+
+    def test_schema_v2_catalogues_and_group_identity(self):
+        self.assertEqual(self.games.get("schema_version"), 2)
+        catalogues = self.games.get("catalogs", {})
+        for key in ("devices", "muos_versions", "rtcore_versions", "core_profiles"):
+            self.assertIsInstance(catalogues.get(key), list)
+            self.assertTrue(catalogues[key])
+            self.assertEqual(len(catalogues[key]), len(set(catalogues[key])))
+        identities = set()
+        report_count = 0
+        for group in self.games["games"]:
+            info = group["game_info"]
+            identity = (info.get("game_id"), info.get("system"), info.get("region"))
+            self.assertNotIn(identity, identities, f"duplicate game group: {identity}")
+            identities.add(identity)
+            self.assertRegex(info.get("game_id", ""), r"^[A-Z0-9]{6}$")
+            self.assertIn(info.get("system"), ("GC", "Wii"))
+            self.assertIn(info.get("region"), ("PAL", "NTSC", "NTSC-J"))
+            for report in group["entries"]:
+                report_count += 1
+                for field in ("game_id", "system", "game", "region"):
+                    self.assertEqual(report["game_info"].get(field), info.get(field), f"{identity}: inconsistent {field}")
+                review = report["test_review"]
+                self.assertIsInstance(review.get("rating"), int)
+                self.assertGreaterEqual(review["rating"], 0)
+                self.assertLessEqual(review["rating"], 5)
+                self.assertIn(review.get("boot"), ("YES", "NO", "CRASH"))
+                self.assertIn(review.get("playable"), ("YES", "YES WITH ISSUES", "NO"))
+        self.assertEqual(report_count, 235)
+        self.assertEqual(len(identities), len(self.games["games"]))
+        all_reports = [entry for group in self.games["games"] for entry in group["entries"]]
+        devices = {entry["test_environment"].get("device", "") for entry in all_reports}
+        muos = {entry["test_environment"].get("muos_version", "") for entry in all_reports}
+        releases = {entry["test_details"].get("rtcore_version", "") for entry in all_reports}
+        profiles = {entry["test_details"].get("core_profile", "") for entry in all_reports}
+        self.assertNotIn("RG 35XX H", devices)
+        self.assertNotIn("RG35XXH", devices)
+        self.assertNotIn("Funky Jacaranda", muos)
+        self.assertNotIn("Funky Jakaranda", muos)
+        self.assertIn("muOS Jacaranda (version not specified)", muos)
+        self.assertNotIn("v11.0.00 (prerelease)", releases)
+        self.assertNotIn("v10.6 (pre release)", releases)
+        self.assertNotIn("standard", profiles)
+        self.assertNotIn("SpeedHack / Default", profiles)
+        reported_values = {
+            "devices": devices,
+            "muos_versions": muos,
+            "rtcore_versions": releases,
+            "core_profiles": profiles,
+        }
+        for key, values in reported_values.items():
+            missing = {value for value in values if value} - set(catalogues[key])
+            self.assertFalse(
+                missing,
+                f"{key} catalogue omits values used by reports: {sorted(missing)}",
+            )
+        self.assertIn("Standard", catalogues["core_profiles"])
+
+    def test_canonical_database_normalizer_is_idempotent(self):
+        normalizer = ROOT / "tools" / "normalize_games_data.py"
+        self.assertTrue(normalizer.is_file())
+        result = subprocess.run(
+            ["python3", str(normalizer), "--check"],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Canonical compatibility data", result.stdout)
+
+    def test_schema_document_matches_dataset(self):
+        schema_path = ROOT / "docs" / "schemas" / "games_data.schema.json"
+        self.assertTrue(schema_path.is_file())
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        self.assertEqual(schema.get("$schema"), "https://json-schema.org/draft/2020-12/schema")
+        self.assertEqual(schema.get("properties", {}).get("schema_version", {}).get("const"), 2)
+        self.assertIn("catalogs", schema.get("properties", {}))
+        self.assertIn("gameGroup", schema.get("$defs", {}))
+        self.assertIn("report", schema.get("$defs", {}))
+
+    def test_issue_templates_are_complete_and_linked(self):
+        templates = ROOT / ".github" / "ISSUE_TEMPLATE"
+        report = templates / "compatibility-test-report.md"
+        bug = templates / "bug_report.yml"
+        feature = templates / "feature_request.yml"
+        config = templates / "config.yml"
+        for path in (report, bug, feature, config):
+            self.assertTrue(path.is_file(), str(path))
+        report_text = report.read_text(encoding="utf-8")
+        bug_text = bug.read_text(encoding="utf-8")
+        feature_text = feature.read_text(encoding="utf-8")
+        config_text = config.read_text(encoding="utf-8")
+        self.assertIn('labels: ["test-report"]', report_text)
+        self.assertIn("Machine-readable report", report_text)
+        self.assertIn("ROMs, BIOS files, firmware images", report_text)
+        self.assertIn("Steps to reproduce", bug_text)
+        self.assertIn("Expected behaviour", bug_text)
+        self.assertIn("Actual behaviour", bug_text)
+        self.assertIn("Acceptance criteria", feature_text)
+        self.assertIn("blank_issues_enabled: false", config_text)
+        self.assertIn("silvercrow2323.github.io/dolphin-rt-core", config_text)
+
+    def test_report_form_uses_shared_catalogues_and_structured_payload(self):
+        for field_id in (
+            "rptDevice", "rptMuos", "rptVersion", "rptProfile", "rptDolphinVersion",
+            "rptGraphicsBackend", "rptDuration", "rptTestScene", "rptAudio",
+            "rptGraphics", "rptInput", "rptStability",
         ):
-            self.assertIn('id="' + element + '"', self.html)
-        self.assertIn("function renderPortalSummary()", self.html)
-        self.assertIn("renderPortalSummary();", self.html)
-        self.assertIn("Compatibility Atlas", self.html)
+            self.assertIn('id="' + field_id + '"', self.html)
+        self.assertIn("state.catalogs=_gamesCache.catalogs||{}", self.html)
+        self.assertIn("populateReportCatalogs()", self.html)
+        self.assertIn("URLSearchParams({template:'compatibility-test-report.md'", self.html)
+        self.assertIn("test_duration_minutes", self.html)
+        self.assertIn("dolphin_version", self.html)
+        self.assertIn("fps:hasFps?", self.html)
+        self.assertIn("issueUrl.length>7800", self.html)
+        self.assertNotIn('id="rptDevices"', self.html)
+        self.assertNotIn('id="rptProfiles"', self.html)
+        self.assertIn("Never attach ROMs, BIOS, firmware", self.html)
 
-    def test_report_form_uses_canonical_metadata_vocabulary(self):
-        for value in (
-            "muOS 2606.0 · Andromeda",
-            "muOS 2601.1 · Funky Jacaranda",
-            "Anbernic RG35XX H",
-            "Anbernic RG34XX SP",
-            "Dolphin Rt:Core 12.5.00 · Arcade",
-            "Dolphin Rt:Core 12.0.0 · Kanzentai",
-            'data-p="Speedhacks"',
-            'data-p="All profiles tested"',
-        ):
-            self.assertIn(value, self.html)
-        self.assertNotIn('data-p="Speed Hack"', self.html)
-        self.assertNotIn("<option>2601.1 Funky Jacaranda</option>", self.html)
+    def test_pwa_cache_is_bumped_for_new_website_shell(self):
+        worker = (ROOT / "sw.js").read_text(encoding="utf-8")
+        self.assertIn("rtcore-site-v2", worker)
+        for page in ("index.html", "compatibility.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+            self.assertIn("'./" + page + "'", worker)
+        self.assertIn("'./data/site-gamesettings-index.json'", worker)
+        self.assertIn("'./data/site-docs-index.json'", worker)
+        self.assertIn("raw.githubusercontent.com", worker)
+        self.assertNotIn("rtcore-db-v3", worker)
 
-    def test_submission_workflow_imports_into_the_live_canonical_sources(self):
-        workflow = (ROOT / ".github" / "workflows" / "merge-submission.yml").read_text(encoding="utf-8")
-        self.assertIn("dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json", workflow)
-        self.assertIn("dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json", workflow)
-        self.assertNotIn("pathlib.Path('data/games_data.json')", workflow)
-        self.assertIn("def normalize_device", workflow)
-        self.assertIn("def normalize_muos", workflow)
-        self.assertIn("def normalize_core", workflow)
-        self.assertIn("def normalize_profile", workflow)
-        self.assertIn("source_issue", workflow)
-        self.assertIn("if json_block:", workflow)
-        self.assertIn("form_field(label)", workflow)
-        self.assertIn("issues:", workflow)
+    def test_project_portal_is_the_public_homepage(self):
+        self.assertIn("Dolphin Rt:Core — Handheld GameCube", self.portal_html)
+        self.assertIn('id="downloads"', self.portal_html)
+        self.assertIn('href="./quick-start.html"', self.portal_html)
+        self.assertIn('href="./profiles.html"', self.portal_html)
+        self.assertIn('href="./gamesettings.html"', self.portal_html)
+        self.assertIn('href="./docs.html"', self.portal_html)
+        self.assertIn('href="./compatibility.html"', self.portal_html)
+        self.assertIn("LATEST STABLE RELEASE", self.portal_html)
+        self.assertIn("H700 FIELD ENGINEERING", self.portal_html)
+        self.assertIn("One engine.", self.portal_html)
 
-    def test_pwa_cache_is_bumped_for_atlas_release(self):
-        self.assertEqual(self.manifest.get("name"), "Dolphin Rt:Core Compatibility Atlas")
-        sw = (ROOT / "sw.js").read_text(encoding="utf-8")
-        self.assertIn("rtcore-atlas-v3", sw)
-        self.assertNotIn("rtcore-db-v2", sw)
+    def test_portal_uses_live_release_assets_and_explains_package_boundary(self):
+        self.assertIn("Dolphin_RtCore_v12_0_0_Andromeda.muxupd", self.portal_html)
+        self.assertIn("SPDW_Stream_Portal-4.2.1-x86_64.AppImage", self.portal_html)
+        self.assertIn("spdw-stream-portal-4.2.1-1.noarch.rpm", self.portal_html)
+        self.assertIn("does not include the Dolphin emulator executable", self.portal_html)
+        self.assertIn("releases/latest", (ROOT / "assets" / "site.js").read_text(encoding="utf-8"))
+        self.assertIn("data-release-asset", self.portal_html)
+
+    def test_release_feed_updates_every_duplicate_version_and_date_label(self):
+        script = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+        self.assertIn("$$('[data-latest-release]')", script)
+        self.assertIn("$$('[data-release-date]')", script)
+        self.assertNotIn("const nodes=$('[data-latest-release]')", script)
+        self.assertNotIn("const dates=$('[data-release-date]')", script)
+        self.assertIn("nodes.map", script)
+        self.assertIn("nodes.forEach", script)
+        self.assertIn("dates.forEach", script)
+        self.assertGreaterEqual(self.portal_html.count("data-latest-release"), 2)
+        self.assertGreaterEqual(self.portal_html.count("data-release-date"), 2)
+
+    def test_compatibility_page_returns_to_project_portal(self):
+        self.assertIn('href="./"', self.html)
+        self.assertIn("Project Portal", self.html)
+        self.assertIn("Compatibility Database", self.html)
+
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_product_hub_navigation_is_keyboard_and_screen_reader_accessible(self):
+        for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+            source = (ROOT / filename).read_text(encoding="utf-8")
+            self.assertIn('class="skip-link" href="#main-content"', source, filename)
+            self.assertIn('id="main-content" tabindex="-1"', source, filename)
+            self.assertIn('aria-controls="site-drawer" aria-expanded="false"', source, filename)
+            self.assertIn('role="dialog" aria-modal="true"', source, filename)
+            self.assertIn('aria-hidden="true" inert', source, filename)
+        stylesheet = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+        script = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+        self.assertIn(":focus-visible", stylesheet)
+        self.assertIn(".skip-link:focus-visible", stylesheet)
+        self.assertIn("visibility:hidden", stylesheet)
+        self.assertIn("e.key!=='Tab'", script)
+        self.assertIn("toggleAttribute('inert',!open)", script)
+        self.assertIn("drawerOpener.focus()", script)
+        self.assertIn("aria-current","".join((ROOT / filename).read_text(encoding="utf-8") for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html")) + script)
+
+    def test_product_hub_has_real_navigation_and_motion_system(self):
+        for filename in ("index.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
+            source = (ROOT / filename).read_text(encoding="utf-8")
+            self.assertIn("./assets/site.css", source, filename)
+            self.assertIn("./assets/site.js", source, filename)
+            self.assertIn("data-open-drawer", source, filename)
+            self.assertIn("prefers-reduced-motion", (ROOT / "assets" / "site.css").read_text(encoding="utf-8"))
+        self.assertIn("IntersectionObserver", (ROOT / "assets" / "site.js").read_text(encoding="utf-8"))
+        self.assertIn("Rt:System Status Center", (ROOT / "quick-start.html").read_text(encoding="utf-8"))
+        self.assertIn("SDL/0/muOS-Keys", (ROOT / "quick-start.html").read_text(encoding="utf-8"))
+        self.assertIn("Video_Hacks", (ROOT / "profiles.html").read_text(encoding="utf-8"))
+        self.assertIn("GameSettings Library", (ROOT / "gamesettings.html").read_text(encoding="utf-8"))

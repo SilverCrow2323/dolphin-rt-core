@@ -1,97 +1,74 @@
 # Compatibility Data Model
 
-The Compatibility Atlas and Rt:UI read the same tracked JSON file. Game records are grouped by title identity; each entry under a group remains an independent test report.
+The Compatibility Database and the LÖVE Rt:UI frontend read the same schema v2 compatibility database. The website reads the bundled Rt:UI JSON; the handheld boot updater also serves a root JSON copy into the runtime data directory. These two tracked copies must remain byte-identical.
 
 ## Source files
 
-- `dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json`: grouped games and individual test reports.
-- `dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json`: community GameSettings entries and their configurations.
+- dolphin-rtcore-muos/app/Dolphin RtUI/data/games_data.json — canonical bundled database and website source.
+- data/games_data.json — runtime download endpoint used by the handheld boot initializer.
+- dolphin-rtcore-muos/app/Dolphin RtUI/data/gamesettings.json — GameSettings and shared resources.
 
-The public site reads these files directly. Update the source once; do not create a manually maintained mirror.
+Do not update one compatibility database copy without updating the other. tools/normalize_games_data.py verifies parity in --check mode and writes both with --write.
 
-## `games_data.json` structure
+## Schema v2
 
-The root contains `version`, `last_update` and a `games` array. Each item in `games` has:
+The root contains:
 
 | Field | Meaning |
 |---|---|
-| `game_info` | Canonical game identity: `game_id`, `system`, `game`, `region` |
-| `entries` | Independent test reports for that game |
+| version | Existing dataset revision field retained for older consumers |
+| schema_version | Data contract version; currently 2 |
+| last_update | Date of the latest imported report, not the schema migration date |
+| catalogs | Canonical device, muOS, Rt:Core and core-profile labels |
+| games | Grouped game identities and their independent reports |
 
-Each report contains:
+Each game group contains game_info and entries. The canonical identity is the tuple Game ID + system + region. The game title is canonical display text but does not replace the Game ID. If two entries carry different Game IDs, they belong to different groups even when the title is identical.
+
+## Report structure
 
 | Object | Fields | Meaning |
 |---|---|---|
-| `game_info` | `game_id`, `system`, `game`, `region` | Tested title and release variant |
-| `test_review` | `rating`, `fps`, `boot`, `playable`, `fps_min`, `fps_max` | Observed compatibility and performance |
-| `test_details` | `rtcore_version`, `core_profile`, `considerations` | Runtime build, profile and tester notes |
-| `test_environment` | `tester`, `device`, `muos_version` | Tester, handheld and firmware |
-| `cover_art` | URL or empty string | Optional artwork |
-| `custom_settings` | list | Optional per-game settings |
-| `attachments` | list | Optional evidence links |
+| game_info | game_id, system, game, region, optional revision | Exact title and release identity |
+| test_review | rating, fps, boot, playable, fps_min, fps_max, optional date | Observed outcome and actual gameplay performance |
+| test_details | rtcore_version, core_profile, considerations, optional Dolphin build, backend, duration, scene and subsystem states | Runtime and test conditions |
+| test_environment | tester, device, muos_version, optional device_revision and date | Tester, hardware and firmware actually used |
+| cover_art | URL or empty string | Optional artwork reference |
+| custom_settings | list | Optional per-game configuration |
+| attachments | list | Optional public evidence links |
 
-The field names and the `GC` / `Wii` system codes are compatibility contracts. The repeated per-entry `game_info` object is retained for Rt:UI consumers.
+Optional detail fields include dolphin_version, graphics_backend, test_duration_minutes, test_scene, audio, graphics, input and stability. Subsystem values are Not tested, Clean, Minor issues or Major issues. Do not report a subsystem as clean unless it was checked.
 
-## Canonical metadata vocabulary
+Ratings range from 0 to 5. Boot is YES, NO or CRASH. Playability is YES, YES WITH ISSUES or NO. When FPS was not measured, use fps=N/A and set the numeric bounds to zero. A known FPS range must be measured in actual gameplay, not in menus or the boot animation.
 
-Canonicalize labels in the JSON source and in all report submission forms. Do not rely on presentation-only aliases.
+## Canonical catalogues
 
-### Devices
+The catalogs object contains unique arrays for devices, muos_versions, rtcore_versions and core_profiles. Use the exact canonical spelling in new entries. Custom values are accepted only when the tester records an actual value not yet listed. Empty firmware is retained as not recorded; a generic Jacaranda label without a version remains muOS Jacaranda (version not specified), not 2601.1 by assumption. Unknown hardware is Unspecified, not a guessed handheld.
 
-Use manufacturer plus exact model, for example:
-
-- `Anbernic RG35XX H`
-- `Anbernic RG34XX SP`
-- `Anbernic RG40XX H`
-- `Anbernic RG CubeXX`
-
-Normalize cosmetic variants such as `RG35XXH` and `RG 35XX H` to `Anbernic RG35XX H`. Use a descriptive family label only when the source genuinely lacks the exact model. Unknown or absent device data is `""`; never convert it into a likely model.
-
-### muOS firmware
-
-Format precise versions as:
-
-- `muOS 2606.0 · Andromeda`
-- `muOS 2601.1 · Funky Jacaranda`
-- `muOS 2601.0 · Jacaranda`
-
-When the source contains only a codename, retain it and say that its numeric version was not recorded, for example `muOS Jacaranda · version not recorded`. The typo `Funky Jakaranda` is a spelling alias for Funky Jacaranda, but it does not provide a numeric release number. An unreported firmware is `""`.
-
-### Dolphin Rt:Core builds
-
-Use the `Dolphin Rt:Core` prefix and one normalized version style, then append a codename or channel where relevant:
-
-- `Dolphin Rt:Core 11.5.00-III · FrontendONE`
-- `Dolphin Rt:Core 11.5.00-II · Bash Arsenal`
-- `Dolphin Rt:Core 11.5.00-I · Comfort Zone · Prerelease`
-- `Dolphin Rt:Core 11.0.00 · Development`
-
-Use `Dolphin Rt:Core Legacy (exact version not recorded)` only for records genuinely identified as legacy but lacking an exact build. Use `Dolphin Rt:Core version not recorded` for an explicitly unknown build. Never promote a historical report to a newer release.
-
-### Profiles
-
-Use stable capitalization and spelling: `Default`, `Speedhacks`, `Performance`, `Compatibility`, `Black Screen Fix`, `Safe`, `Lite`, `Troubleshooting`, `Ultra`, `Speedup 1`, `Speedup 2`.
-
-A test covering multiple profiles must not be recorded as a single profile. Use `All profiles tested` when the report says all profiles were tested, or a descriptive `Multiple profiles: ...` label when the exact set is known. If the set is unknown, use `Multiple profiles (details not recorded)`. A missing profile is `""`.
+Known alias normalization includes RG35XX H spelling variants, RG34XX SP spelling variants, firmware naming variants, Rt:Core prerelease capitalization and profile capitalization. It does not combine different releases or distinct test configurations.
 
 ## Data integrity rules
 
-- Keep every independent test as its own report entry.
-- Do not merge reports from different regions, devices, firmware versions or profiles into a fictional result.
-- Preserve tester attribution, notes, dates, ratings and FPS observations.
-- Validate `system` as `GC` or `Wii`.
-- Ratings range from 0 to 5; zero is the distinct no-boot category.
-- Missing device, firmware, build or profile metadata must not be guessed.
-- Do not add ROMs, BIOS, firmware images, private logs or copyrighted game files.
-- Keep the existing schema field names stable for the LÖVE frontend and public site.
+- Preserve every independent test session and original tester attribution.
+- Group only by Game ID + system + region.
+- Keep regions and systems separate.
+- Keep different devices, firmware builds, Rt:Core versions and profiles as separate entries.
+- Do not infer missing FPS, firmware, device or Dolphin build metadata.
+- Keep rating, boot and playability values consistent with the Rating Guide.
+- Never store ROMs, BIOS, firmware images, copyrighted game files, private logs or personal device identifiers.
 
-## Update workflow
+## Normalization and validation
 
-1. Review the submitted GitHub issue.
-2. Verify game identity, report completeness and environment fields.
-3. Normalize device, muOS, Rt:Core and profile labels against this page.
-4. Add the new report to the tracked source file without deleting prior observations.
-5. Run `python3 -m unittest tests/test_compat_site.py -v`.
-6. Confirm the website, filters and Rt:UI compatibility loader still read the same source.
+Run:
 
-See [[Reporting-a-Test]], [[Rating-Guide]] and [[Compatibility-Site]].
+~~~sh
+python3 tools/normalize_games_data.py --check
+python3 -m unittest tests/test_compat_site.py -v
+~~~
+
+The normalizer is idempotent and verifies that both tracked copies match the same canonical content. To intentionally migrate known aliases or repair group identity / copy drift, review the diff and then run:
+
+~~~sh
+python3 tools/normalize_games_data.py --write
+~~~
+
+The website report form reads catalogues from this same JSON and prepares a GitHub issue. Maintainers review and validate the issue before importing a report. See [[Reporting-a-Test]], [[Rating-Guide]] and [[Compatibility-Site]].

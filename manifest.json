@@ -1,13 +1,13 @@
 {
-  "name": "Dolphin Rt:Core Compatibility Atlas",
-  "short_name": "Rt:Core Atlas",
-  "description": "Community compatibility reports, device and firmware matrix, Rt:Core build history, profiles and GameSettings for GameCube and Wii.",
+  "name": "Dolphin Rt:Core — Project Portal",
+  "short_name": "Rt:Core",
+  "description": "The official Dolphin Rt:Core portal for releases, handheld integrations, Rt:UI, Rt:Stream, documentation and compatibility reports.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#08080f",
-  "theme_color": "#7c3aed",
+  "background_color": "#090a11",
+  "theme_color": "#0a0b12",
   "lang": "en",
   "icons": [
     {

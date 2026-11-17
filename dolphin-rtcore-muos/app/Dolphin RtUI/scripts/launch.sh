@@ -1,22 +1,20 @@
 #!/bin/bash
 # ============================================================
 #  Dolphin Rt:UI — launcher v3
-#  Shared runtime for Dolphin Rt:UI and muOS Content Explorer.
-#  Rt:UI passes game/profile choices directly; the Content Explorer adapter
-#  resolves the selected core + ROM ID + RTID card, then calls this same script.
-#  Both entry points project the canonical workshop profiles into Config/ before
-#  launching Dolphin. No independent static profile-copy pipeline is required.
+#  Modelled on /opt/muos/script/launch/ext-dolphinrt.sh (the path that is
+#  known to work on the device): environment, RtSys profile baseline, then
+#  "cd <emu dir> && ./dolphin -e ROM -u <emu dir>". No session dir, no ROM/ID
+#  detection: the UI already knows the game and passes everything explicitly.
 #
 #  Layered settings, in this order:
-#    1. RtSys/apply_profile.sh   (muOS/device compatibility baseline)
-#    2. workshop profile         (Default <- family <- tier)
-#    3. native GameSettings/<GameID>.ini from the selected Workshop preset
-#    4. controller, hotkeys, logging
+#    1. RtSys/apply_profile.sh   (device baseline, orientation, sticks)
+#    2. workshop profile         (Default <- family[/tier] <- game settings)
+#    3. controller, hotkeys, logging
 #    4. cheats + overlays        (Dolphin.ini / GFX.ini keys)
 #    5. graphic mods             (only the selected ones are active)
 #
 #  Args (all --key=value): rom game-id sys title profile variant controller
-#    hotkeys mods logging cheats safe-exit orient show-fps show-vps show-speed
+#    hotkeys logging cheats safe-exit orient show-fps show-vps show-speed
 #    show-osd return-to
 #
 #  Env:
@@ -28,8 +26,12 @@ set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GAME_DIR="$(dirname "$SCRIPT_DIR")"
-SHARED_PROFILE_RUNTIME="$SCRIPT_DIR/ce_shared_profile_runtime.sh"
-[ -r "$SHARED_PROFILE_RUNTIME" ] && . "$SHARED_PROFILE_RUNTIME"
+HOTKEYS_RUNTIME="$SCRIPT_DIR/hotkeys_runtime.sh"
+if [ ! -r "$HOTKEYS_RUNTIME" ]; then
+    echo "[launcher] missing hotkey runtime helper: $HOTKEYS_RUNTIME" >&2
+    exit 1
+fi
+. "$HOTKEYS_RUNTIME"
 [ -r /opt/muos/script/var/func.sh ] && . /opt/muos/script/var/func.sh >/dev/null 2>&1 || true
 
 LOOP_MODE="${DOLPHINUI_LOOP:-0}"
@@ -37,7 +39,7 @@ LOOP_MODE="${DOLPHINUI_LOOP:-0}"
 # ── Defaults ────────────────────────────────────────────────
 ROM=""; GAME_ID=""; SYS="GC"; TITLE=""
 PROFILE="Default"; VARIANT=""; CONTROLLER=""; HOTKEYS=""
-MODS="none"; LOGGING="off"; CHEATS="0"; SAFE_EXIT="1"; ORIENT=""
+LOGGING="off"; CHEATS="0"; SAFE_EXIT="1"; ORIENT=""
 GAMESETTINGS=""
 SHOW_FPS="0"; SHOW_VPS="0"; SHOW_SPEED="0"; SHOW_OSD="1"
 RETURN_TO="library"
@@ -53,7 +55,6 @@ for arg in "$@"; do
         --controller=*)  CONTROLLER="${arg#*=}" ;;
         --hotkeys=*)     HOTKEYS="${arg#*=}" ;;
         --gamesettings=*) GAMESETTINGS="${arg#*=}" ;;
-        --mods=*)        MODS="${arg#*=}" ;;
         --logging=*)     LOGGING="${arg#*=}" ;;
         --cheats=*)      CHEATS="${arg#*=}" ;;
         --safe-exit=*)   SAFE_EXIT="${arg#*=}" ;;
@@ -75,7 +76,6 @@ DOLPHIN="$EMU/dolphin"
 # Load package-private dependencies (notably HIDAPI) without changing muOS libraries.
 export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 RTSYS="$EMU/RtSys"
-export RT_SAFE_EXIT_CONFIG="$GAME_DIR/data/safe_exit.conf"
 CONFIG="$EMU/Config"
 WORKSHOP="$GAME_DIR/workshop"
 RT_PROFILES="$WORKSHOP/rtcoreprofile"
@@ -90,24 +90,6 @@ ls -t "$LOG_DIR"/launch_*.log 2>/dev/null | tail -n +13 | while IFS= read -r f; 
 ls -t "$LOG_DIR"/dolphin_*.log 2>/dev/null | tail -n +13 | while IFS= read -r f; do rm -f "$f"; done
 
 log() { echo "[$(date '+%T')] $*" >> "$LOG"; }
-
-# /proc/uptime and shell built-ins provide millisecond phase timings on muOS.
-rt_uptime_ms() {
-    local up whole frac
-    [ -r /proc/uptime ] || { printf '0'; return; }
-    read -r up _ < /proc/uptime
-    whole="${up%%.*}"
-    frac="${up#*.}00"
-    frac="${frac:0:2}"
-    printf '%s' "$((10#${whole} * 1000 + 10#${frac}))"
-}
-RT_PHASE_MS="$(rt_uptime_ms)"
-log_phase() {
-    local now
-    now="$(rt_uptime_ms)"
-    log "TIMING $1 $((now - RT_PHASE_MS))ms"
-    RT_PHASE_MS="$now"
-}
 
 WATCHER_PID=""; GPTK_PID=""
 
@@ -170,14 +152,7 @@ fatal() {                                   # fatal <code> <message>
 }
 trap 'stop_helpers; exit 0' TERM INT
 
-# Resolve the muOS release once and expose the chosen override to all helpers.
-MUOS_VERSION=""
-type GET_VAR >/dev/null 2>&1 && MUOS_VERSION="$(GET_VAR system version 2>/dev/null)"
-[ -z "$MUOS_VERSION" ] && [ -r /opt/muos/config/system/version ] && MUOS_VERSION="$(cat /opt/muos/config/system/version)"
-export MUOS_VERSION
-RT_MUOS_PROFILE="$(grep -o '"muos_profile"[[:space:]]*:[[:space:]]*"[^"]*"' "$GAME_DIR/data/settings.json" 2>/dev/null | sed 's/.*"\([^"]*\)"$/\1/')"
-export RT_MUOS_PROFILE="${RT_MUOS_PROFILE:-auto}"
-log "=== launch v3 | $TITLE | id=$GAME_ID sys=$SYS | profile=$PROFILE variant=${VARIANT:-none} | controller=${CONTROLLER:-auto} hotkeys=${HOTKEYS:-auto} mods=$MODS cheats=$CHEATS loop=$LOOP_MODE"
+log "=== launch v3 | $TITLE | id=$GAME_ID sys=$SYS | profile=$PROFILE variant=${VARIANT:-none} | controller=${CONTROLLER:-auto} hotkeys=${HOTKEYS:-auto} cheats=$CHEATS loop=$LOOP_MODE"
 log "rom=$ROM"
 
 [ -x "$DOLPHIN" ] || fatal 1 "Dolphin not found or not executable: $DOLPHIN"
@@ -196,8 +171,6 @@ fi
 export XDG_CONFIG_HOME="${HOME:-/root}/.config"
 type SETUP_SDL_ENVIRONMENT >/dev/null 2>&1 && SETUP_SDL_ENVIRONMENT
 type SET_VAR >/dev/null 2>&1 && SET_VAR "system" "foreground_process" "dolphin"
-
-log_phase "environment"
 
 # ── 2. Profile: family / tier ───────────────────────────────
 # "RtPrime (Std)" → family RtPrime, tier std. Tiers exist ONLY for Rt:CORE
@@ -219,9 +192,18 @@ log "profile resolved: $PROFILE tier=${VARIANT:-none} family=$IS_FAMILY"
 # ── 3. Device baseline (RtSys) ──────────────────────────────
 # Use the matching RtSys profile when there is one, otherwise "default".
 if [ -x "$RTSYS/apply_profile.sh" ]; then
-    # RtSys supplies firmware/device compatibility only. The selected core
-    # profile is read exclusively from workshop/rtcoreprofile below.
     RT_NAME="default"
+    if [ -d "$RTSYS/Config" ]; then
+        want="$(printf '%s' "$PROFILE" | tr 'A-Z ' 'a-z_')"
+        for cand in "${want}-${VARIANT}" "${want}_${VARIANT}" "$want"; do
+            [ -z "$VARIANT" ] && [ "$cand" != "$want" ] && continue
+            for d in "$RTSYS/Config"/*/; do
+                [ -d "$d" ] || continue
+                nm="$(basename "$d")"
+                if [ "$(printf '%s' "$nm" | tr 'A-Z ' 'a-z_')" = "$cand" ]; then RT_NAME="$nm"; break 2; fi
+            done
+        done
+    fi
     if "$RTSYS/apply_profile.sh" "$RT_NAME" "$ORIENT" "$NUMSTICKS" >> "$LOG" 2>&1; then
         log "RtSys baseline applied: $RT_NAME $ORIENT sticks=$NUMSTICKS"
     else
@@ -231,9 +213,7 @@ else
     log "RtSys/apply_profile.sh not present: workshop profile only"
 fi
 
-log_phase "device-baseline"
-
-# ── 4. Workshop global profile (Default <- family <- tier) ──────────
+# ── 4. Workshop profile (Default <- profile[/tier] <- game settings) ──
 PDIR=""
 for cand in "$RT_PROFILES/$PROFILE/$VARIANT" "$RT_PROFILES/$PROFILE" "$RT_PROFILES/Default"; do
     [ -n "$cand" ] && [ -f "$cand/Dolphin.ini" ] && { PDIR="$cand"; break; }
@@ -245,9 +225,14 @@ else
     TMPD="$GAME_DIR/data/tmp_cfg"
     rm -rf "$TMPD"; mkdir -p "$TMPD"
     merged=0
+    GS_ARG=""
+    if [ -n "$GAMESETTINGS" ] && [ "$GAMESETTINGS" != "Disabled" ]; then
+        GS_PATH="$WORKSHOP/gamesettings/$GAME_ID/$GAMESETTINGS"
+        [ -f "$GS_PATH" ] && GS_ARG="--gs-file=$GS_PATH"
+    fi
     if command -v python3 >/dev/null 2>&1 && [ -f "$MERGE" ]; then
         if python3 "$MERGE" --default-dir "$RT_PROFILES/Default" --profile-dir "$PDIR" \
-                --out-dir "$TMPD" --game-id "$GAME_ID" >> "$LOG" 2>&1 \
+                --out-dir "$TMPD" --game-id "$GAME_ID" --workshop "$WORKSHOP" $GS_ARG >> "$LOG" 2>&1 \
            && [ -s "$TMPD/Dolphin.ini" ]; then
             merged=1
         fi
@@ -260,35 +245,13 @@ else
     rm -rf "$TMPD"
 fi
 
-log_phase "core-profile-merge"
-
-# ── 4b. Per-game GameSettings (native Dolphin projection) ─────
-# The selected Workshop GameINI is projected to the user-root GameSettings/<ID>.ini.
-# Dolphin applies this once as a per-game override; it is never merged into
-# the global Dolphin.ini/GFX.ini profile layer.
-if [ -n "$GAMESETTINGS" ] || [ -f "$EMU/GameSettings/$GAME_ID.ini" ]; then
-    if declare -F rt_project_active_gameset >/dev/null 2>&1; then
-        if rt_project_active_gameset "$GAME_ID" "$WORKSHOP/gamesettings" "$EMU/GameSettings" "$GAMESETTINGS" "$GAME_DIR/tools/project_gamesettings.py"; then
-            log "GameSettings projection: ${RT_ACTIVE_GAMESET:-disabled}"
-        else
-            log "WARN: GameSettings projection failed for game_id=$GAME_ID"
-        fi
-    else
-        log "WARN: shared GameSettings projector unavailable"
-    fi
-else
-    log "GameSettings projection skipped (no selected preset or previous runtime file)"
-fi
-
- ───────────────────────────────────────────
+# ── 5. Controller ───────────────────────────────────────────
 CTRL_SUB="GameCube"; CTRL_FILE="GCPadNew.ini"
 [ "$SYS" = "Wii" ] && { CTRL_SUB="Wii"; CTRL_FILE="WiimoteNew.ini"; }
 for c in "$WORKSHOP/controller/$CTRL_SUB/${CONTROLLER:-Default}/$CTRL_FILE" \
          "$WORKSHOP/controller/$CTRL_SUB/Default/$CTRL_FILE" "$BASE_DIR/$CTRL_FILE"; do
     if [ -f "$c" ]; then cp -f "$c" "$CONFIG/$CTRL_FILE"; log "controller $CTRL_FILE <- $c"; break; fi
 done
-
-log_phase "controller-profiles"
 
 # ── 6. Hotkeys + logging ────────────────────────────────────
 if [ "${HOTKEYS:-}" = "Disabled" ]; then
@@ -317,29 +280,40 @@ set_ini_key "$CONFIG/GFX.ini" "Settings" "ShowSpeed" "$(tf "$SHOW_SPEED")"
 set_ini_key "$CONFIG/Dolphin.ini" "Interface" "OnScreenDisplayMessages" "$(tf "$SHOW_OSD")"
 log "cheats=$CHEATS overlays fps=$SHOW_FPS vps=$SHOW_VPS speed=$SHOW_SPEED osd=$SHOW_OSD"
 
-# ── 8. Graphic mods: only the selected ones are active ──────
-# --mods=none | all | name1,name2   (folder names in Load/GraphicMods)
-want_mod() {
-    case "$2" in none|"") return 1 ;; all) return 0 ;; esac
-    local IFS=',' m
-    for m in $2; do [ "$m" = "$1" ] && return 0; done
-    return 1
-}
+# ── 8. Native Dolphin Graphics Mods ────────────────────────
+# Built-in Sys/Load and user Load mods are discovered by Dolphin itself.
+# Rt:UI writes Config/GraphicMods/<GameID>.json with per-game enabled flags.
+# Keep the engine off unless at least one mod is enabled for this title.
 GM_ON="$EMU/Load/GraphicMods"; GM_OFF="$EMU/Load/GraphicMods.off"
-if [ -d "$GM_ON" ] || [ -d "$GM_OFF" ]; then
-    mkdir -p "$GM_ON" "$GM_OFF" 2>/dev/null
-    for d in "$GM_ON"/*/; do
-        [ -d "$d" ] || continue; n="$(basename "$d")"
-        want_mod "$n" "$MODS" || { [ -e "$GM_OFF/$n" ] || mv "${d%/}" "$GM_OFF/$n"; }
-    done
+if [ -d "$GM_OFF" ]; then
+    mkdir -p "$GM_ON"
     for d in "$GM_OFF"/*/; do
-        [ -d "$d" ] || continue; n="$(basename "$d")"
-        want_mod "$n" "$MODS" && { [ -e "$GM_ON/$n" ] || mv "${d%/}" "$GM_ON/$n"; }
+        [ -d "$d" ] || continue
+        n="$(basename "$d")"
+        if [ ! -e "$GM_ON/$n" ]; then
+            mv "$d" "$GM_ON/$n" 2>/dev/null || true
+        fi
     done
-    log "mods active: $(ls -1 "$GM_ON" 2>/dev/null | tr '\n' ',')"
+    rmdir "$GM_OFF" 2>/dev/null || true
+fi
+GM_PROFILE="$CONFIG/GraphicMods/$GAME_ID.json"
+GM_ENABLED=0
+if [ -s "$GM_PROFILE" ]; then
+    if command -v jq >/dev/null 2>&1; then
+        jq -e '.mods | any(.enabled == true)' "$GM_PROFILE" >/dev/null 2>&1 && GM_ENABLED=1
+    else
+        grep -Eq '"enabled"[[:space:]]*:[[:space:]]*true' "$GM_PROFILE" && GM_ENABLED=1
+    fi
+fi
+if [ "$GM_ENABLED" = "1" ]; then
+    set_ini_key "$CONFIG/GFX.ini" "Settings" "EnableMods" "True"
+    log "native Graphics Mods enabled for $GAME_ID"
+else
+    set_ini_key "$CONFIG/GFX.ini" "Settings" "EnableMods" "False"
+    log "native Graphics Mods disabled for $GAME_ID"
 fi
 
-# ── 8b. Mod Vault: Textures / WiiSDSync / Riivolution / DynamicInputTextures ──
+# ── 9. Mod Vault: Textures / WiiSDSync / Riivolution / DynamicInputTextures ──
 # data/mods_plan.txt (scritto dalla UI, una riga per voce):
 #   ON|<Cat>|<nome>            la voce deve stare in Load/<Cat>   (la riporta da .off)
 #   OFF|<Cat>|<nome>           parcheggiala in Load/<Cat>.off
@@ -382,55 +356,20 @@ if [ -f "$MODS_PLAN" ]; then
     log "mods plan applied ($(wc -l < "$MODS_PLAN" 2>/dev/null) entries)"
 fi
 
-log_phase "mod-preparation"
-
-# ── 9. Run ──────────────────────────────────────────────────
+# ── 10. Run ─────────────────────────────────────────────────
 cd "$EMU" || fatal 1 "cd $EMU failed"
 # SETUP_SDL_ENVIRONMENT may alter the path; restore the private runtime path before exec.
 export LD_LIBRARY_PATH="$EMU/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 [ -x "$DOLPHIN" ] || fatal 1 "dolphin binary not found or not executable: $DOLPHIN (supply your aarch64 build)"
 
-# Select a real joydev character device. muOS may expose a phantom js0
-# handler in /proc while the usable device is /dev/input/js1.
-JS_DEV=""
-for candidate in /dev/input/js1 /dev/input/js0 /dev/input/js*; do
-    [ -c "$candidate" ] || continue
-    JS_DEV="$candidate"
-    break
-done
-[ -n "$JS_DEV" ] || log "WARN: no usable /dev/input/js* device; Safe Exit watcher will be unavailable"
-# gptokeyb2 injects keyboard events only for keyboard hotkey profiles.
-# SDL/pad profiles must not create virtual keystrokes or steal SELECT/START.
-if [ "${HOTKEYS:-}" != "Disabled" ]; then
-    HOTKEY_DEVICE="$(awk -F= 'tolower($1) ~ /^[[:space:]]*device[[:space:]]*$/ { gsub(/[[:space:]]/, "", $2); print $2; exit }' "$CONFIG/Hotkeys.ini" 2>/dev/null)"
-    if { [ "$HOTKEY_DEVICE" = "Keyboard" ] || [ "$HOTKEY_DEVICE" = "SDL/0/Keyboard Mouse" ]; }; then
-        GPTK_BIN=""
-        for b in "$GAME_DIR/lib/gptokeyb2" "$GAME_DIR/../lib/gptokeyb2" "/lib/gptokeyb2"; do
-            [ -x "$b" ] && { GPTK_BIN="$b"; break; }
-        done
-        [ "$(uname -m 2>/dev/null)" = "armv7l" ] && [ -x "${GPTK_BIN}.armhf" ] && GPTK_BIN="${GPTK_BIN}.armhf"
-        GPTK_CFG=""
-        for cfg in "$WORKSHOP/hotkeys/${HOTKEYS:-Default}/ext-dolphin.gptk" "$WORKSHOP/hotkeys/Default/ext-dolphin.gptk" "$BASE_DIR/ext-dolphin.gptk"; do
-            [ -f "$cfg" ] && { GPTK_CFG="$cfg"; break; }
-        done
-        if [ -n "$GPTK_BIN" ] && [ -n "$GPTK_CFG" ]; then
-            pkill -f "$GPTK_BIN -c" 2>/dev/null || true
-            sleep 0.3
-            "$GPTK_BIN" -c "$GPTK_CFG" -D states,keyboard > "$LOG_DIR/gptokeyb2_$TS.log" 2>&1 &
-            GPTK_PID=$!
-            log "gptokeyb2 pid=$GPTK_PID cfg=$GPTK_CFG device=$HOTKEY_DEVICE"
-        else
-            log "WARN: keyboard hotkeys requested but gptokeyb2 unavailable (bin='$GPTK_BIN' cfg='$GPTK_CFG')"
-        fi
-    else
-        log "gptokeyb2 not started; Hotkeys.ini Device='${HOTKEY_DEVICE:-missing}'"
-    fi
+JS_DEV=$(ls /dev/input/js* 2>/dev/null | head -1)
+[ -z "$JS_DEV" ] && JS_DEV="/dev/input/js0"
+# RT_NO_EXIT_WATCHER=1 (Knulli / ROCKNIX ports): the watcher reads /dev/input/js* with muOS button numbers
+if [ "$SAFE_EXIT" = "1" ] && [ "${RT_NO_EXIT_WATCHER:-0}" != "1" ]; then
+    for w in "$RTSYS/overlay_exit.sh" "$SCRIPT_DIR/overlay_exit.sh"; do
+        if [ -x "$w" ]; then "$w" "$JS_DEV" >/dev/null 2>&1 & WATCHER_PID=$!; log "exit watcher $w pid=$WATCHER_PID"; break; fi
+    done
 fi
-if [ -n "$GPTK_PID" ]; then
-    sleep 0.25  # only wait when our keyboard helper was actually started
-fi
-log_phase "pre-dolphin"
-
 
 # muOS is a direct framebuffer target: force FBDev + OpenGL ES-capable OGL.
 # This avoids accidental X11/headless selection and ignores stale per-user backend values.
@@ -438,19 +377,36 @@ log_phase "pre-dolphin"
 DOLPHIN_PID=$!
 log "dolphin pid=$DOLPHIN_PID  ( --platform=fbdev --video_backend=OGL -e <rom> -u $EMU )"
 
-# Start the watcher only after Dolphin is alive; bind it to this process PID.
-# RT_NO_EXIT_WATCHER=1 is used by Knulli / ROCKNIX ports.
-if [ "$SAFE_EXIT" = "1" ] && [ "${RT_NO_EXIT_WATCHER:-0}" != "1" ] && [ -n "$JS_DEV" ]; then
-    for w in "$RTSYS/overlay_exit.sh" "$SCRIPT_DIR/overlay_exit.sh"; do
-        if [ -x "$w" ]; then "$w" "$JS_DEV" "$DOLPHIN_PID" >/dev/null 2>&1 & WATCHER_PID=$!; log "exit watcher $w pid=$WATCHER_PID target=$DOLPHIN_PID"; break; fi
+# gptokeyb2 attaches to the "dolphin" process
+if [ "${HOTKEYS:-}" != "Disabled" ] && hotkeys_uses_keyboard "$CONFIG/Hotkeys.ini"; then
+    GPTK_BIN=""
+    for b in "$GAME_DIR/lib/gptokeyb2" "$GAME_DIR/../lib/gptokeyb2" "/lib/gptokeyb2"; do
+        [ -x "$b" ] && { GPTK_BIN="$b"; break; }
     done
+    [ "$(uname -m 2>/dev/null)" = "armv7l" ] && [ -x "${GPTK_BIN}.armhf" ] && GPTK_BIN="${GPTK_BIN}.armhf"
+    GPTK_CFG=""
+    for c in "$WORKSHOP/hotkeys/${HOTKEYS:-Default}/ext-dolphin.gptk" "$WORKSHOP/hotkeys/Default/ext-dolphin.gptk" "$BASE_DIR/ext-dolphin.gptk"; do
+        [ -f "$c" ] && { GPTK_CFG="$c"; break; }
+    done
+    if [ -n "$GPTK_BIN" ] && [ -n "$GPTK_CFG" ]; then
+        pkill -f "$GPTK_BIN -c" 2>/dev/null || true      # stale copy of OUR binary only
+        sleep 0.3
+        "$GPTK_BIN" -c "$GPTK_CFG" -1 dolphin > "$LOG_DIR/gptokeyb2_$TS.log" 2>&1 &
+        GPTK_PID=$!
+        log "gptokeyb2 pid=$GPTK_PID cfg=$GPTK_CFG"
+    else
+        log "WARN: gptokeyb2 not started (bin='$GPTK_BIN' cfg='$GPTK_CFG')"
+    fi
+elif [ "${HOTKEYS:-}" != "Disabled" ]; then
+    HOTKEY_DEVICE="$(hotkeys_device "$CONFIG/Hotkeys.ini" 2>/dev/null || true)"
+    log "gptokeyb2 skipped: Hotkeys.ini uses native/non-keyboard device (Device=${HOTKEY_DEVICE:-unset})"
 fi
 
 wait "$DOLPHIN_PID"
 EXIT_CODE=$?
 log "dolphin exited: $EXIT_CODE"
 
-# ── 10. Back to the frontend ────────────────────────────────
+# ── 11. Back to the frontend ────────────────────────────────
 mods_cleanup_links
 stop_helpers
 if [ "$LOOP_MODE" != "1" ]; then
