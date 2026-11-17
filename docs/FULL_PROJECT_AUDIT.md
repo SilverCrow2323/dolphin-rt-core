@@ -2,9 +2,30 @@
 
 **Status:** active, evidence-based audit  
 **Baseline:** \`main\` at the current project portal / Rt:Stream / Rt:UI integration  
-**Last reviewed:** 2026-11-13
+**Last reviewed:** 2026-11-17
 
 This document records verified repository-level findings, separates completed work from outstanding checks, and keeps CI evidence distinct from physical-device certification. Update it when a relevant PR is merged or when a finding is disproved.
+
+## Operational checkpoint — 2026-11-17
+
+**Mainline:** `9aac80b6c1c041dab6780a68d5880be49d39c9ab` after merge of PR #95.
+
+### Integrated since the previous audit
+- PR #95 merged the current repository audit, documentation index and testing guide. Post-merge CI run [44080810706](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/44080810706) and Pages deployment [44080810002](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/44080810002) completed successfully.
+- PR #99 retired the Task Toolkit payload from new muOS updates and added scoped upgrade cleanup. The older historical archive remains untouched.
+- PR #94 made MUXUPD publication atomic and added regressions for failed and corrupt ZIP output.
+- Mainline Rt:Stream SFTP now constrains operations to canonical ROM roots and checks symlinked paths.
+
+### Open integration queue
+- **PR #96 — compatibility Standard profile:** synchronized to current main with a non-destructive merge commit. Its exact-head CI run [44080924105](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/44080924105) passed all seven jobs. The H700 full-update job [44080924022](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/44080924022) is still running at this checkpoint; do not merge until it completes successfully.
+- **PR #100 — product hub expansion:** exact head `8b8855f07ccf5b93365d5b5af25d583f05992ac2`; CI [44067620006](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/44067620006) passed 7/7. The branch is 47 commits ahead / 5 behind main. It remains Draft pending base synchronization and visual mobile/desktop/accessibility review. The new site bundle test preserves the separate Compatibility Database, but no rendered browser review is claimed by CI.
+- **PR #81 — 12.5.00 / Rt:UI 3.7.0 Arcade:** exact head `1929f9413b2421042defeb449550fec2649e55d4`; source audit confirms the 2606 Hotkeys and Settings/NEXUS fixes are present. The branch is nevertheless 627 commits ahead / 152 behind main and is not mergeable. No CI run is attached to this exact head. Historical green companion or ancestor runs do not validate this candidate. Reconcile the candidate through small, reviewable integrations; then rerun CI, H700 full package and the full AArch64 matrix on the exact resulting head.
+- PRs #85 and #86 were closed as superseded. #85's audit/docs and NEXUS duplicate-registration test are now in main through #95; all 14 files from #86 were verified byte-identical to the corresponding files in the #81 candidate. Their branches were preserved.
+
+### Release position
+The latest published stable release remains **v12.0.0**. Draft v12.0.1 assets are not published releases. **12.5.00 is not released.** The latest mainline H700 and native AArch64 workflows passed on ancestor build commit `9b8b6ce93dc9497b3a8292bba6aa5d3ffe704e4d`, but there is no physical RG35XX H validation for the current 12.5.00 candidate. Installation, upgrade, rollback/uninstall fixtures, exact-candidate package verification and physical boot/input/audio/video/exit checks remain release gates.
+
+---
 
 ## Executive assessment
 
