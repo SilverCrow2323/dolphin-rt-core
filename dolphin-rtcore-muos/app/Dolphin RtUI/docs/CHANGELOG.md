@@ -1,5 +1,32 @@
 # Changelog
 
+## 3.7.0 "Arcade" — Rt:Core v12.5.00 for muOS 2606.0 Andromeda
+
+**Status: release candidate.** This version is not published until the full package and device gates pass.
+
+### Added
+- Autonomous boot introduction and incremental local ROM discovery, keeping startup responsive while the library is scanned.
+- NEXUS action contracts for the GameSettings Browser: library/storage/database navigation, refresh, row selection, read-only preset preview and incremental library sync.
+- Safe Exit screen and supporting shutdown diagnostics, plus centralized muOS platform/tool helpers.
+- Shared controller/input and profile-runtime helpers, including a common profile merge path.
+- Folder tools and Rt:Stream discovery helpers for the active Andromeda application.
+
+### Changed
+- GameSettings deployment is queued and polled incrementally rather than blocking the interface.
+- The muOS launcher and application routes use the Andromeda 2606 hotkey schema and current screen/action contracts.
+- The legacy Dolphin Task Toolkit is retired from the shipping payload; the upgrade cleanup is scoped to legacy Dolphin task directories.
+
+### Fixed
+- Duplicate local-library scan entries and stale GameSettings database state are covered by regression tests.
+- Preset preview handles LF, CRLF and legacy CR line endings while preserving blank lines.
+- Safe Exit, profile merging and the new platform helpers have host-side regression coverage.
+
+### Validation status
+- LuaJIT syntax, shell syntax, NEXUS contracts, LÖVE UI smoke and repository CI are automated.
+- The H700 full-update workflow is required to validate the AArch64 executable, GLIBC ABI, private runtime libraries, matching Sys tree, MUXUPD archive and manifest on the exact candidate commit.
+- Installation, upgrade, rollback/uninstall and physical RG35XX H boot/controller/game/audio/video/exit tests remain separate release gates.
+
+---
 
 ## 3.6.0 "Kanzentai" — Rt:Core v12.0.00 for muOS 2606.0 Andromeda
 
