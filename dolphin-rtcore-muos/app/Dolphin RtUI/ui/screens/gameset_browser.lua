@@ -398,7 +398,7 @@ function S.register_actions(ui)
             return false, "selected row is not a database preset"
         end
         local lines = {}
-        for line in tostring(row.raw_content or ""):gmatch("[^\\r\\n]+") do
+        for line in tostring(row.raw_content or ""):gmatch("[^\r\n]+") do
             lines[#lines + 1] = line
         end
         S.preview = { row = row, lines = lines, scroll = 0 }
