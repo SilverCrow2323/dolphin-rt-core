@@ -419,3 +419,22 @@ if __name__ == "__main__":
         self.assertIn("SDL/0/muOS-Keys", (ROOT / "quick-start.html").read_text(encoding="utf-8"))
         self.assertIn("Video_Hacks", (ROOT / "profiles.html").read_text(encoding="utf-8"))
         self.assertIn("GameSettings Library", (ROOT / "gamesettings.html").read_text(encoding="utf-8"))
+
+    def test_all_modal_backdrops_close_only_when_the_backdrop_is_clicked(self):
+        for modal, closer in (
+            ("gameModal", "closeGameModal"),
+            ("reportModal", "closeReportModal"),
+            ("gsModal", "closeGameSettings"),
+        ):
+            expected = f"$('{modal}').addEventListener('click',e=>{{if(e.target===e.currentTarget){closer}();}});"
+            self.assertIn(expected, self.html)
+
+        self.assertIn(
+            "document.getElementById('iniDetailModal').addEventListener('click',event=>{if(event.target===event.currentTarget)closeIniDetail();});",
+            self.html,
+        )
+        profiles = (ROOT / "profiles.html").read_text(encoding="utf-8")
+        self.assertIn(
+            "document.getElementById('profileDetailModal').addEventListener('click',e=>{if(e.target===e.currentTarget)close()});",
+            profiles,
+        )
