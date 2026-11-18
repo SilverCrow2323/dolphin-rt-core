@@ -1603,7 +1603,7 @@ function openReportModal(prefill){
     if(rptSS&&rptSS.showSel)rptSS.showSel({title:prefill.title,gameId:prefill.gameId,region:prefill.region,system:prefill.system,cover:coverUrl(prefill.gameId,prefill.region)});
   }
 }
-function closeReportModal(){$('reportModal').classList.remove('show');document.body.style.overflow='';}
+function closeReportModal(){const m=$('reportModal');if(!m)return;m.classList.remove('show');syncModalScrollLock();}
 function resetReportForm(){
   $('rptErrors').style.display='none';$$('#reportModal .input-err').forEach(el=>el.classList.remove('input-err'));
   ['rptGameId','rptGameTitle','rptSystem','rptRegion'].forEach(id=>$(id).value='');
