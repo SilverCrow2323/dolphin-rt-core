@@ -115,7 +115,7 @@ class CompatibilitySiteTests(unittest.TestCase):
             expected = {
                 ".nojekyll", "index.html", "compatibility.html", "quick-start.html",
                 "profiles.html", "gamesettings.html", "docs.html", "manifest.json", "sw.js",
-                "assets/site.css", "assets/site.js", "assets/editorial.css", "assets/spdw_symbol.png",
+                "assets/site.css", "assets/site.js", "assets/editorial.css", "assets/magazine.js", "assets/spdw_symbol.png",
                 "assets/dolphinrt_icon.png", "assets/dolphin_rtcore_title.png",
                 "assets/gamecube.svg", "assets/wii.svg",
                 "data/site-gamesettings-index.json", "data/site-profiles.json", "data/site-docs-index.json",
@@ -130,6 +130,10 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertIn('href="./quick-start.html"', deployed_html)
             self.assertIn('href="./compatibility.html"', deployed_html)
             self.assertIn('./assets/editorial.css', deployed_html)
+            self.assertIn('./assets/magazine.js', deployed_html)
+            self.assertIn("TOKYO UNDERGROUND SIGNAL", deployed_html)
+            self.assertIn('id="magazineReader"', deployed_html)
+            self.assertIn('data-mag-next', deployed_html)
             for page in ("quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
                 self.assertTrue((output / page).is_file(), page)
             self.assertIn("1,914", deployed_html)
