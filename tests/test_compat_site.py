@@ -323,7 +323,8 @@ class CompatibilitySiteTests(unittest.TestCase):
 
     def test_pwa_cache_is_bumped_for_new_website_shell(self):
         worker = (ROOT / "sw.js").read_text(encoding="utf-8")
-        self.assertIn("rtcore-site-v2", worker)
+        self.assertIn("rtcore-site-v4", worker)
+        self.assertIn("'./assets/magazine.js'", worker)
         for page in ("index.html", "compatibility.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
             self.assertIn("'./" + page + "'", worker)
         self.assertIn("'./data/site-gamesettings-index.json'", worker)
@@ -332,11 +333,14 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertNotIn("rtcore-db-v3", worker)
 
     def test_project_portal_is_the_public_homepage(self):
-        self.assertIn("Dolphin Rt:Core — Handheld GameCube", self.portal_html)
+        self.assertIn("Dolphin Rt:Core — Tokyo 2099 Field Journal", self.portal_html)
+        self.assertIn('id="magazineReader"', self.portal_html)
+        self.assertIn('class="mag-page cover-page"', self.portal_html)
+        self.assertIn('id="magNext"', self.portal_html) if 'id="magNext"' in self.portal_html else self.assertIn('id="magNext"', self.portal_html)
         self.assertIn('id="downloads"', self.portal_html)
         self.assertIn('href="./quick-start.html"', self.portal_html)
         self.assertIn('href="./profiles.html"', self.portal_html)
-        self.assertIn('href="./gamesettings.html"', self.portal_html)
+        self.assertIn('href="./compatibility.html#gamesettings"', self.portal_html)
         self.assertIn('href="./docs.html"', self.portal_html)
         self.assertIn('href="./compatibility.html"', self.portal_html)
         self.assertIn("LATEST STABLE RELEASE", self.portal_html)
