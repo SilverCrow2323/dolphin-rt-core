@@ -1,7 +1,7 @@
-const CACHE = 'rtcore-site-v2';
+const CACHE = 'rtcore-site-v3';
 const SHELL = [
   './','./index.html','./compatibility.html','./quick-start.html','./profiles.html','./gamesettings.html','./docs.html',
-  './manifest.json','./assets/site.css','./assets/site.js','./assets/spdw_symbol.png',
+  './manifest.json','./assets/site.css','./assets/site.js','./assets/editorial.css','./assets/spdw_symbol.png',
   './assets/dolphinrt_icon.png','./assets/dolphin_rtcore_title.png','./assets/gamecube.svg','./assets/wii.svg',
   './data/site-gamesettings-index.json','./data/site-profiles.json','./data/site-docs-index.json'
 ];
