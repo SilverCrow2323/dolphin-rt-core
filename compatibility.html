@@ -511,8 +511,9 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
 }
 </style>
+<link rel="stylesheet" href="./assets/editorial.css">
 </head>
-<body class="theme-gc">
+<body class="theme-gc editorial-compat">
 <a class="skip-link" href="#main-content">Skip to compatibility results</a>
 
 <noscript><style>body > *:not(noscript){display:none !important;}</style><div style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:#08080f;color:#f1f5f9;text-align:center;font-family:sans-serif;"><div style="max-width:520px;"><h1 style="font-size:32px;margin:0 0 14px;font-family:Audiowide,sans-serif;color:#a855f7;">JavaScript richiesto</h1><p style="font-size:16px;line-height:1.6;color:#a8b3c2;margin:0;">Questa pagina necessita JavaScript per caricare il database di compatibilit\u00e0. Abilita JavaScript nel browser e ricarica.</p></div></div></noscript>
@@ -525,16 +526,17 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
       <img id="brandIcon" class="brand-icon" src="./assets/gamecube.svg" alt="">
       <div>
         <div class="brand-title">Dolphin <span class="rt">Rt</span>:Core</div>
-        <div class="brand-sub">Community Compatibility Database · GameCube + Wii</div>
+        <div class="brand-sub">SPDW FACTORY · COMPATIBILITY / GAMESETTINGS</div>
       </div>
     </div>
-    <nav class="nav">
-      <a href="./" class="nav-btn"><i class="fa-solid fa-house"></i><span>Project Portal</span></a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="./index.html" class="nav-btn"><i class="fa-solid fa-house"></i><span>Portal</span></a>
+      <a href="./quick-start.html" class="nav-btn"><i class="fa-solid fa-book"></i><span>Quick Start</span></a>
+      <a href="./profiles.html" class="nav-btn"><i class="fa-solid fa-sliders"></i><span>Profiles</span></a>
+      <a href="./docs.html" class="nav-btn"><i class="fa-solid fa-layer-group"></i><span>Docs</span></a>
       <a href="https://github.com/SilverCrow2323/dolphin-rt-core" target="_blank" rel="noopener" class="nav-btn"><i class="fa-brands fa-github"></i><span>Repo</span></a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases" target="_blank" rel="noopener" class="nav-btn"><i class="fa-solid fa-download"></i><span>Release</span></a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/wiki" target="_blank" rel="noopener" class="nav-btn"><i class="fa-solid fa-book-open"></i><span>Wiki</span></a>
-      <button class="nav-btn" id="reportBtn"><i class="fa-solid fa-clipboard-list"></i><span>Report</span></button>
-      <button class="nav-btn accent" id="gsBtn"><i class="fa-solid fa-sliders"></i><span>GameSettings</span><span class="badge" id="gsBadge" style="display:none;">0</span></button>
+      <button class="nav-btn" id="reportBtn"><i class="fa-solid fa-clipboard-list"></i><span>Submit Report</span></button>
+      <button class="nav-btn accent" id="gsBtn"><i class="fa-solid fa-sliders"></i><span>Submit Config</span><span class="badge" id="gsBadge" style="display:none;">0</span></button>
     </nav>
     <div class="console-toggle" id="consoleToggle" role="button" tabindex="0" aria-label="Choose console" aria-pressed="false">
       <div class="track">
@@ -549,8 +551,8 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 <section class="hero">
   <div class="hero-inner">
     <div>
-      <h1 class="hero-title"><a href="./">Dolphin <span class="rt">Rt</span>:Core Compatibility</a></h1>
-      <p class="hero-tag">Community-driven compatibility data for Dolphin Rt:Core on muOS &amp; H700 handhelds.</p>
+      <h1 class="hero-title"><a href="./">Dolphin <span class="rt">Rt</span>:Core<br>Compatibility Database</a></h1>
+      <p class="hero-tag">The field journal for GameCube and Wii on handheld hardware: inspect real test reports, compare exact environments and browse the GameSettings archive without leaving this page.</p>
     </div>
     <div class="hero-stats">
       <div class="stat"><div class="stat-num" id="statGames">0</div><div class="stat-lbl">Games</div></div>
@@ -560,7 +562,12 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
   </div>
 </section>
 
-<div class="filter-bar">
+<div class="editorial-tabs" role="tablist" aria-label="Compatibility and GameSettings views">
+  <button class="editorial-tab active" id="compatibilityTab" type="button" role="tab" aria-selected="true" aria-controls="main-content"><strong>01</strong> Compatibility Reports</button>
+  <button class="editorial-tab" id="gameSettingsTab" type="button" role="tab" aria-selected="false" aria-controls="gamesettings"><strong>02</strong> GameSettings Library <span id="iniTabCount">1,914 FILES</span></button>
+</div>
+
+<div class="filter-bar" id="compatibilityControls">
   <div class="filter-inner">
     <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="searchInput" placeholder="Search game title or Game ID…" autocomplete="off" aria-label="Search game title, Game ID or test notes"><button class="clear" id="clearSearch">✕</button></div>
     <select id="regionFilter" aria-label="Filter by region" style="max-width:150px;"><option value="all">🌍 Region</option><option value="PAL">🇪🇺 PAL</option><option value="NTSC">🇺🇸 NTSC</option><option value="JPN">🇯🇵 JPN</option></select>
@@ -589,6 +596,29 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
   <div id="gamesGrid" class="games-grid" style="display:none;margin-top:20px;"></div>
   <div id="empty" class="empty" style="display:none;margin-top:20px;"><i class="fa-solid fa-folder-open"></i><h3>No games found</h3><p id="emptyMsg">Try changing your filters or search query.</p><button class="btn btn-primary" type="button" id="retryDataBtn" style="display:none;">Retry database load</button></div>
 </main>
+
+<section class="ini-explorer" id="gamesettings" aria-labelledby="iniExplorerTitle" hidden>
+  <header class="ini-explorer-head">
+    <div>
+      <span class="eyebrow">ARCHIVE / SOURCE INDEX / LIVE REPOSITORY</span>
+      <h2 id="iniExplorerTitle">GameSettings Library.</h2>
+      <p>Search the 1,914 tracked INI files in the current repository tree. Official Dolphin defaults, Rt:Core overrides and Rt:UI workshop presets remain identified by source — this is an archive, not a list of universal recommendations.</p>
+    </div>
+    <div class="stat"><div class="stat-num" id="iniTotal">1,914</div><div class="stat-lbl">Tracked INI files</div></div>
+  </header>
+  <div class="ini-explorer-tools">
+    <input id="iniSearch" type="search" placeholder="Search filename, Game ID or path…" autocomplete="off" aria-label="Search GameSettings files">
+    <select id="iniFilter" aria-label="Filter GameSettings source">
+      <option value="all">All sources</option>
+      <option value="Dolphin system database">Dolphin system database</option>
+      <option value="Rt:Core custom override">Rt:Core custom overrides</option>
+      <option value="Rt:UI workshop">Rt:UI workshop</option>
+    </select>
+  </div>
+  <div class="ini-explorer-meta"><span id="iniCount" aria-live="polite">Loading repository index…</span><span>Each row opens the tracked file or raw INI source</span></div>
+  <div class="ini-explorer-list" id="iniList"><div class="ini-explorer-empty">Loading the GameSettings archive…</div></div>
+  <div class="ini-more"><button id="iniMore" type="button" hidden>Load next 60 files</button></div>
+</section>
 
 <div class="modal-back" id="gameModal">
   <div class="modal" style="max-width:1080px;">
@@ -2107,5 +2137,106 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
   });
 }
 </script>
+
+<script>
+(()=>{'use strict';
+  const tabs={compat:document.getElementById('compatibilityTab'),ini:document.getElementById('gameSettingsTab')};
+  const controls=document.getElementById('compatibilityControls');
+  const ratings=document.getElementById('ratingPills');
+  const results=document.getElementById('main-content');
+  const explorer=document.getElementById('gamesettings');
+  const search=document.getElementById('iniSearch');
+  const filter=document.getElementById('iniFilter');
+  const list=document.getElementById('iniList');
+  const count=document.getElementById('iniCount');
+  const total=document.getElementById('iniTotal');
+  const tabCount=document.getElementById('iniTabCount');
+  const more=document.getElementById('iniMore');
+  if(!tabs.compat||!tabs.ini||!explorer)return;
+  let entries=[],filtered=[],shown=0,loaded=false;
+  const pageSize=60;
+  const number=n=>new Intl.NumberFormat().format(n);
+  function setView(mode,updateUrl=true){
+    const isIni=mode==='ini';
+    tabs.compat.classList.toggle('active',!isIni);
+    tabs.ini.classList.toggle('active',isIni);
+    tabs.compat.setAttribute('aria-selected',String(!isIni));
+    tabs.ini.setAttribute('aria-selected',String(isIni));
+    controls.hidden=isIni;
+    ratings.hidden=isIni;
+    results.hidden=isIni;
+    explorer.hidden=!isIni;
+    if(updateUrl){
+      const next=location.pathname+location.search+(isIni?'#gamesettings':'');
+      history.replaceState(null,'',next);
+    }
+    if(isIni){loadIndex();if(updateUrl)explorer.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}
+    else if(updateUrl)document.querySelector('.hero')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function linkFor(value,allowed){
+    if(typeof value!=='string'||!allowed.some(prefix=>value.startsWith(prefix)))return '';
+    return value;
+  }
+  function appendRow(entry,parent){
+    const row=document.createElement('article');row.className='ini-explorer-row';
+    const info=document.createElement('div');
+    const title=document.createElement('strong');title.textContent=entry.filename||'Unnamed INI';
+    const path=document.createElement('small');path.textContent=(entry.gameId?entry.gameId+' · ':'')+(entry.path||'');
+    info.append(title,path);
+    const kind=document.createElement('span');kind.className='ini-kind';kind.textContent=entry.kind||'Unclassified source';
+    const actions=document.createElement('div');actions.style.display='flex';actions.style.gap='12px';
+    const source=linkFor(entry.url,['https://github.com/SilverCrow2323/dolphin-rt-core/']);
+    const raw=linkFor(entry.raw,['https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/']);
+    if(source){const a=document.createElement('a');a.href=source;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Source ↗';actions.append(a);}
+    if(raw){const a=document.createElement('a');a.href=raw;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Raw INI ↗';actions.append(a);}
+    row.append(info,kind,actions);parent.append(row);
+  }
+  function render(){
+    const q=(search.value||'').trim().toLowerCase(),source=filter.value;
+    filtered=entries.filter(entry=>(source==='all'||entry.kind===source)&&[entry.filename,entry.gameId,entry.kind,entry.path].join(' ').toLowerCase().includes(q));
+    shown=0;list.replaceChildren();appendPage();
+    count.textContent=number(filtered.length)+' matching files · '+number(entries.length)+' indexed';
+    more.hidden=shown>=filtered.length;
+  }
+  function appendPage(){
+    const fragment=document.createDocumentFragment();
+    filtered.slice(shown,shown+pageSize).forEach(entry=>appendRow(entry,fragment));
+    if(shown===0&&!fragment.childNodes.length){const empty=document.createElement('div');empty.className='ini-explorer-empty';empty.textContent='No files match this search. Try another Game ID or source.';list.append(empty);}
+    else list.append(fragment);
+    shown=Math.min(shown+pageSize,filtered.length);
+    more.hidden=shown>=filtered.length;
+    more.textContent='Load next '+Math.min(pageSize,filtered.length-shown)+' files';
+  }
+  async function loadIndex(){
+    if(loaded)return;
+    loaded=true;count.textContent='Loading the tracked repository index…';
+    try{
+      const response=await fetch('./data/site-gamesettings-index.json',{cache:'no-cache'});
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      const data=await response.json();
+      entries=Array.isArray(data.entries)?data.entries:[];
+      total.textContent=number(entries.length);
+      tabCount.textContent=number(entries.length)+' FILES';
+      render();
+    }catch(error){
+      loaded=false;count.textContent='Index unavailable · '+error.message;
+      list.replaceChildren();
+      const empty=document.createElement('div');empty.className='ini-explorer-empty';
+      empty.textContent='The GameSettings index could not be loaded. Reconnect and try again, or inspect data/site-gamesettings-index.json in the repository.';
+      list.append(empty);
+    }
+  }
+  tabs.compat.addEventListener('click',()=>setView('compat'));
+  tabs.ini.addEventListener('click',()=>setView('ini'));
+  search.addEventListener('input',render);
+  filter.addEventListener('change',render);
+  more.addEventListener('click',appendPage);
+  window.addEventListener('hashchange',()=>setView(location.hash==='#gamesettings'?'ini':'compat',false));
+  const initial=location.hash.toLowerCase()==='#gamesettings'?'ini':'compat';
+  setView(initial,false);
+  if(initial==='ini')requestAnimationFrame(()=>explorer.scrollIntoView({block:'start'}));
+})();
+</script>
+
 </body>
 </html>
