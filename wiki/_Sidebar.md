@@ -6,7 +6,8 @@
 - [[Platform-Support]]
 - [[FAQ]]
 
-**FIELD REPORTS · COMPATIBILITY**
+**FIELD REPORTS · COMPATIBILITY + SETTINGS**
+- [GameSettings INI archive](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html#gamesettings)
 - [[Compatibility-Database]]
 - [[Compatibility-Data-Model]]
 - [[Rating-Guide]]
