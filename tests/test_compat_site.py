@@ -178,6 +178,12 @@ class CompatibilitySiteTests(unittest.TestCase):
                 tmp.flush()
                 result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
+        magazine_script = subprocess.run(
+            [node, "--check", str(ROOT / "assets" / "magazine.js")],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(magazine_script.returncode, 0, magazine_script.stderr)
 
     def test_wiki_navigation_references_resolve(self):
         wiki = ROOT / "wiki"
