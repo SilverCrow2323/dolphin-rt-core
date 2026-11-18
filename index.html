@@ -3,157 +3,216 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dolphin Rt:Core — The H700 Field Journal</title>
-<meta name="description" content="Dolphin Rt:Core: H700 handheld engineering, GameCube and Wii compatibility reports, profiles, GameSettings and Rt:Stream.">
-<meta name="theme-color" content="#0a0f18">
-<meta property="og:title" content="Dolphin Rt:Core — The H700 Field Journal">
-<meta property="og:description" content="One engine. A field-tested ecosystem.">
+<title>Dolphin Rt:Core — Tokyo 2099 Field Journal</title>
+<meta name="description" content="A cyberpunk field journal for Dolphin Rt:Core: H700 handheld engineering, GameCube and Wii compatibility, profiles, GameSettings and Rt:Stream.">
+<meta name="theme-color" content="#090d16">
+<meta property="og:title" content="Dolphin Rt:Core — Tokyo 2099 Field Journal">
+<meta property="og:description" content="One engine. A field-tested underground ecosystem.">
 <link rel="icon" href="./assets/spdw_symbol.png">
 <link rel="manifest" href="./manifest.json">
 <link rel="stylesheet" href="./assets/site.css">
 <link rel="stylesheet" href="./assets/editorial.css">
 </head>
-<body class="magazine-site">
-<a class="skip-link" href="#main-content">Skip to content</a>
-<div class="topline"></div>
+<body class="magazine-site tokyo-2099">
+<a class="skip-link" href="#magazineReader">Skip to magazine pages</a>
+<div class="tokyo-signal" aria-hidden="true"><span>NEO TOKYO // 2099</span><span>UNDERGROUND SIGNAL NETWORK · SPDW FACTORY</span></div>
 <header class="header">
   <div class="wrap headrow">
-    <a class="brand" href="./index.html"><img src="./assets/dolphinrt_icon.png" alt=""><span><b>DOLPHIN <span>Rt:CORE</span></b><small>SPDW FACTORY · FIELD JOURNAL</small></span></a>
+    <a class="brand" href="./index.html" aria-label="Dolphin Rt:Core magazine cover"><img src="./assets/dolphinrt_icon.png" alt=""><span><b>DOLPHIN <span>Rt:CORE</span></b><small>SPDW FACTORY · TOKYO 2099 EDITION</small></span></a>
     <nav class="nav" aria-label="Main navigation">
-      <a class="active" href="./index.html" aria-current="page">Overview</a>
-      <a href="./quick-start.html">Quick Start</a>
-      <a href="./profiles.html">Profile Atlas</a>
-      <a href="./compatibility.html">Compatibility + INI</a>
-      <a href="./docs.html">Docs</a>
+      <a class="active" href="./index.html" aria-current="page">01 / Cover</a>
+      <a href="./compatibility.html">02 / Field Reports</a>
+      <a href="./profiles.html">03 / Tuning Lab</a>
+      <a href="./quick-start.html">04 / Field Manual</a>
+      <a href="./docs.html">05 / Archive</a>
     </nav>
     <div class="headtools">
-      <a class="toolbtn" href="https://github.com/SilverCrow2323/dolphin-rt-core/releases">Releases ↗</a>
-      <button class="toolbtn hamb" data-open-drawer aria-controls="site-drawer" aria-expanded="false">☰ Explore</button>
+      <a class="toolbtn" href="https://github.com/SilverCrow2323/dolphin-rt-core/releases">Stable Releases ↗</a>
+      <button class="toolbtn hamb" data-open-drawer aria-controls="site-drawer" aria-expanded="false">☰ Index</button>
     </div>
   </div>
 </header>
 <div class="drawer-backdrop" data-close-drawer aria-hidden="true"></div>
-<aside class="drawer" id="site-drawer" role="dialog" aria-modal="true" aria-label="Explore Dolphin Rt:Core" aria-hidden="true" inert>
-  <div class="drawer-head"><b>EXPLORE Rt:CORE</b><button class="toolbtn" data-close-drawer aria-label="Close navigation drawer">✕</button></div>
-  <a href="./index.html">⌂ Overview</a>
-  <a href="./quick-start.html">01 · Quick Start</a>
-  <a href="./profiles.html">02 · Profile Atlas</a>
-  <a href="./compatibility.html">03 · Compatibility + GameSettings</a>
-  <a href="./docs.html">04 · Documentation</a>
-  <h3>THE ECOSYSTEM</h3>
+<aside class="drawer" id="site-drawer" role="dialog" aria-modal="true" aria-label="Magazine contents" aria-hidden="true" inert>
+  <div class="drawer-head"><b>ISSUE 001 / CONTENTS</b><button class="toolbtn" data-close-drawer aria-label="Close contents">✕</button></div>
+  <a href="#cover" data-mag-jump="0">00 · Front cover</a>
+  <a href="#contents" data-mag-jump="1">01 · Contents / Release desk</a>
+  <a href="./compatibility.html">02 · Compatibility / GameSettings</a>
+  <a href="./profiles.html">03 · Tuning lab / Profile atlas</a>
+  <a href="./quick-start.html">04 · H700 field manual</a>
+  <a href="./docs.html">05 · Engineering archive</a>
+  <h3>THE UNDERGROUND NETWORK</h3>
   <a href="https://github.com/SilverCrow2323/dolphin-rt-core/tree/main/portal">Rt:Stream source ↗</a>
   <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases">Downloads & release notes ↗</a>
   <a href="https://github.com/SilverCrow2323/dolphin-rt-core/issues">Support & issue tracker ↗</a>
 </aside>
 
-<main class="page-enter" id="main-content" tabindex="-1">
-  <section class="wrap cover-story">
-    <div class="cover-rule"><span>SPDW FACTORY / DOLPHIN Rt:CORE</span><span>FIELD JOURNAL · ISSUE 01 · 2026</span><span>GAMECUBE × WII</span></div>
-    <div class="cover-grid">
-      <div class="cover-copy">
-        <div class="cover-kicker">H700 FIELD ENGINEERING · RG35XX H</div>
-        <h1 class="cover-headline">The H700 <span>field guide.</span></h1>
-        <p class="cover-deck">One Dolphin engine, an entire handheld ecosystem. Explore real compatibility reports, carefully documented profiles, the GameSettings archive and the Rt:Stream PC companion — all in one editorial hub.</p>
-        <div class="cover-actions">
-          <a class="btn primary" href="./quick-start.html">Start the field guide →</a>
-          <a class="btn ghost" href="./compatibility.html">Open compatibility lab</a>
+<main class="page-enter" id="main-content">
+  <div class="reader-masthead wrap">
+    <div><span class="reader-kana">東京地下通信 / TOKYO UNDERGROUND SIGNAL</span><span class="reader-edition">INDEPENDENT FIELD JOURNAL · VOL. 01 · 2099</span></div>
+    <div class="reader-status"><i></i> ARCHIVE SIGNAL ONLINE</div>
+  </div>
+
+  <div class="magazine-reader" id="magazineReader" tabindex="0" aria-label="Dolphin Rt:Core magazine. Use the arrow controls or swipe horizontally to turn pages.">
+    <section class="mag-page cover-page" id="cover" data-page="0" aria-label="Front cover">
+      <div class="page-paper">
+        <div class="cover-topline"><span>SPDW FACTORY PRESENTS</span><span>NO. 001 / 2099.11</span><span>¥ 880 // DIGITAL EDITION</span></div>
+        <div class="cover-body">
+          <div class="cover-main">
+            <div class="cover-mark"><span>東京</span><span>地下</span><span>通信</span></div>
+            <div class="cover-kicker"><b>FIELD JOURNAL</b><span>GAMECUBE × WII / H700 SYSTEMS</span></div>
+            <h1 class="cover-headline">DOLPHIN<br><em>Rt:CORE</em></h1>
+            <p class="cover-subhead">THE HANDHELD<br>UNDERGROUND</p>
+            <div class="cover-rule-text">ONE ENGINE. MULTIPLE FIRMWARE LAYERS.<br>NO FAKE BENCHMARKS. NO PLUG-AND-PLAY MYTHS.</div>
+            <div class="cover-lines">
+              <div><b>01</b><span>THE H700 SURVIVAL GUIDE</span><small>RG35XX H / muOS ANDROMEDA</small></div>
+              <div><b>02</b><span>DOES IT ACTUALLY RUN?</span><small>235 COMMUNITY TEST REPORTS</small></div>
+              <div><b>03</b><span>THE 1,914 FILE INI UNDERWORLD</span><small>GAMESETTINGS / PROFILE TUNING</small></div>
+              <div><b>04</b><span>STREAM THE OUTSIDE WORLD</span><small>Rt:STREAM PC COMPANION</small></div>
+            </div>
+            <div class="cover-actions">
+              <button class="btn primary" type="button" data-mag-next>OPEN THE ISSUE →</button>
+              <a class="btn ghost" href="./compatibility.html">ENTER THE FIELD DATABASE ↗</a>
+            </div>
+          </div>
+          <div class="cover-art">
+            <div class="neon-kanji" aria-hidden="true">夜 / 走 / 査</div>
+            <div class="cover-art-frame"><img src="./assets/dolphin_rtcore_title.png" alt="Dolphin Rt:Core project artwork"></div>
+            <div class="cover-sticker">H700<br>FIELD<br>UNIT</div>
+            <div class="cover-art-meta"><span>RG35XX H</span><span>AARCH64</span><span>MUOS 2606</span></div>
+            <div class="cover-vertical">DOLPHIN Rt:CORE / SPDW FACTORY / FIELD ENGINEERING</div>
+            <div class="cover-barcode"><span>0012099</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
         </div>
-        <div class="cover-byline">
-          <span>REFERENCE <strong>RG35XX H / H700</strong></span>
-          <span>FIRMWARE <strong>muOS 2606.0 ANDROMEDA</strong></span>
-          <span>BUILD <strong>AARCH64</strong></span>
+        <div class="cover-bottomline"><span>BUILD IT. INSPECT IT. BOOT IT.</span><span>THE CITY NEVER SLEEPS. NEITHER DOES THE DEBUGGER.</span><span>SPDW / 001</span></div>
+        <span class="page-corner">COVER</span>
+      </div>
+    </section>
+
+    <section class="mag-page" id="contents" data-page="1" aria-label="Contents and release desk">
+      <div class="page-paper content-page">
+        <header class="spread-head">
+          <div><span class="eyebrow">01 / INSIDE THIS ISSUE</span><h2>THE SIGNAL<br><em>INDEX.</em></h2></div>
+          <p>Pick your route through the underground. Five sections, one connected project hub. The technical evidence stays real; the presentation gets its own personality.</p>
+        </header>
+        <div class="contents-grid">
+          <a class="contents-feature" href="./compatibility.html"><span>02 / FIELD REPORTS</span><b>DOES IT<br>RUN?</b><small>GameCube + Wii · compatibility ratings · test history ↗</small></a>
+          <a class="contents-item" href="./profiles.html"><span>03 / TUNING LAB</span><b>Profiles<br>with intent.</b><small>Rt:Boost / Rt:Prime / Rt:Pure ↗</small></a>
+          <a class="contents-item" href="./compatibility.html#gamesettings"><span>04 / INI ARCHIVE</span><b>1,914 files.<br>One tunnel.</b><small>GameSettings database, workshop, overrides ↗</small></a>
+          <a class="contents-item" href="./quick-start.html"><span>05 / FIELD MANUAL</span><b>First boot.<br>No folklore.</b><small>Andromeda setup / recovery / validation ↗</small></a>
+          <a class="contents-item" href="./docs.html"><span>06 / ENGINEERING ARCHIVE</span><b>Read the<br>source notes.</b><small>50 tracked documents / troubleshooting ↗</small></a>
         </div>
+        <div class="issue-stats">
+          <div class="issue-stat"><strong>H700</strong><span>Reference hardware</span></div>
+          <div class="issue-stat"><strong>235</strong><span>Compatibility test reports</span></div>
+          <div class="issue-stat"><strong>1,914</strong><span>Tracked GameSettings INI files</span></div>
+          <div class="issue-stat"><strong data-latest-release>v12.0.0</strong><span>Latest stable release · <time data-release-date>05 Nov 2026 · fallback</time></span></div>
+        </div>
+        <section class="release-desk">
+          <div class="release-desk-top">
+            <div><span class="eyebrow">RELEASE DESK / VERIFIED STABLE CHANNEL</span><h3>Dolphin Rt:Core <strong data-latest-release>v12.0.0</strong></h3><p>Published <time data-release-date>05 Nov 2026 · fallback</time> · muOS 2606.0 Andromeda stable family</p></div>
+            <a class="release-notes" data-release-link href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/v12.0.0">Release notes ↗</a>
+          </div>
+          <div class="release-assets">
+            <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.0.0/Dolphin_RtCore_v12_0_0_Andromeda.muxupd" data-release-asset="muxupd"><span>HANDHELD / muOS</span><strong>Andromeda MUXUPD ↗</strong></a>
+            <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.0.0/SPDW_Stream_Portal-4.2.1-x86_64.AppImage" data-release-asset="appimage"><span>DESKTOP / LINUX</span><strong>Rt:Stream AppImage ↗</strong></a>
+            <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.0.0/spdw-stream-portal-4.2.1-1.noarch.rpm" data-release-asset="rpm"><span>DESKTOP / RPM</span><strong>Rt:Stream RPM ↗</strong></a>
+          </div>
+          <p class="release-caveat">The muOS update package does not include the Dolphin emulator executable. Pair the AArch64 binary with its matching <code>Sys/</code> resources and firmware family; follow the Quick Start before installing.</p>
+        </section>
+        <div class="page-footerline"><span>SPDW FACTORY / TOKYO 2099</span><span>02 — CONTENTS & RELEASES</span><span>TURN PAGE →</span></div>
+        <span class="page-corner">02</span>
       </div>
-      <div class="cover-art" aria-label="Dolphin Rt:Core project artwork">
-        <div class="cover-frame"><img src="./assets/dolphin_rtcore_title.png" alt="Dolphin Rt:Core project artwork"></div>
-        <div class="cover-sticker">Field<br>tested<br>thinking</div>
-        <div class="cover-caption">COVER ART / SPDW FACTORY ENGINEERING ARCHIVE</div>
+    </section>
+
+    <section class="mag-page" id="field-report" data-page="2" aria-label="Compatibility field report">
+      <div class="page-paper content-page">
+        <header class="spread-head">
+          <div><span class="eyebrow">02 / FIELD REPORTS · LIVE DATABASE</span><h2>DOES IT<br><em>ACTUALLY RUN?</em></h2></div>
+          <p>Skip the vague “works great” comment. Each report belongs to a game ID, region, device, firmware, build and profile — with boot, playability and field notes kept separate.</p>
+        </header>
+        <div class="report-spread">
+          <div class="report-visual">
+            <div class="report-visual-stamp">REAL<br>WORLD<br>DATA</div>
+            <div class="report-scoreline"><strong>235</strong><span>FIELD REPORTS<br>IN THE CURRENT DATASET</span></div>
+            <div class="report-datagrid"><span>GAMECUBE <b>01</b></span><span>WII <b>02</b></span><span>DEVICE MATRIX <b>03</b></span><span>FIRMWARE LOG <b>04</b></span></div>
+            <div class="report-footnote">A GREEN CI BADGE IS NOT A HANDHELD TEST.</div>
+          </div>
+          <div class="report-copy">
+            <span class="tag">COMPATIBILITY / GAMECUBE + WII</span>
+            <h3>Every claim gets a context.</h3>
+            <p>Search game titles or six-character IDs, compare regions, filter by device and muOS version, inspect rating distributions, save favourites and share a filtered view. Open a game to see its individual test reports and the GameSettings attached to that title.</p>
+            <p>The database also accepts reproducible community reports. Unknown hardware details stay unknown — no invented FPS, firmware versions or “certified” claims.</p>
+            <a class="btn primary" href="./compatibility.html">ENTER COMPATIBILITY LAB ↗</a>
+          </div>
+        </div>
+        <div class="ini-teaser">
+          <div><span class="eyebrow">THE CONFIG UNDERWORLD</span><h3>1,914 INI FILES.<br>ONE SEARCH PORTAL.</h3><p>Official Dolphin defaults, Rt:Core overrides and Rt:UI workshop presets — searchable by Game ID, filename and source, right beside the test database.</p></div>
+          <a class="btn ghost" href="./compatibility.html#gamesettings">OPEN THE GAMESETTINGS ARCHIVE ↗</a>
+        </div>
+        <div class="page-footerline"><span>FIELD JOURNAL / REPORT 02</span><span>235 ENTRIES · COMMUNITY MAINTAINED</span><span>SPDW / 003</span></div>
+        <span class="page-corner">03</span>
       </div>
-    </div>
-    <div class="cover-footline"><span>BUILD IT. INSPECT IT. BOOT IT.</span><span>NO FAKE BENCHMARKS · NO UNIVERSAL FPS CLAIMS</span><span>SPDW / 001</span></div>
-  </section>
+    </section>
 
-  <section class="wrap issue-stats" aria-label="Project snapshot">
-    <div class="issue-stat"><strong>H700</strong><span>Reference hardware</span></div>
-    <div class="issue-stat"><strong>235</strong><span>Compatibility test reports</span></div>
-    <div class="issue-stat"><strong>1,914</strong><span>Tracked GameSettings INI files</span></div>
-    <div class="issue-stat"><strong data-latest-release>v12.0.0</strong><span>Latest stable release · <time data-release-date>05 Nov 2026 · fallback</time></span></div>
-  </section>
+    <section class="mag-page" id="tuning-lab" data-page="3" aria-label="Profiles and documentation">
+      <div class="page-paper content-page">
+        <header class="spread-head">
+          <div><span class="eyebrow">03 / THE TUNING LAB</span><h2>NO MAGIC<br><em>FPS SWITCHES.</em></h2></div>
+          <p>Profiles are starting points, not magic. Their job is to make trade-offs explicit and give testers a reproducible baseline for each game and environment.</p>
+        </header>
+        <div class="profile-triptych">
+          <a href="./profiles.html" class="profile-ticket boost"><span>PROFILE / 01</span><b>Rt:BOOST</b><small>PERFORMANCE FIRST</small><i>LITE · STANDARD · MAX</i></a>
+          <a href="./profiles.html" class="profile-ticket prime"><span>PROFILE / 02</span><b>Rt:PRIME</b><small>DAILY DRIVER / BALANCED</small><i>LITE · STANDARD · MAX</i></a>
+          <a href="./profiles.html" class="profile-ticket pure"><span>PROFILE / 03</span><b>Rt:PURE</b><small>ACCURACY FIRST</small><i>LITE · STANDARD · MAX</i></a>
+        </div>
+        <div class="archive-note">
+          <div class="archive-note-number">50</div>
+          <div><span class="eyebrow">ENGINEERING ARCHIVE / TRACKED SOURCE</span><h3>50 documents. No dead-end wiki maze.</h3><p>Read practical setup guides, engineering references, input architecture and troubleshooting notes inside the Documentation Center. The index points to tracked source files so the portal follows the project instead of drifting away from it.</p><a class="link" href="./docs.html">OPEN THE DOCUMENTATION CENTER ↗</a></div>
+        </div>
+        <div class="page-footerline"><span>FIELD JOURNAL / TUNING LAB</span><span>PROFILE ATLAS + ENGINEERING NOTES</span><span>SPDW / 004</span></div>
+        <span class="page-corner">04</span>
+      </div>
+    </section>
 
-  <section class="wrap release-desk">
-    <div class="release-desk-top">
-      <div><span class="eyebrow">RELEASE DESK / VERIFIED STABLE CHANNEL</span><h2>Dolphin Rt:Core <strong data-latest-release>v12.0.0</strong></h2><p>Published <time data-release-date>05 Nov 2026 · fallback</time> · muOS 2606.0 Andromeda stable family</p></div>
-      <a class="release-notes" data-release-link href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/v12.0.0">Release notes ↗</a>
-    </div>
-    <div class="release-assets">
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.0.0/Dolphin_RtCore_v12_0_0_Andromeda.muxupd" data-release-asset="muxupd"><span>HANDHELD / muOS</span><strong>Andromeda MUXUPD ↗</strong></a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.0.0/SPDW_Stream_Portal-4.2.1-x86_64.AppImage" data-release-asset="appimage"><span>DESKTOP / LINUX</span><strong>Rt:Stream AppImage ↗</strong></a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.0.0/spdw-stream-portal-4.2.1-1.noarch.rpm" data-release-asset="rpm"><span>DESKTOP / RPM</span><strong>Rt:Stream RPM ↗</strong></a>
-    </div>
-    <p class="release-caveat">The muOS update package does not include the Dolphin emulator executable. Pair the AArch64 binary with its matching <code>Sys/</code> resources and firmware family; follow the Quick Start before installing.</p>
-  </section>
+    <section class="mag-page" id="field-manual" data-page="4" aria-label="Field manual and ecosystem">
+      <div class="page-paper content-page">
+        <header class="spread-head">
+          <div><span class="eyebrow">04 / SURVIVAL KIT</span><h2>THE H700<br><em>FIELD MANUAL.</em></h2></div>
+          <p>Before the first game, match the right firmware package, Dolphin binary, Sys resources and registration. Then test on the actual handheld. There is no shortcut around that.</p>
+        </header>
+        <div class="manual-layout">
+          <div class="manual-checklist">
+            <div><b>01</b><span>MUOS 2606.0 ANDROMEDA</span><small>Keep the legacy Jacaranda line separate.</small></div>
+            <div><b>02</b><span>MATCHING AARCH64 DOLPHIN</span><small>Use the executable from the intended build.</small></div>
+            <div><b>03</b><span>THE MATCHING SYS TREE</span><small>Fonts, DSP, GameSettings and resources.</small></div>
+            <div><b>04</b><span>RG35XX H / H700 VALIDATION</span><small>Boot, input, audio, video, gameplay, clean exit.</small></div>
+          </div>
+          <div class="manual-copy">
+            <span class="tag">MUST KNOW / ANDROMEDA</span>
+            <h3>Install it like an engineer.</h3>
+            <p>The Quick Start walks through backup, Archive Manager, binary/resource pairing, registration, first launch and recovery — including the edge cases that tend to waste an evening.</p>
+            <a class="btn primary" href="./quick-start.html">OPEN THE FIELD MANUAL ↗</a>
+          </div>
+        </div>
+        <div class="stack-strip">
+          <div><span>ENGINE</span><b>Dolphin Rt:Core</b><small>Pinned emulator / H700 build</small></div>
+          <div><span>HANDHELD</span><b>RtSys + Rt:UI</b><small>Integration / library / profiles</small></div>
+          <div><span>PC COMPANION</span><b>Rt:Stream</b><small>Streaming / desktop portal</small></div>
+        </div>
+        <div class="network-callout"><strong>THE CITY NEVER SLEEPS.<br>NEITHER DOES THE DEBUGGER.</strong><a class="link" href="https://github.com/SilverCrow2323/dolphin-rt-core/tree/main/portal">ENTER THE Rt:STREAM NETWORK ↗</a></div>
+        <div class="page-footerline"><span>SPDW FACTORY / FIELD ENGINEERING</span><span>BUILD IT · INSPECT IT · BOOT IT</span><span>END OF ISSUE 001</span></div>
+        <span class="page-corner">05</span>
+      </div>
+    </section>
+  </div>
 
-  <section class="wrap mag-section">
-    <header class="mag-section-head">
-      <div class="mag-section-index">01</div>
-      <div><span class="eyebrow">THE COVER STORY</span><h2>Start with the evidence.</h2></div>
-      <p>Compatibility is not a vibe or a screenshot of a boot logo. Each report is tied to a game ID, region, device, firmware, build and profile.</p>
-    </header>
-    <div class="mag-feature-grid">
-      <article class="mag-feature feature-lead" data-folio="01">
-        <div><span class="feature-label">FIELD REPORTS / LIVE DATABASE</span><h3>Does it actually run?</h3><p>Compare GameCube and Wii results, inspect gameplay notes and open a title's report history. Filter by device, firmware, region and observed rating.</p></div>
-        <a href="./compatibility.html">Open the compatibility lab ↗</a>
-      </article>
-      <article class="mag-feature" data-folio="02">
-        <div><span class="feature-label">CONFIGURATION / PROFILE ATLAS</span><h3>Pick a profile with intent.</h3><p>Understand Rt:Boost, Rt:Prime and Rt:Pure. Browse the real tracked INI presets instead of chasing a mythical universal best setting.</p></div>
-        <a href="./profiles.html">Read the profile atlas ↗</a>
-      </article>
-      <article class="mag-feature" data-folio="03">
-        <div><span class="feature-label">GAMESETTINGS / ONE DESTINATION</span><h3>1,914 INIs. One archive.</h3><p>Search official Dolphin defaults, Rt:Core overrides and Rt:UI workshop presets from the GameSettings tab inside Compatibility.</p></div>
-        <a href="./compatibility.html#gamesettings">Browse the INI library ↗</a>
-      </article>
-    </div>
-  </section>
-
-  <section class="wrap mag-section">
-    <header class="mag-section-head">
-      <div class="mag-section-index">02</div>
-      <div><span class="eyebrow">THE PRACTICAL PAGES</span><h2>From setup to tuning.</h2></div>
-      <p>Short routes to the tasks that matter: install the right firmware package, inspect the actual profile data and understand the moving parts.</p>
-    </header>
-    <div class="mag-feature-grid">
-      <article class="mag-feature" data-folio="04">
-        <div><span class="feature-label">MUST KNOW / ANDROMEDA</span><h3>First boot. No guesswork.</h3><p>Package family, matching Dolphin binary and Sys resources, registration, controller input and first launch.</p></div>
-        <a href="./quick-start.html">Open the quick-start guide ↗</a>
-      </article>
-      <article class="mag-feature" data-folio="05">
-        <div><span class="feature-label">KNOWLEDGE CENTER / 50 DOCS</span><h3>One manual, not a maze.</h3><p>Read the tracked engineering notes, how-to guides, troubleshooting pages and project documentation.</p></div>
-        <a href="./docs.html">Enter the documentation center ↗</a>
-      </article>
-      <article class="mag-feature" data-folio="06">
-        <div><span class="feature-label">PC COMPANION / Rt:STREAM</span><h3>Local emulation is not streaming.</h3><p>Explore the separate PC-side streaming portal and handheld companion. Two workflows, clearly explained.</p></div>
-        <a href="https://github.com/SilverCrow2323/dolphin-rt-core/tree/main/portal">Explore Rt:Stream source ↗</a>
-      </article>
-    </div>
-  </section>
-
-  <section class="wrap mag-note">
-    <div><strong>One rule before every “works great” claim.</strong><p>CI can prove that code built and checks passed. It cannot prove a handheld booted, a game stayed playable or a controller mapping felt right. We publish the setup and the evidence — not wishful thinking.</p></div>
-    <div class="note-mark">FACT<br>FIRST</div>
-  </section>
-
-  <section class="wrap mag-section">
-    <header class="mag-section-head">
-      <div class="mag-section-index">03</div>
-      <div><span class="eyebrow">THE CURRENT ISSUE</span><h2>What ships in the stack.</h2></div>
-      <p>The components have separate responsibilities. Rt:Core is the engine integration; Rt:UI is the handheld control center; Rt:Stream is the PC companion.</p>
-    </header>
-    <div class="grid">
-      <article class="card"><span class="tag">01 / ENGINE</span><h3>Dolphin Rt:Core</h3><p>Pinned Dolphin source, H700-aware build targets, system resources and title-specific configuration.</p><a class="link" href="https://github.com/SilverCrow2323/dolphin-rt-core/tree/main/dolphin-build">Inspect the build pipeline ↗</a></article>
-      <article class="card"><span class="tag">02 / HANDHELD</span><h3>RtSys + Rt:UI</h3><p>muOS integration, launch orchestration, controller mapping, library, status center, profiles and tools.</p><a class="link" href="./quick-start.html">Read the handheld guide ↗</a></article>
-      <article class="card"><span class="tag">03 / PC COMPANION</span><h3>Rt:Stream</h3><p>PC-side streaming portal and handheld companion. Streaming is distinct from local H700 emulation.</p><a class="link" href="https://github.com/SilverCrow2323/dolphin-rt-core/tree/main/portal">Read the portal source ↗</a></article>
-    </div>
-  </section>
+  <nav class="magazine-navigation wrap" aria-label="Turn magazine pages">
+    <button type="button" class="page-turn prev" id="magPrev" disabled><span>←</span> PREVIOUS PAGE</button>
+    <div class="page-indicator"><span id="magPageNumber" aria-live="polite">01</span><i>/</i><span id="magPageTotal">05</span><div class="page-progress"><b id="magProgress"></b></div></div>
+    <button type="button" class="page-turn next" id="magNext">NEXT PAGE <span>→</span></button>
+  </nav>
+  <p class="swipe-hint wrap" id="swipeHint">SWIPE / SCROLL SIDEWAYS / USE ← → TO TURN THE PAGE</p>
 </main>
 
 <footer class="footer">
@@ -164,6 +223,7 @@
 </footer>
 <div class="toast"></div>
 <script src="./assets/site.js" defer></script>
+<script src="./assets/magazine.js" defer></script>
 <script>if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
 </body>
 </html>
