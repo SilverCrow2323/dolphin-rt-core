@@ -512,7 +512,17 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 }
 </style>
 <link rel="stylesheet" href="./assets/editorial.css">
-</head>
+<style>
+#header{transform:none!important}body.scrolled #header{transform:none!important}
+.header{position:sticky;top:0;z-index:50;background:#090d16f2;border-bottom:1px solid #ff613d55;backdrop-filter:blur(14px)}
+.headrow{min-height:76px;gap:12px;flex-wrap:wrap}
+.brand small{color:#76d9d1;letter-spacing:.14em;font:9px var(--mag-mono)}
+.nav a{font:10px var(--mag-mono);text-transform:uppercase;letter-spacing:.06em}
+.headtools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#header .nav-btn{border-radius:3px}
+.floating-close{z-index:35;pointer-events:auto}
+#gameModal{z-index:220}#reportModal{z-index:230}#gsModal{z-index:240}
+</style></head>
 <body class="theme-gc editorial-compat">
 <a class="skip-link" href="#main-content">Skip to compatibility results</a>
 
@@ -520,33 +530,7 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 
 <div id="toast" class="toast"></div>
 
-<header id="header">
-  <div class="header-inner">
-    <div class="brand">
-      <img id="brandIcon" class="brand-icon" src="./assets/gamecube.svg" alt="">
-      <div>
-        <div class="brand-title">Dolphin <span class="rt">Rt</span>:Core</div>
-        <div class="brand-sub">SPDW FACTORY · COMPATIBILITY / GAMESETTINGS</div>
-      </div>
-    </div>
-    <nav class="nav" aria-label="Main navigation">
-      <a href="./index.html" class="nav-btn"><i class="fa-solid fa-house"></i><span>Project Portal</span></a>
-      <a href="./quick-start.html" class="nav-btn"><i class="fa-solid fa-book"></i><span>Quick Start</span></a>
-      <a href="./profiles.html" class="nav-btn"><i class="fa-solid fa-sliders"></i><span>Profiles</span></a>
-      <a href="./docs.html" class="nav-btn"><i class="fa-solid fa-layer-group"></i><span>Docs</span></a>
-      <a href="https://github.com/SilverCrow2323/dolphin-rt-core" target="_blank" rel="noopener" class="nav-btn"><i class="fa-brands fa-github"></i><span>Repo</span></a>
-      <button class="nav-btn" id="reportBtn"><i class="fa-solid fa-clipboard-list"></i><span>Submit Report</span></button>
-      <button class="nav-btn accent" id="gsBtn"><i class="fa-solid fa-sliders"></i><span>Submit Config</span><span class="badge" id="gsBadge" style="display:none;">0</span></button>
-    </nav>
-    <div class="console-toggle" id="consoleToggle" role="button" tabindex="0" aria-label="Choose console" aria-pressed="false">
-      <div class="track">
-        <div class="slider"></div>
-        <div class="opt active" data-c="gc"><img src="./assets/gamecube.svg" alt="">GameCube</div>
-        <div class="opt" data-c="wii"><img src="./assets/wii.svg" alt="">Wii</div>
-      </div>
-    </div>
-  </div>
-</header>
+<header class="header"><div class="wrap headrow"><a class="brand" href="./index.html" aria-label="Dolphin Rt:Core magazine cover"><img id="brandIcon" src="./assets/dolphinrt_icon.png" alt=""><span><b>DOLPHIN <span>Rt:CORE</span></b><small>SPDW FACTORY · TOKYO 2099 EDITION</small></span></a><nav class="nav" aria-label="Main navigation"><a href="./index.html">01 / Cover</a><a class="active" aria-current="page" href="./compatibility.html">02 / Field Reports</a><a href="./profiles.html">03 / Tuning Lab</a><a href="./quick-start.html">04 / Field Manual</a><a href="./docs.html">05 / Archive</a></nav><div class="headtools"><button class="toolbtn" id="reportBtn">Submit Report</button><button class="toolbtn" id="gsBtn">Submit Config <span class="badge" id="gsBadge" style="display:none;">0</span></button><a class="toolbtn" href="https://github.com/SilverCrow2323/dolphin-rt-core/releases">Stable Releases ↗</a><button class="toolbtn hamb" data-open-drawer aria-controls="site-drawer" aria-expanded="false">☰ Index</button><div class="console-toggle" id="consoleToggle" role="button" tabindex="0" aria-label="Choose console" aria-pressed="false"><div class="track"><div class="slider"></div><div class="opt active" data-c="gc"><img src="./assets/gamecube.svg" alt="">GC</div><div class="opt" data-c="wii"><img src="./assets/wii.svg" alt="">Wii</div></div></div></div></div></header>
 
 <section class="hero">
   <div class="hero-inner">
@@ -1181,15 +1165,19 @@ function openGameModal(idx){
   currentGame=state.filtered[idx];
   if(!currentGame)return;
   currentRegion=currentGame.allRegions[0].region;
-  $('gameModal').classList.add('show');
+  clearTimeout($('gameModal')._closeTimer);$('gameModal').classList.remove('closing');$('gameModal').classList.add('show');
   document.body.style.overflow='hidden';
   renderGameModal();
   try{const gid=currentGame.agg.gameId||'';if(gid){const url=new URL(location.href);url.searchParams.set('game',gid);history.replaceState(null,'',url.toString());}}catch(e){}
 }
+function syncModalScrollLock(){
+  const open=[...document.querySelectorAll('.modal-back.show')].some(m=>!m.classList.contains('closing'));
+  document.body.style.overflow=open?'hidden':'';
+}
 function closeGameModal(){
-  const m=$('gameModal');
-  m.classList.add('closing');
-  setTimeout(()=>{m.classList.remove('show','closing');document.body.style.overflow='';},400);
+  const m=$('gameModal');if(!m||!m.classList.contains('show'))return;
+  clearTimeout(m._closeTimer);m.classList.add('closing');
+  m._closeTimer=setTimeout(()=>{m.classList.remove('show','closing');syncModalScrollLock();},400);
   try{const url=new URL(location.href);url.searchParams.delete('game');history.replaceState(null,'',url.toString());}catch(e){}
 }
 function renderGameModal(){
@@ -1581,7 +1569,7 @@ function openReportModal(prefill){
     if(rptSS&&rptSS.showSel)rptSS.showSel({title:prefill.title,gameId:prefill.gameId,region:prefill.region,system:prefill.system,cover:coverUrl(prefill.gameId,prefill.region)});
   }
 }
-function closeReportModal(){$('reportModal').classList.remove('show');document.body.style.overflow='';}
+function closeReportModal(){const m=$('reportModal');if(!m)return;m.classList.remove('show');syncModalScrollLock();}
 function resetReportForm(){
   $('rptErrors').style.display='none';$$('#reportModal .input-err').forEach(el=>el.classList.remove('input-err'));
   ['rptGameId','rptGameTitle','rptSystem','rptRegion'].forEach(id=>$(id).value='');
@@ -1703,7 +1691,7 @@ function updateGsBadge(){
   else b.style.display='none';
 }
 function openGameSettings(filterGameId){
-  $('gsModal').classList.add('show');document.body.style.overflow='hidden';
+  clearTimeout($('gsModal')._closeTimer);$('gsModal').classList.remove('closing');$('gsModal').classList.add('show');document.body.style.overflow='hidden';
   switchGsTab('browse');
   if(filterGameId){
     const g=state.rawGames.find(x=>String(x.game_info?.game_id||'').toUpperCase()===String(filterGameId).toUpperCase());
@@ -1716,9 +1704,9 @@ function openGameSettings(filterGameId){
   renderGsList();
 }
 function closeGameSettings(){
-  const m=$('gsModal');
-  m.classList.add('closing');
-  setTimeout(()=>{m.classList.remove('show','closing');document.body.style.overflow='';},400);
+  const m=$('gsModal');if(!m||!m.classList.contains('show'))return;
+  clearTimeout(m._closeTimer);m.classList.add('closing');
+  m._closeTimer=setTimeout(()=>{m.classList.remove('show','closing');syncModalScrollLock();},400);
 }
 function setGsConsole(c){
   state.gsConsole=c;
@@ -2118,7 +2106,7 @@ function init(){
       if(target!==state.gsConsole)setGsConsole(target);
     });
   }
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeGameModal();closeReportModal();closeGameSettings();}});
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('gsModal').classList.contains('show'))closeGameSettings();else if($('reportModal').classList.contains('show'))closeReportModal();else if($('gameModal').classList.contains('show'))closeGameModal();});
   let lastY=0;
   window.addEventListener('scroll',()=>{const y=window.scrollY;document.body.classList.toggle('scrolled',y>120&&y>lastY);lastY=y;},{passive:true});
 }
@@ -2177,6 +2165,16 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
     if(typeof value!=='string'||!allowed.some(prefix=>value.startsWith(prefix)))return '';
     return value;
   }
+  const escHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function openIniDetail(entry){
+    const modal=document.getElementById('iniDetailModal'),body=document.getElementById('iniDetailBody');
+    document.getElementById('iniDetailTitle').textContent=entry.filename||'GameSettings INI';
+    document.getElementById('iniDetailMeta').textContent=[entry.gameId,entry.kind,entry.path].filter(Boolean).join(' · ');
+    body.textContent='Fetching tracked INI source…';modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.body.classList.add('overlay-open');modal.querySelector('[data-ini-close]').focus();
+    try{const raw=linkFor(entry.raw,['https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/']);if(!raw)throw new Error('Source URL rejected');const response=await fetch(raw);if(!response.ok)throw new Error('HTTP '+response.status);body.textContent=await response.text();}
+    catch(error){body.textContent='Unable to load the raw INI ('+error.message+'). Use the Source or Raw INI link in the archive row.';}
+  }
+  function closeIniDetail(){const modal=document.getElementById('iniDetailModal');modal.classList.remove('show');modal.setAttribute('aria-hidden','true');if(!document.querySelector('.detail-overlay.show'))document.body.classList.remove('overlay-open');}
   function appendRow(entry,parent){
     const row=document.createElement('article');row.className='ini-explorer-row';
     const info=document.createElement('div');
@@ -2184,7 +2182,7 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
     const path=document.createElement('small');path.textContent=(entry.gameId?entry.gameId+' · ':'')+(entry.path||'');
     info.append(title,path);
     const kind=document.createElement('span');kind.className='ini-kind';kind.textContent=entry.kind||'Unclassified source';
-    const actions=document.createElement('div');actions.style.display='flex';actions.style.gap='12px';
+    const actions=document.createElement('div');actions.style.display='flex';actions.style.gap='12px';const inspect=document.createElement('button');inspect.type='button';inspect.className='ini-inspect';inspect.textContent='Inspect';inspect.addEventListener('click',()=>openIniDetail(entry));actions.append(inspect);
     const source=linkFor(entry.url,['https://github.com/SilverCrow2323/dolphin-rt-core/']);
     const raw=linkFor(entry.raw,['https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/']);
     if(source){const a=document.createElement('a');a.href=source;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Source ↗';actions.append(a);}
@@ -2214,7 +2212,7 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
       const response=await fetch('./data/site-gamesettings-index.json',{cache:'no-cache'});
       if(!response.ok)throw new Error('HTTP '+response.status);
       const data=await response.json();
-      entries=Array.isArray(data.entries)?data.entries:[];
+      entries=(Array.isArray(data.entries)?data.entries:[]).filter(entry=>!/^rtgameset_data\\.ini$/i.test(entry.filename||'')&&!String(entry.path||'').toLowerCase().endsWith('/rtgameset_data.ini'));
       total.textContent=number(entries.length);
       tabCount.textContent=number(entries.length)+' FILES';
       render();
@@ -2226,6 +2224,7 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
       list.append(empty);
     }
   }
+  document.querySelectorAll('[data-ini-close]').forEach(button=>button.addEventListener('click',closeIniDetail));document.getElementById('iniDetailModal').addEventListener('click',event=>{if(event.target.id==='iniDetailModal')closeIniDetail();});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('iniDetailModal').classList.contains('show'))closeIniDetail();});
   tabs.compat.addEventListener('click',()=>setView('compat'));
   tabs.ini.addEventListener('click',()=>setView('ini'));
   search.addEventListener('input',render);
@@ -2238,5 +2237,6 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
 })();
 </script>
 
+<div class="detail-overlay" id="iniDetailModal" aria-hidden="true"><section class="detail-dialog ini-detail-dialog" role="dialog" aria-modal="true" aria-label="GameSettings source details"><button class="detail-close" data-ini-close aria-label="Close INI inspector">×</button><div class="detail-kicker">GAMESETTINGS / READ-ONLY SOURCE INSPECTOR</div><h2 id="iniDetailTitle">Loading INI…</h2><p id="iniDetailMeta"></p><pre id="iniDetailBody">Fetching tracked INI source…</pre><div class="detail-dialog-foot"><span>TRACKED SOURCE · NO FILES MODIFIED</span><button class="btn ghost" data-ini-close>Close inspector</button></div></section></div>
 </body>
 </html>
