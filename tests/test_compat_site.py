@@ -115,7 +115,7 @@ class CompatibilitySiteTests(unittest.TestCase):
             expected = {
                 ".nojekyll", "index.html", "compatibility.html", "quick-start.html",
                 "profiles.html", "gamesettings.html", "docs.html", "manifest.json", "sw.js",
-                "assets/site.css", "assets/site.js", "assets/spdw_symbol.png",
+                "assets/site.css", "assets/site.js", "assets/editorial.css", "assets/magazine.js", "assets/spdw_symbol.png",
                 "assets/dolphinrt_icon.png", "assets/dolphin_rtcore_title.png",
                 "assets/gamecube.svg", "assets/wii.svg",
                 "data/site-gamesettings-index.json", "data/site-profiles.json", "data/site-docs-index.json",
@@ -129,6 +129,11 @@ class CompatibilitySiteTests(unittest.TestCase):
             deployed_html = (output / "index.html").read_text(encoding="utf-8")
             self.assertIn('href="./quick-start.html"', deployed_html)
             self.assertIn('href="./compatibility.html"', deployed_html)
+            self.assertIn('./assets/editorial.css', deployed_html)
+            self.assertIn('./assets/magazine.js', deployed_html)
+            self.assertIn("TOKYO UNDERGROUND SIGNAL", deployed_html)
+            self.assertIn('id="magazineReader"', deployed_html)
+            self.assertIn('data-mag-next', deployed_html)
             for page in ("quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
                 self.assertTrue((output / page).is_file(), page)
             self.assertIn("1,914", deployed_html)
@@ -140,6 +145,12 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertEqual(len(json.loads((output / "data" / "site-docs-index.json").read_text(encoding="utf-8"))["entries"]), 50)
             deployed_compatibility = (output / "compatibility.html").read_text(encoding="utf-8")
             self.assertIn("Compatibility Database", deployed_compatibility)
+            self.assertIn('id="gameSettingsTab"', deployed_compatibility)
+            self.assertIn('id="gamesettings"', deployed_compatibility)
+            self.assertIn("data/site-gamesettings-index.json", deployed_compatibility)
+            self.assertIn('./assets/editorial.css', deployed_compatibility)
+            legacy_gamesettings = (output / "gamesettings.html").read_text(encoding="utf-8")
+            self.assertIn("compatibility.html#gamesettings", legacy_gamesettings)
             self.assertIn('id="reportBtn"', deployed_compatibility)
             self.assertNotIn("README.md", actual)
             self.assertFalse((output / "dolphin-rtcore-muos").exists())
@@ -167,6 +178,12 @@ class CompatibilitySiteTests(unittest.TestCase):
                 tmp.flush()
                 result = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
+        magazine_script = subprocess.run(
+            [node, "--check", str(ROOT / "assets" / "magazine.js")],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(magazine_script.returncode, 0, magazine_script.stderr)
 
     def test_wiki_navigation_references_resolve(self):
         wiki = ROOT / "wiki"
@@ -312,7 +329,8 @@ class CompatibilitySiteTests(unittest.TestCase):
 
     def test_pwa_cache_is_bumped_for_new_website_shell(self):
         worker = (ROOT / "sw.js").read_text(encoding="utf-8")
-        self.assertIn("rtcore-site-v2", worker)
+        self.assertIn("rtcore-site-v4", worker)
+        self.assertIn("'./assets/magazine.js'", worker)
         for page in ("index.html", "compatibility.html", "quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
             self.assertIn("'./" + page + "'", worker)
         self.assertIn("'./data/site-gamesettings-index.json'", worker)
@@ -321,16 +339,19 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertNotIn("rtcore-db-v3", worker)
 
     def test_project_portal_is_the_public_homepage(self):
-        self.assertIn("Dolphin Rt:Core — Handheld GameCube", self.portal_html)
+        self.assertIn("Dolphin Rt:Core — Tokyo 2099 Field Journal", self.portal_html)
+        self.assertIn('id="magazineReader"', self.portal_html)
+        self.assertIn('class="mag-page cover-page"', self.portal_html)
+        self.assertIn('id="magNext"', self.portal_html)
         self.assertIn('id="downloads"', self.portal_html)
         self.assertIn('href="./quick-start.html"', self.portal_html)
         self.assertIn('href="./profiles.html"', self.portal_html)
-        self.assertIn('href="./gamesettings.html"', self.portal_html)
+        self.assertIn('href="./compatibility.html#gamesettings"', self.portal_html)
         self.assertIn('href="./docs.html"', self.portal_html)
         self.assertIn('href="./compatibility.html"', self.portal_html)
         self.assertIn("LATEST STABLE RELEASE", self.portal_html)
         self.assertIn("H700 FIELD ENGINEERING", self.portal_html)
-        self.assertIn("One engine.", self.portal_html)
+        self.assertIn("ONE ENGINE. MULTIPLE FIRMWARE LAYERS.", self.portal_html)
 
     def test_portal_uses_live_release_assets_and_explains_package_boundary(self):
         self.assertIn("Dolphin_RtCore_v12_0_0_Andromeda.muxupd", self.portal_html)
