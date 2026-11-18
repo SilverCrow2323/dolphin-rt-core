@@ -539,7 +539,24 @@ body.theme-wii #header .console-toggle .slider{background:#63e6e2}
 #header .nav-btn span{display:inline}
 @media(max-width:900px){#header .nav-btn span{display:none}#header .nav-btn{padding:10px 12px}}
 </style>
-</head>
+<style>
+/* Compatibility header aligned with the shared SPDW magazine shell. */
+#header{background:#09070bf0;border-bottom:1px solid #ff365f66;box-shadow:0 8px 32px #0009;transform:none!important}
+body.scrolled #header{transform:none!important}
+.header-inner{max-width:1280px;margin:0 auto;padding:13px 22px;gap:16px}
+.brand-title{font-family:Audiowide,sans-serif;letter-spacing:.04em;text-shadow:3px 2px 0 #ff365f55;text-transform:uppercase}
+.brand-title .rt{color:#ffb52e!important}
+.brand-sub{color:#63e6e2;letter-spacing:.14em;font:9px 'JetBrains Mono',monospace}
+#header .nav{gap:5px}
+#header .nav-btn{border-radius:3px;border:1px solid #80616c;background:#120c12;color:#fff1e5;font:10px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;padding:9px 11px}
+#header .nav-btn:hover,#header .nav-btn[aria-current=page]{color:#ffb52e;border-color:#ffb52e;background:#ffb52e10}
+#header .nav-btn.accent{border-color:#ff365f;color:#ff365f}
+.floating-close{z-index:35;pointer-events:auto}
+.modal-back{z-index:220}
+#gsModal{z-index:240}
+#reportModal{z-index:230}
+@media(max-width:900px){#header .header-inner{padding:10px 14px;gap:10px}.brand-sub{display:none}#header .nav-btn span{display:none}#header .nav-btn{padding:10px}}
+</style></head>
 <body class="theme-gc">
 <a class="skip-link" href="#main-content">Skip to compatibility results</a>
 
@@ -1182,15 +1199,19 @@ function openGameModal(idx){
   currentGame=state.filtered[idx];
   if(!currentGame)return;
   currentRegion=currentGame.allRegions[0].region;
-  $('gameModal').classList.add('show');
+  clearTimeout($('gameModal')._closeTimer);$('gameModal').classList.remove('closing');$('gameModal').classList.add('show');
   document.body.style.overflow='hidden';
   renderGameModal();
   try{const gid=currentGame.agg.gameId||'';if(gid){const url=new URL(location.href);url.searchParams.set('game',gid);history.replaceState(null,'',url.toString());}}catch(e){}
 }
+function syncModalScrollLock(){
+  const anyOpen=['gameModal','reportModal','gsModal'].some(id=>{const m=$(id);return m&&m.classList.contains('show')&&!m.classList.contains('closing');});
+  document.body.style.overflow=anyOpen?'hidden':'';
+}
 function closeGameModal(){
-  const m=$('gameModal');
-  m.classList.add('closing');
-  setTimeout(()=>{m.classList.remove('show','closing');document.body.style.overflow='';},400);
+  const m=$('gameModal');if(!m||!m.classList.contains('show'))return;
+  clearTimeout(m._closeTimer);m.classList.add('closing');
+  m._closeTimer=setTimeout(()=>{m.classList.remove('show','closing');syncModalScrollLock();},400);
   try{const url=new URL(location.href);url.searchParams.delete('game');history.replaceState(null,'',url.toString());}catch(e){}
 }
 function renderGameModal(){
@@ -1704,7 +1725,7 @@ function updateGsBadge(){
   else b.style.display='none';
 }
 function openGameSettings(filterGameId){
-  $('gsModal').classList.add('show');document.body.style.overflow='hidden';
+  clearTimeout($('gsModal')._closeTimer);$('gsModal').classList.remove('closing');$('gsModal').classList.add('show');document.body.style.overflow='hidden';
   switchGsTab('browse');
   if(filterGameId){
     const g=state.rawGames.find(x=>String(x.game_info?.game_id||'').toUpperCase()===String(filterGameId).toUpperCase());
@@ -1717,9 +1738,9 @@ function openGameSettings(filterGameId){
   renderGsList();
 }
 function closeGameSettings(){
-  const m=$('gsModal');
-  m.classList.add('closing');
-  setTimeout(()=>{m.classList.remove('show','closing');document.body.style.overflow='';},400);
+  const m=$('gsModal');if(!m||!m.classList.contains('show'))return;
+  clearTimeout(m._closeTimer);m.classList.add('closing');
+  m._closeTimer=setTimeout(()=>{m.classList.remove('show','closing');syncModalScrollLock();},400);
 }
 function setGsConsole(c){
   state.gsConsole=c;
@@ -2119,7 +2140,7 @@ function init(){
       if(target!==state.gsConsole)setGsConsole(target);
     });
   }
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeGameModal();closeReportModal();closeGameSettings();}});
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('gsModal').classList.contains('show'))closeGameSettings();else if($('reportModal').classList.contains('show'))closeReportModal();else if($('gameModal').classList.contains('show'))closeGameModal();});
   let lastY=0;
   window.addEventListener('scroll',()=>{const y=window.scrollY;document.body.classList.toggle('scrolled',y>120&&y>lastY);lastY=y;},{passive:true});
 }
