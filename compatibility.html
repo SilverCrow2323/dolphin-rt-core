@@ -539,7 +539,7 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 <section class="hero">
   <div class="hero-inner">
     <div>
-      <h1 class="hero-title"><a href="./">Dolphin <span class="rt">Rt</span>:Core<br>Compatibility Database</a></h1>
+      <h1 class="hero-title"><a href="./" aria-label="Project Portal home">Dolphin <span class="rt">Rt</span>:Core<br>Compatibility Database</a></h1>
       <p class="hero-tag">The field journal for GameCube and Wii on handheld hardware: inspect real test reports, compare exact environments and browse the GameSettings archive without leaving this page.</p>
     </div>
     <div class="hero-stats">
@@ -2073,11 +2073,11 @@ function init(){
   $('.rating-pill').forEach(p=>p.addEventListener('click',()=>{const r=p.dataset.r;state.stars=state.stars===r?'all':r;$('.rating-pill').forEach(x=>{x.classList.toggle('active',x.dataset.r===state.stars);x.setAttribute('aria-pressed',x.dataset.r===state.stars?'true':'false');});applyFilters();renderGames();}));
   $('gmClose').addEventListener('click',closeGameModal);
   $('gmCloseBtn').addEventListener('click',closeGameModal);
-  $('gameModal').addEventListener('click',e=>{if(e.target===$('gameModal'))closeGameModal();});
+  $('gameModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeGameModal();});
   $('reportBtn').addEventListener('click',openReportModal);
   $('rptClose').addEventListener('click',closeReportModal);
   $('rptCancel').addEventListener('click',closeReportModal);
-  $('reportModal').addEventListener('click',e=>{if(e.target===$('reportModal'))closeReportModal();});
+  $('reportModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeReportModal();});
   $$('#rptStars .star-btn').forEach(btn=>btn.addEventListener('click',()=>{
     const v=parseInt(btn.dataset.v);
     $$('#rptStars .star-btn').forEach(b=>{const bv=parseInt(b.dataset.v);b.classList.toggle('lit',bv===0?v===0:bv<=v);});
@@ -2094,7 +2094,7 @@ function init(){
   $('gsBtn').addEventListener('click',()=>openGameSettings());
   $('gsClose').addEventListener('click',closeGameSettings);
   $('gsCancel').addEventListener('click',()=>switchGsTab('browse'));
-  $('gsModal').addEventListener('click',e=>{if(e.target===$('gsModal'))closeGameSettings();});
+  $('gsModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeGameSettings();});
   $('gsTabBrowse').addEventListener('click',()=>switchGsTab('browse'));
   $('gsTabUpload').addEventListener('click',()=>{initGsUpload();switchGsTab('upload');});
   $('gsSubmit').addEventListener('click',gsSubmit);
@@ -2229,7 +2229,7 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
       list.append(empty);
     }
   }
-  document.querySelectorAll('[data-ini-close]').forEach(button=>button.addEventListener('click',closeIniDetail));document.getElementById('iniDetailModal').addEventListener('click',event=>{if(event.target.id==='iniDetailModal')closeIniDetail();});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('iniDetailModal').classList.contains('show'))closeIniDetail();});
+  document.querySelectorAll('[data-ini-close]').forEach(button=>button.addEventListener('click',closeIniDetail));document.getElementById('iniDetailModal').addEventListener('click',event=>{if(event.target===event.currentTarget)closeIniDetail();});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('iniDetailModal').classList.contains('show'))closeIniDetail();});
   tabs.compat.addEventListener('click',()=>setView('compat'));
   tabs.ini.addEventListener('click',()=>setView('ini'));
   search.addEventListener('input',render);
