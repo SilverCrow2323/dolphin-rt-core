@@ -2024,8 +2024,7 @@ function _applyConsole(target){
     t.classList.toggle('wii',target==='wii');
     t.querySelectorAll('.opt').forEach(o=>o.classList.toggle('active',o.dataset.c===target));
   });
-  const icon=target==='gc'?'./assets/gamecube.svg':'./assets/wii.svg';
-  $('brandIcon').src=icon;
+  // Keep the shared Dolphin Rt:Core masthead identity stable across console filters.
   const consoleToggle=$('consoleToggle');if(consoleToggle)consoleToggle.setAttribute('aria-pressed',target==='wii'?'true':'false');
   try{localStorage.setItem('dolphin-rtcore-console',target);}catch(e){}
   loadGames();
