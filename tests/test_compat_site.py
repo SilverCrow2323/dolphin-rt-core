@@ -115,7 +115,7 @@ class CompatibilitySiteTests(unittest.TestCase):
             expected = {
                 ".nojekyll", "index.html", "compatibility.html", "quick-start.html",
                 "profiles.html", "gamesettings.html", "docs.html", "manifest.json", "sw.js",
-                "assets/site.css", "assets/site.js", "assets/spdw_symbol.png",
+                "assets/site.css", "assets/site.js", "assets/editorial.css", "assets/spdw_symbol.png",
                 "assets/dolphinrt_icon.png", "assets/dolphin_rtcore_title.png",
                 "assets/gamecube.svg", "assets/wii.svg",
                 "data/site-gamesettings-index.json", "data/site-profiles.json", "data/site-docs-index.json",
@@ -129,6 +129,7 @@ class CompatibilitySiteTests(unittest.TestCase):
             deployed_html = (output / "index.html").read_text(encoding="utf-8")
             self.assertIn('href="./quick-start.html"', deployed_html)
             self.assertIn('href="./compatibility.html"', deployed_html)
+            self.assertIn('./assets/editorial.css', deployed_html)
             for page in ("quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
                 self.assertTrue((output / page).is_file(), page)
             self.assertIn("1,914", deployed_html)
@@ -140,6 +141,12 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertEqual(len(json.loads((output / "data" / "site-docs-index.json").read_text(encoding="utf-8"))["entries"]), 50)
             deployed_compatibility = (output / "compatibility.html").read_text(encoding="utf-8")
             self.assertIn("Compatibility Database", deployed_compatibility)
+            self.assertIn('id="gameSettingsTab"', deployed_compatibility)
+            self.assertIn('id="gamesettings"', deployed_compatibility)
+            self.assertIn("data/site-gamesettings-index.json", deployed_compatibility)
+            self.assertIn('./assets/editorial.css', deployed_compatibility)
+            legacy_gamesettings = (output / "gamesettings.html").read_text(encoding="utf-8")
+            self.assertIn("compatibility.html#gamesettings", legacy_gamesettings)
             self.assertIn('id="reportBtn"', deployed_compatibility)
             self.assertNotIn("README.md", actual)
             self.assertFalse((output / "dolphin-rtcore-muos").exists())
