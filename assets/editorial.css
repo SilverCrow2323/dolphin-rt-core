@@ -567,3 +567,11 @@ body.tokyo-2099 :focus-visible{outline:2px solid var(--neo-cyan);outline-offset:
 #iniDetailBody{white-space:pre;overflow:auto;max-height:55dvh;padding:18px;background:#05070d;border:1px solid var(--mag-line);color:#b9f4ed;font:11px/1.65 var(--mag-mono)}
 body.overlay-open{overflow:hidden}
 @media(max-width:650px){.profile-detail-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.detail-dialog{padding:22px 16px}.detail-dialog-foot{align-items:flex-start;flex-direction:column}}
+
+/* Source inspector shared by the magazine's INI archive. */
+.ini-inspect{padding:8px 11px;border:1px solid var(--mag-cyan);background:#76d9d10d;color:#c8f5ef;font:10px var(--mag-mono);cursor:pointer}
+.ini-inspect:hover{background:#76d9d122}
+.ini-detail-dialog{width:min(1000px,100%)}
+#iniDetailMeta{font:10px var(--mag-mono);color:var(--mag-muted);overflow-wrap:anywhere;margin-bottom:14px}
+#iniDetailBody{white-space:pre;overflow:auto;max-height:55dvh;padding:18px;background:#05070d;border:1px solid var(--mag-line);color:#b9f4ed;font:11px/1.65 var(--mag-mono)}
+body.overlay-open{overflow:hidden}
