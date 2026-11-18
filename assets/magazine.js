@@ -28,8 +28,9 @@ function detect(){
 prev.addEventListener('click',()=>setActive(active-1,true));
 next.addEventListener('click',()=>setActive(active+1,true));
 reader.addEventListener('scroll',detect,{passive:true});
-reader.addEventListener('keydown',event=>{
-  if(['INPUT','TEXTAREA','SELECT'].includes(event.target.tagName))return;
+document.addEventListener('keydown',event=>{
+  const target=event.target;
+  if(target.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(target.tagName))return;
   if(event.key==='ArrowRight'||event.key==='PageDown'){event.preventDefault();setActive(active+1,true)}
   if(event.key==='ArrowLeft'||event.key==='PageUp'){event.preventDefault();setActive(active-1,true)}
   if(event.key==='Home'){event.preventDefault();setActive(0,true)}
