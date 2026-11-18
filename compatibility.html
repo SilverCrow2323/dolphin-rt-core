@@ -548,7 +548,7 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 
 <div class="editorial-tabs" role="tablist" aria-label="Compatibility and GameSettings views">
   <button class="editorial-tab active" id="compatibilityTab" type="button" role="tab" aria-selected="true" aria-controls="main-content"><strong>01</strong> Compatibility Reports</button>
-  <button class="editorial-tab" id="gameSettingsTab" type="button" role="tab" aria-selected="false" aria-controls="gamesettings"><strong>02</strong> GameSettings Library <span id="iniTabCount">1,914 FILES</span></button>
+  <button class="editorial-tab" id="gameSettingsTab" type="button" role="tab" aria-selected="false" aria-controls="gamesettings"><strong>02</strong> GameSettings Library <span id="iniTabCount">1,907 FILES</span></button>
 </div>
 
 <div class="filter-bar" id="compatibilityControls">
@@ -586,9 +586,9 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
     <div>
       <span class="eyebrow">ARCHIVE / SOURCE INDEX / LIVE REPOSITORY</span>
       <h2 id="iniExplorerTitle">GameSettings Library.</h2>
-      <p>Search the 1,914 tracked INI files in the current repository tree. Official Dolphin defaults, Rt:Core overrides and Rt:UI workshop presets remain identified by source — this is an archive, not a list of universal recommendations.</p>
+      <p>Search the 1,907 tracked INI files in the current repository tree. Official Dolphin defaults, Rt:Core overrides and Rt:UI workshop presets remain identified by source — this is an archive, not a list of universal recommendations.</p>
     </div>
-    <div class="stat"><div class="stat-num" id="iniTotal">1,914</div><div class="stat-lbl">Tracked INI files</div></div>
+    <div class="stat"><div class="stat-num" id="iniTotal">1,907</div><div class="stat-lbl">Tracked INI files</div></div>
   </header>
   <div class="ini-explorer-tools">
     <input id="iniSearch" type="search" placeholder="Search filename, Game ID or path…" autocomplete="off" aria-label="Search GameSettings files">
@@ -2212,7 +2212,7 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
       const response=await fetch('./data/site-gamesettings-index.json',{cache:'no-cache'});
       if(!response.ok)throw new Error('HTTP '+response.status);
       const data=await response.json();
-      entries=(Array.isArray(data.entries)?data.entries:[]).filter(entry=>!/^rtgameset_data\\.ini$/i.test(entry.filename||'')&&!String(entry.path||'').toLowerCase().endsWith('/rtgameset_data.ini'));
+      entries=(Array.isArray(data.entries)?data.entries:[]).filter(entry=>!/^rtgameset_data\.ini$/i.test(entry.filename||'')&&!String(entry.path||'').toLowerCase().endsWith('/rtgameset_data.ini'));
       total.textContent=number(entries.length);
       tabCount.textContent=number(entries.length)+' FILES';
       render();
