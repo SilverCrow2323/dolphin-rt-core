@@ -2126,6 +2126,8 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
 }
 </script>
 
+<div class="detail-overlay" id="iniDetailModal" aria-hidden="true"><section class="detail-dialog ini-detail-dialog" role="dialog" aria-modal="true" aria-label="GameSettings source details"><button class="detail-close" data-ini-close aria-label="Close INI inspector">×</button><div class="detail-kicker">GAMESETTINGS / READ-ONLY SOURCE INSPECTOR</div><h2 id="iniDetailTitle">Loading INI…</h2><p id="iniDetailMeta"></p><pre id="iniDetailBody">Fetching tracked INI source…</pre><div class="detail-dialog-foot"><span>TRACKED SOURCE · NO FILES MODIFIED</span><button class="btn ghost" data-ini-close>Close inspector</button></div></section></div>
+
 <script>
 (()=>{'use strict';
   const tabs={compat:document.getElementById('compatibilityTab'),ini:document.getElementById('gameSettingsTab')};
@@ -2237,6 +2239,5 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
 })();
 </script>
 
-<div class="detail-overlay" id="iniDetailModal" aria-hidden="true"><section class="detail-dialog ini-detail-dialog" role="dialog" aria-modal="true" aria-label="GameSettings source details"><button class="detail-close" data-ini-close aria-label="Close INI inspector">×</button><div class="detail-kicker">GAMESETTINGS / READ-ONLY SOURCE INSPECTOR</div><h2 id="iniDetailTitle">Loading INI…</h2><p id="iniDetailMeta"></p><pre id="iniDetailBody">Fetching tracked INI source…</pre><div class="detail-dialog-foot"><span>TRACKED SOURCE · NO FILES MODIFIED</span><button class="btn ghost" data-ini-close>Close inspector</button></div></section></div>
 </body>
 </html>
