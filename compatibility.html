@@ -15,6 +15,8 @@
 <meta name="color-scheme" content="dark light" />
 <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=JetBrains+Mono:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="./assets/editorial.css">
+<script src="./assets/site.js" defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html{overflow-y:scroll;overflow-x:hidden;scroll-behavior:smooth;}
@@ -523,14 +525,16 @@ body.theme-wii .form-group label{flex-direction:row-reverse;justify-content:flex
 .floating-close{z-index:35;pointer-events:auto}
 #gameModal{z-index:220}#reportModal{z-index:230}#gsModal{z-index:240}
 </style></head>
-<body class="theme-gc editorial-compat">
+<body class="theme-gc editorial-compat magazine-site">
 <a class="skip-link" href="#main-content">Skip to compatibility results</a>
 
 <noscript><style>body > *:not(noscript){display:none !important;}</style><div style="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:#08080f;color:#f1f5f9;text-align:center;font-family:sans-serif;"><div style="max-width:520px;"><h1 style="font-size:32px;margin:0 0 14px;font-family:Audiowide,sans-serif;color:#a855f7;">JavaScript richiesto</h1><p style="font-size:16px;line-height:1.6;color:#a8b3c2;margin:0;">Questa pagina necessita JavaScript per caricare il database di compatibilit\u00e0. Abilita JavaScript nel browser e ricarica.</p></div></div></noscript>
 
 <div id="toast" class="toast"></div>
 
-<header class="header"><div class="wrap headrow"><a class="brand" href="./index.html" aria-label="Dolphin Rt:Core magazine cover"><img id="brandIcon" src="./assets/dolphinrt_icon.png" alt=""><span><b>DOLPHIN <span>Rt:CORE</span></b><small>SPDW FACTORY · TOKYO 2099 EDITION</small></span></a><nav class="nav" aria-label="Main navigation"><a href="./index.html">01 / Cover</a><a class="active" aria-current="page" href="./compatibility.html">02 / Field Reports</a><a href="./profiles.html">03 / Tuning Lab</a><a href="./quick-start.html">04 / Field Manual</a><a href="./docs.html">05 / Archive</a></nav><div class="headtools"><button class="toolbtn" id="reportBtn">Submit Report</button><button class="toolbtn" id="gsBtn">Submit Config <span class="badge" id="gsBadge" style="display:none;">0</span></button><a class="toolbtn" href="https://github.com/SilverCrow2323/dolphin-rt-core/releases">Stable Releases ↗</a><button class="toolbtn hamb" data-open-drawer aria-controls="site-drawer" aria-expanded="false">☰ Index</button><div class="console-toggle" id="consoleToggle" role="button" tabindex="0" aria-label="Choose console" aria-pressed="false"><div class="track"><div class="slider"></div><div class="opt active" data-c="gc"><img src="./assets/gamecube.svg" alt="">GC</div><div class="opt" data-c="wii"><img src="./assets/wii.svg" alt="">Wii</div></div></div></div></div></header>
+<div class="topline"></div>
+<header class="header"><div class="wrap headrow"><a class="brand" href="./index.html" aria-label="Dolphin Rt:Core magazine cover"><img id="brandIcon" src="./assets/dolphinrt_icon.png" alt=""><span><b>DOLPHIN <span>Rt:CORE</span></b><small>SPDW FACTORY · TOKYO 2099 EDITION</small></span></a><nav class="nav" aria-label="Main navigation"><a href="./index.html">01 / Cover</a><a class="active" aria-current="page" href="./compatibility.html">02 / Field Reports</a><a href="./profiles.html">03 / Tuning Lab</a><a href="./quick-start.html">04 / Field Manual</a><a href="./docs.html">05 / Archive</a></nav><div class="headtools"><button class="toolbtn" id="reportBtn">Submit Report</button><button class="toolbtn" id="gsBtn">Submit Config <span class="badge" id="gsBadge" style="display:none;">0</span></button><a class="toolbtn" href="https://github.com/SilverCrow2323/dolphin-rt-core/releases">Stable Releases ↗</a><button class="toolbtn hamb" data-open-drawer aria-controls="site-drawer" aria-expanded="false">☰ Index</button><div class="console-toggle" id="consoleToggle" role="button" tabindex="0" aria-label="Choose console" aria-pressed="false"><div class="track"><div class="slider"></div><div class="opt active" data-c="gc"><img src="./assets/gamecube.svg" alt="">GC</div><div class="opt" data-c="wii"><img src="./assets/wii.svg" alt="">Wii</div></div></div></div></div></header><div class="drawer-backdrop" data-close-drawer aria-hidden="true"></div><aside class="drawer" id="site-drawer" role="dialog" aria-modal="true" aria-label="Explore Dolphin Rt:Core" aria-hidden="true" inert><div class="drawer-head"><b>THE TOKYO 2099 INDEX</b><button class="toolbtn" data-close-drawer aria-label="Close navigation">×</button></div><a href="./index.html">01 / Cover</a><a href="./compatibility.html">02 / Field Reports</a><a href="./profiles.html">03 / Tuning Lab</a><a href="./quick-start.html">04 / Field Manual</a><a href="./docs.html">05 / Archive</a><a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases">Stable releases ↗</a><a href="https://github.com/SilverCrow2323/dolphin-rt-core/issues">Report an issue ↗</a></aside>
+
 
 <section class="hero">
   <div class="hero-inner">
