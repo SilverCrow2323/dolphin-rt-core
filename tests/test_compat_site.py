@@ -336,7 +336,7 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn("Dolphin Rt:Core — Tokyo 2099 Field Journal", self.portal_html)
         self.assertIn('id="magazineReader"', self.portal_html)
         self.assertIn('class="mag-page cover-page"', self.portal_html)
-        self.assertIn('id="magNext"', self.portal_html) if 'id="magNext"' in self.portal_html else self.assertIn('id="magNext"', self.portal_html)
+        self.assertIn('id="magNext"', self.portal_html)
         self.assertIn('id="downloads"', self.portal_html)
         self.assertIn('href="./quick-start.html"', self.portal_html)
         self.assertIn('href="./profiles.html"', self.portal_html)
@@ -345,7 +345,7 @@ class CompatibilitySiteTests(unittest.TestCase):
         self.assertIn('href="./compatibility.html"', self.portal_html)
         self.assertIn("LATEST STABLE RELEASE", self.portal_html)
         self.assertIn("H700 FIELD ENGINEERING", self.portal_html)
-        self.assertIn("One engine.", self.portal_html)
+        self.assertIn("ONE ENGINE. MULTIPLE FIRMWARE LAYERS.", self.portal_html)
 
     def test_portal_uses_live_release_assets_and_explains_package_boundary(self):
         self.assertIn("Dolphin_RtCore_v12_0_0_Andromeda.muxupd", self.portal_html)
