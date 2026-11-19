@@ -2109,7 +2109,7 @@ function init(){
       if(target!==state.gsConsole)setGsConsole(target);
     });
   }
-  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('gsModal').classList.contains('show'))closeGameSettings();else if($('reportModal').classList.contains('show'))closeReportModal();else if($('gameModal').classList.contains('show'))closeGameModal();});
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('iniDetailModal')?.classList.contains('show'))return;if($('gsModal').classList.contains('show'))closeGameSettings();else if($('reportModal').classList.contains('show'))closeReportModal();else if($('gameModal').classList.contains('show'))closeGameModal();});
   let lastY=0;
   window.addEventListener('scroll',()=>{const y=window.scrollY;document.body.classList.toggle('scrolled',y>120&&y>lastY);lastY=y;},{passive:true});
 }
