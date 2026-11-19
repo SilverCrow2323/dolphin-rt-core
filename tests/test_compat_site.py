@@ -154,6 +154,14 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertIn("openIniDetail(entry)", deployed_compatibility)
             self.assertIn('id="iniDetailModal"', deployed_compatibility)
             self.assertIn("syncModalScrollLock()", deployed_compatibility)
+        self.assertIn(
+            "document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('iniDetailModal')?.classList.contains('show'))return;if($('gsModal').classList.contains('show'))closeGameSettings();else if($('reportModal').classList.contains('show'))closeReportModal();else if($('gameModal').classList.contains('show'))closeGameModal();});",
+            deployed_compatibility,
+        )
+        self.assertIn(
+            "document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('iniDetailModal').classList.contains('show'))closeIniDetail();});",
+            deployed_compatibility,
+        )
             self.assertIn('./assets/editorial.css', deployed_compatibility)
             legacy_gamesettings = (output / "gamesettings.html").read_text(encoding="utf-8")
             self.assertIn("compatibility.html#gamesettings", legacy_gamesettings)
