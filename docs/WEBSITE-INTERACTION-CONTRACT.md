@@ -6,6 +6,7 @@ This is the implementation reference for the public portal's Compatibility, Game
 
 - A game detail sheet closes through its close controls, backdrop or Escape.
 - Nested GameSettings and report dialogs close independently. Escape closes only the topmost open dialog.
+- The read-only INI inspector is layered above the GameSettings modal: its first Escape closes only the inspector; a second Escape closes the parent GameSettings modal.
 - Scroll locking remains active while any underlying dialog is open.
 - Reopening during an exit animation cancels the stale close timer.
 
