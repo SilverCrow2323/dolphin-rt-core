@@ -454,3 +454,26 @@ if __name__ == "__main__":
             "document.getElementById('profileDetailModal').addEventListener('click',e=>{if(e.target===e.currentTarget)close()});",
             profiles,
         )
+
+
+    def test_profile_and_ini_detail_dialogs_have_accessible_focus_management(self):
+        profiles = (ROOT / "profiles.html").read_text(encoding="utf-8")
+        compatibility = (ROOT / "compatibility.html").read_text(encoding="utf-8")
+        site_js = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+
+        self.assertIn('aria-labelledby="profileDetailTitle"', profiles)
+        self.assertIn('aria-describedby="profileDetailDescription"', profiles)
+        self.assertIn('id="profileDetailTitle"', profiles)
+        self.assertIn('id="profileDetailDescription"', profiles)
+        self.assertIn('returnFocus=trigger||document.activeElement', profiles)
+        self.assertIn('if(target&&target.isConnected)target.focus()', profiles)
+
+        self.assertIn('aria-labelledby="iniDetailTitle"', compatibility)
+        self.assertIn('aria-describedby="iniDetailMeta"', compatibility)
+        self.assertIn('modal._returnFocus=document.activeElement', compatibility)
+        self.assertIn('if(target&&target.isConnected)target.focus()', compatibility)
+
+        self.assertIn("event.key!=='Tab'", site_js)
+        self.assertIn("$$('.detail-overlay.show')", site_js)
+        self.assertIn('document.activeElement===last', site_js)
+        self.assertIn('document.activeElement===first', site_js)

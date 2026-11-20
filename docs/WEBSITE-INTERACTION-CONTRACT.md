@@ -28,6 +28,7 @@ This is the implementation reference for the public portal's Compatibility, Game
 ## Settings inspector
 
 - Each public GameSettings row has a read-only in-page inspector showing exact raw INI text from its tracked source.
+- Profile and INI detail overlays expose an accessible name and description, trap Tab/Shift+Tab within the active dialog, close on Escape/backdrop, and restore focus to the invoking control.
 - Never rewrite or upload the file from the inspector. Preserve Source and Raw links as fallbacks.
 
 ## Documentation organization

@@ -25,7 +25,8 @@ document.addEventListener('keydown',e=>{
  if(e.shiftKey&&(document.activeElement===first||!drawerNode.contains(document.activeElement))){e.preventDefault();last.focus()}
  else if(!e.shiftKey&&(document.activeElement===last||!drawerNode.contains(document.activeElement))){e.preventDefault();first.focus()}
 });
-$$('[data-year]').forEach(n=>n.textContent=new Date().getFullYear());
+document.addEventListener('keydown',event=>{if(event.key!=='Tab')return;const overlays=$('.detail-overlay.show').filter(node=>node.getAttribute('aria-hidden')==='false');const overlay=overlays[overlays.length-1];if(!overlay)return;const dialog=overlay.querySelector('[role="dialog"][aria-modal="true"]');if(!dialog)return;const focusable=[...dialog.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(node=>!node.hidden);if(!focusable.length){event.preventDefault();dialog.focus();return}const first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&(document.activeElement===first||!dialog.contains(document.activeElement))){event.preventDefault();last.focus()}else if(!event.shiftKey&&(document.activeElement===last||!dialog.contains(document.activeElement))){event.preventDefault();first.focus()}});
+$('[data-year]').forEach(n=>n.textContent=new Date().getFullYear());
 if('IntersectionObserver'in window)reveal();else reveal();window.addEventListener('scroll',progress,{passive:true});progress();loadRelease();
 document.addEventListener('DOMContentLoaded',reveal);
 document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||a.target==='_blank'||a.origin!==location.origin||a.hash||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const href=a.getAttribute('href');if(!href||href.startsWith('mailto:')||href.startsWith('tel:'))return;e.preventDefault();document.body.classList.add('page-exit');setTimeout(()=>location.href=href,150)});

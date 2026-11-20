@@ -2129,7 +2129,7 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
 }
 </script>
 
-<div class="detail-overlay" id="iniDetailModal" aria-hidden="true"><section class="detail-dialog ini-detail-dialog" role="dialog" aria-modal="true" aria-label="GameSettings source details"><button class="detail-close" data-ini-close aria-label="Close INI inspector">×</button><div class="detail-kicker">GAMESETTINGS / READ-ONLY SOURCE INSPECTOR</div><h2 id="iniDetailTitle">Loading INI…</h2><p id="iniDetailMeta"></p><pre id="iniDetailBody">Fetching tracked INI source…</pre><div class="detail-dialog-foot"><span>TRACKED SOURCE · NO FILES MODIFIED</span><button class="btn ghost" data-ini-close>Close inspector</button></div></section></div>
+<div class="detail-overlay" id="iniDetailModal" aria-hidden="true"><section class="detail-dialog ini-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="iniDetailTitle" aria-describedby="iniDetailMeta" tabindex="-1"><button class="detail-close" data-ini-close aria-label="Close INI inspector">×</button><div class="detail-kicker">GAMESETTINGS / READ-ONLY SOURCE INSPECTOR</div><h2 id="iniDetailTitle">Loading INI…</h2><p id="iniDetailMeta"></p><pre id="iniDetailBody">Fetching tracked INI source…</pre><div class="detail-dialog-foot"><span>TRACKED SOURCE · NO FILES MODIFIED</span><button class="btn ghost" data-ini-close>Close inspector</button></div></section></div>
 
 <script>
 (()=>{'use strict';
@@ -2172,14 +2172,14 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){
   }
   const escHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function openIniDetail(entry){
-    const modal=document.getElementById('iniDetailModal'),body=document.getElementById('iniDetailBody');
+    const modal=document.getElementById('iniDetailModal'),body=document.getElementById('iniDetailBody');modal._returnFocus=document.activeElement;
     document.getElementById('iniDetailTitle').textContent=entry.filename||'GameSettings INI';
     document.getElementById('iniDetailMeta').textContent=[entry.gameId,entry.kind,entry.path].filter(Boolean).join(' · ');
     body.textContent='Fetching tracked INI source…';modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.body.classList.add('overlay-open');modal.querySelector('[data-ini-close]').focus();
     try{const raw=linkFor(entry.raw,['https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/']);if(!raw)throw new Error('Source URL rejected');const response=await fetch(raw);if(!response.ok)throw new Error('HTTP '+response.status);body.textContent=await response.text();}
     catch(error){body.textContent='Unable to load the raw INI ('+error.message+'). Use the Source or Raw INI link in the archive row.';}
   }
-  function closeIniDetail(){const modal=document.getElementById('iniDetailModal');modal.classList.remove('show');modal.setAttribute('aria-hidden','true');if(!document.querySelector('.detail-overlay.show'))document.body.classList.remove('overlay-open');}
+  function closeIniDetail(){const modal=document.getElementById('iniDetailModal');modal.classList.remove('show');modal.setAttribute('aria-hidden','true');if(!document.querySelector('.detail-overlay.show'))document.body.classList.remove('overlay-open');const target=modal._returnFocus;modal._returnFocus=null;if(target&&target.isConnected)target.focus();else search.focus();}
   function appendRow(entry,parent){
     const row=document.createElement('article');row.className='ini-explorer-row';
     const info=document.createElement('div');
