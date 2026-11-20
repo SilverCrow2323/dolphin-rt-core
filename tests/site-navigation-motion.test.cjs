@@ -26,7 +26,7 @@ function runNavigation(reducedMotion) {
   const document = {
     body: { classList: bodyClasses },
     documentElement: { scrollHeight: 0 },
-    querySelector() { return null; },
+    querySelector(selector) { return selector === '.nav a' ? [] : null; },
     querySelectorAll() { return []; },
     addEventListener(name, callback) {
       const current = listeners.get(name) || [];
