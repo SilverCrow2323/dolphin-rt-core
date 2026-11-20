@@ -193,5 +193,10 @@ jobs:
         run: bash tests/test_dolphin_qt6_packaging.sh
       - name: Test Knulli and ROCKNIX packaging with a matching Sys tree
         run: bash tests/test_port_sys_packaging.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Test reduced-motion navigation behavior
+        run: node --test tests/site-navigation-motion.test.cjs
       - name: Test repository and website tooling
         run: python -m unittest tests/test_repo_tools.py tests/test_compat_site.py tests/test_rtstream_web_portal.py -v
