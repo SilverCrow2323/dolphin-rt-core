@@ -23,7 +23,7 @@ The archive contains the refreshed Home, Library, Compatibility browser, Mod Vau
 **Download the PNG capture archive:** [GitHub Actions · CI run #1198](https://github.com/SilverCrow2323/dolphin-rt-core/actions/runs/43283168682)
 
 > [!NOTE]
-> These are automated Xvfb/LÖVE captures for the 12.1.0 / Rt:UI 3.7.0 Arcade candidate, not photographs or captures from an RG35XX H. They verify screen loading and layout rendering in CI; they do not certify physical-device rendering, input or performance. GitHub retains this workflow artifact for a limited period (currently 14 days).
+> These are automated Xvfb/LÖVE captures for the 12.5.00 / Rt:UI 3.7.0 Arcade candidate, not photographs or captures from an RG35XX H. They verify screen loading and layout rendering in CI; they do not certify physical-device rendering, input or performance. GitHub retains this workflow artifact for a limited period (currently 14 days).
 
 ## What to inspect first
 
