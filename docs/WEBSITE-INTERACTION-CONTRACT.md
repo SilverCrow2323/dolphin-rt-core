@@ -34,3 +34,8 @@ This is the implementation reference for the public portal's Compatibility, Game
 ## Documentation organization
 
 Use `docs/README.md` as the engineering index, `wiki/_Sidebar.md` as practical wiki navigation and `docs.html` as the searchable public reading interface. Keep user procedures in the wiki and implementation contracts in `docs/`.
+
+
+## Reduced-motion navigation
+
+Internal page navigation skips the 150 ms exit-transition delay when `prefers-reduced-motion: reduce` is active. The reduced-motion path changes location immediately; the normal path retains the short transition. A Node regression test exercises both branches with a mocked browser environment.
