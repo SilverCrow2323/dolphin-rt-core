@@ -29,5 +29,5 @@ document.addEventListener('keydown',event=>{if(event.key!=='Tab')return;const ov
 $('[data-year]').forEach(n=>n.textContent=new Date().getFullYear());
 if('IntersectionObserver'in window)reveal();else reveal();window.addEventListener('scroll',progress,{passive:true});progress();loadRelease();
 document.addEventListener('DOMContentLoaded',reveal);
-document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||a.target==='_blank'||a.origin!==location.origin||a.hash||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const href=a.getAttribute('href');if(!href||href.startsWith('mailto:')||href.startsWith('tel:'))return;e.preventDefault();document.body.classList.add('page-exit');setTimeout(()=>location.href=href,150)});
+document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||a.target==='_blank'||a.origin!==location.origin||a.hash||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const href=a.getAttribute('href');if(!href||href.startsWith('mailto:')||href.startsWith('tel:'))return;e.preventDefault();document.body.classList.add('page-exit');const reduceMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches===true;if(reduceMotion){location.href=href;return}setTimeout(()=>location.href=href,150)});
 })();
