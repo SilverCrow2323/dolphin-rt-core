@@ -1,7 +1,7 @@
 {
-  "generated_from": "main",
+  "generated_from": "main · public GameSettings INI entries only (internal rtgameset_data.ini metadata excluded)",
   "generated_at": "2026-11-15",
-  "count": 1914,
+  "count": 1907,
   "entries": [
     {
       "filename": "base.ini",
@@ -10,14 +10,6 @@
       "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GD7E70/base.ini",
       "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GD7E70/base.ini",
       "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GD7E70/base.ini"
-    },
-    {
-      "filename": "rtgameset_data.ini",
-      "gameId": "GD7E70",
-      "kind": "Rt:UI workshop",
-      "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GD7E70/rtgameset_data.ini",
-      "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GD7E70/rtgameset_data.ini",
-      "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GD7E70/rtgameset_data.ini"
     },
     {
       "filename": "speedhack.ini",
@@ -36,28 +28,12 @@
       "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GRHP41/custom_1024_0138.ini"
     },
     {
-      "filename": "rtgameset_data.ini",
-      "gameId": "GRHP41",
-      "kind": "Rt:UI workshop",
-      "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GRHP41/rtgameset_data.ini",
-      "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GRHP41/rtgameset_data.ini",
-      "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GRHP41/rtgameset_data.ini"
-    },
-    {
       "filename": "base.ini",
       "gameId": "GZ2E01",
       "kind": "Rt:UI workshop",
       "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GZ2E01/base.ini",
       "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ2E01/base.ini",
       "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ2E01/base.ini"
-    },
-    {
-      "filename": "rtgameset_data.ini",
-      "gameId": "GZ2E01",
-      "kind": "Rt:UI workshop",
-      "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GZ2E01/rtgameset_data.ini",
-      "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ2E01/rtgameset_data.ini",
-      "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ2E01/rtgameset_data.ini"
     },
     {
       "filename": "speedhack.ini",
@@ -76,14 +52,6 @@
       "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ2P01/base.ini"
     },
     {
-      "filename": "rtgameset_data.ini",
-      "gameId": "GZ2P01",
-      "kind": "Rt:UI workshop",
-      "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GZ2P01/rtgameset_data.ini",
-      "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ2P01/rtgameset_data.ini",
-      "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ2P01/rtgameset_data.ini"
-    },
-    {
       "filename": "speedhack.ini",
       "gameId": "GZ2P01",
       "kind": "Rt:UI workshop",
@@ -98,14 +66,6 @@
       "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GZ3E70/base.ini",
       "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ3E70/base.ini",
       "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ3E70/base.ini"
-    },
-    {
-      "filename": "rtgameset_data.ini",
-      "gameId": "GZ3E70",
-      "kind": "Rt:UI workshop",
-      "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GZ3E70/rtgameset_data.ini",
-      "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ3E70/rtgameset_data.ini",
-      "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZ3E70/rtgameset_data.ini"
     },
     {
       "filename": "speedhack.ini",
@@ -124,14 +84,6 @@
       "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZLP01/base.ini"
     },
     {
-      "filename": "rtgameset_data.ini",
-      "gameId": "GZLP01",
-      "kind": "Rt:UI workshop",
-      "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/GZLP01/rtgameset_data.ini",
-      "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZLP01/rtgameset_data.ini",
-      "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/GZLP01/rtgameset_data.ini"
-    },
-    {
       "filename": "speedhack.ini",
       "gameId": "GZLP01",
       "kind": "Rt:UI workshop",
@@ -146,14 +98,6 @@
       "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/SEKJ99/full_english_patch.ini",
       "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/SEKJ99/full_english_patch.ini",
       "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/SEKJ99/full_english_patch.ini"
-    },
-    {
-      "filename": "rtgameset_data.ini",
-      "gameId": "SEKJ99",
-      "kind": "Rt:UI workshop",
-      "path": "dolphin-rtcore-muos/app/Dolphin RtUI/workshop/gamesettings/SEKJ99/rtgameset_data.ini",
-      "url": "https://github.com/SilverCrow2323/dolphin-rt-core/blob/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/SEKJ99/rtgameset_data.ini",
-      "raw": "https://raw.githubusercontent.com/SilverCrow2323/dolphin-rt-core/main/dolphin-rtcore-muos/app/Dolphin%20RtUI/workshop/gamesettings/SEKJ99/rtgameset_data.ini"
     },
     {
       "filename": "G4QE01.ini",

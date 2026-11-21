@@ -21,7 +21,8 @@
 |---|---|
 | Install or upgrade on muOS | [[Quick-Start]] · [[muOS-Registration]] |
 | Understand controls and profile families | [[Controls-and-Profiles]] |
-| Find a GameCube/Wii result | [[Compatibility-Database]] |
+| Find a GameCube/Wii result | [[Compatibility-Database]] · includes the integrated GameSettings archive |
+| Browse GameSettings files | [Open GameSettings tab](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html#gamesettings) |
 | Understand ratings and FPS | [[Rating-Guide]] |
 | Submit a reproducible test | [[Reporting-a-Test]] |
 | Understand report fields | [[Compatibility-Data-Model]] |
@@ -46,7 +47,7 @@ See [[Project-Map]] and [[Platform-Support]] for boundaries and supported combin
 
 ## Compatibility Database
 
-The public homepage is the repository-root `index.html`; the standalone Compatibility Database lives at `compatibility.html`. The database reads the frontend's tracked `games_data.json` and `gamesettings.json`. The app includes GameCube/Wii themes, search, region/boot/rating filters, per-device and per-muOS filters, shareable filter URLs, report submission and offline shell support.
+The public homepage is the repository-root `index.html`; the unified Compatibility + GameSettings workspace lives at `compatibility.html`. Use its **Field Reports** and **GameSettings** tabs to move between test results and the INI archive without leaving the portal. The database reads the frontend's tracked `games_data.json` and `gamesettings.json`. The app includes GameCube/Wii themes, search, region/boot/rating filters, per-device and per-muOS filters, shareable filter URLs, report submission and offline shell support.
 
 **The source file is not proof that GitHub Pages is enabled.** Use a public Pages URL only after the repository owner has configured Pages. See [[Compatibility-Site]].
 

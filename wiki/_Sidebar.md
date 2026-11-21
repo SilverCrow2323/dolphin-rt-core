@@ -1,29 +1,30 @@
-## Dolphin Rt:Core
+## Dolphin Rt:Core · Tokyo 2099
 
-**Start**
+**THE MAGAZINE**
 - [[Home]]
 - [[Quick-Start]]
 - [[Platform-Support]]
 - [[FAQ]]
 
-**muOS and handheld**
-- [[muOS-Registration]]
-- [[Rt-System-Status-Center]]
-- [[Graphics-Mods]]
-- [[Controls-and-Profiles]]
-- [[Troubleshooting]]
-
-**Compatibility Database**
+**FIELD REPORTS · COMPATIBILITY + SETTINGS**
+- [GameSettings INI archive](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html#gamesettings)
 - [[Compatibility-Database]]
 - [[Compatibility-Data-Model]]
 - [[Rating-Guide]]
 - [[Reporting-a-Test]]
 - [[Compatibility-Site]]
 
-**Rt:Stream**
+**TUNING LAB · PROFILES**
+- [[Controls-and-Profiles]]
+- [[Graphics-Mods]]
+- [[muOS-Registration]]
+
+**FIELD SUPPORT**
+- [[Rt-System-Status-Center]]
+- [[Troubleshooting]]
 - [[Rt-Stream]]
 
-**Development**
+**ENGINEERING ARCHIVE**
 - [[Project-Map]]
 - [[Architecture]]
 - [[Development]]

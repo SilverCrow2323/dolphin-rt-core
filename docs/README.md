@@ -2,6 +2,13 @@
 
 This index points to the current engineering references for the multi-platform Dolphin Rt:Core repository.
 
+## Start here — project map
+
+- Public portal interaction and data boundaries: [WEBSITE-INTERACTION-CONTRACT.md](WEBSITE-INTERACTION-CONTRACT.md).
+- Compatibility and test evidence: [COMPATIBILITY_SITE.md](COMPATIBILITY_SITE.md).
+- Profile and GameSettings semantics: [PROFILES.md](PROFILES.md).
+- Practical user procedures: tracked `wiki/` pages and the [GitHub Wiki](../wiki).
+
 ## Architecture and implementation
 
 | Document | What it covers |

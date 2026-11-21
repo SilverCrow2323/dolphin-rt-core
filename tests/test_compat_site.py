@@ -136,18 +136,24 @@ class CompatibilitySiteTests(unittest.TestCase):
             self.assertIn('data-mag-next', deployed_html)
             for page in ("quick-start.html", "profiles.html", "gamesettings.html", "docs.html"):
                 self.assertTrue((output / page).is_file(), page)
-            self.assertIn("1,914", deployed_html)
+            self.assertIn("1,907", deployed_html)
             catalog = json.loads((output / "data" / "site-gamesettings-index.json").read_text(encoding="utf-8"))
-            self.assertEqual(catalog["count"], 1914)
-            self.assertEqual(len(catalog["entries"]), 1914)
+            self.assertEqual(catalog["count"], 1907)
+            self.assertEqual(len(catalog["entries"]), 1907)
             self.assertTrue(all((ROOT / entry["path"]).is_file() for entry in catalog["entries"]))
+            self.assertFalse(any(entry["filename"].lower() == "rtgameset_data.ini" for entry in catalog["entries"]))
             self.assertEqual(len(json.loads((output / "data" / "site-profiles.json").read_text(encoding="utf-8"))["profiles"]), 19)
-            self.assertEqual(len(json.loads((output / "data" / "site-docs-index.json").read_text(encoding="utf-8"))["entries"]), 50)
+            self.assertIn("profileDetailModal", (output / "profiles.html").read_text(encoding="utf-8"))
+            self.assertIn("TOKYO 2099 EDITION", (output / "profiles.html").read_text(encoding="utf-8"))
+            self.assertEqual(len(json.loads((output / "data" / "site-docs-index.json").read_text(encoding="utf-8"))["entries"]), 51)
             deployed_compatibility = (output / "compatibility.html").read_text(encoding="utf-8")
             self.assertIn("Compatibility Database", deployed_compatibility)
             self.assertIn('id="gameSettingsTab"', deployed_compatibility)
             self.assertIn('id="gamesettings"', deployed_compatibility)
             self.assertIn("data/site-gamesettings-index.json", deployed_compatibility)
+            self.assertIn("openIniDetail(entry)", deployed_compatibility)
+            self.assertIn('id="iniDetailModal"', deployed_compatibility)
+            self.assertIn("syncModalScrollLock()", deployed_compatibility)
             self.assertIn('./assets/editorial.css', deployed_compatibility)
             legacy_gamesettings = (output / "gamesettings.html").read_text(encoding="utf-8")
             self.assertIn("compatibility.html#gamesettings", legacy_gamesettings)
@@ -413,3 +419,61 @@ if __name__ == "__main__":
         self.assertIn("SDL/0/muOS-Keys", (ROOT / "quick-start.html").read_text(encoding="utf-8"))
         self.assertIn("Video_Hacks", (ROOT / "profiles.html").read_text(encoding="utf-8"))
         self.assertIn("GameSettings Library", (ROOT / "gamesettings.html").read_text(encoding="utf-8"))
+
+    def test_all_modal_backdrops_close_only_when_the_backdrop_is_clicked(self):
+        for modal, closer in (
+            ("gameModal", "closeGameModal"),
+            ("reportModal", "closeReportModal"),
+            ("gsModal", "closeGameSettings"),
+        ):
+            expected = f"$('{modal}').addEventListener('click',e=>{{if(e.target===e.currentTarget){closer}();}});"
+            self.assertIn(expected, self.html)
+
+        self.assertIn(
+            "document.getElementById('iniDetailModal').addEventListener('click',event=>{if(event.target===event.currentTarget)closeIniDetail();});",
+            self.html,
+        )
+        self.assertIn(
+            "document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if($('iniDetailModal')?.classList.contains('show'))return;if($('gsModal').classList.contains('show'))closeGameSettings();else if($('reportModal').classList.contains('show'))closeReportModal();else if($('gameModal').classList.contains('show'))closeGameModal();});",
+            self.html,
+        )
+        self.assertIn(
+            "document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('iniDetailModal').classList.contains('show'))closeIniDetail();});",
+            self.html,
+        )
+        self.assertLess(
+            self.html.index("if($('iniDetailModal')?.classList.contains('show'))return;"),
+            self.html.index("if($('gsModal').classList.contains('show'))closeGameSettings();"),
+        )
+        self.assertNotIn(
+            "document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('iniDetailModal').classList.contains('show'))closeIniDetail();});",
+            self.html[self.html.index("document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('iniDetailModal').classList.contains('show'))closeIniDetail();});")+1:],
+        )
+        profiles = (ROOT / "profiles.html").read_text(encoding="utf-8")
+        self.assertIn(
+            "document.getElementById('profileDetailModal').addEventListener('click',e=>{if(e.target===e.currentTarget)close()});",
+            profiles,
+        )
+
+
+    def test_profile_and_ini_detail_dialogs_have_accessible_focus_management(self):
+        profiles = (ROOT / "profiles.html").read_text(encoding="utf-8")
+        compatibility = (ROOT / "compatibility.html").read_text(encoding="utf-8")
+        site_js = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+
+        self.assertIn('aria-labelledby="profileDetailTitle"', profiles)
+        self.assertIn('aria-describedby="profileDetailDescription"', profiles)
+        self.assertIn('id="profileDetailTitle"', profiles)
+        self.assertIn('id="profileDetailDescription"', profiles)
+        self.assertIn('returnFocus=trigger||document.activeElement', profiles)
+        self.assertIn('if(target&&target.isConnected)target.focus()', profiles)
+
+        self.assertIn('aria-labelledby="iniDetailTitle"', compatibility)
+        self.assertIn('aria-describedby="iniDetailMeta"', compatibility)
+        self.assertIn('modal._returnFocus=document.activeElement', compatibility)
+        self.assertIn('if(target&&target.isConnected)target.focus()', compatibility)
+
+        self.assertIn("event.key!=='Tab'", site_js)
+        self.assertIn("$$('.detail-overlay.show')", site_js)
+        self.assertIn('document.activeElement===last', site_js)
+        self.assertIn('document.activeElement===first', site_js)
