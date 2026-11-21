@@ -1,6 +1,6 @@
-# Dolphin Rt:UI 3.4 "Triage" — Flavour III of Dolphin Rt:Core
+# Dolphin Rt:UI 3.7.0 "Arcade" — Release candidate
 
-Controller-first frontend for Dolphin on muOS (RG35XX H, 640x480, 1 GB RAM).
+Controller-first frontend for Dolphin on muOS (RG35XX H, H700, 640x480, 1 GB RAM). This document tracks the 3.7.0 Arcade candidate; see the repository root README for published release status.
 Full description, screenshots and install guide: see the Flavour III README
 shipped with the release (`README_Flavour_III_FrontendONE.md`).
 
