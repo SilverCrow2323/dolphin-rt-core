@@ -93,3 +93,77 @@ test('normal navigation retains the short exit transition', () => {
   result.timers[0].callback();
   assert.equal(result.location.href, '/profiles.html');
 });
+
+
+function runOverlayFocusTrap(active, shiftKey) {
+  const listeners = new Map();
+  let focused = '';
+  const first = { hidden: false, focus() { focused = 'first'; } };
+  const last = { hidden: false, focus() { focused = 'last'; } };
+  const dialog = {
+    querySelectorAll() { return [first, last]; },
+    contains(node) { return node === first || node === last; },
+    focus() { focused = 'dialog'; },
+  };
+  const overlay = {
+    getAttribute(name) { return name === 'aria-hidden' ? 'false' : null; },
+    querySelector(selector) {
+      return selector === '[role="dialog"][aria-modal="true"]' ? dialog : null;
+    },
+  };
+  const document = {
+    body: {
+      classList: {
+        add() {},
+        toggle() {},
+        contains() { return false; },
+      },
+    },
+    documentElement: { scrollHeight: 0 },
+    activeElement: active === 'first' ? first : last,
+    querySelector() { return null; },
+    querySelectorAll(selector) {
+      return selector === '.detail-overlay.show' ? [overlay] : [];
+    },
+    addEventListener(name, callback) {
+      const current = listeners.get(name) || [];
+      current.push(callback);
+      listeners.set(name, current);
+    },
+  };
+  const window = {
+    addEventListener() {},
+    matchMedia() { return { matches: false }; },
+  };
+  const context = {
+    document,
+    window,
+    location: {
+      pathname: '/compatibility.html',
+      origin: 'https://example.test',
+      href: 'https://example.test/compatibility.html',
+    },
+    setTimeout() { return 1; },
+    clearTimeout() {},
+  };
+
+  vm.runInNewContext(source, context, { filename: 'assets/site.js' });
+  let prevented = false;
+  const event = {
+    key: 'Tab',
+    shiftKey,
+    preventDefault() { prevented = true; },
+  };
+  for (const handler of listeners.get('keydown') || []) handler(event);
+  return { focused, prevented };
+}
+
+test('open modal overlays trap Tab focus in both directions', () => {
+  const forward = runOverlayFocusTrap('last', false);
+  assert.equal(forward.prevented, true);
+  assert.equal(forward.focused, 'first');
+
+  const reverse = runOverlayFocusTrap('first', true);
+  assert.equal(reverse.prevented, true);
+  assert.equal(reverse.focused, 'last');
+});
