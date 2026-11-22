@@ -26,7 +26,6 @@ GPTK="$APP/workshop/hotkeys/Default/ext-dolphin.gptk"
 need "$GPTK" 'select+start    = escape'
 ! grep -Eq '^select\+m[[:space:]]*=[[:space:]]*escape' "$GPTK" || fail "Exit is incorrectly bound to MENU instead of physical START"
 need "$HK" 'General/Exit = Escape'
-WATCHER="$APP/scripts/overlay_exit.sh"
 APP_WATCHER="$APP/scripts/overlay_exit.sh"
 RTSYS_WATCHER="$EMU/RtSys/overlay_exit.sh"
 for watcher in "$APP_WATCHER" "$RTSYS_WATCHER"; do
