@@ -14,9 +14,9 @@ log "Watcher started on $JS_DEV"
 
 [ -e "$JS_DEV" ] || { log "ERROR: $JS_DEV not found"; exit 1; }
 
-# Button numbers (muOS Schema B / RG35XX H)
-START_BTN=7
-SELECT_BTN=6
+# /dev/input/jsX uses zero-based joydev indices: START=9, SELECT=8.
+START_BTN=9
+SELECT_BTN=8
 
 start_down=0
 select_down=0
