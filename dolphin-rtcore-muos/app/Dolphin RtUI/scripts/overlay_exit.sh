@@ -18,9 +18,9 @@ log() { echo "[$(date '+%H:%M:%S')] $*" >> "$LOG"; }
 log "watcher on $JS_DEV (dolphin_pid='${DOLPHIN_PID:-none}')"
 [ -e "$JS_DEV" ] || { log "ERROR: $JS_DEV not present"; exit 1; }
 
-# RG35XX H / muOS schema: START=7, SELECT=6
-START_BTN=7
-SELECT_BTN=6
+# /dev/input/jsX uses zero-based joydev indices: START=9, SELECT=8.
+START_BTN=9
+SELECT_BTN=8
 start_down=0
 select_down=0
 

@@ -20,17 +20,20 @@ need "$HK" 'Load State/Load State Slot 1 = F2'
 ! grep -Fq 'Keys/Exit' "$HK" || fail "legacy Keys/Exit action is still shipped"
 ok "default hotkeys use Dolphin 2606 schema"
 
-# The SELECT+START chord must be consistent between the gptk virtual-key
-# binding and the Dolphin hotkey profile; the raw overlay watcher remains
-# a separate safety path using the same H700 physical button numbers.
+# SDL keyboard injection and the raw /dev/input/jsX watcher are separate paths.
+# The virtual-key chord remains SELECT+START; the watcher must use joydev IDs.
 GPTK="$APP/workshop/hotkeys/Default/ext-dolphin.gptk"
 need "$GPTK" 'select+start    = escape'
 ! grep -Eq '^select\+m[[:space:]]*=[[:space:]]*escape' "$GPTK" || fail "Exit is incorrectly bound to MENU instead of physical START"
 need "$HK" 'General/Exit = Escape'
-WATCHER="$APP/scripts/overlay_exit.sh"
-need "$WATCHER" 'START_BTN=7'
-need "$WATCHER" 'SELECT_BTN=6'
-ok "SELECT+START exit chord matches H700 raw input schema"
+APP_WATCHER="$APP/scripts/overlay_exit.sh"
+RTSYS_WATCHER="$EMU/RtSys/overlay_exit.sh"
+for watcher in "$APP_WATCHER" "$RTSYS_WATCHER"; do
+    need "$watcher" 'START_BTN=9'
+    need "$watcher" 'SELECT_BTN=8'
+    need "$watcher" '/dev/input/jsX uses zero-based joydev indices'
+done
+ok "SELECT+START raw watcher uses joydev indices START=9 / SELECT=8"
 
 # muOS Content Explorer launches through ext-dolphinrt.sh, not Rt:UI's
 # in-app scripts/launch.sh. That launcher must attach gptokeyb2 too.
