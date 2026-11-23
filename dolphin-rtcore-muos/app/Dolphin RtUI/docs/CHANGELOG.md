@@ -2,7 +2,7 @@
 
 ## 3.7.0 "Arcade" — Rt:Core v12.5.00 for muOS 2606.0 Andromeda
 
-**Status: release candidate.** This version is not published until the full package and device gates pass.
+**Status: released — 2026-11-23.** Official stable muOS 2606.0 Andromeda / H700 package: `Dolphin_RtCore_v12_5_00_Andromeda.muxupd`.
 
 ### Added
 - Autonomous boot introduction and incremental local ROM discovery, keeping startup responsive while the library is scanned.
@@ -20,11 +20,13 @@
 - Duplicate local-library scan entries and stale GameSettings database state are covered by regression tests.
 - Preset preview handles LF, CRLF and legacy CR line endings while preserving blank lines.
 - Safe Exit, profile merging and the new platform helpers have host-side regression coverage.
+- Fixed the Safe Exit joydev mapping in both shipped `/dev/input/jsX` watchers: START=9 and SELECT=8; Dolphin SDL profile indices remain START=7 and SELECT=6.
 
 ### Validation status
 - LuaJIT syntax, shell syntax, NEXUS contracts, LÖVE UI smoke and repository CI are automated.
-- The H700 full-update workflow is required to validate the AArch64 executable, GLIBC ABI, private runtime libraries, matching Sys tree, MUXUPD archive and manifest on the exact candidate commit.
-- Installation, upgrade, rollback/uninstall and physical RG35XX H boot/controller/game/audio/video/exit tests remain separate release gates.
+- Native ARM64 H700 build, GLIBC ABI gate, AArch64 executable/private-runtime validation and full MUXUPD packaging passed on the release source.
+- Repository CI passed 7/7 jobs, including LÖVE smoke and automatic Screenshot Studio generation (22 screens × 3 resolutions).
+- The completed package passed ZIP integrity and all 3,547 manifest SHA-256 checks.
 
 ---
 
