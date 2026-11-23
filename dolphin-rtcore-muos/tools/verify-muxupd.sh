@@ -6,8 +6,8 @@ ARCHIVE="$(readlink -f "${1:?usage: verify-muxupd.sh <file.muxupd>}")"
 TAG="${MUOS_TAG:-2606.0_Andromeda}"
 W="$(mktemp -d)"; trap 'rm -rf "$W"' EXIT; cd "$W"
 RAW="https://raw.githubusercontent.com/MustardOS/internal/$TAG/script"
-curl -fsSL "$RAW/var/zip.sh" -o zip.sh || { echo "cannot fetch zip.sh for $TAG"; exit 2; }
-curl -fsSL "$RAW/mux/extract.sh" -o extract.sh || { echo "cannot fetch extract.sh for $TAG"; exit 2; }
+curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 15 --max-time 90 "$RAW/var/zip.sh" -o zip.sh || { echo "cannot fetch zip.sh for $TAG after retries"; exit 2; }
+curl -fsSL --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 15 --max-time 90 "$RAW/mux/extract.sh" -o extract.sh || { echo "cannot fetch extract.sh for $TAG after retries"; exit 2; }
 sed -n '/^VERIFY_UPDATE()/,/^}/p' extract.sh > verify.sh
 sed -n '/^INSTALL_UPDATE()/,/^}/p' extract.sh \
   | sed 's|"/\${UPDATE_DIR#\./}"|"$FAKEROOT/${UPDATE_DIR#./}"|; s|UPDATE_DEST="/\$UPDATE_FILE"|UPDATE_DEST="$FAKEROOT/$UPDATE_FILE"|' > install.sh

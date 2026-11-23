@@ -121,44 +121,40 @@ jobs:
           test -s data/logs/smoke.txt
           grep -Fq "0 FAIL" data/logs/smoke.txt
           cat data/logs/smoke.txt
-      - name: Capture every screen at supported display sizes
+      - name: Generate and validate release-ready UI screenshot pack
         env:
           SDL_AUDIODRIVER: dummy
         run: |
           expected="$(sed -nE 's/^RESULT: ([0-9]+)\/([0-9]+) OK, 0 FAIL$/\2/p' data/logs/smoke.txt)"
-          for resolution in 640x480 720x480 720x720; do
-            output="$RUNNER_TEMP/dolphin-rtui-screenshots/$resolution"
-            mkdir -p "$output"
-            DOLPHINUI_RES="$resolution" bash ../../../tools/capture-ui.sh --all --delay 0.7 --out-dir "$output"
-            actual="$(find "$output" -maxdepth 1 -type f -name '*.png' | wc -l)"
-            test "$actual" -eq "$expected"
-            python3 - "$output" "$resolution" <<'PY'
-          from pathlib import Path
-          import struct
+          output="$RUNNER_TEMP/dolphin-rtui-screenshots/release-pack"
+          python3 ../../../tools/screenshot_studio.py \
+            --resolutions "640x480,720x480,720x720" \
+            --delay 0.7 \
+            --out-dir "$output"
+          python3 - "$output/manifest.json" "$expected" <<'PY'
+          import json
           import sys
+          from pathlib import Path
 
-          folder = Path(sys.argv[1])
-          expected_size = tuple(map(int, sys.argv[2].split("x")))
-          images = sorted(folder.glob("*.png"))
-          for image in images:
-            with image.open("rb") as stream:
-              header = stream.read(24)
-            if header[:8] != b"\x89PNG\r\n\x1a\n":
-              raise SystemExit(f"{image.name}: invalid PNG signature")
-            actual_size = struct.unpack(">II", header[16:24])
-            if actual_size != expected_size:
-              raise SystemExit(f"{image.name}: {actual_size}, expected {expected_size}")
-          print(f"Verified {len(images)} PNG dimensions at {sys.argv[2]}.")
+          manifest = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected = int(sys.argv[2])
+          for resolution in ("640x480", "720x480", "720x720"):
+            images = [item for item in manifest["images"] if item["resolution"] == resolution]
+            if len(images) != expected:
+              raise SystemExit(f"{resolution}: captured {len(images)}, expected {expected}")
+          print(f"Verified {len(manifest['images'])} PNGs and gallery metadata.")
           PY
-            echo "Captured $actual/$expected screens at $resolution."
-          done
       - uses: actions/upload-artifact@v4
         with:
-          name: dolphin-rtui-screen-captures
-          path: "${{ runner.temp }}/dolphin-rtui-screenshots/**/*.png"
+          name: dolphin-rtui-screenshot-studio
+          path: |
+            ${{ runner.temp }}/dolphin-rtui-screenshots/release-pack/**/*.png
+            ${{ runner.temp }}/dolphin-rtui-screenshots/release-pack/manifest.json
+            ${{ runner.temp }}/dolphin-rtui-screenshots/release-pack/GALLERY.md
+            ${{ runner.temp }}/dolphin-rtui-screenshots/release-pack/README_GALLERY_SNIPPET.md
+            ${{ runner.temp }}/dolphin-rtui-screenshots/release-pack/RELEASE_NOTES_SNIPPET.md
           if-no-files-found: error
           retention-days: 14
-
   repository-tooling:
     runs-on: ubuntu-latest
     steps:
@@ -178,7 +174,7 @@ jobs:
           sh -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/manifest_tool.sh
           bash -n dolphin-rtcore-muos/overlay/opt/muos/share/emulator/dolphin/RtSys/switch_weapon/switch_weapon.sh
           bash -n tests/test_muos_registration.sh tests/test_dolphin_runtime_contract.sh tests/test_dolphin_sys_packaging.sh tests/test_port_sys_packaging.sh tests/test_dolphin_build_workflow_triggers.sh
-          python -m py_compile tools/asset_inventory.py tests/test_repo_tools.py tests/test_compat_site.py tests/test_rtstream_web_portal.py pc-stream/usr/lib/spdw-stream-portal/web_portal.py
+          python -m py_compile tools/asset_inventory.py tools/screenshot_studio.py tests/test_repo_tools.py tests/test_screenshot_studio.py tests/test_compat_site.py tests/test_rtstream_web_portal.py pc-stream/usr/lib/spdw-stream-portal/web_portal.py
       - name: Test native Dolphin workflow self-triggers
         run: bash tests/test_dolphin_build_workflow_triggers.sh
       - name: Test AArch64 ELF validation contract
@@ -199,4 +195,4 @@ jobs:
       - name: Test reduced-motion navigation behavior
         run: node --test tests/site-navigation-motion.test.cjs
       - name: Test repository and website tooling
-        run: python -m unittest tests/test_repo_tools.py tests/test_compat_site.py tests/test_rtstream_web_portal.py -v
+        run: python -m unittest tests/test_repo_tools.py tests/test_screenshot_studio.py tests/test_compat_site.py tests/test_rtstream_web_portal.py -v

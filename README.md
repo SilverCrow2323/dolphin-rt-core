@@ -8,7 +8,7 @@
 
 **One engine. Multiple firmware layers. No fake benchmarks. No plug-and-play promises.**
 
-[![Release](https://img.shields.io/badge/release-12.0.0%20Kanzentai-8C59F2?style=for-the-badge)](https://github.com/SilverCrow2323/dolphin-rt-core/releases/latest)
+[![Release](https://img.shields.io/badge/release-12.5.00%20Arcade-8C59F2?style=for-the-badge)](https://github.com/SilverCrow2323/dolphin-rt-core/releases/latest)
 ![Device](https://img.shields.io/badge/reference-RG35XX%20H-FF6F00?style=for-the-badge)
 ![SoC](https://img.shields.io/badge/SoC-Allwinner%20H700-FF6F00?style=for-the-badge)
 ![Architecture](https://img.shields.io/badge/target-AArch64-22A06B?style=for-the-badge)
@@ -21,14 +21,14 @@
 
 ---
 
-> **FIELD NOTE // 2026-11-17**
+> **FIELD NOTE // 2026-11-23**
 >
-> The active hardware reference for this development line is the **Anbernic RG35XX H with the Allwinner H700 SoC**.
-> Legacy hardware notes have been reconciled with this RG35XX H reference.
+> **Dolphin Rt:Core v12.5.00 "Arcade"** is the current stable release for **muOS 2606.0 Andromeda** on H700/AArch64 handhelds.
+> The package ships the matching Dolphin executable, Rt:UI 3.7.0, system resources and private runtime libraries in one verified MUXUPD.
 >
-> The currently published stable release is **v12.0.0**. Dolphin Rt:Core **12.5.00 / Rt:UI 3.7.0 Arcade** remains an integration candidate and has not been released.
+> The reference hardware remains the **Anbernic RG35XX H with the Allwinner H700 SoC**. Other H700 devices, firmware generations and distro ports require their own validation; do not infer compatibility from the shared CPU architecture.
 >
-> A successful build is not a successful device boot. The current H700 binaries still need to pass the on-device launch, font, input, rendering and clean-exit checks described below.
+> CI and package integrity checks establish that the release was built and assembled correctly. They are not a promise of full speed for every game or blanket certification for other devices and firmware.
 
 ## 01 — The project
 
@@ -44,7 +44,7 @@ This project does not promise that every GameCube or Wii title will run at full 
 
 | Platform | Integration | Current status |
 |---|---|---|
-| **muOS 2606.0 Andromeda** | Main v12.0.0 Kanzentai package, Rt:UI, RtSys and core registration | Primary handheld line. The reproducible H700 NoGUI build is in the native ARM64 workflow; fresh binaries still require an RG35XX H runtime test. |
+| **muOS 2606.0 Andromeda** | Stable v12.5.00 "Arcade" package, Rt:UI 3.7.0, RtSys and core registration | Current stable H700/AArch64 NoGUI release. The complete update includes the matched Dolphin binary, Sys tree and private runtime. |
 | **muOS 2601.1 Jacaranda** | Legacy v11.5.1 Triptych line | Historical/legacy release line. Do not install the Andromeda package on Jacaranda by assumption. |
 | **Knulli / Batocera** | Separate Rt:Core K integration | Existing RG35XX H / Knulli Scarab device testing is documented in the K port. Verify each new binary/resource pair before releasing it. |
 | **ROCKNIX** | Separate Rt:Core R integration with a Wayland-enabled build target | Experimental. The old fbdev binary/display mismatch is the reason for the dedicated Wayland build. A successful CI build still needs a physical-device launch test. |
@@ -86,6 +86,30 @@ The active muOS frontend lives in **dolphin-rtcore-muos/app/Dolphin RtUI/**. His
 Press **M** in Rt:UI to expand the header into the scrollable **Rt:System Status Center**. It reports Wi-Fi and battery telemetry, Rt:Stream portal/Sunshine health, database download state, GameSettings deployment, library indexing, background operations and notification history. Wi-Fi link state and remote server health are deliberately reported separately.
 
 Keep Dolphin's official **Sys/GameSettings/** and **Sys/Load/GraphicMods/** resources. Rt:UI's **Mod Vault → Graphics Mods** combines that built-in catalog with user mods from **Load/GraphicMods/**. A mod marked **All Games** is eligible for every game; it is not globally enabled. Enablement is saved per Game ID in the game's **Config/GraphicMods** profile, and the launcher turns on Dolphin's Graphics Mods engine only when that profile contains an enabled entry. See [Graphics Mods](wiki/Graphics-Mods.md) and [Rt:System Status Center](wiki/Rt-System-Status-Center.md).
+
+
+### Rt:UI 3.7.0 — Interface preview
+
+The release includes selected interface captures and a complete 66-image gallery, generated automatically by Screenshot Studio. The previews are rendered by LÖVE under Xvfb, not photographed from a handheld.
+
+<p align="center">
+  <img src="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.5.00/rtui-settings.png" width="32%" alt="Rt:UI Settings">
+  <img src="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.5.00/rtui-compatibility.png" width="32%" alt="Rt:UI Compatibility">
+  <img src="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.5.00/rtui-keymap.png" width="32%" alt="Rt:UI Controller Keymap">
+</p>
+
+[Download the complete Rt:UI Arcade screenshot gallery](https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.5.00/RtUI_3_7_0_Arcade_Screenshot_Gallery.zip).
+
+### Rt:UI Screenshot Studio
+
+Generate the actual Rt:UI screens automatically — no mockups and no manual screen-by-screen navigation:
+
+```sh
+python3 tools/screenshot_studio.py
+```
+
+The tool discovers every registered screen, captures the UI at three resolutions, validates PNG dimensions and SHA-256 hashes, and creates a complete `GALLERY.md` plus ready-to-paste README and release-note snippets. It uses Python's standard library and the existing LÖVE capture engine. See [Screenshot Studio guide](docs/SCREENSHOTS.md). Review images for personal ROM names, paths or diagnostic data before publishing; Xvfb captures are not hardware photographs.
+
 
 ## 05 — Build system
 
@@ -214,16 +238,16 @@ GitHub Actions runs repository contracts, packaging dry-runs, frontend smoke tes
 
 Development should happen on short-lived branches and be merged through pull requests. Keep changes small and independently reviewable. Do not bypass a failing check by weakening architecture validation or relabelling an untested build.
 
-**Current engineering priorities — 17 November 2026**
+**Current engineering priorities — 23 November 2026**
 
-1. Bring the **12.5.00 release candidate** onto a reviewable branch based on current `main`; reconcile the Rt:UI 3.7.0 Arcade, Hotkeys 2606, Settings/NEXUS and GameSettings contracts without carrying a divergent repository snapshot.
-2. Build the **full Andromeda MUXUPD** from one matching AArch64 Dolphin binary, `Sys/` tree and private runtime-library set. Verify ELF64/AArch64, GLIBC baseline, archive integrity and `manifest.sha256` on the exact candidate SHA.
-3. Exercise install, upgrade, rollback and uninstall with disposable fixtures; audit package contents, runtime provenance and preservation of user data.
-4. Verify the exact package on a real **RG35XX H / H700** running the recorded muOS firmware: boot, fonts, controller/hotkeys, GameCube/Wii launch and return, audio/video, memory behavior and clean shutdown.
-5. Complete Rt:UI 3.7.0 Arcade smoke/input review and Rt:Stream PC Companion interoperability, including real-device Sunshine/Moonlight and SFTP path/transfer checks.
-6. Finish the product hub review: mobile/desktop layout, keyboard/accessibility, reduced-motion behavior, PWA cache/offline routes and release-feed behavior. Keep the Compatibility Database available at `compatibility.html`.
+1. Maintain the **v12.5.00 Arcade** stable line with focused hotfixes and regression coverage.
+2. Keep the Rt:UI Screenshot Studio gallery current for new screens and releases; inspect screenshots for privacy and visual correctness before publishing.
+3. Continue collecting game-by-game compatibility reports with exact Game ID, region, profile, firmware and observed behavior.
+4. Keep KNULLI and ROCKNIX integrations versioned and validated independently from the muOS Andromeda package.
+5. Continue Rt:Stream interoperability checks against real Sunshine/Moonlight hosts and SFTP targets.
+6. Maintain the product hub, documentation, accessibility and offline/PWA checks.
 
-**Release status:** v12.0.0 is the latest published stable release. Draft v12.0.1 build candidates are not public releases; 12.5.00 is not released. A green CI run or native ARM64 build is not a handheld installation test.
+**Release status:** **v12.5.00 "Arcade"** is the current stable release for muOS 2606.0 Andromeda. The full MUXUPD contains the matched AArch64 Dolphin binary and runtime, Rt:UI 3.7.0 and the corresponding Sys resources. The package is specific to this firmware line; KNULLI, ROCKNIX and Jacaranda remain separate targets.
 
 ## 11 — Documentation and links
 

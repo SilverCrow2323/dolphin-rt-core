@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="760" viewBox="0 0 1500 760" role="img" aria-labelledby="title desc">
+<title id="title">muOS firmware profile selection</title>
+<desc id="desc">Automatic detection or a manual override resolves to Andromeda equals or non-Andromeda. Jacaranda belongs to non-Andromeda and retains the initial mapping.</desc>
+<defs>
+<linearGradient id="bg" x2="1" y2="1"><stop stop-color="#09152c"/><stop offset="1" stop-color="#1b0d35"/></linearGradient>
+<linearGradient id="blue" x2="1"><stop stop-color="#0956a7"/><stop offset="1" stop-color="#087fba"/></linearGradient>
+<linearGradient id="purple" x2="1"><stop stop-color="#4f2384"/><stop offset="1" stop-color="#7f31b6"/></linearGradient>
+<linearGradient id="green" x2="1"><stop stop-color="#096545"/><stop offset="1" stop-color="#149b60"/></linearGradient>
+<style>
+.h{font:700 40px 'DejaVu Sans',Arial,sans-serif;fill:#f7f8ff}.s{font:500 22px 'DejaVu Sans',Arial,sans-serif;fill:#cfdbef}.t{font:700 26px 'DejaVu Sans',Arial,sans-serif;fill:#fff}.b{font:500 21px 'DejaVu Sans',Arial,sans-serif;fill:#eef4ff}.m{font:500 18px 'DejaVu Sans',Arial,sans-serif;fill:#c1cee3}
+</style></defs>
+<rect width="1500" height="760" rx="34" fill="url(#bg)"/>
+<text x="75" y="88" class="h">muOS PROFILE · AUTO OR MANUAL</text>
+<text x="77" y="128" class="s">The override selects the firmware family. It does not convert EV_KEY into SDL or joydev indices.</text>
+
+<rect x="80" y="210" width="360" height="170" rx="24" fill="url(#blue)" stroke="#71caff" stroke-width="2"/>
+<text x="260" y="270" text-anchor="middle" class="t">AUTO</text>
+<text x="260" y="315" text-anchor="middle" class="b">GET_VAR system version</text>
+<text x="260" y="348" text-anchor="middle" class="m">fallback: version file</text>
+
+<rect x="80" y="430" width="360" height="170" rx="24" fill="url(#purple)" stroke="#cb9aff" stroke-width="2"/>
+<text x="260" y="490" text-anchor="middle" class="t">MANUAL OVERRIDE</text>
+<text x="260" y="535" text-anchor="middle" class="b">= Andromeda</text>
+<text x="260" y="568" text-anchor="middle" class="b">!= Andromeda</text>
+
+<path d="M440 295 H560 V380 H660" fill="none" stroke="#8bd2ff" stroke-width="4" stroke-linecap="round"/>
+<path d="M440 515 H560 V420 H660" fill="none" stroke="#cba4ff" stroke-width="4" stroke-linecap="round"/>
+
+<path d="M800 305 L940 400 L800 495 L660 400 Z" fill="#31205b" stroke="#d9a4ff" stroke-width="3"/>
+<text x="800" y="390" text-anchor="middle" class="t">ANDROMEDA?</text>
+<text x="800" y="426" text-anchor="middle" class="m">version string match</text>
+
+<path d="M940 400 H1030 V260 H1090" fill="none" stroke="#75e5b2" stroke-width="4"/>
+<path d="M940 400 H1030 V535 H1090" fill="none" stroke="#d1a8ff" stroke-width="4"/>
+<text x="1000" y="235" class="m">YES</text><text x="1000" y="570" class="m">NO</text>
+
+<rect x="1090" y="180" width="330" height="155" rx="24" fill="url(#green)" stroke="#74edb7" stroke-width="2"/>
+<text x="1255" y="237" text-anchor="middle" class="t">= ANDROMEDA</text>
+<text x="1255" y="282" text-anchor="middle" class="b">Alternative EV_KEY map</text>
+
+<rect x="1090" y="455" width="330" height="155" rx="24" fill="url(#blue)" stroke="#8bd5ff" stroke-width="2"/>
+<text x="1255" y="512" text-anchor="middle" class="t">!= ANDROMEDA</text>
+<text x="1255" y="555" text-anchor="middle" class="b">Jacaranda = initial map</text>
+
+<text x="750" y="690" text-anchor="middle" class="m">Auto is recommended. Choose a manual override only when firmware detection is unavailable or intentionally forced.</text>
+</svg>

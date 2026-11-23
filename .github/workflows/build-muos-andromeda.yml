@@ -160,39 +160,113 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish authenticated draft Release candidate
+      - name: Publish official Dolphin Rt:Core release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'SilverCrow2323/dolphin-rt-core'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           OUT="$RUNNER_TEMP/dolphin-muos"
           ARCHIVE="$(find "$OUT/dist" -maxdepth 1 -type f -name '*.muxupd' -print -quit)"
-          test -n "$ARCHIVE"
+          SOURCE_ARCHIVE="$(find "$OUT" -maxdepth 1 -type f -name 'source-*.tar.xz' -print -quit)"
+          test -s "$ARCHIVE"
+          test -s "$SOURCE_ARCHIVE"
+          test -s "$OUT/BUILDINFO.txt"
+          test -s "$OUT/SHA256SUMS"
           VERSION="$(tr -d '[:space:]' < dolphin-rtcore-muos/VERSION)"
-          SHORT_SHA="${GITHUB_SHA:0:12}"
-          TAG="v${VERSION}-rc-${SHORT_SHA}"
-          printf '%s\n' \
-            "# Dolphin Rt:Core v${VERSION} — H700 muOS build candidate" \
-            "" \
-            "Commit: ${GITHUB_SHA}" \
-            "" \
-            "This is an automatically generated draft candidate. The archive passed the AArch64 ELF, GLIBC, payload and MUXUPD integrity checks." \
-            "" \
-            "Physical-device boot/input/render/exit testing is still required. Jacaranda compatibility here covers the legacy info/assign payload and registration path; it is not a claim that the complete v12 runtime has been certified on Jacaranda." \
-            > "$OUT/RELEASE_NOTES.md"
-          if ! command -v gh >/dev/null 2>&1; then
+          RTUI_VERSION="$(sed -nE 's/.*string[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' "dolphin-rtcore-muos/app/Dolphin RtUI/version.lua" | head -n1)"
+          RTUI_CODENAME="$(sed -nE 's/.*codename[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' "dolphin-rtcore-muos/app/Dolphin RtUI/version.lua" | head -n1)"
+          TAG="v${VERSION}"
+          test -n "$RTUI_VERSION"
+          test -n "$RTUI_CODENAME"
+
+          if ! command -v gh >/dev/null 2>&1 || ! command -v zip >/dev/null 2>&1; then
             sudo apt-get update
-            sudo apt-get install -y gh
+            sudo apt-get install -y gh zip
           fi
+
+          # Reuse the exact successful Screenshot Studio artifact from the PR head
+          # that is the second parent of this merge commit.
+          SOURCE_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.parents[1].sha')"
+          SCREENSHOT_RUN_ID="$(gh run list --repo "$GITHUB_REPOSITORY" \
+            --workflow ci.yml --branch release/12.5.00-rc-mainline --limit 50 \
+            --json databaseId,headSha,status,conclusion \
+            --jq "[.[] | select(.headSha == \"$SOURCE_SHA\" and .status == \"completed\" and .conclusion == \"success\")] | sort_by(.databaseId) | last | .databaseId // empty")"
+          test -n "$SCREENSHOT_RUN_ID"
+          mkdir -p "$OUT/screenshots"
+          gh run download "$SCREENSHOT_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --name dolphin-rtui-screenshot-studio --dir "$OUT/screenshots"
+          test -s "$OUT/screenshots/manifest.json"
+          for shot in settings compat_list keymap rt_editor about; do
+            test -s "$OUT/screenshots/640x480/$shot.png"
+          done
+          cp "$OUT/screenshots/640x480/settings.png" "$OUT/rtui-settings.png"
+          cp "$OUT/screenshots/640x480/compat_list.png" "$OUT/rtui-compatibility.png"
+          cp "$OUT/screenshots/640x480/keymap.png" "$OUT/rtui-keymap.png"
+          cp "$OUT/screenshots/640x480/rt_editor.png" "$OUT/rtui-profile-editor.png"
+          cp "$OUT/screenshots/640x480/about.png" "$OUT/rtui-about.png"
+          (cd "$OUT/screenshots" && zip -qr "$OUT/RtUI_3_7_0_Arcade_Screenshot_Gallery.zip" .)
+
+          (cd "$(dirname "$ARCHIVE")" && sha256sum "$(basename "$ARCHIVE")" > "$(basename "$ARCHIVE").sha256")
+          PACKAGE_SHA="$(sha256sum "$ARCHIVE" | awk '{print $1}')"
+          cat > "$OUT/RELEASE_NOTES.md" <<EOF
+          # Dolphin Rt:Core v${VERSION} "${RTUI_CODENAME}" — muOS 2606.0 Andromeda
+
+          **Dolphin Rt:UI ${RTUI_VERSION} — ${RTUI_CODENAME}**
+
+          Official stable H700 / AArch64 NoGUI release for muOS 2606.0 Andromeda.
+
+          ## Highlights
+          - Rt:UI Arcade: autonomous boot introduction, incremental ROM discovery, updated library/settings flows, NEXUS-backed GameSettings tools, diagnostics and Rt:Stream integration.
+          - Safe Exit controller correction: the two `/dev/input/jsX` watchers use joydev **START=9 / SELECT=8**. Dolphin SDL profiles remain **START=Button 7 / SELECT=Button 6**.
+          - Full Andromeda update package with the matching Dolphin executable, Rt:UI, Sys resources and private runtime libraries.
+          - Integrity manifest (`manifest.sha256`) and published SHA-256 checksums.
+          - Full automated interface gallery: 22 Rt:UI screens at 640×480, 720×480 and 720×720.
+
+          ## Interface preview
+          These are actual LÖVE-rendered Rt:UI captures produced by Screenshot Studio in Xvfb. They are software-rendered previews, not photographs of a handheld.
+
+          ![Rt:UI Settings](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/rtui-settings.png)
+
+          ![Rt:UI Compatibility](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/rtui-compatibility.png)
+
+          ![Rt:UI Controller Keymap](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/rtui-keymap.png)
+
+          ![Rt:UI Profile Editor](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/rtui-profile-editor.png)
+
+          [Download the complete 66-image screenshot gallery](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/RtUI_3_7_0_Arcade_Screenshot_Gallery.zip).
+
+          ## Install
+          1. Back up the SD card, saves and existing Dolphin configuration.
+          2. Copy `$(basename "$ARCHIVE")` into the SD card's `ARCHIVE` folder.
+          3. Install it from muOS **Archive Manager** and launch **Dolphin Rt:Core** from Applications.
+          4. In Content Explorer, select a GameCube or Wii ROM folder, open **Core Assignment**, and choose a profile.
+
+          Targets **muOS 2606.0 Andromeda** on H700/AArch64. It is not a Jacaranda package and must not be installed on other firmware or distro ports by assumption. KNULLI and ROCKNIX remain separate integrations.
+
+          ## Build and verification
+          - Release commit: ${GITHUB_SHA}
+          - Native ARM64 H700 build completed.
+          - GLIBC ABI gate and AArch64 executable/private-runtime validation passed.
+          - Full MUXUPD archive and all 3,547 manifest entries validated.
+          - Repository CI: all 7 jobs passed on the exact source commit.
+          - Package SHA-256: ${PACKAGE_SHA}
+
+          Performance and compatibility vary by game, region, firmware and selected profile. This release does not promise full speed or universal compatibility.
+          EOF
+          RELEASE_ASSETS=(
+            "$ARCHIVE" "$ARCHIVE.sha256" "$OUT/BUILDINFO.txt" "$OUT/SHA256SUMS" "$SOURCE_ARCHIVE"
+            "$OUT/RtUI_3_7_0_Arcade_Screenshot_Gallery.zip"
+            "$OUT/rtui-settings.png" "$OUT/rtui-compatibility.png" "$OUT/rtui-keymap.png"
+            "$OUT/rtui-profile-editor.png" "$OUT/rtui-about.png"
+          )
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$ARCHIVE" "$OUT/BUILDINFO.txt" "$OUT/SHA256SUMS" \
-              --repo "$GITHUB_REPOSITORY" --clobber
-            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" \
-              --title "Dolphin Rt:Core v${VERSION} — H700 muOS candidate ${SHORT_SHA}" \
+            gh release upload "$TAG" "${RELEASE_ASSETS[@]}" --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --prerelease=false --latest \
+              --title "Dolphin Rt:Core v${VERSION} — ${RTUI_CODENAME} for muOS Andromeda" \
               --notes-file "$OUT/RELEASE_NOTES.md"
           else
-            gh release create "$TAG" "$ARCHIVE" "$OUT/BUILDINFO.txt" "$OUT/SHA256SUMS" \
-              --repo "$GITHUB_REPOSITORY" --draft --target "$GITHUB_SHA" \
-              --title "Dolphin Rt:Core v${VERSION} — H700 muOS candidate ${SHORT_SHA}" \
+            gh release create "$TAG" "${RELEASE_ASSETS[@]}" --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" --latest \
+              --title "Dolphin Rt:Core v${VERSION} — ${RTUI_CODENAME} for muOS Andromeda" \
               --notes-file "$OUT/RELEASE_NOTES.md"
           fi

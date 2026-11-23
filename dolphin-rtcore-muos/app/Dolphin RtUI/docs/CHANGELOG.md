@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.7.0 "Arcade" — Rt:Core v12.5.00 for muOS 2606.0 Andromeda
+
+**Status: released — 2026-11-23.** Official stable muOS 2606.0 Andromeda / H700 package: `Dolphin_RtCore_v12_5_00_Andromeda.muxupd`.
+
+### Added
+- Autonomous boot introduction and incremental local ROM discovery, keeping startup responsive while the library is scanned.
+- NEXUS action contracts for the GameSettings Browser: library/storage/database navigation, refresh, row selection, read-only preset preview and incremental library sync.
+- Safe Exit screen and supporting shutdown diagnostics, plus centralized muOS platform/tool helpers.
+- Shared controller/input and profile-runtime helpers, including a common profile merge path.
+- Folder tools and Rt:Stream discovery helpers for the active Andromeda application.
+
+### Changed
+- GameSettings deployment is queued and polled incrementally rather than blocking the interface.
+- The muOS launcher and application routes use the Andromeda 2606 hotkey schema and current screen/action contracts.
+- The legacy Dolphin Task Toolkit is retired from the shipping payload; the upgrade cleanup is scoped to legacy Dolphin task directories.
+
+### Fixed
+- Duplicate local-library scan entries and stale GameSettings database state are covered by regression tests.
+- Preset preview handles LF, CRLF and legacy CR line endings while preserving blank lines.
+- Safe Exit, profile merging and the new platform helpers have host-side regression coverage.
+- Fixed the Safe Exit joydev mapping in both shipped `/dev/input/jsX` watchers: START=9 and SELECT=8; Dolphin SDL profile indices remain START=7 and SELECT=6.
+
+### Validation status
+- LuaJIT syntax, shell syntax, NEXUS contracts, LÖVE UI smoke and repository CI are automated.
+- Native ARM64 H700 build, GLIBC ABI gate, AArch64 executable/private-runtime validation and full MUXUPD packaging passed on the release source.
+- Repository CI passed 7/7 jobs, including LÖVE smoke and automatic Screenshot Studio generation (22 screens × 3 resolutions).
+- The completed package passed ZIP integrity and all 3,547 manifest SHA-256 checks.
+
+---
 
 ## 3.6.0 "Kanzentai" — Rt:Core v12.0.00 for muOS 2606.0 Andromeda
 
