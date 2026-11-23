@@ -87,6 +87,17 @@ Press **M** in Rt:UI to expand the header into the scrollable **Rt:System Status
 
 Keep Dolphin's official **Sys/GameSettings/** and **Sys/Load/GraphicMods/** resources. Rt:UI's **Mod Vault → Graphics Mods** combines that built-in catalog with user mods from **Load/GraphicMods/**. A mod marked **All Games** is eligible for every game; it is not globally enabled. Enablement is saved per Game ID in the game's **Config/GraphicMods** profile, and the launcher turns on Dolphin's Graphics Mods engine only when that profile contains an enabled entry. See [Graphics Mods](wiki/Graphics-Mods.md) and [Rt:System Status Center](wiki/Rt-System-Status-Center.md).
 
+### Rt:UI Screenshot Studio
+
+Generate the actual Rt:UI screens automatically — no mockups and no manual screen-by-screen navigation:
+
+```sh
+python3 tools/screenshot_studio.py
+```
+
+The tool discovers every registered screen, captures the UI at three resolutions, validates PNG dimensions and SHA-256 hashes, and creates a complete `GALLERY.md` plus ready-to-paste README and release-note snippets. It uses Python's standard library and the existing LÖVE capture engine. See [Screenshot Studio guide](docs/SCREENSHOTS.md). Review images for personal ROM names, paths or diagnostic data before publishing; Xvfb captures are not hardware photographs.
+
+
 ## 05 — Build system
 
 The reproducible build scripts live in [dolphin-build/](dolphin-build/README.md). The upstream Dolphin revision is pinned in [DOLPHIN_REF](dolphin-build/DOLPHIN_REF); builds do not silently float to upstream HEAD.
