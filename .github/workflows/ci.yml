@@ -125,11 +125,11 @@ jobs:
         env:
           SDL_AUDIODRIVER: dummy
         run: |
-          expected="$(sed -nE 's/^RESULT: ([0-9]+)\\/([0-9]+) OK, 0 FAIL$/\\2/p' data/logs/smoke.txt)"
+          expected="$(sed -nE 's/^RESULT: ([0-9]+)\/([0-9]+) OK, 0 FAIL$/\2/p' data/logs/smoke.txt)"
           output="$RUNNER_TEMP/dolphin-rtui-screenshots/release-pack"
-          python3 ../../../tools/screenshot_studio.py \\
-            --resolutions "640x480,720x480,720x720" \\
-            --delay 0.7 \\
+          python3 ../../../tools/screenshot_studio.py \
+            --resolutions "640x480,720x480,720x720" \
+            --delay 0.7 \
             --out-dir "$output"
           python3 - "$output/manifest.json" "$expected" <<'PY'
           import json
