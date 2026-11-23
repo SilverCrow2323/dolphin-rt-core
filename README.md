@@ -87,6 +87,19 @@ Press **M** in Rt:UI to expand the header into the scrollable **Rt:System Status
 
 Keep Dolphin's official **Sys/GameSettings/** and **Sys/Load/GraphicMods/** resources. Rt:UI's **Mod Vault → Graphics Mods** combines that built-in catalog with user mods from **Load/GraphicMods/**. A mod marked **All Games** is eligible for every game; it is not globally enabled. Enablement is saved per Game ID in the game's **Config/GraphicMods** profile, and the launcher turns on Dolphin's Graphics Mods engine only when that profile contains an enabled entry. See [Graphics Mods](wiki/Graphics-Mods.md) and [Rt:System Status Center](wiki/Rt-System-Status-Center.md).
 
+
+### Rt:UI 3.7.0 — Interface preview
+
+The release includes selected interface captures and a complete 66-image gallery, generated automatically by Screenshot Studio. The previews are rendered by LÖVE under Xvfb, not photographed from a handheld.
+
+<p align="center">
+  <img src="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.5.00/rtui-settings.png" width="32%" alt="Rt:UI Settings">
+  <img src="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.5.00/rtui-compatibility.png" width="32%" alt="Rt:UI Compatibility">
+  <img src="https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.5.00/rtui-keymap.png" width="32%" alt="Rt:UI Controller Keymap">
+</p>
+
+[Download the complete Rt:UI Arcade screenshot gallery](https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/v12.5.00/RtUI_3_7_0_Arcade_Screenshot_Gallery.zip).
+
 ### Rt:UI Screenshot Studio
 
 Generate the actual Rt:UI screens automatically — no mockups and no manual screen-by-screen navigation:
