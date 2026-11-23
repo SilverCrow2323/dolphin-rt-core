@@ -179,6 +179,11 @@ jobs:
           test -n "$RTUI_VERSION"
           test -n "$RTUI_CODENAME"
 
+          if ! command -v gh >/dev/null 2>&1 || ! command -v zip >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y gh zip
+          fi
+
           # Reuse the exact successful Screenshot Studio artifact from the PR head
           # that is the second parent of this merge commit.
           SOURCE_SHA="$(git rev-parse HEAD^2)"
@@ -248,10 +253,6 @@ jobs:
 
           Performance and compatibility vary by game, region, firmware and selected profile. This release does not promise full speed or universal compatibility.
           EOF
-          if ! command -v gh >/dev/null 2>&1; then
-            sudo apt-get update
-            sudo apt-get install -y gh
-          fi
           RELEASE_ASSETS=(
             "$ARCHIVE" "$ARCHIVE.sha256" "$OUT/BUILDINFO.txt" "$OUT/SHA256SUMS" "$SOURCE_ARCHIVE"
             "$OUT/RtUI_3_7_0_Arcade_Screenshot_Gallery.zip"
