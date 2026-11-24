@@ -133,16 +133,1286 @@ run mkdir -p "$ROOT/logs"
 if [ "$DO_ES" = 1 ]; then
   run mkdir -p "$ROMS/wii" "$ROMS/gamecube" "$ES_DIR"
 
-  CORES_SYS=""; CORES_FEAT=""; first=1
+  CORES_SYS=""; CORES_FEAT=""; SHARED_FEATURES=""; first=1
+  OPTIONS_TSV="$ROOT/config/options.tsv"
+  [ -f "$OPTIONS_TSV" ] || die "missing $OPTIONS_TSV"
+
+  # ROM systems: two independent entries in the EmulationStation main carousel.
   while IFS= read -r c; do
     c="${c%%#*}"; c="$(echo "$c" | tr -d '[:space:]')"; [ -z "$c" ] && continue
-    if [ $first = 1 ]; then CORES_SYS+="          <core default=\"true\">$c</core>"$'\n'; first=0
-    else CORES_SYS+="          <core>$c</core>"$'\n'; fi
-    CORES_FEAT+="      <core name=\"$c\" features=\"\">"$'\n'
-    for v in rtc_pad rtc_orient rtc_gamesettings rtc_exit rtc_textures rtc_cheats rtc_fps; do
-      CORES_FEAT+="        <sharedFeature value=\"$v\" />"$'\n'
-    done
-    CORES_FEAT+="      </core>"$'\n'
+    if [ $first = 1 ]; then CORES_SYS+="          <core default=\"true\">$c</core>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@SHARED_FEATURES@/${SHARED_FEATURES%
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'; first=0
+    else CORES_SYS+="          <core>$c</core>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'; fi
+  done < "$ROOT/config/cores.list"
+
+  # One source of truth for both Advanced Game Settings and launcher overrides.
+  active_feature=0
+  while IFS=
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\t' read -r kind submenu key label desc; do
+    case "$kind" in
+      F)
+        [ "$active_feature" = 0 ] || SHARED_FEATURES+="    </feature>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        SHARED_FEATURES+="    <feature name=\"$(xml_escape "$label")\" value=\"$(xml_escape "$key")\" description=\"$(xml_escape "$desc")\" submenu=\"$(xml_escape "$submenu")\">"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        active_feature=1
+        ;;
+      C)
+        [ "$active_feature" = 1 ] || continue
+        SHARED_FEATURES+="      <choice name=\"$(xml_escape "$label")\" value=\"$(xml_escape "$key")\" />"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        ;;
+      \#*|"") ;;
+    esac
+  done < "$OPTIONS_TSV"
+  [ "$active_feature" = 0 ] || SHARED_FEATURES+="    </feature>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+
+  while IFS= read -r c; do
+    c="${c%%#*}"; c="$(echo "$c" | tr -d '[:space:]')"; [ -z "$c" ] && continue
+    CORES_FEAT+="      <core name=\"$c\" features=\"\">"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+    while IFS=
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\t' read -r kind _submenu key _label _desc; do
+      [ "$kind" = F ] || continue
+      CORES_FEAT+="        <sharedFeature value=\"$key\" />"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+    done < "$OPTIONS_TSV"
+    CORES_FEAT+="      </core>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+  done < "$ROOT/config/cores.list"
+
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'}}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'; first=0
+    else CORES_SYS+="          <core>$c</core>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'; fi
+  done < "$ROOT/config/cores.list"
+
+  # One source of truth for both Advanced Game Settings and launcher overrides.
+  active_feature=0
+  while IFS=
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\t' read -r kind submenu key label desc; do
+    case "$kind" in
+      F)
+        [ "$active_feature" = 0 ] || SHARED_FEATURES+="    </feature>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        SHARED_FEATURES+="    <feature name=\"$(xml_escape "$label")\" value=\"$(xml_escape "$key")\" description=\"$(xml_escape "$desc")\" submenu=\"$(xml_escape "$submenu")\">"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        active_feature=1
+        ;;
+      C)
+        [ "$active_feature" = 1 ] || continue
+        SHARED_FEATURES+="      <choice name=\"$(xml_escape "$label")\" value=\"$(xml_escape "$key")\" />"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        ;;
+      \#*|"") ;;
+    esac
+  done < "$OPTIONS_TSV"
+  [ "$active_feature" = 0 ] || SHARED_FEATURES+="    </feature>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+
+  while IFS= read -r c; do
+    c="${c%%#*}"; c="$(echo "$c" | tr -d '[:space:]')"; [ -z "$c" ] && continue
+    CORES_FEAT+="      <core name=\"$c\" features=\"\">"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+    while IFS=
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\t' read -r kind _submenu key _label _desc; do
+      [ "$kind" = F ] || continue
+      CORES_FEAT+="        <sharedFeature value=\"$key\" />"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+    done < "$OPTIONS_TSV"
+    CORES_FEAT+="      </core>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+  done < "$ROOT/config/cores.list"
+
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'; first=0
+    else CORES_SYS+="          <core>$c</core>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'; fi
+  done < "$ROOT/config/cores.list"
+
+  # One source of truth for both Advanced Game Settings and launcher overrides.
+  active_feature=0
+  while IFS=
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\t' read -r kind submenu key label desc; do
+    case "$kind" in
+      F)
+        [ "$active_feature" = 0 ] || SHARED_FEATURES+="    </feature>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        SHARED_FEATURES+="    <feature name=\"$(xml_escape "$label")\" value=\"$(xml_escape "$key")\" description=\"$(xml_escape "$desc")\" submenu=\"$(xml_escape "$submenu")\">"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        active_feature=1
+        ;;
+      C)
+        [ "$active_feature" = 1 ] || continue
+        SHARED_FEATURES+="      <choice name=\"$(xml_escape "$label")\" value=\"$(xml_escape "$key")\" />"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+        ;;
+      \#*|"") ;;
+    esac
+  done < "$OPTIONS_TSV"
+  [ "$active_feature" = 0 ] || SHARED_FEATURES+="    </feature>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+
+  while IFS= read -r c; do
+    c="${c%%#*}"; c="$(echo "$c" | tr -d '[:space:]')"; [ -z "$c" ] && continue
+    CORES_FEAT+="      <core name=\"$c\" features=\"\">"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+    while IFS=
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\t' read -r kind _submenu key _label _desc; do
+      [ "$kind" = F ] || continue
+      CORES_FEAT+="        <sharedFeature value=\"$key\" />"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
+    done < "$OPTIONS_TSV"
+    CORES_FEAT+="      </core>"
+  render() {  # template -> output
+    local t; t="$(cat "$1")"
+    t="${t//@ROOT@/$(xml_escape "$ROOT")}"
+    t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
+    t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
+    if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
+    [ -f "$2" ] && cp -f "$2" "$2.bak"
+    printf '%s\n' "$t" > "$2"
+  }
+  render "$ROOT/es/es_systems_rtcore.cfg.in"  "$ES_DIR/es_systems_rtcore.cfg"
+  render "$ROOT/es/es_features_rtcore.cfg.in" "$ES_DIR/es_features_rtcore.cfg"
+  say "EmulationStation: systems 'wii' and 'gamecube' defined, put ROMs in $ROMS/{wii,gamecube}"
+fi
+
+if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
+  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+fi
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+\n'
   done < "$ROOT/config/cores.list"
 
   render() {  # template -> output
