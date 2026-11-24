@@ -30,7 +30,7 @@ EOT
 }
 
 USERDATA_OPT=""; ROMS_OPT=""; ES_OPT=""; THEMES_OPT=""
-DO_ES=1; DO_THEME=0; DO_RESTART=1; DRY=0; UPDATE=0; OFFLINE=0
+DO_ES=1; DO_THEME=1; DO_RESTART=1; DRY=0; UPDATE=0; OFFLINE=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --update)     UPDATE=1; shift;;
@@ -163,9 +163,9 @@ if [ "$DO_ES" = 1 ]; then
   else bash "$ROOT/tools/es-features.sh" install "$ES_DIR" || say "WARNING: could not add the options menu; the profile can still be chosen per game"; fi
 fi
 
-if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
-  if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
-  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+if [ "$DO_THEME" = 1 ] && [ -n "$UD" ]; then
+  if [ "$DRY" = 1 ]; then bash "$ROOT/theme/install-theme.sh" --userdata "$UD" --dry-run
+  else bash "$ROOT/theme/install-theme.sh" --userdata "$UD"; fi
 fi
 
 if [ "$DRY" != 1 ]; then
