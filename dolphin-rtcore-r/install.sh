@@ -24,7 +24,6 @@ Usage: ./install.sh [options]
   --no-es          do not write the EmulationStation files
   --no-theme       do not install the logos into the theme
   --no-ui          do not add the Dolphin Rt:UI launcher to Ports
-  --no-ui          do not add the Dolphin Rt:UI launcher to Ports
   --no-restart     do not restart EmulationStation
   --dry-run        show what would be done, write nothing
   -h, --help       this help
@@ -47,7 +46,6 @@ while [ $# -gt 0 ]; do
     --themes)     THEMES_OPT="$2"; shift 2;;
     --no-es)      DO_ES=0; shift;;
     --no-theme)   DO_THEME=0; shift;;
-    --no-ui)      DO_UI=0; shift;;
     --no-ui)      DO_UI=0; shift;;
     --no-restart) DO_RESTART=0; shift;;
     --dry-run)    DRY=1; shift;;
@@ -199,48 +197,6 @@ fi
 
 if [ "$DO_UI" = 1 ] && [ -n "$UD" ]; then
   write_gui_launcher "$UD/roms/ports" "RTCORE-R-GUI-LAUNCHER" "ROCKNIX Ports"
-fi
-
-# ROCKNIX Ports is the supported category for ordinary user applications.
-# Keep the app payload in this Rt:Core folder; expose only one launcher script.
-if [ "$DO_UI" = 1 ] && [ -n "$UD" ]; then
-  UI_DIR="$UD/roms/ports"
-  UI_LAUNCHER="$UI_DIR/Dolphin RtCore GUI.sh"
-  if [ ! -s "$ROOT/ui/gui/main.lua" ] || [ ! -s "$ROOT/ui/gui/conf.lua" ] || [ ! -x "$ROOT/bin/rtcore-ui.sh" ]; then
-    say "GUI payload incomplete; Ports launcher not installed"
-  elif [ "$DRY" = 1 ]; then
-    say "[dry-run] would install $UI_LAUNCHER"
-  else
-    mkdir -p "$UI_DIR"
-    if [ -f "$UI_LAUNCHER" ] && ! grep -q '^# RTCORE-R-GUI-LAUNCHER
-
-if [ "$DRY" != 1 ]; then
-  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
-fi
-
-if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
-  if command -v systemctl >/dev/null 2>&1; then
-    say "Restarting EmulationStation..."
-    systemctl restart emulationstation >/dev/null 2>&1 &
-  else
-    say "Restart EmulationStation manually."
-  fi
-fi
-say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
- "$UI_LAUNCHER"; then
-      [ -e "$UI_LAUNCHER.rtcore.bak" ] || cp -p "$UI_LAUNCHER" "$UI_LAUNCHER.rtcore.bak"
-    fi
-    ROOT_Q="$(printf '%q' "$ROOT")"
-    cat > "$UI_LAUNCHER" <<EOF
-#!/bin/sh
-# RTCORE-R-GUI-LAUNCHER
-ROOT=$ROOT_Q
-exec "$ROOT/bin/rtcore-ui.sh" "\$@"
-EOF
-    chmod 755 "$UI_LAUNCHER"
-    printf '%s\n' "$UI_LAUNCHER" > "$ROOT/.ui_launcher_installed"
-    say "Dolphin Rt:UI registered in ROCKNIX Ports: $UI_LAUNCHER"
-  fi
 fi
 
 if [ "$DRY" != 1 ]; then
