@@ -1,28 +1,45 @@
-# Dolphin Rt:Core R — GUI specification
+# Dolphin Rt:UI — ROCKNIX handheld frontend
 
-**Status: planned; not shipped in the current port candidate.**
+<badge>Alpha implementation · experimental</badge>
 
-The Rt:Core GUI is a separate handheld application. It does not replace the dedicated GAMECUBE and WII EmulationStation systems.
+Dolphin Rt:UI is a controller-first LÖVE application installed separately from the GAMECUBE and WII library entries. The installer exposes **one launcher** in ROCKNIX **Ports**:
 
-## ROCKNIX placement
+`/storage/roms/ports/Dolphin RtCore GUI.sh`
 
-- Install one visible launcher `.sh` under `/storage/roms/ports/`.
-- Do not place an ordinary user application in ROCKNIX Tools: the Tools system is reserved for system modules.
-- Keep GUI resources in the Rt:Core installation's private data directory, not as visible loose files in Ports.
+A regular app launcher belongs in Ports; ROCKNIX Tools is for system modules. The application and support files remain in the Rt:Core installation folder. It uses the shared **PortMaster LÖVE 11.5 runtime**; the runtime is not bundled with Rt:Core.
 
 ## Pages
 
-1. **HOME / DIAGNOSTICS** — firmware, device, Dolphin build, Wayland/runtime health and logs.
-2. **GAMECUBE** — discovered GameCube games, per-game profile and status.
-3. **WII** — discovered Wii games, per-game profile and controller orientation.
-4. **GAME SETTINGS** — the five shared groups (Game, Controls, Graphics, Performance, Audio) plus the ROCKNIX-only Window Platform selector.
-5. **PROFILES** — inspect/select profiles and explain their performance/compatibility trade-offs.
-6. **CONTROLS** — controller layout, Wii Remote orientation, Safe Exit and detected input device.
+1. **HOME** — GAMECUBE, WII and SYSTEM DIAGNOSTICS.
+2. **GAMECUBE** — discover the local GameCube library and choose a title.
+3. **WII** — discover the local Wii library and choose a title.
+4. **ADVANCED GAME SETTINGS** — the selected title's GAME, CONTROLS, GRAPHICS, PERFORMANCE and AUDIO options, plus ROCKNIX's SYSTEM / WINDOW PLATFORM selector.
+5. **SYSTEM DIAGNOSTICS** — platform, ROM root, configuration path and option-catalog summary.
 
-## Shared settings contract
+The GUI reads `config/options.tsv`, the same catalog used by the EmulationStation Advanced Game Settings generator and the Rt:Core launcher. It writes the same per-game keys in `/storage/.config/system/configs/system.cfg`.
 
-`config/options.tsv` is the catalog for both the GUI and the EmulationStation Advanced Game Settings menu. The GUI reads/writes the same keys in `/storage/.config/system/configs/system.cfg`; *Profile default* means the setting is absent and the selected profile retains control.
+## Controls
 
-Configuration edits must be atomic, preserve unrelated system settings, and create a backup before mutation. Library scanning remains read-only; scripts and ROMs are never executed during discovery.
+- D-pad: move through pages and options.
+- **A**: open a page or advance the selected setting.
+- **B**: go back.
+- **Left / Right**: change the selected value.
+- **L1 / R1**: switch settings group.
+- **X**: clear the selected per-game override and return to the system/global/profile value.
+- **Y**: rescan the current library.
 
-The GUI must not register its Ports launcher until a working runtime/frontend has been packaged and smoke-tested on the target. A placeholder menu item is not a delivered feature.
+## Safety and configuration
+
+- Discovery only lists supported ROM file types: ISO, GCM, RVZ, WBFS, WIA, GCZ and CISO. It does not execute ROMs or shell scripts.
+- Settings are written to `/storage/.config/system/configs/system.cfg`, preserving unrelated entries.
+- Before the first GUI change, the app keeps a copy at `system.cfg.rtcore.bak`.
+- Writes use a temporary file and same-filesystem rename.
+- **EmulationStation remains the game launcher.** Rt:UI edits settings and browses titles; it does not replace the GAMECUBE/WII systems.
+
+## Requirements and current limits
+
+- ROCKNIX with PortMaster and its shared LÖVE 11.5 runtime installed.
+- The matching Rt:Core R Wayland build and `core/Sys`.
+- ROMs in `/storage/roms/gamecube` and `/storage/roms/wii`.
+
+This is an initial experimental GUI. It does not yet edit performance profiles, controller maps or cheats, and it does not launch games itself. The new ROCKNIX Wayland binary and GUI still require physical-device qualification; source/CI checks alone cannot confirm a game launch works on every ROCKNIX device.
