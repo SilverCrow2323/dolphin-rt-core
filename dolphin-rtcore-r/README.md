@@ -120,3 +120,35 @@ The ROCKNIX package expects `core/Sys/` beside `core/dolphin`. Build the Wayland
 ```
 
 The port builder validates both GameCube fonts and the DSP ROM/coefficient files before creating the release. Do not pair a binary with a `Sys/` tree from another build.
+
+
+## Main menu systems and artwork
+
+Dolphin is registered as **two independent EmulationStation systems** in the main carousel:
+
+| Main-menu entry | ROM folder | Theme key |
+|---|---|---|
+| **WII** | `/storage/roms/wii` | `wii` |
+| **GAMECUBE** | `/storage/roms/gamecube` | `gamecube` |
+
+The installer writes the two system definitions into `/storage/.emulationstation/es_systems_rtcore.cfg`. The system logos are installed using ROCKNIX's supported persistent Art Book Next customization directory:
+
+`/storage/roms/rocknix/theme-customizations/art-book-next/logos/`
+
+In **UI Settings → Theme Configuration**, keep **Distribution = ROCKNIX** and set **Color Scheme = Custom** to activate custom logos. The installer backs up any existing files it replaces; `./uninstall.sh` restores them.
+
+If the system entries are hidden because their ROM folders are empty, add a game or enable **Show Empty Systems** in Game Collection Settings.
+
+## Advanced per-game settings
+
+Open a game's **Advanced Game Settings** in EmulationStation. The list is generated from `config/options.tsv`, and the launcher reads that same file to apply options. Each option supports per-game, per-system and global values; **Profile default** leaves the selected Rt:Core profile unchanged.
+
+Settings are grouped into **GAME**, **CONTROLS**, **GRAPHICS**, **PERFORMANCE**, **AUDIO** and the ROCKNIX-only **SYSTEM** page (Window Platform: Auto, Wayland, X11 or Framebuffer). The SYSTEM page is a platform selector, not a game-performance option.
+
+## Rt:Core GUI
+
+The handheld GUI is a separate application, not a third ROM system. On ROCKNIX it belongs under **Ports**, launched by a `.sh` entry in `/storage/roms/ports`. ROCKNIX's **Tools** category is reserved for system modules, which is why a normal app-plus-script placed there may not appear. The GUI's support data stays outside the visible Ports list.
+
+Planned pages: Home/Diagnostics, GameCube, Wii, selected-game Advanced Settings, Profiles, Controls and Runtime. The settings page will use the same `options.tsv` catalogue and the existing `/storage/.config/system/configs/system.cfg` store as EmulationStation.
+
+**The GUI is not shipped in this candidate yet.** Until its ROCKNIX runtime and frontend are implemented and device-tested, use EmulationStation's Advanced Game Settings. The emulator build and the GUI are separate qualification gates.
