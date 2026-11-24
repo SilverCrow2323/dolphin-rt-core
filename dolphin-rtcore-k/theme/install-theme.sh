@@ -3,11 +3,12 @@
 ROOT="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 LOGOS="$ROOT/theme/logos"
 MANIFEST="$ROOT/.theme_installed"
-THEMES=""; ES_DIR=""; UNINSTALL=0
+THEMES=""; ES_DIR=""; USERDATA=""; UNINSTALL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --themes) THEMES="$2"; shift 2;;
     --es-dir) ES_DIR="$2"; shift 2;;
+    --userdata) USERDATA="$2"; shift 2;;
     --uninstall) UNINSTALL=1; shift;;
     *) shift;;
   esac
@@ -24,6 +25,19 @@ if [ "$UNINSTALL" = 1 ]; then
 fi
 
 [ -n "$THEMES" ] && [ -n "$ES_DIR" ] || { echo "uso: install-theme.sh --themes DIR --es-dir DIR"; exit 1; }
+
+# Art Book Next exposes a supported, update-persistent custom-logo directory.
+# KNULLI's theme customization folder is not the active theme's internal assets.
+if [ -n "$USERDATA" ]; then
+  CUSTOM_LOGOS="$USERDATA/theme-customizations/art-book-next/logos"
+  mkdir -p "$CUSTOM_LOGOS"
+  for pair in "logo_wii.png:wii.png" "logo_gamecube.png:gamecube.png"; do
+    src="${pair%%:*}"; dst="$CUSTOM_LOGOS/${pair##*:}"
+    [ -f "$dst" ] && [ ! -f "$dst.rtcore.bak" ] && cp -f "$dst" "$dst.rtcore.bak"
+    cp -f "$LOGOS/$src" "$dst" && echo "$dst" >> "$MANIFEST" && echo "[theme] Art Book Next logo installed: $dst"
+  done
+fi
+
 THEME="$(grep -o 'name="ThemeSet" value="[^"]*"' "$ES_DIR/es_settings.cfg" 2>/dev/null | sed 's/.*value="//; s/"$//')"
 [ -z "$THEME" ] && { echo "[theme] tema attivo non trovato / active theme not found"; exit 0; }
 TD="$THEMES/$THEME"
@@ -31,7 +45,7 @@ echo "[theme] tema attivo / active theme: $THEME"
 
 if [ -d "$TD/_art/Colorlogos" ]; then
   DEST="$TD/_art/Colorlogos"
-  : > "$MANIFEST"
+  [ -f "$MANIFEST" ] || : > "$MANIFEST"
   for pair in "logo_wii.png:wii.png" "logo_gamecube.png:gamecube.png" "logo_rtcore.png:rtcore.png"; do
     src="${pair%%:*}"; dst="$DEST/${pair##*:}"
     [ -f "$dst" ] && [ ! -f "$dst.rtcore.bak" ] && cp -f "$dst" "$dst.rtcore.bak"
