@@ -24,6 +24,7 @@ Usage: ./install.sh [options]
   --no-es          do not write the EmulationStation files
   --no-theme       do not install the logos into the theme
   --no-ui          do not add the Dolphin Rt:UI launcher to Ports
+  --no-ui          do not add the Dolphin Rt:UI launcher to Ports
   --no-restart     do not restart EmulationStation
   --dry-run        show what would be done, write nothing
   -h, --help       this help
@@ -47,6 +48,7 @@ while [ $# -gt 0 ]; do
     --no-es)      DO_ES=0; shift;;
     --no-theme)   DO_THEME=0; shift;;
     --no-ui)      DO_UI=0; shift;;
+    --no-ui)      DO_UI=0; shift;;
     --no-restart) DO_RESTART=0; shift;;
     --dry-run)    DRY=1; shift;;
     -h|--help)    usage; exit 0;;
@@ -58,6 +60,31 @@ say()  { echo "[rtcore-r] $*"; }
 die()  { echo "[rtcore-r] ERROR: $*" >&2; exit 1; }
 run()  { if [ "$DRY" = 1 ]; then echo "[dry-run] $*"; else "$@"; fi; }
 xml_escape() { local s="$1"; s="${s//&/&amp;}"; s="${s//</&lt;}"; s="${s//>/&gt;}"; printf '%s' "$s"; }
+write_gui_launcher() {
+  local target_dir="$1" tag="$2" category="$3"
+  local launcher="$target_dir/Dolphin RtCore GUI.sh" root_q
+  if [ ! -s "$ROOT/ui/gui/main.lua" ] || [ ! -s "$ROOT/ui/gui/conf.lua" ] || [ ! -s "$ROOT/bin/rtcore-ui.sh" ]; then
+    say "GUI payload incomplete; $category launcher not installed"
+    return 0
+  fi
+  if [ "$DRY" = 1 ]; then
+    say "[dry-run] would install $launcher"
+    return 0
+  fi
+  mkdir -p "$target_dir"
+  if [ -f "$launcher" ] && ! grep -Fq "# $tag" "$launcher"; then
+    [ -e "$launcher.rtcore.bak" ] || cp -p "$launcher" "$launcher.rtcore.bak"
+  fi
+  printf -v root_q "%q" "$ROOT"
+  {
+    printf "%s\n" "#!/bin/sh" "# $tag"
+    printf "ROOT=%s\n" "$root_q"
+    printf "%s\n" 'exec "$ROOT/bin/rtcore-ui.sh" "$@"'
+  } > "$launcher"
+  chmod 755 "$launcher"
+  printf "%s\n" "$launcher" > "$ROOT/.ui_launcher_installed"
+  say "Dolphin Rt:UI registered in $category: $launcher"
+}
 
 find_userdata() {
   if [ -n "$USERDATA_OPT" ]; then echo "$USERDATA_OPT"; return; fi
@@ -168,6 +195,10 @@ fi
 if [ "$DO_THEME" = 1 ] && [ -n "$UD" ]; then
   if [ "$DRY" = 1 ]; then bash "$ROOT/theme/install-theme.sh" --userdata "$UD" --dry-run
   else bash "$ROOT/theme/install-theme.sh" --userdata "$UD"; fi
+fi
+
+if [ "$DO_UI" = 1 ] && [ -n "$UD" ]; then
+  write_gui_launcher "$UD/roms/ports" "RTCORE-R-GUI-LAUNCHER" "ROCKNIX Ports"
 fi
 
 # ROCKNIX Ports is the supported category for ordinary user applications.
