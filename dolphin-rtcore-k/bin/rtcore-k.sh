@@ -59,9 +59,31 @@ case "$EXITC" in
 esac
 
 EXTRA=()
-[ "$TEX" = on ]    && EXTRA+=(-C GFX.Settings.HiresTextures=True)
-[ "$CHEATS" = on ] && EXTRA+=(-C Dolphin.Core.EnableCheats=True)
-[ "$FPS" = on ]    && EXTRA+=(-C GFX.Settings.ShowFPS=True)
+APPLIED=""
+OPTS_TSV="$ROOT/config/options.tsv"
+TAB="$(printf '\011')"
+if [ -f "$OPTS_TSV" ]; then
+  while IFS="$TAB" read -r kind _submenu okey _label _desc; do
+    [ "$kind" = F ] || continue
+    ov_val="$(opt "$okey" auto)"
+    [ "$ov_val" = auto ] && continue
+    ov_list=""
+    while IFS="$TAB" read -r row_kind row_key row_value _row_label row_override; do
+      if [ "$row_kind" = C ] && [ "$row_key" = "$okey" ] && [ "$row_value" = "$ov_val" ]; then
+        ov_list="$row_override"
+        break
+      fi
+    done < "$OPTS_TSV"
+    [ -n "$ov_list" ] || continue
+    IFS=';' read -ra ov_parts <<< "$ov_list"
+    for ov in "${ov_parts[@]}"; do
+      if [[ "$ov" =~ ^(Dolphin|GFX)\.[A-Za-z]+\.[A-Za-z0-9_]+=[A-Za-z0-9._+-]+$ ]]; then
+        EXTRA+=(-C "$ov")
+        APPLIED+=" $ov"
+      fi
+    done
+  done < "$OPTS_TSV"
+fi
 
 esc() { printf '%s' "$1" | sed -e 's/[\\#&]/\\&/g'; }
 
@@ -97,6 +119,7 @@ fi
 
 {
 echo "=== $(date '+%F %T') | $SYS | $PROFILE | pad=$NUMSTICKS $ORIENT | gs=$GSET tex=$TEX ch=$CHEATS fps=$FPS exit=$EXITC | $(basename "$ROM") ==="
+[ -n "$APPLIED" ] && echo "options applied:$APPLIED"
 cd "$CORE/Config" || exit 1
 PROFILE_BASE="${PROFILE%-sideways}"; PROFILE_BASE="${PROFILE_BASE%-upright}"
 for f in Dolphin.ini GFX.ini; do
