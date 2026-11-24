@@ -133,22 +133,55 @@ run mkdir -p "$ROOT/logs"
 if [ "$DO_ES" = 1 ]; then
   run mkdir -p "$ROMS/wii" "$ROMS/gamecube" "$ES_DIR"
 
-  CORES_SYS=""; CORES_FEAT=""; first=1
+  CORES_SYS=""; CORES_FEAT=""; SHARED_FEATURES=""; first=1
+  OPTIONS_TSV="$ROOT/config/options.tsv"
+  [ -f "$OPTIONS_TSV" ] || die "missing $OPTIONS_TSV"
+
+  # Register WII and GAMECUBE as separate systems in the main carousel.
   while IFS= read -r c; do
     c="${c%%#*}"; c="$(echo "$c" | tr -d '[:space:]')"; [ -z "$c" ] && continue
-    if [ $first = 1 ]; then CORES_SYS+="          <core default=\"true\">$c</core>"$'\n'; first=0
-    else CORES_SYS+="          <core>$c</core>"$'\n'; fi
-    CORES_FEAT+="      <core name=\"$c\" features=\"\">"$'\n'
-    for v in rtc_pad rtc_orient rtc_gamesettings rtc_exit rtc_textures rtc_cheats rtc_fps; do
-      CORES_FEAT+="        <sharedFeature value=\"$v\" />"$'\n'
-    done
-    CORES_FEAT+="      </core>"$'\n'
+    if [ "$first" = 1 ]; then
+      CORES_SYS+="$(printf '          <core default="true">%s</core>\n' "$c")"
+      first=0
+    else
+      CORES_SYS+="$(printf '          <core>%s</core>\n' "$c")"
+    fi
+  done < "$ROOT/config/cores.list"
+
+  # Generate the EmulationStation feature menu from the shared TSV catalog.
+  active_feature=0
+  while IFS=$'\t' read -r kind submenu key label desc; do
+    case "$kind" in
+      F)
+        if [ "$active_feature" = 1 ]; then SHARED_FEATURES+="$(printf '    </feature>\n')"; fi
+        SHARED_FEATURES+="$(printf '    <feature name="%s" value="%s" description="%s" submenu="%s">\n' "$(xml_escape "$label")" "$(xml_escape "$key")" "$(xml_escape "$desc")" "$(xml_escape "$submenu")")"
+        active_feature=1
+        ;;
+      C)
+        [ "$active_feature" = 1 ] || continue
+        SHARED_FEATURES+="$(printf '      <choice name="%s" value="%s" />\n' "$(xml_escape "$label")" "$(xml_escape "$key")")"
+        ;;
+      *) continue ;;
+    esac
+  done < "$OPTIONS_TSV"
+  if [ "$active_feature" = 1 ]; then SHARED_FEATURES+="$(printf '    </feature>\n')"; fi
+
+  # Bind every declared feature to every installed Rt:Core profile.
+  while IFS= read -r c; do
+    c="${c%%#*}"; c="$(echo "$c" | tr -d '[:space:]')"; [ -z "$c" ] && continue
+    CORES_FEAT+="$(printf '      <core name="%s" features="">\n' "$c")"
+    while IFS=$'\t' read -r kind _submenu key _label _desc; do
+      [ "$kind" = F ] || continue
+      CORES_FEAT+="$(printf '        <sharedFeature value="%s" />\n' "$key")"
+    done < "$OPTIONS_TSV"
+    CORES_FEAT+="$(printf '      </core>\n')"
   done < "$ROOT/config/cores.list"
 
   render() {  # template -> output
     local t; t="$(cat "$1")"
     t="${t//@ROOT@/$(xml_escape "$ROOT")}"
     t="${t//@ROMS@/$(xml_escape "$ROMS")}"
+    t="${t//@SHARED_FEATURES@/$SHARED_FEATURES}"
     t="${t//@CORES_SYSTEMS@/${CORES_SYS%$'\n'}}"
     t="${t//@CORES_FEATURES@/${CORES_FEAT%$'\n'}}"
     if [ "$DRY" = 1 ]; then echo "[dry-run] would write $2"; return; fi
