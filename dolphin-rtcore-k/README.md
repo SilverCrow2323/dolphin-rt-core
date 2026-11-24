@@ -112,14 +112,14 @@ theme/                 logos + install-theme.sh
 docs/                  screenshot generator + screens
 install.sh uninstall.sh rtcore.sh get.sh
 tools/make-release.sh  builds the release archives
-ui/                    frontend (planned)
+ui/                    LÖVE 11.5 handheld frontend (PortMaster shared runtime)
 legacy-muos/           original muOS launcher, tasks and LOVE UI, kept as reference for the port
 ```
 
 Publishing it as a git repo: `git init && git add . && git commit` (see `.gitignore`). To build the archives: `tools/make-release.sh`.
 
 ## Known limits
-The frontend UI is not ported yet - graphic mods and hotkeys per game are still to do - logos were only checked against the ARCADEPLANET layout. See `NOTICE.md` for licences.
+The first handheld GUI is included: it browses GameCube/Wii libraries and edits per-game advanced settings. Profile editing, controller-map editing, graphic mods and hotkey editing are still pending. Physical GUI qualification is still required. See `NOTICE.md` for licences.
 
 
 ## Main menu systems and artwork
@@ -155,6 +155,8 @@ The setting precedence remains **per-game → per-system → global → profile 
 
 ## Rt:Core GUI
 
-The standalone controller-friendly GUI is a separate application from the GAMECUBE and WII library entries. Its planned KNULLI menu location is **Tools**; it will be launched by a small script in `/userdata/roms/tools`, while its application data stays with the Rt:Core installation. The GUI will provide GameCube/Wii library pages, selected-game advanced settings, profiles and diagnostics.
+The standalone controller-friendly GUI is a separate application from the GAMECUBE and WII library entries. The installer registers one launcher in **KNULLI Tools** at `/userdata/roms/tools/Dolphin RtCore GUI.sh`; application data remains in this Rt:Core folder. It uses PortMaster's shared LÖVE 11.5 runtime, so no duplicate runtime is bundled.
 
-**The GUI is not included in this candidate yet.** Until its handheld frontend and self-contained runtime are implemented and tested, use EmulationStation's Advanced Game Settings menu. Do not install a placeholder launcher that reports success without a working interface.
+The Alpha GUI includes HOME, GAMECUBE, WII, selected-game Advanced Settings and System Diagnostics. It reads `config/options.tsv` and writes the same per-game settings in `/userdata/system/batocera.conf` as EmulationStation and the Rt:Core launcher. EmulationStation remains responsible for launching games. See [the GUI guide](ui/README.md).
+
+This source/CI implementation still needs physical KNULLI device qualification.
