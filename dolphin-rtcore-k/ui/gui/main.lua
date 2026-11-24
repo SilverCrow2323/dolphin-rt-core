@@ -484,7 +484,7 @@ local function footer()
 end
 
 function love.draw()
-    love.graphics.clear(COLOURS.bg)
+    love.graphics.clear(COLOURS.bg[1], COLOURS.bg[2], COLOURS.bg[3], 1)
     if state.page == "home" then
         header("HOME", "Choose an emulator library")
         text("GAME LIBRARIES", 28, 92, SMALL, COLOURS.muted)
