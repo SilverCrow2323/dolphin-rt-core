@@ -59,9 +59,100 @@ case "$EXITC" in
 esac
 
 EXTRA=()
-[ "$TEX" = on ]    && EXTRA+=(-C GFX.Settings.HiresTextures=True)
-[ "$CHEATS" = on ] && EXTRA+=(-C Dolphin.Core.EnableCheats=True)
-[ "$FPS" = on ]    && EXTRA+=(-C GFX.Settings.ShowFPS=True)
+APPLIED=""
+OPTS_TSV="$ROOT/config/options.tsv"
+if [ -f "$OPTS_TSV" ]; then
+  while IFS=
+
+esc() { printf '%s' "$1" | sed -e 's/[\\#&]/\\&/g'; }
+
+watcher() {
+  exec 3< "${JS_DEV:-/dev/input/js0}" || exit 1
+  local s=0 b=0 EV V T N i
+  while true; do
+    EV=$(dd bs=8 count=1 <&3 2>/dev/null | od -An -tu1)
+    [ -z "$EV" ] && continue
+    set -- $EV
+    V=$5; T=$(( $7 & 127 )); N=$8
+    [ "$T" = 1 ] || continue
+    [ "$N" = "$KA" ] && s=$V
+    [ "$N" = "$KB" ] && b=$V
+    if [ "$s" = 1 ] && [ "$b" = 1 ]; then
+      echo "combo uscita / exit combo ($EXITC)" >> "$LOG"
+      killall -TERM dolphin 2>/dev/null
+      for i in $(seq 1 "${EXIT_GRACE:-8}"); do pidof dolphin >/dev/null || break; sleep 1; done
+      killall -KILL dolphin 2>/dev/null
+      break
+    fi
+  done
+}
+
+restore() {
+  [ -d "$CORE/GameSettings.off" ] && [ ! -d "$CORE/GameSettings" ] && mv "$CORE/GameSettings.off" "$CORE/GameSettings"
+}
+trap restore EXIT
+restore
+if [ "$GSET" = off ] && [ -d "$CORE/GameSettings" ] && [ -z "${RTCORE_DRYRUN:-}" ]; then
+  mv "$CORE/GameSettings" "$CORE/GameSettings.off"
+fi
+
+{
+echo "=== $(date '+%F %T') | $SYS | $PROFILE | pad=$NUMSTICKS $ORIENT | gs=$GSET tex=$TEX ch=$CHEATS fps=$FPS exit=$EXITC | $(basename "$ROM") ==="
+[ -n "$APPLIED" ] && echo "options applied:$APPLIED"
+cd "$CORE/Config" || exit 1
+PROFILE_BASE="${PROFILE%-sideways}"; PROFILE_BASE="${PROFILE_BASE%-upright}"
+for f in Dolphin.ini GFX.ini; do
+  if   [ -f "$f.$PROFILE_BASE" ]; then cp -f "$f.$PROFILE_BASE" "$f"
+  elif [ -f "$f.default" ];       then cp -f "$f.default" "$f"; fi
+done
+case "$PROFILE_BASE" in
+  *rtverbose*) [ -f Logger.ini.verbose ] && cp -f Logger.ini.verbose Logger.ini;;
+  *)           [ -f Logger.ini.default ] && cp -f Logger.ini.default Logger.ini;;
+esac
+[ -f "GCPadNew.ini.${NUMSTICKS}joy" ] && cp -f "GCPadNew.ini.${NUMSTICKS}joy" GCPadNew.ini
+SUF=""; [ "$ORIENT" = sideways ] && SUF=".sideways"
+if   [ -f "WiimoteNew.ini.${NUMSTICKS}joy$SUF" ]; then cp -f "WiimoteNew.ini.${NUMSTICKS}joy$SUF" WiimoteNew.ini
+elif [ -f "WiimoteNew.ini.${NUMSTICKS}joy" ];      then cp -f "WiimoteNew.ini.${NUMSTICKS}joy" WiimoteNew.ini; fi
+
+# nome del pad e percorsi: riscritti a ogni avvio (la release è spostabile)
+for f in GCPadNew.ini WiimoteNew.ini Hotkeys.ini; do
+  [ -f "$f" ] && sed -i "s#^Device = SDL/0/.*#Device = SDL/0/$(esc "${PAD_NAME:-Controller}")#" "$f"
+done
+E="$(esc "$CORE")"
+sed -i -e "s#/run/muos/storage/save/dolphin/#$E/#g" -e "s#/run/muos/storage/bios/dolphin/#$E/bios/#g" Dolphin.ini
+
+cd "$CORE" || exit 1
+export HOME="${UD:+$UD/system}"; [ -d "$HOME" ] || export HOME="$ROOT"
+export SDL_GAMECONTROLLERCONFIG="${SDL_GUID},${PAD_NAME},${SDL_MAP},platform:Linux,"
+
+if [ -n "${RTCORE_DRYRUN:-}" ]; then
+  echo "[dry-run] ROOT=$ROOT CORE=$CORE UD=$UD SYS=$SYS"
+  echo "[dry-run] SDL_GAMECONTROLLERCONFIG=$SDL_GAMECONTROLLERCONFIG"
+  echo "[dry-run] cmd: $CORE/dolphin -e $ROM -u $CORE ${EXTRA[*]}"
+  exit 0
+fi
+
+watcher & WPID=$!
+./dolphin -e "$ROM" -u "$CORE" "${EXTRA[@]}"
+echo "exit=$?"
+kill $WPID 2>/dev/null
+} >> "$LOG" 2>&1
+exit 0
+\t' read -r kind _submenu okey _label _desc; do
+    [ "$kind" = F ] || continue
+    ov_val="$(opt "$okey" auto)"
+    [ "$ov_val" = auto ] && continue
+    ov_list="$(awk -F'\t' -v k="$okey" -v v="$ov_val" '$1=="C" && $2==k && $3==v {print $5; exit}' "$OPTS_TSV")"
+    [ -n "$ov_list" ] || continue
+    IFS=';' read -ra ov_parts <<< "$ov_list"
+    for ov in "${ov_parts[@]}"; do
+      if [[ "$ov" =~ ^(Dolphin|GFX)\.[A-Za-z]+\.[A-Za-z0-9_]+=[A-Za-z0-9._+-]+$ ]]; then
+        EXTRA+=(-C "$ov")
+        APPLIED+=" $ov"
+      fi
+    done
+  done < "$OPTS_TSV"
+fi
 
 esc() { printf '%s' "$1" | sed -e 's/[\\#&]/\\&/g'; }
 
