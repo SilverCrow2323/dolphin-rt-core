@@ -1,6 +1,6 @@
 # Dolphin Rt:UI — ROCKNIX handheld frontend
 
-<badge>Alpha implementation · experimental</badge>
+ > **Alpha implementation · experimental**
 
 Dolphin Rt:UI is a controller-first LÖVE application installed separately from the GAMECUBE and WII library entries. The installer exposes **one launcher** in ROCKNIX **Ports**:
 
