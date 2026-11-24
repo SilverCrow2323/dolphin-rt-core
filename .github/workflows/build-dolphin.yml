@@ -164,7 +164,7 @@ jobs:
 # KNULLI and ROCKNIX are built and packaged independently from the muOS/desktop
   # matrix above, so a desktop or experimental Qt failure cannot block port candidates.
   build-ports:
-    name: Build \${{ matrix.target }} port (native ARM64)
+    name: Build ${{ matrix.target }} port (native ARM64)
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 360
     strategy:
@@ -207,9 +207,9 @@ jobs:
         if: matrix.target == 'rocknix'
         run: bash dolphin-build/verify-patches.sh
 
-      - name: Build \${{ matrix.target }} Dolphin
+      - name: Build ${{ matrix.target }} Dolphin
         env:
-          TARGET: \${{ matrix.target }}
+          TARGET: ${{ matrix.target }}
         run: |
           OUT="$RUNNER_TEMP/dolphin-port-$TARGET"
           mkdir -p "$OUT"
@@ -222,8 +222,8 @@ jobs:
 
       - name: Validate and package firmware port
         env:
-          TARGET: \${{ matrix.target }}
-          PORT: \${{ matrix.port }}
+          TARGET: ${{ matrix.target }}
+          PORT: ${{ matrix.port }}
         run: |
           set -euo pipefail
           OUT="$RUNNER_TEMP/dolphin-port-$TARGET"
@@ -263,8 +263,8 @@ jobs:
       - name: Upload installable port, checksums and matching GPL source
         uses: actions/upload-artifact@v4
         with:
-          name: dolphin-port-\${{ matrix.target }}-aarch64-\${{ github.sha }}
-          path: \${{ runner.temp }}/dolphin-port-\${{ matrix.target }}/dist/*
+          name: dolphin-port-${{ matrix.target }}-aarch64-${{ github.sha }}
+          path: ${{ runner.temp }}/dolphin-port-${{ matrix.target }}/dist/*
           if-no-files-found: error
           retention-days: 30
 
@@ -280,20 +280,20 @@ jobs:
       - name: Download KNULLI port
         uses: actions/download-artifact@v4
         with:
-          name: dolphin-port-knulli-aarch64-\${{ github.sha }}
-          path: \${{ runner.temp }}/knulli
+          name: dolphin-port-knulli-aarch64-${{ github.sha }}
+          path: ${{ runner.temp }}/knulli
 
       - name: Download ROCKNIX port
         uses: actions/download-artifact@v4
         with:
-          name: dolphin-port-rocknix-aarch64-\${{ github.sha }}
-          path: \${{ runner.temp }}/rocknix
+          name: dolphin-port-rocknix-aarch64-${{ github.sha }}
+          path: ${{ runner.temp }}/rocknix
 
       - name: Publish KNULLI Scarab candidate
         env:
-          GH_TOKEN: \${{ github.token }}
-          GITHUB_REPOSITORY: \${{ github.repository }}
-          GITHUB_SHA: \${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           DIR="$RUNNER_TEMP/knulli"
@@ -306,13 +306,13 @@ jobs:
           test -s "$DIR/BUILDINFO.txt"
           SOURCE="$(find "$DIR" -maxdepth 1 -name 'source-*.tar.xz' -print -quit)"
           test -s "$SOURCE"
-          SHORT_SHA="\${GITHUB_SHA:0:7}"
-          TAG="knulli-v\${VERSION}-\${SHORT_SHA}"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          TAG="knulli-v${VERSION}-${SHORT_SHA}"
           cat > "$RUNNER_TEMP/knulli-release-notes.md" <<EOF
           # Dolphin Rt:Core K — KNULLI Scarab H700 candidate
 
-          Port package version: **\${VERSION}**  
-          Build commit: \${GITHUB_SHA}
+          Port package version: **${VERSION}**  
+          Build commit: ${GITHUB_SHA}
 
           This candidate contains the native AArch64 Dolphin NoGUI binary and the matching Sys resources from the same pinned upstream build. The installer, EmulationStation integration and per-game profile layer are supplied by the existing Rt:Core K port.
 
@@ -330,15 +330,15 @@ jobs:
           gh release create "$TAG" "$DIR"/* \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Dolphin Rt:Core K — KNULLI Scarab H700 candidate \${VERSION} (\${SHORT_SHA})" \
+            --title "Dolphin Rt:Core K — KNULLI Scarab H700 candidate ${VERSION} (${SHORT_SHA})" \
             --notes-file "$RUNNER_TEMP/knulli-release-notes.md" \
             --prerelease
 
       - name: Publish ROCKNIX Wayland candidate
         env:
-          GH_TOKEN: \${{ github.token }}
-          GITHUB_REPOSITORY: \${{ github.repository }}
-          GITHUB_SHA: \${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           DIR="$RUNNER_TEMP/rocknix"
@@ -351,13 +351,13 @@ jobs:
           test -s "$DIR/BUILDINFO.txt"
           SOURCE="$(find "$DIR" -maxdepth 1 -name 'source-*.tar.xz' -print -quit)"
           test -s "$SOURCE"
-          SHORT_SHA="\${GITHUB_SHA:0:7}"
-          TAG="rocknix-v\${VERSION}-\${SHORT_SHA}"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          TAG="rocknix-v${VERSION}-${SHORT_SHA}"
           cat > "$RUNNER_TEMP/rocknix-release-notes.md" <<EOF
           # Dolphin Rt:Core R — ROCKNIX Wayland H700 candidate
 
-          Port package version: **\${VERSION}**  
-          Build commit: \${GITHUB_SHA}
+          Port package version: **${VERSION}**  
+          Build commit: ${GITHUB_SHA}
 
           This candidate uses the dedicated ROCKNIX Wayland patch series and a native AArch64 NoGUI binary, packaged with its matching Sys resources. It is separate from the FBDev builds for muOS and KNULLI.
 
@@ -375,6 +375,6 @@ jobs:
           gh release create "$TAG" "$DIR"/* \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Dolphin Rt:Core R — ROCKNIX Wayland H700 candidate \${VERSION} (\${SHORT_SHA})" \
+            --title "Dolphin Rt:Core R — ROCKNIX Wayland H700 candidate ${VERSION} (${SHORT_SHA})" \
             --notes-file "$RUNNER_TEMP/rocknix-release-notes.md" \
             --prerelease
