@@ -1,38 +1,45 @@
-# ui/ — frontend Dolphin Rt:Core K (in arrivo / planned)
-Qui andrà il frontend LÖVE per Knulli (profili, controller, hotkeys, graphic mods, texture, cheats).
-Il frontend originale per muOS è in `../legacy-muos/DolphinRtUI-muos/` come riferimento.
-Per ora le opzioni per gioco sono nel menu di EmulationStation (vedi README principale).
+# Dolphin Rt:UI — KNULLI handheld frontend
 
+ > **Alpha implementation · source included in the candidate package**
 
-# Dolphin Rt:Core K — GUI specification
+Dolphin Rt:UI is a controller-first LÖVE application installed separately from the GAMECUBE and WII library entries. The installer exposes **one launcher** in the native KNULLI **Tools** category:
 
-**Status: planned; not shipped in the current port candidate.**
+`/userdata/roms/tools/Dolphin RtCore GUI.sh`
 
-The GUI is a first-class application, separate from the two EmulationStation game systems.
+The application and its support files remain in the Rt:Core installation folder. It uses the shared **PortMaster LÖVE 11.5 runtime**; the runtime itself is not copied into the Dolphin package.
 
-## KNULLI placement
+## Pages
 
-- Register one launcher script in `/userdata/roms/tools/`, so it appears under the native **Tools** category.
-- Keep executable/UI data inside the Rt:Core installation directory; do not scatter support files through the visible Tools list.
-- The GUI must be removable without deleting ROMs, memory cards, Wii NAND, save states, per-game settings or profiles.
+1. **HOME** — GAMECUBE, WII and SYSTEM DIAGNOSTICS.
+2. **GAMECUBE** — discover the local GameCube library and choose a title.
+3. **WII** — discover the local Wii library and choose a title.
+4. **ADVANCED GAME SETTINGS** — the selected title's GAME, CONTROLS, GRAPHICS, PERFORMANCE and AUDIO options.
+5. **SYSTEM DIAGNOSTICS** — platform, ROM root, configuration path and option-catalog summary.
 
-## Page model
+The GUI reads `config/options.tsv`, the same catalog used to generate EmulationStation's Advanced Game Settings. It writes the same per-game `batocera.conf` keys as EmulationStation and the Rt:Core launcher. Changing an option in one interface is therefore visible in the other after refresh.
 
-1. **HOME** — detected firmware/device, installed core version, build identity and quick health.
-2. **GAMECUBE** — library list, selected game, profile and last-run status.
-3. **WII** — library list, selected game, controller orientation and profile.
-4. **GAME SETTINGS** — the selected game's options, using the same identifiers and values in `../config/options.tsv`.
-5. **PROFILES** — select and inspect Rt:Core performance/compatibility profiles.
-6. **CONTROLS** — pad layout, Wii Remote orientation and Safe Exit mapping.
-7. **DIAGNOSTICS** — binary architecture, required Sys assets, launcher log and storage state.
+## Controls
 
-The settings page mirrors the five Advanced Game Settings groups (Game, Controls, Graphics, Performance and Audio). It reads and writes the same per-game keys used by EmulationStation in `/userdata/system/batocera.conf`; there must be one source of truth, not a second private settings database.
+- D-pad: move through pages and options.
+- **A**: open a page or advance the selected setting.
+- **B**: go back.
+- **Left / Right**: change the selected value.
+- **L1 / R1**: switch settings group.
+- **X**: clear the selected per-game override and return to the system/global/profile value.
+- **Y**: rescan the current library.
 
-## Input and safety
+## Safety and configuration
 
-- D-pad/left stick moves focus; A confirms; B backs out; shoulders switch top-level pages where useful.
-- Never run a ROM while a settings write is in progress.
-- Write configuration atomically, preserve unrelated lines and keep a backup before the first mutation.
-- The GUI and EmulationStation must display each other's changes after a refresh.
-- Scanning the library is read-only. No game, shell script or user content is executed by the scanner.
-- GUI availability is gated on the actual runtime and device adapter; it must not appear as installable until the frontend can launch on the target firmware.
+- The library scanner only lists supported ROM file types: ISO, GCM, RVZ, WBFS, WIA, GCZ and CISO. It never runs ROMs or shell scripts during discovery.
+- Settings are written to `/userdata/system/batocera.conf`, preserving unrelated entries.
+- Before the first GUI change, the app keeps a copy at `batocera.conf.rtcore.bak`.
+- Writes use a temporary file and same-filesystem rename.
+- **EmulationStation remains the game launcher.** Rt:UI edits settings and browses titles; selecting a title opens its settings page rather than launching the game.
+
+## Requirements and current limits
+
+- KNULLI with the PortMaster shared LÖVE 11.5 runtime installed.
+- Rt:Core K already installed with its matching Dolphin binary and `core/Sys`.
+- ROMs in `/userdata/roms/gamecube` and `/userdata/roms/wii`.
+
+This is an initial GUI implementation. It does not yet edit Rt:Core performance profiles, controller maps or cheats, and it does not launch games itself. CI/source checks are not a substitute for testing the GUI on a physical KNULLI handheld.

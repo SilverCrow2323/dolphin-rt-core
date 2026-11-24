@@ -11,6 +11,15 @@ for f in es_systems_rtcore.cfg; do
 done
 bash "$ROOT/tools/es-features.sh" remove "$ES_DIR"
 bash "$ROOT/theme/install-theme.sh" --uninstall
+if [ -s "$ROOT/.ui_launcher_installed" ]; then
+  while IFS= read -r launcher; do
+    [ -n "$launcher" ] || continue
+    rm -f "$launcher"
+    [ -f "$launcher.rtcore.bak" ] && mv -f "$launcher.rtcore.bak" "$launcher"
+    echo "[rtcore-r] removed GUI launcher $launcher"
+  done < "$ROOT/.ui_launcher_installed"
+  rm -f "$ROOT/.ui_launcher_installed"
+fi
 rm -f "$ROOT/.installed"
 command -v systemctl >/dev/null 2>&1 && systemctl restart emulationstation >/dev/null 2>&1 &
 echo "[rtcore-r] Done. This folder, your ROMs and your saves were left untouched."

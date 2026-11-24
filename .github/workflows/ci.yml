@@ -115,6 +115,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install LÖVE and virtual display
         run: sudo apt-get update && sudo apt-get install -y love xvfb
+      - name: Smoke-test the KNULLI and ROCKNIX handheld settings GUIs
+        run: bash ../../../tests/test_rtui_port_smoke.sh
       - name: Exercise every declared LÖVE screen
         env:
           SDL_AUDIODRIVER: dummy
