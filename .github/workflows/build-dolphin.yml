@@ -12,6 +12,9 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
+      - "tools/make-port-release.sh"
+      - "dolphin-rtcore-k/**"
+      - "dolphin-rtcore-r/**"
       - ".github/workflows/build-dolphin.yml"
   pull_request:
     branches: [main]
@@ -24,6 +27,9 @@ on:
       - "dolphin-rtcore-muos/emu/dolphin/Sys/**"
       - "dolphin-rtcore-muos/tools/build-muxupd.sh"
       - "dolphin-rtcore-muos/tools/build-muxupd-qt6-experimental.sh"
+      - "tools/make-port-release.sh"
+      - "dolphin-rtcore-k/**"
+      - "dolphin-rtcore-r/**"
       - ".github/workflows/build-dolphin.yml"
   workflow_dispatch:
 
@@ -49,10 +55,6 @@ jobs:
             frontend: nogui
           - target: muos-qt
             frontend: both
-          - target: knulli
-            frontend: nogui
-          - target: rocknix
-            frontend: nogui
           - target: desktop
             frontend: nogui
           - target: desktop
@@ -159,3 +161,220 @@ jobs:
             ${{ runner.temp }}/dolphin-${{ matrix.target }}-${{ matrix.frontend }}/source-*.tar.xz
           if-no-files-found: error
           retention-days: 30
+# KNULLI and ROCKNIX are built and packaged independently from the muOS/desktop
+  # matrix above, so a desktop or experimental Qt failure cannot block port candidates.
+  build-ports:
+    name: Build \${{ matrix.target }} port (native ARM64)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - target: knulli
+            port: k
+          - target: rocknix
+            port: r
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Show native runner resources
+        run: |
+          uname -a
+          uname -m
+          nproc
+          free -h
+          df -h
+
+      - name: Install common Dolphin build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build git patch pkg-config python3 \
+            ca-certificates xz-utils binutils zip unzip \
+            libevdev-dev libudev-dev libusb-1.0-0-dev libpulse-dev \
+            libasound2-dev libcurl4-openssl-dev liblzo2-dev libzstd-dev \
+            liblzma-dev libpng-dev zlib1g-dev libbz2-dev libegl-dev \
+            libgles-dev libgl-dev libdrm-dev libbluetooth-dev libhidapi-dev \
+            libxi-dev libwayland-dev wayland-protocols libxkbcommon-dev libdecor-0-dev
+
+      - name: Verify ROCKNIX Wayland patch series
+        if: matrix.target == 'rocknix'
+        run: bash dolphin-build/verify-patches.sh
+
+      - name: Build \${{ matrix.target }} Dolphin
+        env:
+          TARGET: \${{ matrix.target }}
+        run: |
+          OUT="$RUNNER_TEMP/dolphin-port-$TARGET"
+          mkdir -p "$OUT"
+          bash dolphin-build/build-dolphin.sh \
+            --target "$TARGET" \
+            --frontend nogui \
+            --out "$OUT" \
+            --jobs "$(nproc)" \
+            --no-deps
+
+      - name: Validate and package firmware port
+        env:
+          TARGET: \${{ matrix.target }}
+          PORT: \${{ matrix.port }}
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/dolphin-port-$TARGET"
+          PORT_ROOT="dolphin-rtcore-$PORT"
+
+          test -x "$OUT/dolphin"
+          bash dolphin-build/validate-aarch64-elf.sh "$OUT/dolphin"
+          test -s "$OUT/BUILDINFO.txt"
+          for asset in \
+            GC/font_western.bin GC/font_japanese.bin \
+            GC/dsp_rom.bin GC/dsp_coef.bin Resources/OSD_Font.ttf; do
+            test -s "$OUT/Sys/$asset"
+          done
+
+          SOURCE_ARCHIVE="$(find "$OUT" -maxdepth 1 -type f -name 'source-*.tar.xz' -print -quit)"
+          test -s "$SOURCE_ARCHIVE"
+          mkdir -p "$OUT/dist"
+          bash tools/make-port-release.sh "$PORT" \
+            --binary "$OUT/dolphin" \
+            --sys-dir "$OUT/Sys" \
+            --out "$OUT/dist"
+
+          TAR_ARCHIVE="$(find "$OUT/dist" -maxdepth 1 -type f -name '*_emulators.tar.gz' -print -quit)"
+          ZIP_ARCHIVE="$(find "$OUT/dist" -maxdepth 1 -type f -name '*.zip' -print -quit)"
+          test -s "$TAR_ARCHIVE"
+          test -s "$ZIP_ARCHIVE"
+          tar -tzf "$TAR_ARCHIVE" | grep -Fx "$PORT_ROOT/core/dolphin"
+          tar -tzf "$TAR_ARCHIVE" | grep -Fx "$PORT_ROOT/core/Sys/GC/dsp_rom.bin"
+          unzip -tq "$ZIP_ARCHIVE"
+          unzip -Z1 "$ZIP_ARCHIVE" | grep -Fx "$PORT_ROOT/core/dolphin"
+
+          cp "$OUT/BUILDINFO.txt" "$OUT/dist/"
+          cp "$SOURCE_ARCHIVE" "$OUT/dist/"
+          (cd "$OUT/dist" && sha256sum *.tar.gz *.zip BUILDINFO.txt source-*.tar.xz > SHA256SUMS)
+          cat "$OUT/dist/SHA256SUMS"
+
+      - name: Upload installable port, checksums and matching GPL source
+        uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-port-\${{ matrix.target }}-aarch64-\${{ github.sha }}
+          path: \${{ runner.temp }}/dolphin-port-\${{ matrix.target }}/dist/*
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-port-candidates:
+    name: Publish KNULLI and ROCKNIX candidate releases
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'SilverCrow2323/dolphin-rt-core'
+    needs: build-ports
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download KNULLI port
+        uses: actions/download-artifact@v4
+        with:
+          name: dolphin-port-knulli-aarch64-\${{ github.sha }}
+          path: \${{ runner.temp }}/knulli
+
+      - name: Download ROCKNIX port
+        uses: actions/download-artifact@v4
+        with:
+          name: dolphin-port-rocknix-aarch64-\${{ github.sha }}
+          path: \${{ runner.temp }}/rocknix
+
+      - name: Publish KNULLI Scarab candidate
+        env:
+          GH_TOKEN: \${{ github.token }}
+          GITHUB_REPOSITORY: \${{ github.repository }}
+          GITHUB_SHA: \${{ github.sha }}
+        run: |
+          set -euo pipefail
+          DIR="$RUNNER_TEMP/knulli"
+          ARCHIVE="$(find "$DIR" -maxdepth 1 -name '*_emulators.tar.gz' -print -quit)"
+          ZIP_ARCHIVE="$(find "$DIR" -maxdepth 1 -name '*.zip' -print -quit)"
+          VERSION="$(basename "$ARCHIVE" | sed -E 's/^Dolphin-RtCore-K_v(.*)_emulators\.tar\.gz$/\1/')"
+          test -s "$ARCHIVE"
+          test -s "$ZIP_ARCHIVE"
+          test -s "$DIR/SHA256SUMS"
+          test -s "$DIR/BUILDINFO.txt"
+          SOURCE="$(find "$DIR" -maxdepth 1 -name 'source-*.tar.xz' -print -quit)"
+          test -s "$SOURCE"
+          SHORT_SHA="\${GITHUB_SHA:0:7}"
+          TAG="knulli-v\${VERSION}-\${SHORT_SHA}"
+          cat > "$RUNNER_TEMP/knulli-release-notes.md" <<EOF
+          # Dolphin Rt:Core K — KNULLI Scarab H700 candidate
+
+          Port package version: **\${VERSION}**  
+          Build commit: \${GITHUB_SHA}
+
+          This candidate contains the native AArch64 Dolphin NoGUI binary and the matching Sys resources from the same pinned upstream build. The installer, EmulationStation integration and per-game profile layer are supplied by the existing Rt:Core K port.
+
+          ## Install
+          1. Back up your SD card, saves and existing Rt:Core folder.
+          2. Download the *_emulators.tar.gz archive and extract it into /userdata/emulators.
+          3. Run /userdata/emulators/dolphin-rtcore-k.sh to register the systems.
+          4. In EmulationStation, update the game lists.
+
+          The ZIP is an alternate extraction format. SHA256SUMS, BUILDINFO.txt and the matching source-*.tar.xz are included.
+
+          ## Qualification
+          Native ARM64 compilation, AArch64 ELF validation, required Dolphin resource checks, archive integrity and package-layout checks passed in CI. This exact candidate has not yet been physically qualified on an RG35XX H running KNULLI Scarab. First launch, controller input, video/audio output and clean exit still require device testing. It is a prerelease candidate, not a hardware-certified stable update.
+          EOF
+          gh release create "$TAG" "$DIR"/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Dolphin Rt:Core K — KNULLI Scarab H700 candidate \${VERSION} (\${SHORT_SHA})" \
+            --notes-file "$RUNNER_TEMP/knulli-release-notes.md" \
+            --prerelease
+
+      - name: Publish ROCKNIX Wayland candidate
+        env:
+          GH_TOKEN: \${{ github.token }}
+          GITHUB_REPOSITORY: \${{ github.repository }}
+          GITHUB_SHA: \${{ github.sha }}
+        run: |
+          set -euo pipefail
+          DIR="$RUNNER_TEMP/rocknix"
+          ARCHIVE="$(find "$DIR" -maxdepth 1 -name '*_emulators.tar.gz' -print -quit)"
+          ZIP_ARCHIVE="$(find "$DIR" -maxdepth 1 -name '*.zip' -print -quit)"
+          VERSION="$(basename "$ARCHIVE" | sed -E 's/^Dolphin-RtCore-R_v(.*)_emulators\.tar\.gz$/\1/')"
+          test -s "$ARCHIVE"
+          test -s "$ZIP_ARCHIVE"
+          test -s "$DIR/SHA256SUMS"
+          test -s "$DIR/BUILDINFO.txt"
+          SOURCE="$(find "$DIR" -maxdepth 1 -name 'source-*.tar.xz' -print -quit)"
+          test -s "$SOURCE"
+          SHORT_SHA="\${GITHUB_SHA:0:7}"
+          TAG="rocknix-v\${VERSION}-\${SHORT_SHA}"
+          cat > "$RUNNER_TEMP/rocknix-release-notes.md" <<EOF
+          # Dolphin Rt:Core R — ROCKNIX Wayland H700 candidate
+
+          Port package version: **\${VERSION}**  
+          Build commit: \${GITHUB_SHA}
+
+          This candidate uses the dedicated ROCKNIX Wayland patch series and a native AArch64 NoGUI binary, packaged with its matching Sys resources. It is separate from the FBDev builds for muOS and KNULLI.
+
+          ## Install
+          1. Back up your SD card and existing Rt:Core configuration.
+          2. Download the *_emulators.tar.gz archive and extract it into /storage/emulators.
+          3. Run /storage/emulators/dolphin-rtcore-r.sh to install the EmulationStation integration.
+          4. Run ./rtcore.sh doctor from the extracted dolphin-rtcore-r folder before the first game launch.
+
+          The ZIP is an alternate extraction format. SHA256SUMS, BUILDINFO.txt and the matching source-*.tar.xz are included.
+
+          ## Qualification
+          Native ARM64 compilation, ROCKNIX Wayland patch validation, AArch64 ELF validation, required Dolphin resource checks, archive integrity and package-layout checks passed in CI. This exact candidate has not yet been physically qualified on an RG35XX H running ROCKNIX. The game launch, compositor/display, controls, audio and clean exit still require device testing. It remains experimental and is published as a prerelease candidate only.
+          EOF
+          gh release create "$TAG" "$DIR"/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Dolphin Rt:Core R — ROCKNIX Wayland H700 candidate \${VERSION} (\${SHORT_SHA})" \
+            --notes-file "$RUNNER_TEMP/rocknix-release-notes.md" \
+            --prerelease
