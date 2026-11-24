@@ -3,13 +3,14 @@
 ROOT="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 LOGOS="$ROOT/theme/logos"
 MANIFEST="$ROOT/.theme_installed"
-THEMES=""; ES_DIR=""; USERDATA=""; UNINSTALL=0
+THEMES=""; ES_DIR=""; USERDATA=""; UNINSTALL=0; DRY=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --themes) THEMES="$2"; shift 2;;
     --es-dir) ES_DIR="$2"; shift 2;;
     --userdata) USERDATA="$2"; shift 2;;
     --uninstall) UNINSTALL=1; shift;;
+    --dry-run) DRY=1; shift;;
     *) shift;;
   esac
 done
@@ -25,6 +26,17 @@ if [ "$UNINSTALL" = 1 ]; then
 fi
 
 [ -n "$THEMES" ] && [ -n "$ES_DIR" ] || { echo "uso: install-theme.sh --themes DIR --es-dir DIR"; exit 1; }
+
+if [ "$DRY" = 1 ]; then
+  if [ -n "$USERDATA" ]; then
+    echo "[dry-run] Art Book Next: install GameCube and Wii logos into $USERDATA/theme-customizations/art-book-next/logos"
+  fi
+  THEME="$(grep -o 'name="ThemeSet" value="[^"]*"' "$ES_DIR/es_settings.cfg" 2>/dev/null | sed 's/.*value="//; s/"$//')"
+  if [ -n "$THEME" ] && [ -d "$THEMES/$THEME/_art/Colorlogos" ]; then
+    echo "[dry-run] copy GameCube, Wii and Rt:Core logos into $THEMES/$THEME/_art/Colorlogos"
+  fi
+  exit 0
+fi
 : > "$MANIFEST"
 
 # Art Book Next exposes a supported, update-persistent custom-logo directory.
