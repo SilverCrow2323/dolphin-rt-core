@@ -21,6 +21,30 @@
 
 ---
 
+## 🎮 Platform ports — fresh builds, separate packages
+
+<div align="center">
+
+| <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/knulli-v0.2.0-c79acd1"><img src="https://knulli.org/_inc/images/logo-knulli.png" height="116" alt="KNULLI official logo"></a> | <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/rocknix-v0.3.0-experimental-c79acd1"><img src="https://img.shields.io/badge/ROCKNIX-WAYLAND%20PORT-24A7A1?style=for-the-badge&logo=linux&logoColor=white" alt="ROCKNIX platform wordmark"></a> |
+|:---:|:---:|
+| **KNULLI SCARAB · Rt:Core K** | **ROCKNIX · Rt:Core R** |
+| <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/knulli-v0.2.0-c79acd1"><img src="https://img.shields.io/badge/PRE--RELEASE-v0.2.0-7B61FF?style=for-the-badge"></a> | <a href="https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/rocknix-v0.3.0-experimental-c79acd1"><img src="https://img.shields.io/badge/EXPERIMENTAL-v0.3.0-24A7A1?style=for-the-badge"></a> |
+| [⬇️ TAR.GZ](https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/knulli-v0.2.0-c79acd1/Dolphin-RtCore-K_v0.2.0_emulators.tar.gz) · [ZIP](https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/knulli-v0.2.0-c79acd1/Dolphin-RtCore-K_v0.2.0.zip) | [⬇️ TAR.GZ](https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/rocknix-v0.3.0-experimental-c79acd1/Dolphin-RtCore-R_v0.3.0-experimental_emulators.tar.gz) · [ZIP](https://github.com/SilverCrow2323/dolphin-rt-core/releases/download/rocknix-v0.3.0-experimental-c79acd1/Dolphin-RtCore-R_v0.3.0-experimental.zip) |
+| [Release notes · checksums](https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/knulli-v0.2.0-c79acd1) | [Release notes · checksums](https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/rocknix-v0.3.0-experimental-c79acd1) |
+
+</div>
+
+> [!IMPORTANT]
+> These are **independent platform packages** built from the same integration commit. KNULLI uses FBDev/SDL-EGL; ROCKNIX uses its dedicated Wayland build. Never swap binaries or package layouts between firmware targets. Both passed native ARM64 CI packaging checks, but neither candidate has yet been physically qualified on an RG35XX H. Back up your SD card and saves before testing.
+
+**Install quick links**
+- **KNULLI:** extract the TAR.GZ into `/userdata/emulators`, run `/userdata/emulators/dolphin-rtcore-k.sh`, then refresh game lists in EmulationStation.
+- **ROCKNIX:** extract the TAR.GZ into `/storage/emulators`, run `/storage/emulators/dolphin-rtcore-r.sh`, then run `./rtcore.sh doctor` from the extracted `dolphin-rtcore-r` directory before launching a game.
+
+[Browse all releases and older stable builds →](https://github.com/SilverCrow2323/dolphin-rt-core/releases)
+
+---
+
 > **FIELD NOTE // 2026-11-23**
 >
 > **Dolphin Rt:Core v12.5.00 "Arcade"** is the current stable release for **muOS 2606.0 Andromeda** on H700/AArch64 handhelds.
@@ -46,8 +70,8 @@ This project does not promise that every GameCube or Wii title will run at full 
 |---|---|---|
 | **muOS 2606.0 Andromeda** | Stable v12.5.00 "Arcade" package, Rt:UI 3.7.0, RtSys and core registration | Current stable H700/AArch64 NoGUI release. The complete update includes the matched Dolphin binary, Sys tree and private runtime. |
 | **muOS 2601.1 Jacaranda** | Legacy v11.5.1 Triptych line | Historical/legacy release line. Do not install the Andromeda package on Jacaranda by assumption. |
-| **Knulli / Batocera** | Separate Rt:Core K integration | Existing RG35XX H / Knulli Scarab device testing is documented in the K port. Verify each new binary/resource pair before releasing it. |
-| **ROCKNIX** | Separate Rt:Core R integration with a Wayland-enabled build target | Experimental. The old fbdev binary/display mismatch is the reason for the dedicated Wayland build. A successful CI build still needs a physical-device launch test. |
+| **KNULLI Scarab** | Separate Rt:Core K integration; FBDev + SDL/EGL/GLES | **v0.2.0 prerelease published.** Native AArch64 build and package checks passed; physical RG35XX H qualification is pending. |
+| **ROCKNIX** | Separate Rt:Core R integration with a dedicated Wayland-enabled build target | **v0.3.0-experimental prerelease published.** Native AArch64 build and package checks passed; physical RG35XX H qualification is pending. |
 | **Linux desktop x86_64** | Qt GUI + NoGUI bundle with X11/Wayland and local Sys resources | Dedicated PC build intended for MX Linux XFCE and comparable Debian/Ubuntu desktops; separate from handheld binaries. |
 | **ARM64 desktop** | Qt GUI and NoGUI build variants | Build and diagnostic target; not a handheld firmware package. |
 
@@ -238,12 +262,12 @@ GitHub Actions runs repository contracts, packaging dry-runs, frontend smoke tes
 
 Development should happen on short-lived branches and be merged through pull requests. Keep changes small and independently reviewable. Do not bypass a failing check by weakening architecture validation or relabelling an untested build.
 
-**Current engineering priorities — 23 November 2026**
+**Current engineering priorities — 24 November 2026**
 
 1. Maintain the **v12.5.00 Arcade** stable line with focused hotfixes and regression coverage.
 2. Keep the Rt:UI Screenshot Studio gallery current for new screens and releases; inspect screenshots for privacy and visual correctness before publishing.
 3. Continue collecting game-by-game compatibility reports with exact Game ID, region, profile, firmware and observed behavior.
-4. Keep KNULLI and ROCKNIX integrations versioned and validated independently from the muOS Andromeda package.
+4. Maintain the published KNULLI Scarab v0.2.0 and ROCKNIX v0.3.0-experimental candidates as independent platform lines; collect real-device boot, controls, video/audio and clean-exit reports.
 5. Continue Rt:Stream interoperability checks against real Sunshine/Moonlight hosts and SFTP targets.
 6. Maintain the product hub, documentation, accessibility and offline/PWA checks.
 
@@ -251,7 +275,9 @@ Development should happen on short-lived branches and be merged through pull req
 
 ## 11 — Documentation and links
 
-- [Releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases)
+- [KNULLI Scarab v0.2.0 prerelease](https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/knulli-v0.2.0-c79acd1)
+- [ROCKNIX v0.3.0-experimental prerelease](https://github.com/SilverCrow2323/dolphin-rt-core/releases/tag/rocknix-v0.3.0-experimental-c79acd1)
+- [All releases](https://github.com/SilverCrow2323/dolphin-rt-core/releases)
 - [Issues](https://github.com/SilverCrow2323/dolphin-rt-core/issues)
 - [Official Project Portal](https://silvercrow2323.github.io/dolphin-rt-core/)
 - [Compatibility Database](https://silvercrow2323.github.io/dolphin-rt-core/compatibility.html)
