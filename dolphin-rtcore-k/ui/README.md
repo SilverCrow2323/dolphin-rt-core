@@ -1,6 +1,6 @@
 # Dolphin Rt:UI — KNULLI handheld frontend
 
-<badge>Alpha implementation · source included in the candidate package</badge>
+ > **Alpha implementation · source included in the candidate package**
 
 Dolphin Rt:UI is a controller-first LÖVE application installed separately from the GAMECUBE and WII library entries. The installer exposes **one launcher** in the native KNULLI **Tools** category:
 
