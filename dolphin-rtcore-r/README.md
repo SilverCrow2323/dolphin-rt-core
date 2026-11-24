@@ -1,5 +1,7 @@
 # Dolphin Rt:Core R — ROCKNIX (experimental)
 
+> The earlier `0.3.0-experimental` build used an FBDev-only Dolphin binary and could install its EmulationStation entries but not launch games on ROCKNIX. This PR isolates a Wayland-enabled ARM64 build and adds an Rt:UI app in Ports. Neither new candidate is marked hardware-qualified until tested on the target device.
+
 > [!WARNING]
 > **Status, from the first real test on a device:** the installer works, the Rt:Core systems and the options show up in
 > EmulationStation, you can pick a game — **and the emulator does not start.** Run `./rtcore.sh doctor` (below) to see why.
@@ -147,8 +149,8 @@ Settings are grouped into **GAME**, **CONTROLS**, **GRAPHICS**, **PERFORMANCE**,
 
 ## Rt:Core GUI
 
-The handheld GUI is a separate application, not a third ROM system. On ROCKNIX it belongs under **Ports**, launched by a `.sh` entry in `/storage/roms/ports`. ROCKNIX's **Tools** category is reserved for system modules, which is why a normal app-plus-script placed there may not appear. The GUI's support data stays outside the visible Ports list.
+The handheld GUI is a separate application, not a third ROM system. The installer registers one launcher in **ROCKNIX Ports** at `/storage/roms/ports/Dolphin RtCore GUI.sh`; support files stay in the Rt:Core installation folder. It uses PortMaster's shared LÖVE 11.5 runtime, not a second bundled runtime.
 
-Planned pages: Home/Diagnostics, GameCube, Wii, selected-game Advanced Settings, Profiles, Controls and Runtime. The settings page will use the same `options.tsv` catalogue and the existing `/storage/.config/system/configs/system.cfg` store as EmulationStation.
+The Alpha frontend includes HOME, GAMECUBE, WII, selected-game Advanced Settings and System Diagnostics. It reads `config/options.tsv` and writes the same per-game values in `/storage/.config/system/configs/system.cfg` as EmulationStation and the Rt:Core launcher. EmulationStation remains responsible for launching games. See [the GUI guide](ui/README.md).
 
-**The GUI is not shipped in this candidate yet.** Until its ROCKNIX runtime and frontend are implemented and device-tested, use EmulationStation's Advanced Game Settings. The emulator build and the GUI are separate qualification gates.
+This is an Alpha source implementation, not a hardware certification. The Wayland Dolphin build, controller input, graphics/audio output, GUI runtime and clean return to EmulationStation still need physical ROCKNIX testing.
