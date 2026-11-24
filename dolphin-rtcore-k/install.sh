@@ -158,7 +158,7 @@ fi
 
 if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
   if [ "$DRY" = 1 ]; then echo "[dry-run] bash theme/install-theme.sh --themes '$THEMES' --es-dir '$ES_DIR'"
-  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR"; fi
+  else bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR" --userdata "$UD"; fi
 fi
 
 if [ "$DRY" != 1 ]; then
