@@ -120,3 +120,41 @@ Publishing it as a git repo: `git init && git add . && git commit` (see `.gitign
 
 ## Known limits
 The frontend UI is not ported yet - graphic mods and hotkeys per game are still to do - logos were only checked against the ARCADEPLANET layout. See `NOTICE.md` for licences.
+
+
+## Main menu systems and artwork
+
+Dolphin is registered as **two separate EmulationStation systems**, not as a single generic emulator folder:
+
+| Main-menu entry | ROM folder | Theme key |
+|---|---|---|
+| **WII** | `/userdata/roms/wii` | `wii` |
+| **GAMECUBE** | `/userdata/roms/gamecube` | `gamecube` |
+
+The installer adds both system definitions to `es_systems_rtcore.cfg`. Their system logos are copied to KNULLI's persistent Art Book Next customization folder:
+
+`/userdata/theme-customizations/art-book-next/logos/`
+
+To show those custom logos with Art Book Next, open **User Interface Settings → Theme Configuration** and set **System Logos → Custom**. The existing Carbon/Batocera `_art/Colorlogos` placement is also retained when that theme layout is detected. Theme customizations are backed up and restored by the Rt:Core uninstaller.
+
+If a system is not visible because its ROM folder is empty, add a game or enable **Show Empty Systems** in Game Collection Settings.
+
+## Advanced per-game settings
+
+The Advanced Game Settings menu is generated from `config/options.tsv`. The same catalog is consumed by the launcher, so a menu choice and the value applied to Dolphin cannot drift into separate hand-maintained lists.
+
+Options are grouped into five pages/submenus:
+
+- **GAME:** Game Settings, HD Textures, Cheats, Show FPS.
+- **CONTROLS:** Controller layout, Wii Remote position, Safe Exit.
+- **GRAPHICS:** Internal Resolution, Aspect Ratio, Widescreen Hack, Anisotropic Filtering, Force Texture Filtering, MSAA, V-Sync, Shader Compilation, EFB Access from CPU, Pixel Lighting.
+- **PERFORMANCE:** Emulation Speed, Emulated CPU Clock, Dual Core, MMU Emulation.
+- **AUDIO:** Volume, Audio Engine (HLE).
+
+The setting precedence remains **per-game → per-system → global → profile default**. Selecting *Profile default* means no extra override is passed to Dolphin. ROCKNIX's display-window choice is platform-specific and is deliberately not exposed on KNULLI.
+
+## Rt:Core GUI
+
+The standalone controller-friendly GUI is a separate application from the GAMECUBE and WII library entries. Its planned KNULLI menu location is **Tools**; it will be launched by a small script in `/userdata/roms/tools`, while its application data stays with the Rt:Core installation. The GUI will provide GameCube/Wii library pages, selected-game advanced settings, profiles and diagnostics.
+
+**The GUI is not included in this candidate yet.** Until its handheld frontend and self-contained runtime are implemented and tested, use EmulationStation's Advanced Game Settings menu. Do not install a placeholder launcher that reports success without a working interface.
