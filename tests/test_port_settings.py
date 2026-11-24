@@ -96,13 +96,38 @@ class PortSettingsContractTests(unittest.TestCase):
         self.assertIn("--userdata \"$UD\"", (K / "install.sh").read_text(encoding="utf-8"))
         self.assertIn("--userdata \"$UD\"", (R / "install.sh").read_text(encoding="utf-8"))
 
-    def test_gui_placement_is_firmware_specific_and_not_a_false_launcher(self):
+    def test_controller_gui_is_shipped_in_the_correct_firmware_category(self):
         k_ui = (K / "ui" / "README.md").read_text(encoding="utf-8")
         r_ui = (R / "ui" / "README.md").read_text(encoding="utf-8")
+        k_main = (K / "ui" / "gui" / "main.lua").read_text(encoding="utf-8")
+        r_main = (R / "ui" / "gui" / "main.lua").read_text(encoding="utf-8")
+        k_install = (K / "install.sh").read_text(encoding="utf-8")
+        r_install = (R / "install.sh").read_text(encoding="utf-8")
         self.assertIn("/userdata/roms/tools/", k_ui)
         self.assertIn("/storage/roms/ports/", r_ui)
-        self.assertIn("not shipped", k_ui.lower())
-        self.assertIn("not shipped", r_ui.lower())
+        self.assertIn('write_gui_launcher "$ROMS/tools"', k_install)
+        self.assertIn('write_gui_launcher "$UD/roms/ports"', r_install)
+        self.assertIn("D-pad", k_ui)
+        self.assertIn("D-pad", r_ui)
+        self.assertIn("ADVANCED GAME SETTINGS", k_main)
+        self.assertIn("ADVANCED GAME SETTINGS", r_main)
+        self.assertIn("config/options.tsv", k_main)
+        self.assertIn("config/options.tsv", r_main)
+        self.assertIn("/system/batocera.conf", k_main)
+        self.assertIn("/.config/system/configs/system.cfg", r_main)
+        self.assertIn('["return"]="a"', k_main)
+        self.assertIn('["return"]="a"', r_main)
+        self.assertNotIn('return="a"', k_main)
+        self.assertNotIn('return="a"', r_main)
+
+    def test_gui_launchers_use_portmaster_shared_love_runtime_without_bundling_it(self):
+        for platform in (K, R):
+            launcher = (platform / "bin" / "rtcore-ui.sh").read_text(encoding="utf-8")
+            self.assertIn("runtimes/love_11.5/love.txt", launcher)
+            self.assertIn('RTCORE_PORT_ROOT="$ROOT"', launcher)
+            self.assertIn('RTCORE_PLATFORM="$PLATFORM"', launcher)
+            self.assertIn("PortMaster was not found", launcher)
+            self.assertFalse((platform / "ui" / "gui" / "love").exists())
 
     def test_modified_shell_entrypoints_parse(self):
         scripts = (
@@ -110,10 +135,12 @@ class PortSettingsContractTests(unittest.TestCase):
             K / "uninstall.sh",
             K / "bin" / "rtcore-k.sh",
             K / "theme" / "install-theme.sh",
+            K / "bin" / "rtcore-ui.sh",
             R / "install.sh",
             R / "uninstall.sh",
             R / "bin" / "rtcore-r.sh",
             R / "theme" / "install-theme.sh",
+            R / "bin" / "rtcore-ui.sh",
             R / "tools" / "es-features.sh",
         )
         for script in scripts:
