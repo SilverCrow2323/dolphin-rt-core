@@ -204,7 +204,7 @@ say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Up
 #!/bin/sh
 # RTCORE-R-GUI-LAUNCHER
 ROOT=$ROOT_Q
-exec "$ROOT/bin/rtcore-ui.sh" "$@"
+exec "$ROOT/bin/rtcore-ui.sh" "\$@"
 EOF
     chmod 755 "$UI_LAUNCHER"
     printf '%s\n' "$UI_LAUNCHER" > "$ROOT/.ui_launcher_installed"
