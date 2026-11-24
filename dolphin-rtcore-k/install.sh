@@ -23,6 +23,7 @@ Usage: ./install.sh [options]
   --themes DIR     themes folder         (default: <userdata>/themes)
   --no-es          do not write the EmulationStation files
   --no-theme       do not install the logos into the theme
+  --no-ui          do not add the Dolphin Rt:UI launcher to Tools
   --no-restart     do not restart EmulationStation
   --dry-run        show what would be done, write nothing
   -h, --help       this help
@@ -30,7 +31,7 @@ EOT
 }
 
 USERDATA_OPT=""; ROMS_OPT=""; ES_OPT=""; THEMES_OPT=""
-DO_ES=1; DO_THEME=1; DO_RESTART=1; DRY=0; UPDATE=0; OFFLINE=0
+DO_ES=1; DO_THEME=1; DO_UI=1; DO_RESTART=1; DRY=0; UPDATE=0; OFFLINE=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --update)     UPDATE=1; shift;;
@@ -45,6 +46,7 @@ while [ $# -gt 0 ]; do
     --themes)     THEMES_OPT="$2"; shift 2;;
     --no-es)      DO_ES=0; shift;;
     --no-theme)   DO_THEME=0; shift;;
+    --no-ui)      DO_UI=0; shift;;
     --no-restart) DO_RESTART=0; shift;;
     --dry-run)    DRY=1; shift;;
     -h|--help)    usage; exit 0;;
@@ -198,6 +200,47 @@ if [ "$DO_THEME" = 1 ] && [ -n "$THEMES" ] && [ -n "$ES_DIR" ]; then
     bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR" --userdata "$UD" --dry-run
   else
     bash "$ROOT/theme/install-theme.sh" --themes "$THEMES" --es-dir "$ES_DIR" --userdata "$UD"
+  fi
+fi
+
+# The handheld GUI is a single visible Tools entry; all support files stay here.
+if [ "$DO_UI" = 1 ] && [ -n "$ROMS" ]; then
+  UI_DIR="$ROMS/tools"
+  UI_LAUNCHER="$UI_DIR/Dolphin RtCore GUI.sh"
+  if [ ! -s "$ROOT/ui/gui/main.lua" ] || [ ! -s "$ROOT/ui/gui/conf.lua" ] || [ ! -x "$ROOT/bin/rtcore-ui.sh" ]; then
+    say "GUI payload incomplete; Tools launcher not installed"
+  elif [ "$DRY" = 1 ]; then
+    say "[dry-run] would install $UI_LAUNCHER"
+  else
+    mkdir -p "$UI_DIR"
+    if [ -f "$UI_LAUNCHER" ] && ! grep -q '^# RTCORE-K-GUI-LAUNCHER
+
+if [ "$DRY" != 1 ]; then
+  { echo "root=$ROOT"; echo "es_dir=$ES_DIR"; echo "roms=$ROMS"; echo "version=$(cat "$ROOT/VERSION" 2>/dev/null)"; echo "date=$(date '+%F %T')"; } > "$ROOT/.installed"
+fi
+
+if [ "$DO_ES" = 1 ] && [ "$DO_RESTART" = 1 ] && [ "$DRY" != 1 ]; then
+  if [ -x /etc/init.d/S31emulationstation ]; then
+    say "Restarting EmulationStation..."
+    /etc/init.d/S31emulationstation restart >/dev/null 2>&1 &
+  else
+    say "Restart EmulationStation manually."
+  fi
+fi
+say "Done. Next: put ROMs in the wii / gamecube folders, then Game Settings > Update Game Lists."
+ "$UI_LAUNCHER"; then
+      [ -e "$UI_LAUNCHER.rtcore.bak" ] || cp -p "$UI_LAUNCHER" "$UI_LAUNCHER.rtcore.bak"
+    fi
+    ROOT_Q="$(printf '%q' "$ROOT")"
+    cat > "$UI_LAUNCHER" <<EOF
+#!/bin/sh
+# RTCORE-K-GUI-LAUNCHER
+ROOT=$ROOT_Q
+exec "$ROOT/bin/rtcore-ui.sh" "$@"
+EOF
+    chmod 755 "$UI_LAUNCHER"
+    printf '%s\n' "$UI_LAUNCHER" > "$ROOT/.ui_launcher_installed"
+    say "Dolphin Rt:UI registered in KNULLI Tools: $UI_LAUNCHER"
   fi
 fi
 
