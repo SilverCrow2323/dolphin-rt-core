@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 150" role="img" aria-labelledby="title desc">
+  <title id="title">Nintendo Wii</title><desc id="desc">Wii system logo in cool blue lettering</desc>
+  <defs><linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#83d9f4"/><stop offset="1" stop-color="#1689bd"/></linearGradient></defs>
+  <g fill="url(#blue)" stroke="#0875a8" stroke-width="1.2">
+    <path d="M64 37 L88 37 L102 93 L117 37 L140 37 L155 93 L171 37 L195 37 L166 123 L143 123 L128 71 L113 123 L90 123 Z"/>
+    <path d="M228 47 L249 47 L249 123 L228 123 Z"/>
+    <path d="M276 47 L297 47 L297 123 L276 123 Z"/>
+  </g>
+  <circle cx="238.5" cy="29" r="8" fill="#1689bd"/><circle cx="286.5" cy="29" r="8" fill="#1689bd"/>
+  <path d="M335 123 C325 106 320 83 320 60 C320 29 335 13 360 13 C385 13 400 29 400 60 C400 83 395 106 385 123 L360 123 Z" fill="none" stroke="#1689bd" stroke-width="7" opacity=".0"/>
+  <text x="435" y="105" font-family="DejaVu Sans,Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="3" text-anchor="middle" fill="#1689bd">NINTENDO</text>
+  <path d="M48 133 H472" stroke="#1689bd" stroke-width="2" opacity=".35"/>
+</svg>
