@@ -512,6 +512,12 @@ function love.draw()
             text(g.title, 36, y + 8, SMALL, COLOURS.text, 390)
             text(g.id, 505, y + 9, TINY, COLOURS.accent)
         end
+        if #state.games == 0 then
+            panel(24, 128, W - 48, 96, false)
+            text("NO GAMES FOUND", 44, 148, FONT, COLOURS.text)
+            text("Add ROMs to " .. ROM_ROOT .. "/" .. state.system, 44, 181, TINY, COLOURS.muted, W - 88)
+            text("Then press Y to rescan the library.", 44, 199, TINY, COLOURS.muted)
+        end
         text("L1 GAMECUBE     R1 WII     Y RESCAN", 28, 438, TINY, COLOURS.muted)
     elseif state.page == "settings" then
         local game = state.selected_game
