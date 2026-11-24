@@ -72,8 +72,9 @@ class PortSettingsContractTests(unittest.TestCase):
         self.assertIn('t="${t//@SHARED_FEATURES@/', installer)
         self.assertIn('OPTS_TSV="$ROOT/config/options.tsv"', launcher)
         self.assertIn('EXTRA+=(-C "$ov")', launcher)
+        self.assertIn('submenu="%s"', installer)
         for group in ("GAME", "CONTROLS", "GRAPHICS", "PERFORMANCE", "AUDIO"):
-            self.assertIn(f'submenu="{group}"', installer)
+            self.assertIn(group, (K / "config" / "options.tsv").read_text(encoding="utf-8"))
 
     def test_rocknix_options_are_grouped_and_platform_selector_is_separate(self):
         generator = (R / "tools" / "es-features.sh").read_text(encoding="utf-8")
