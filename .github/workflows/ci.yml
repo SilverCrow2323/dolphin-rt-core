@@ -100,6 +100,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash tests/test_ports_dryrun.sh
+      - name: Validate KNULLI and ROCKNIX systems, logos and advanced settings
+        run: python3 tests/test_port_settings.py
       - name: Test Knulli and ROCKNIX packaging with a matching Sys tree
         run: bash tests/test_port_sys_packaging.sh
 
