@@ -10,6 +10,7 @@ for f in es_systems_rtcore.cfg; do
   rm -f "$ES_DIR/$f" "$ES_DIR/$f.bak" && echo "[rtcore-r] removed $ES_DIR/$f"
 done
 bash "$ROOT/tools/es-features.sh" remove "$ES_DIR"
+bash "$ROOT/theme/install-theme.sh" --uninstall
 rm -f "$ROOT/.installed"
 command -v systemctl >/dev/null 2>&1 && systemctl restart emulationstation >/dev/null 2>&1 &
 echo "[rtcore-r] Done. This folder, your ROMs and your saves were left untouched."
