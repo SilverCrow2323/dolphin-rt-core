@@ -37,7 +37,7 @@ candidates=(
   "/userdata/roms/ports/PortMaster"
   "/storage/roms/ports/PortMaster"
   "/opt/system/Tools/PortMaster"
-  "$HOME/.local/share/PortMaster"
+  "${HOME:-/userdata}/.local/share/PortMaster"
 )
 controlfolder=""
 for candidate in "${candidates[@]}"; do
