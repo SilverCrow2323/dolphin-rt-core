@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 160" role="img" aria-labelledby="title desc">
+  <title id="title">Nintendo GameCube</title><desc id="desc">GameCube inspired cube mark and wordmark</desc>
+  <defs><linearGradient id="cube" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8e80d5"/><stop offset="1" stop-color="#47328f"/></linearGradient></defs>
+  <g transform="translate(22 18)" stroke="#5c4caa" stroke-width="5" stroke-linejoin="round">
+    <path d="M58 12 L118 46 L118 112 L58 146 L0 112 L0 46 Z" fill="url(#cube)"/>
+    <path d="M58 12 V80 L118 46 M58 80 L0 46 M58 80 V146" fill="none" stroke="#ddd9f5" stroke-width="4"/>
+    <path d="M58 80 L82 93 V119 L58 133 L34 119 V93 Z" fill="#272044" stroke="#ddd9f5" stroke-width="3"/>
+    <path d="M58 12 L82 26 L58 40 L34 26 Z" fill="#b8b0e9" stroke="none"/>
+  </g>
+  <text x="178" y="83" font-family="DejaVu Sans,Arial,sans-serif" font-size="49" font-weight="800" letter-spacing="2" fill="#45348d">GAMECUBE</text>
+  <text x="182" y="119" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" letter-spacing="5" fill="#786da8">NINTENDO HOME CONSOLE</text>
+  <path d="M178 135 H584" stroke="#7568b4" stroke-width="3" opacity=".45"/>
+</svg>
