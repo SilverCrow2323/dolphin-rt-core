@@ -79,7 +79,7 @@ end
 local function load_options()
     local raw = read_file(OPTIONS_FILE)
     if not raw then return false, "Missing " .. OPTIONS_FILE end
-    local map, groups = {}, {}
+    local map, groups, ordered = {}, {}, {}
     for line in raw:gmatch("[^\r\n]+") do
         if line ~= "" and line:sub(1, 1) ~= "#" then
             local f = split_tsv(line)
@@ -89,7 +89,10 @@ local function load_options()
                     description = f[5], choices = {}
                 }
                 map[option.key] = option
-                if not groups[option.group] then groups[option.group] = {} end
+                if not groups[option.group] then
+                    groups[option.group] = {}
+                    ordered[#ordered + 1] = option.group
+                end
                 table.insert(groups[option.group], option)
             elseif f[1] == "C" and #f >= 5 and map[f[2]] then
                 table.insert(map[f[2]].choices, {
@@ -98,9 +101,6 @@ local function load_options()
             end
         end
     end
-    local ordered = {}
-    for name in pairs(groups) do ordered[#ordered + 1] = name end
-    table.sort(ordered)
     state.option_map, state.options, state.groups = map, groups, ordered
     return true
 end
@@ -437,7 +437,7 @@ end
 function love.keypressed(key)
     local map = {
         up="up", down="down", left="left", right="right",
-        return="a", space="a", z="a", escape="b", backspace="b",
+        ["return"]="a", space="a", z="a", escape="b", backspace="b",
         x="x", q="l1", e="r1", r="y"
     }
     if map[key] then key_action(map[key]) end
