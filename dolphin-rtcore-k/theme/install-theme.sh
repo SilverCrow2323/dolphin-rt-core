@@ -25,6 +25,7 @@ if [ "$UNINSTALL" = 1 ]; then
 fi
 
 [ -n "$THEMES" ] && [ -n "$ES_DIR" ] || { echo "uso: install-theme.sh --themes DIR --es-dir DIR"; exit 1; }
+: > "$MANIFEST"
 
 # Art Book Next exposes a supported, update-persistent custom-logo directory.
 # KNULLI's theme customization folder is not the active theme's internal assets.
@@ -45,8 +46,7 @@ echo "[theme] tema attivo / active theme: $THEME"
 
 if [ -d "$TD/_art/Colorlogos" ]; then
   DEST="$TD/_art/Colorlogos"
-  [ -f "$MANIFEST" ] || : > "$MANIFEST"
-  for pair in "logo_wii.png:wii.png" "logo_gamecube.png:gamecube.png" "logo_rtcore.png:rtcore.png"; do
+    for pair in "logo_wii.png:wii.png" "logo_gamecube.png:gamecube.png" "logo_rtcore.png:rtcore.png"; do
     src="${pair%%:*}"; dst="$DEST/${pair##*:}"
     [ -f "$dst" ] && [ ! -f "$dst.rtcore.bak" ] && cp -f "$dst" "$dst.rtcore.bak"
     cp -f "$LOGOS/$src" "$dst" && echo "$dst" >> "$MANIFEST" && echo "[theme] copiato/copied $dst"
