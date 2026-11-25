@@ -38,6 +38,12 @@ on:
       - "dolphin-rtcore-muos/app/Dolphin RtUI/**"
       - "dolphin-rtcore-muos/overlay/**"
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publish the stable muOS H700 release after a successful build"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -161,7 +167,7 @@ jobs:
           retention-days: 30
 
       - name: Publish official Dolphin Rt:Core release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'SilverCrow2323/dolphin-rt-core'
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.repository == 'SilverCrow2323/dolphin-rt-core'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

@@ -256,6 +256,12 @@ Do not upload private logs, pairing tokens, ROMs or BIOS files to issue reports.
 | [wiki/](wiki/) | Tracked Markdown source for the GitHub Wiki. |
 | [Core_History/](Core_History/) | Historical implementations and provenance archive. |
 
+## Stable release publishing
+
+A push to `main` runs the native H700 build and retains its CI artifacts; it does **not** publish or overwrite a GitHub Release. Stable publication is a separate manual `workflow_dispatch` action and requires the operator to set `publish_release=true` explicitly. The input defaults to `false`. PR builds never publish releases.
+
+This gate is deliberate: native compilation, package validation and CI artifacts are evidence for review, not authorization to publish. Physical-device qualification remains a separate release gate.
+
 ## 10 — CI, releases and contribution
 
 GitHub Actions runs repository contracts, packaging dry-runs, frontend smoke tests and native ARM64 build variants. Successful build jobs upload the binary, build information, checksums and corresponding source archive. An artifact is only available after its job completes successfully.
