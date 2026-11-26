@@ -251,7 +251,7 @@ def verify_pack(out_dir: Path) -> int:
         raise ValueError("Screenshot manifest has an incomplete capture matrix")
     if any(not isinstance(screen, str) or not screen for screen in screens):
         raise ValueError("Screenshot manifest contains an invalid screen ID")
-    if any(not isinstance(resolution, str) or not re.fullmatch(r"\\d{3,4}x\\d{3,4}", resolution)
+    if any(not isinstance(resolution, str) or not re.fullmatch(r"\d{3,4}x\d{3,4}", resolution)
            for resolution in resolutions):
         raise ValueError("Screenshot manifest contains an invalid resolution")
     if len(set(screens)) != len(screens) or len(set(resolutions)) != len(resolutions):
