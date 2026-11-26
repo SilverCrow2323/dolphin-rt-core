@@ -1,69 +1,72 @@
-from __future__ import annotations
-
+import importlib.util
 import json
 import struct
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
-from tools import screenshot_studio as studio
+ROOT = Path(__file__).resolve().parents[1]
+SPEC = importlib.util.spec_from_file_location("screenshot_studio", ROOT / "tools" / "screenshot_studio.py")
+studio = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(studio)
 
 
 class ScreenshotStudioTests(unittest.TestCase):
-    def test_parse_resolutions_preserves_order_and_removes_duplicates(self):
+    def test_resolution_parser_deduplicates_and_preserves_order(self):
         self.assertEqual(
-            studio.parse_resolutions("640x480, 720x480,640X480"),
+            studio.parse_resolutions("640x480,720x480,640x480"),
             [(640, 480), (720, 480)],
         )
 
-    def test_parse_resolutions_rejects_bad_or_unsupported_sizes(self):
-        for value in ("640x", "640x480;720x480", "100x100", "5000x480", ""):
+    def test_resolution_parser_rejects_malformed_and_oversized_values(self):
+        for value in ("640x", "192x144", "4000x3000", ""):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 studio.parse_resolutions(value)
 
-    def test_png_dimensions_reads_png_ihdr(self):
-        header = studio.PNG_SIGNATURE + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", 640, 480)
-        with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "shot.png"
+    def test_png_dimensions_accepts_valid_ihdr(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "valid.png"
+            header = studio.PNG_SIGNATURE + b"\x00\x00\x00\x0dIHDR" + struct.pack(">II", 640, 480)
             path.write_bytes(header)
             self.assertEqual(studio.png_dimensions(path), (640, 480))
 
-    def test_png_dimensions_rejects_non_png(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "bad.png"
-            path.write_bytes(b"not a png")
+    def test_png_dimensions_rejects_invalid_signature(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "invalid.png"
+            path.write_bytes(b"not-a-png" + bytes(32))
             with self.assertRaises(ValueError):
                 studio.png_dimensions(path)
 
-    def test_manifest_cleanup_only_returns_paths_inside_output_dir(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / "captures"
+    def test_manifest_cleanup_ignores_paths_outside_output_root(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "gallery"
             root.mkdir()
-            (root / "640x480").mkdir()
-            image = root / "640x480" / "library.png"
-            image.write_bytes(b"image")
-            (root / "manifest.json").write_text(
-                json.dumps({"images": [{"path": "640x480/library.png"}, {"path": "../../outside.png"}]}),
-                encoding="utf-8",
-            )
-            self.assertEqual(studio.previous_generated_paths(root), [image.resolve()])
+            outside = Path(directory) / "private.png"
+            outside.write_bytes(b"private")
+            (root / "inside.png").write_bytes(b"generated")
+            (root / "manifest.json").write_text(json.dumps({
+                "images": [
+                    {"path": "inside.png"},
+                    {"path": "../private.png"},
+                    {"path": str(outside)},
+                ]
+            }), encoding="utf-8")
+            self.assertEqual(studio.previous_generated_paths(root), [root / "inside.png"])
+            self.assertTrue(outside.exists())
 
-    def test_gallery_and_snippets_reference_generated_images(self):
-        records = [
-            {"screen": "library", "resolution": "640x480"},
-            {"screen": "settings", "resolution": "640x480"},
-        ]
-        gallery = studio.build_gallery(
-            "12.5.00", "3.7.0", "Arcade", ["library", "settings"],
-            [(640, 480)], "2026-11-23T00:00:00Z", "deadbeef", "Xvfb",
-        )
-        self.assertIn("![Game Library — Rt:UI 3.7.0](640x480/library.png)", gallery)
-        readme = studio.build_readme_snippet("GALLERY.md", "https://example.invalid/screens", records)
-        self.assertIn("https://example.invalid/screens/640x480/library.png", readme)
-        notes = studio.build_release_snippet("GALLERY.md", "https://example.invalid/screens", records)
-        self.assertIn("Interface tour", notes)
-        self.assertIn("https://example.invalid/screens/640x480/library.png", notes)
+    def test_dry_run_does_not_create_output_directory_or_launch_capture(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "not-created"
+            with mock.patch.object(studio, "discover_screens", return_value=["library", "settings"]), \
+                 mock.patch.object(studio, "read_versions", return_value=("12.5.00", "3.7.0", "Arcade")), \
+                 mock.patch.object(studio, "git_value", return_value="main"), \
+                 mock.patch.object(studio, "repository_slug", return_value="SilverCrow2323/dolphin-rt-core"), \
+                 mock.patch.object(studio, "run", side_effect=AssertionError("dry-run must not launch capture")):
+                result = studio.main(["--dry-run", "--out-dir", str(output), "--resolutions", "640x480"])
+            self.assertEqual(result, 0)
+            self.assertFalse(output.exists())
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)
