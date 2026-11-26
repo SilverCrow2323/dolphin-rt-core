@@ -48,6 +48,64 @@ class ScreenshotStudioTests(unittest.TestCase):
             )
             self.assertEqual(studio.previous_generated_paths(root), [image.resolve()])
 
+
+    def _make_valid_pack(self, root):
+        root.mkdir()
+        screens = ["library", "settings"]
+        resolutions = ["640x480"]
+        records = []
+        for screen in screens:
+            image_path = root / "640x480" / f"{screen}.png"
+            image_path.parent.mkdir(exist_ok=True)
+            data = studio.PNG_SIGNATURE + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", 640, 480)
+            image_path.write_bytes(data)
+            records.append({
+                "screen": screen, "resolution": "640x480",
+                "path": f"640x480/{screen}.png", "bytes": len(data),
+                "sha256": studio.sha256(image_path), "width": 640, "height": 480,
+            })
+        manifest = {"schema": 1, "screens": screens, "resolutions": resolutions, "images": records}
+        (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        for name in ("GALLERY.md", "README_GALLERY_SNIPPET.md", "RELEASE_NOTES_SNIPPET.md"):
+            (root / name).write_text("review me", encoding="utf-8")
+        return manifest
+
+    def test_verify_pack_checks_complete_capture_matrix_and_hashes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "pack"
+            self._make_valid_pack(root)
+            self.assertEqual(studio.verify_pack(root), 2)
+
+    def test_verify_pack_rejects_modified_png(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "pack"
+            self._make_valid_pack(root)
+            with (root / "640x480/library.png").open("ab") as stream:
+                stream.write(b"tamper")
+            with self.assertRaisesRegex(ValueError, "fingerprint mismatch"):
+                studio.verify_pack(root)
+
+    def test_verify_pack_rejects_manifest_path_traversal(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "pack"
+            manifest = self._make_valid_pack(root)
+            manifest["images"][0]["path"] = "../../outside.png"
+            (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Unsafe screenshot path"):
+                studio.verify_pack(root)
+
+    def test_verify_pack_rejects_symlinked_png(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "pack"
+            self._make_valid_pack(root)
+            target = root / "640x480/library.png"
+            outside = Path(tmp) / "outside.png"
+            outside.write_bytes(target.read_bytes())
+            target.unlink()
+            target.symlink_to(outside)
+            with self.assertRaisesRegex(ValueError, "symlink"):
+                studio.verify_pack(root)
+
     def test_gallery_and_snippets_reference_generated_images(self):
         records = [
             {"screen": "library", "resolution": "640x480"},

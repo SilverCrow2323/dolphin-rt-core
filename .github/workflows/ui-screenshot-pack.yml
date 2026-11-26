@@ -1,0 +1,68 @@
+name: Rt:UI screenshot pack
+on:
+  workflow_dispatch:
+    inputs:
+      resolutions:
+        description: Comma-separated capture sizes
+        required: true
+        default: "640x480,720x480,720x720"
+        type: string
+      screens:
+        description: Optional comma-separated screen IDs (empty captures all)
+        required: false
+        default: ""
+        type: string
+      delay:
+        description: Seconds to wait before each capture
+        required: true
+        default: "1.0"
+        type: string
+permissions:
+  contents: read
+jobs:
+  capture:
+    name: Render and validate Rt:UI screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Install LÖVE and virtual display
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y love xvfb libgl1-mesa-dri python3
+      - name: Validate screenshot capture plan
+        run: |
+          python3 tools/screenshot_studio.py --list
+          python3 tools/screenshot_studio.py \
+            --resolutions "${{ inputs.resolutions }}" \
+            --screens "${{ inputs.screens }}" \
+            --delay "${{ inputs.delay }}" \
+            --out-dir screenshots/ci-generated \
+            --ref "${{ github.ref_name }}" \
+            --dry-run
+      - name: Capture every selected screen at every requested resolution
+        env:
+          SDL_AUDIODRIVER: dummy
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          args=(
+            --resolutions "${{ inputs.resolutions }}"
+            --delay "${{ inputs.delay }}"
+            --out-dir screenshots/ci-generated
+            --ref "${{ github.ref_name }}"
+          )
+          if [[ -n "${{ inputs.screens }}" ]]; then
+            args+=(--screens "${{ inputs.screens }}")
+          fi
+          python3 tools/screenshot_studio.py "${args[@]}"
+      - name: Verify the complete screenshot pack independently
+        run: python3 tools/screenshot_studio.py --out-dir screenshots/ci-generated --verify-pack
+      - name: Upload validated screenshot pack and release snippets
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtui-screenshots-${{ github.run_number }}
+          path: screenshots/ci-generated/
+          if-no-files-found: error
+          retention-days: 30
