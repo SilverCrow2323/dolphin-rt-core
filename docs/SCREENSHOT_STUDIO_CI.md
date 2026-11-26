@@ -29,3 +29,14 @@ Open **Actions → Rt:UI screenshot pack → Run workflow**. Choose resolutions,
 5. uploads `manifest.json`, `GALLERY.md`, `README_GALLERY_SNIPPET.md`, `RELEASE_NOTES_SNIPPET.md` and PNGs as one artifact.
 
 The workflow does not commit generated screenshots or edit release notes automatically. Review the artifact for visual glitches and personal data, then copy the approved gallery into the release branch.
+
+
+## Offline pack verification
+
+A generated pack can be checked without LÖVE or a virtual display:
+
+```sh
+python3 tools/screenshot_studio.py --out-dir screenshots/releases/current --verify-pack
+```
+
+The verifier checks the complete screen × resolution matrix, safe relative paths, symlink-free image paths, PNG dimensions, byte counts, SHA-256 fingerprints and required gallery/release snippets. CI runs this independent verification before uploading the artifact.

@@ -57,6 +57,8 @@ jobs:
             args+=(--screens "${{ inputs.screens }}")
           fi
           python3 tools/screenshot_studio.py "${args[@]}"
+      - name: Verify the complete screenshot pack independently
+        run: python3 tools/screenshot_studio.py --out-dir screenshots/ci-generated --verify-pack
       - name: Upload validated screenshot pack and release snippets
         uses: actions/upload-artifact@v4
         with:

@@ -18,7 +18,7 @@ import struct
 import subprocess
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -229,6 +229,79 @@ def build_release_snippet(gallery_url: str, raw_base: str | None, records: list[
     return "\n".join(lines).rstrip() + "\n"
 
 
+def verify_pack(out_dir: Path) -> int:
+    """Verify a completed screenshot pack independently of the capture process."""
+    if out_dir.is_symlink() or not out_dir.is_dir():
+        raise ValueError("Screenshot pack directory is missing or is a symlink")
+    manifest_path = out_dir / "manifest.json"
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise ValueError("Screenshot pack manifest is missing or unsafe")
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Cannot read screenshot manifest: {exc}") from exc
+    if not isinstance(manifest, dict) or manifest.get("schema") != 1:
+        raise ValueError("Unsupported screenshot manifest schema")
+    screens = manifest.get("screens")
+    resolutions = manifest.get("resolutions")
+    records = manifest.get("images")
+    if (not isinstance(screens, list) or not screens or
+            not isinstance(resolutions, list) or not resolutions or
+            not isinstance(records, list)):
+        raise ValueError("Screenshot manifest has an incomplete capture matrix")
+    if len(set(screens)) != len(screens) or len(set(resolutions)) != len(resolutions):
+        raise ValueError("Screenshot manifest contains duplicate screens or resolutions")
+    expected = {
+        f"{resolution}/{safe_name(screen)}.png"
+        for screen in screens for resolution in resolutions
+    }
+    if len(expected) != len(screens) * len(resolutions) or len(records) != len(expected):
+        raise ValueError("Screenshot manifest image count does not match the capture matrix")
+    seen = set()
+    for record in records:
+        if not isinstance(record, dict):
+            raise ValueError("Screenshot image record must be an object")
+        relative = record.get("path")
+        if not isinstance(relative, str) or "\\\\" in relative or "\\x00" in relative:
+            raise ValueError(f"Unsafe screenshot path: {relative!r}")
+        path = PurePosixPath(relative)
+        if path.is_absolute() or any(part in ("", ".", "..") for part in path.parts):
+            raise ValueError(f"Unsafe screenshot path: {relative!r}")
+        normalized = path.as_posix()
+        if normalized not in expected or normalized in seen:
+            raise ValueError(f"Unexpected or duplicate screenshot path: {normalized}")
+        seen.add(normalized)
+        candidate = out_dir.joinpath(*path.parts)
+        current = out_dir
+        for part in path.parts:
+            current = current / part
+            if current.is_symlink():
+                raise ValueError(f"Screenshot path contains a symlink: {normalized}")
+        if not candidate.is_file():
+            raise ValueError(f"Screenshot is missing: {normalized}")
+        resolution = record.get("resolution")
+        try:
+            expected_width, expected_height = map(int, resolution.split("x"))
+        except (AttributeError, ValueError):
+            raise ValueError(f"Invalid screenshot resolution in record: {normalized}")
+        if resolution not in resolutions or normalized != f"{resolution}/{safe_name(record.get('screen', ''))}.png":
+            raise ValueError(f"Screenshot record identity mismatch: {normalized}")
+        actual = png_dimensions(candidate)
+        if actual != (expected_width, expected_height):
+            raise ValueError(f"Screenshot dimensions mismatch: {normalized}: {actual}")
+        if record.get("width") != expected_width or record.get("height") != expected_height:
+            raise ValueError(f"Manifest dimensions mismatch: {normalized}")
+        if candidate.stat().st_size != record.get("bytes") or sha256(candidate) != record.get("sha256"):
+            raise ValueError(f"Screenshot fingerprint mismatch: {normalized}")
+    if seen != expected:
+        raise ValueError("Screenshot manifest is missing one or more screen/resolution combinations")
+    for name in ("GALLERY.md", "README_GALLERY_SNIPPET.md", "RELEASE_NOTES_SNIPPET.md"):
+        path = out_dir / name
+        if path.is_symlink() or not path.is_file():
+            raise ValueError(f"Screenshot pack companion file is missing or unsafe: {name}")
+    return len(records)
+
+
 def previous_generated_paths(out_dir: Path) -> list[Path]:
     manifest_path = out_dir / "manifest.json"
     if not manifest_path.is_file():
@@ -265,9 +338,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ref", help="Git ref for GitHub image URLs (default: current branch).")
     parser.add_argument("--image-base-url", help="Override the raw-image base URL in generated snippets.")
     parser.add_argument("--dry-run", action="store_true", help="Show the capture plan without launching LÖVE or writing files.")
+    parser.add_argument("--verify-pack", action="store_true", help="Verify an existing screenshot pack at --out-dir without capturing.")
     args = parser.parse_args(argv)
 
     try:
+        if args.verify_pack:
+            if not args.out_dir:
+                raise ValueError("--verify-pack requires --out-dir")
+            verify_dir = Path(args.out_dir).expanduser()
+            if not verify_dir.is_absolute():
+                verify_dir = ROOT / verify_dir
+            count = verify_pack(verify_dir)
+            print(f"Screenshot pack verified: {count} images")
+            return 0
         registered = discover_screens()
         if args.list:
             print("\n".join(registered))
