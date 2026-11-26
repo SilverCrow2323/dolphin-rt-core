@@ -1,0 +1,26 @@
+name: Screenshot Studio tests
+on:
+  push:
+    branches: [main, "feat/**"]
+    paths:
+      - "tools/screenshot_studio.py"
+      - "tests/test_screenshot_studio.py"
+      - ".github/workflows/screenshot-studio.yml"
+  pull_request:
+    paths:
+      - "tools/screenshot_studio.py"
+      - "tests/test_screenshot_studio.py"
+      - ".github/workflows/screenshot-studio.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run screenshot tooling safety tests
+        run: python3 -m unittest tests/test_screenshot_studio.py -v
