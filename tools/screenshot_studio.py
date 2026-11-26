@@ -249,6 +249,11 @@ def verify_pack(out_dir: Path) -> int:
             not isinstance(resolutions, list) or not resolutions or
             not isinstance(records, list)):
         raise ValueError("Screenshot manifest has an incomplete capture matrix")
+    if any(not isinstance(screen, str) or not screen for screen in screens):
+        raise ValueError("Screenshot manifest contains an invalid screen ID")
+    if any(not isinstance(resolution, str) or not re.fullmatch(r"\\d{3,4}x\\d{3,4}", resolution)
+           for resolution in resolutions):
+        raise ValueError("Screenshot manifest contains an invalid resolution")
     if len(set(screens)) != len(screens) or len(set(resolutions)) != len(resolutions):
         raise ValueError("Screenshot manifest contains duplicate screens or resolutions")
     expected = {
@@ -280,6 +285,9 @@ def verify_pack(out_dir: Path) -> int:
         if not candidate.is_file():
             raise ValueError(f"Screenshot is missing: {normalized}")
         resolution = record.get("resolution")
+        screen = record.get("screen")
+        if not isinstance(screen, str) or not screen:
+            raise ValueError(f"Invalid screen ID in screenshot record: {normalized}")
         try:
             expected_width, expected_height = map(int, resolution.split("x"))
         except (AttributeError, ValueError):
