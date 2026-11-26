@@ -54,6 +54,10 @@
 >
 > CI and package integrity checks establish that the release was built and assembled correctly. They are not a promise of full speed for every game or blanket certification for other devices and firmware.
 
+## Screenshot production
+
+Generate a reproducible gallery of the real Rt:UI screens locally with `python3 tools/screenshot_studio.py`, or run the manual [GitHub Actions screenshot pack](.github/workflows/ui-screenshot-pack.yml). The workflow uploads validated PNGs, a SHA-256 manifest and ready-to-review README/release-note snippets. See [Screenshot Studio CI guide](docs/SCREENSHOT_STUDIO_CI.md).
+
 ## 01 — The project
 
 Dolphin Rt:Core is a community engineering stack for running and integrating **Dolphin GameCube/Wii emulation** on constrained ARM64 handhelds.
