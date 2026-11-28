@@ -34,8 +34,20 @@ for port in k r; do
   version="$(tr -d '[:space:]' < "$ROOT/$name/VERSION")"
   archive="$out/Dolphin-RtCore-${tag}_v${version}_emulators.tar.gz"
   [ -s "$archive" ]
+  case "$port" in
+    k) other_root="dolphin-rtcore-r/" ;;
+    r) other_root="dolphin-rtcore-k/" ;;
+  esac
   listing="$TMP/$port-archive-files.txt"
   tar -tzf "$archive" > "$listing"
+  if grep -Fq "$other_root" "$listing"; then
+    echo "[FAIL] $name archive contains the other platform root" >&2
+    exit 1
+  fi
+  if grep -Fq "dolphin-rtcore-muos/" "$listing"; then
+    echo "[FAIL] $name archive contains the muOS package root" >&2
+    exit 1
+  fi
   for asset in \
     "$name/core/dolphin" \
     "$name/core/Sys/GC/font_western.bin" \
